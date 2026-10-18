@@ -1078,3 +1078,14 @@ A /code-review xhigh on the work since 28b14c8 gave 15 findings, all fixed:
   a note. (2) Two quick edits lost the first one. (3) A partial saved filter in localStorage
   left the page empty. (4) Without the shared store, the verdict dropdown dropped changes
   silently. Orb of Restoration is now flagged as flat (+10 mana regen).
+- **Trinket map, second review** (`/code-review xhigh`, 15 findings, all fixed; page version 3).
+  Verdict writes now run one at a time per trinket, so a Reset can no longer race a change.
+  A change that fails to save is rolled back instead of staying on screen. Live updates
+  wait while a pointer is down or a note is being typed, and focus returns to the rebuilt
+  control. Saved filters accept only known keys. Notes are capped at 2000 characters and
+  flattened to one line in the copied to-do. A failed copy is reported. The "Note added" label
+  shows only when there is a note. Three HoH1 set pieces with no HoH2 trinket (Circlet of
+  Willpower, Wizard's Wand, Steady Greaves) now sit under their HoH1 set, not under
+  "Missing, no set". Markham's Amulet/Mace/Wand, Decaying Hand and Pickled Eye are now
+  flagged flat (52 HoH2 trinkets with flat values). The lang files now decode strictly
+  (no U+FFFD patching), with identical output. 43 jsdom checks pass on the new build.

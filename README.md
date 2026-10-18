@@ -84,6 +84,9 @@ nearby kept Morale off. A later code review fixed 15 smaller issues: town units 
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines
 (`docs/RE_NOTES.md`).
+The HoH1-to-HoH2 trinket comparison (missing, modified, new and flat-value trinkets,
+grouped by HoH2 set, with shared verdicts) is a private web app outside the repo; its link
+is in `docs/RE_NOTES.md`.
 
 ## Developing
 
