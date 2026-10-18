@@ -270,11 +270,11 @@ namespace Modules
 				{
 					m_boardDone = true;
 					if (g_inTown && Network::IsServer())
-						m_board.m_unit = HWP::LastStats::SpawnBoard();
+						m_board.Set(HWP::LastStats::SpawnBoard());
 				}
 			}
 			else if (m_board.Due(ms)) // a building upgrade reloaded the town
-				m_board.m_unit = HWP::LastStats::SpawnBoard();
+				m_board.Set(HWP::LastStats::SpawnBoard());
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace HWP
 		void Clear()
 		{
 			for (uint i = 0; i < g_markers.length(); i++)
-				if (g_markers[i].IsValid())
+				if (HWP::Town::Ours(g_markers[i]))
 					g_markers[i].Destroy();
 			g_dyes.removeRange(0, g_dyes.length());
 			g_markers.removeRange(0, g_markers.length());
@@ -43,7 +43,7 @@ namespace HWP
 			{
 				if (g_dyes[i].IsValid() && !g_dyes[i].IsHidden())
 					continue;
-				if (g_markers[i].IsValid())
+				if (HWP::Town::Ours(g_markers[i]))
 					g_markers[i].Destroy();
 				g_dyes.removeAt(i);
 				g_markers.removeAt(i);

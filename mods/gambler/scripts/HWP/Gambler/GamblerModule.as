@@ -88,7 +88,7 @@ namespace Modules
 				return;
 			}
 			UnitPtr npc = prod.Produce(g_scene, spawnPos);
-			m_kept.m_unit = npc;
+			m_kept.Set(npc);
 			if (!npc.IsValid())
 			{
 				HWP::LogError("gambler", "Produce returned no unit at (-124, -106)");

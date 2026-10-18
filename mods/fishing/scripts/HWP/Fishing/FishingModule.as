@@ -783,7 +783,7 @@ namespace HWP
 		void ClearLocal()
 		{
 			for (uint i = 0; i < g_local.length(); i++)
-				if (g_local[i].IsValid() && !g_local[i].IsDestroyed())
+				if (HWP::Town::Ours(g_local[i]))
 					g_local[i].Destroy();
 			g_local.removeRange(0, g_local.length());
 		}
@@ -836,7 +836,7 @@ namespace HWP
 			if (g_watchTimer < WATCH_MS)
 				return;
 			g_watchTimer = 0;
-			if (g_pirate.IsValid() && !g_pirate.IsDestroyed() && TradingPostTier() == g_pirateTier)
+			if (HWP::Town::Ours(g_pirate) && TradingPostTier() == g_pirateTier)
 				return;
 			HWP::Log("fishing", "the town changed (trading post tier " + TradingPostTier() + "); placing the coast again");
 			SpawnCoast();
@@ -881,7 +881,7 @@ namespace HWP
 		void ClearTraps()
 		{
 			for (uint i = 0; i < g_traps.length(); i++)
-				if (g_traps[i].IsValid() && !g_traps[i].IsDestroyed())
+				if (HWP::Town::Ours(g_traps[i]))
 					g_traps[i].Destroy();
 			g_traps.removeRange(0, g_traps.length());
 		}

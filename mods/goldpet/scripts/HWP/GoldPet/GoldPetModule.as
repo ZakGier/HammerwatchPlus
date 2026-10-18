@@ -43,7 +43,7 @@ namespace Modules
 
 			// the first check after a load spawns the vendor; later ones bring it
 			// back when a building upgrade (or building the lodge) rebuilt the town
-			if (Network::IsServer() && (!m_vendorSpawned || !m_vendor.IsValid() || m_vendor.IsDestroyed()))
+			if (Network::IsServer() && (!m_vendorSpawned || !HWP::Town::Ours(m_vendor)))
 			{
 				m_vendorSpawned = true;
 				SpawnVendor();

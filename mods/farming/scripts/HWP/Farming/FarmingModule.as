@@ -261,11 +261,21 @@ namespace HWP
 			return g_scene.FetchAllUnitsOfType(prod);
 		}
 
+		// a hidden vanilla crop that is still there (a town rebuild reuses unit
+		// ids, so an old pointer can name some other unit: HWP::Town::Ours)
+		bool LiveCrop(UnitPtr u)
+		{
+			if (!u.IsValid() || u.IsDestroyed())
+				return false;
+			auto prod = u.GetUnitProducer();
+			return prod !is null && prod.GetResourceName().findFirst("doodads/terrain/crop_") == 0;
+		}
+
 		void SetCropsHidden(bool hidden)
 		{
 			for (uint i = 0; i < g_hiddenCrops.length(); i++)
 			{
-				if (!g_hiddenCrops[i].IsValid() || g_hiddenCrops[i].IsDestroyed())
+				if (!LiveCrop(g_hiddenCrops[i]))
 					continue;
 				g_hiddenCrops[i].SetHidden(hidden);
 				g_hiddenCrops[i].SetShouldCollide(!hidden);
@@ -354,15 +364,15 @@ namespace HWP
 		bool FieldsStale()
 		{
 			for (uint i = 0; i < g_hiddenCrops.length(); i++)
-				if (!g_hiddenCrops[i].IsValid() || g_hiddenCrops[i].IsDestroyed())
+				if (!LiveCrop(g_hiddenCrops[i]))
 					return true;
 			for (uint i = 0; i < g_plotUnits.length(); i++)
-				if (!g_plotUnits[i].IsValid() || g_plotUnits[i].IsDestroyed())
+				if (!HWP::Town::Ours(g_plotUnits[i]))
 					return true;
 			for (uint i = 0; i < g_visual.length(); i++)
-				if (!g_visual[i].IsValid() || g_visual[i].IsDestroyed())
+				if (!HWP::Town::Ours(g_visual[i]))
 					return true;
-			if (g_wellUnit.IsValid() && g_wellUnit.IsDestroyed())
+			if (g_wellUnit.IsValid() && !HWP::Town::Ours(g_wellUnit))
 				return true;
 			if (!HWP::Settings::GetBool("farm.fields", true))
 				return false;
@@ -783,7 +793,7 @@ namespace HWP
 		void ClearVisuals()
 		{
 			for (uint i = 0; i < g_visual.length(); i++)
-				if (g_visual[i].IsValid() && !g_visual[i].IsDestroyed())
+				if (HWP::Town::Ours(g_visual[i]))
 					g_visual[i].Destroy();
 			g_visual.removeRange(0, g_visual.length());
 		}
@@ -1111,7 +1121,7 @@ namespace HWP
 		void ClearPlots()
 		{
 			for (uint i = 0; i < g_plotUnits.length(); i++)
-				if (g_plotUnits[i].IsValid() && !g_plotUnits[i].IsDestroyed())
+				if (HWP::Town::Ours(g_plotUnits[i]))
 					g_plotUnits[i].Destroy();
 			g_plotUnits.removeRange(0, g_plotUnits.length());
 		}
@@ -1158,7 +1168,7 @@ namespace HWP
 
 		void SpawnWell()
 		{
-			if (g_wellUnit.IsValid() && !g_wellUnit.IsDestroyed())
+			if (HWP::Town::Ours(g_wellUnit))
 				g_wellUnit.Destroy();
 			g_wellUnit = UnitPtr();
 			auto prod = Resources::GetUnitProducer(WELL_UNIT);
@@ -1195,7 +1205,7 @@ namespace HWP
 			ClearVisuals(); // the survivors of a partial rebuild go too
 			DetectFields();
 			SpawnPlots();
-			if (!g_wellUnit.IsValid() || g_wellUnit.IsDestroyed())
+			if (!HWP::Town::Ours(g_wellUnit))
 				SpawnWell();
 			RefreshVisuals();
 		}

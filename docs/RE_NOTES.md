@@ -726,3 +726,15 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - **The dark column over a window in the lower-left is the in-game chat history panel**
   (x 19-250, y 136-360 at 640x360). It shows while recent chat lines are up (any `[HWP]`
   message) and fades with them. It isn't part of the HWP window under it (probe 063142).
+- **A town rebuild reuses unit ids.** `TownRecord.Refresh` reloads the level in the same
+  scene, and the new level's units get the old ids back. A `UnitPtr` kept from before then
+  reads `IsValid()` and not `IsDestroyed()`, but names a different unit. Measured in
+  mod-town-rebuild run 064132: id 923 (the notice board) came back as `tree_oak.unit` and
+  924 (the gambler) as `beetle_green_small.unit`, so neither was spawned again (run 063819
+  failed on both). The pet bowl's id happened not to be reused. Core now has
+  `HWP::Town::Ours(u)` (live, and the unit file is an HWP one), `Kept.Set` remembers the
+  producer, and `Placeable` compares the unit path. Every destroy or "still there" check
+  on a kept town unit (gambler, board, bowl, pet vendor, pirate, coast spots, traps, farm
+  plots, visuals, well, hidden crops, dye markers) goes through them. Assumed, not
+  measured: before this, a rebuild could make `ClearLocal`, `ClearVisuals` or
+  `Placeable.Spawn` destroy (or `SetCropsHidden` hide) whatever vanilla unit took the id.

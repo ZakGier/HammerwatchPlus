@@ -177,7 +177,7 @@ namespace HWP
 			{
 				if (g_enabled)
 					SpawnBowl(BowlPos());
-				else if (g_bowlUnit.IsValid())
+				else if (HWP::Town::Ours(g_bowlUnit))
 				{
 					g_bowlUnit.Destroy();
 					g_bowlUnit = UnitPtr();
@@ -996,7 +996,7 @@ namespace HWP
 
 		void SpawnBowl(vec3 pos)
 		{
-			if (g_bowlUnit.IsValid())
+			if (HWP::Town::Ours(g_bowlUnit))
 				g_bowlUnit.Destroy();
 			g_bowlUnit = UnitPtr();
 			auto prod = Resources::GetUnitProducer(BOWL_UNIT);
@@ -1514,7 +1514,7 @@ namespace Modules
 			// a building upgrade reloads the town without a new Start and takes the bowl
 			else if (m_bowlSpawned && HWP::Pets::g_enabled)
 			{
-				m_bowl.m_unit = HWP::Pets::g_bowlUnit;
+				m_bowl.Set(HWP::Pets::g_bowlUnit);
 				if (m_bowl.Due(ms))
 					HWP::Pets::SpawnBowl(HWP::Pets::BowlPos());
 			}
