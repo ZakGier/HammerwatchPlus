@@ -27,6 +27,10 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `use` | `<filter>` | use <filter>: IUsable.Use of the nearest usable unit whose unit path or behaviour matches, from wherever the player stands |
 | `shop` | `[buy <index>]` | shop [buy <index>]: the open shop's entries (id, gold price); buy presses entry <index> the way a click does (ShopWindow.OnFunc "buy") |
 | `trinkets` |  | trinkets: the local character's run trinkets, by id |
+| `prefab` | `<file> <dx> <dy>` | prefab <file> <dx> <dy>: Prefab.Fabricate at the player + (dx, dy) |
+| `ws` | `<type> [commentPrefix]` | ws <type> [commentPrefix]: every world script of that type whose comment starts with the prefix: comment, enabled, trigger times, position, value (Variables) |
+| `usews` | `<comment> [ifType ifComment]` | usews <comment> [ifType ifComment]: IUsable.Use of the UseTrigger with that comment; with a condition only while that other world script is enabled (a static scenario can then press exactly the cells a random puzzle wants) |
+| `goto` | `<type> <comment> [dx dy]` | goto <type> <comment> [dx dy]: the player to that world script's position + (dx, dy) |
 | `timescale` | `<x>` | timescale <x>: measurement only, NOT a test accelerator. Sets the engine cvar g_timescale (0.1-16), turning e_cheats on first. Game-ms timers scale with it but player movement per frame does not (floor-soak 20261017-175501 at 4x: intents timed out after a quarter of the walk), so gameplay results under it are not results at 1x. |
 | `cull` |  | cull: the cht_kill_all cheat's body (Console/Cheats.as:970-980): Kill every targetable actor not on the player's team. Measurement scenarios only, like teleport. |
 | `teleport` | `<x> <y>` | teleport <x> <y>: set the local player's unit position (the respawn path's call, Player.as SetPosition(x, y, z, true)). Measurement scenarios only: a gate scenario that teleports is not evidence of play. |

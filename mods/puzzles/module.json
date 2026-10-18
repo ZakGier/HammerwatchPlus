@@ -1,0 +1,6 @@
+{
+  "id": "puzzles",
+  "requires": ["core"],
+  "overrides": ["scripts/WorldScript/Prefabs/PrefabPicker.as"],
+  "exclude": []
+}

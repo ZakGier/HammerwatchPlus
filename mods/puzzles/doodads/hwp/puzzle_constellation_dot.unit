@@ -1,0 +1,33 @@
+<unit slot="doodad" layer="-30">
+	<!-- one dot of the Constellation chart (tools/make_constellation.py): dim when off,
+	     lit when the picked pattern includes it. Sprites are the centres of the vanilla
+	     magic button glyph, so it matches the stars below it. -->
+	<scenes off="off" on="on">
+		<scene name="off">
+			<sprite origin="3 3" texture="doodads/buttons/buttons.png" material="system/default.mats:floor">
+				<frame>133 142 6 6</frame>
+			</sprite>
+		</scene>
+		<scene name="on">
+			<sprite origin="3 3" ulayer="1" texture="doodads/buttons/buttons.png" material="system/default.mats:bright">
+				<frame>133 158 6 6</frame>
+			</sprite>
+			<light pos="0 0">
+				<sprite texture="system/default_L.png">
+					<frame>0 0 128 128</frame>
+				</sprite>
+				<length value="50" />
+				<looping value="true" />
+				<cast-shadows value="false" />
+				<shadow-cast-pos value="0 0" />
+				<shadow-cast-pos-jitter value="0 0 0 0" />
+				<sizes>
+					<size value="10" />
+				</sizes>
+				<colors>
+					<color value="0 255 255 0 0" />
+				</colors>
+			</light>
+		</scene>
+	</scenes>
+</unit>

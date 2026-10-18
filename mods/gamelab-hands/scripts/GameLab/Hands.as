@@ -332,6 +332,10 @@ namespace Modules
 			GameLab::RegisterVerb("use", "<filter>", GameLab::Verb(GameLab::VerbUse));
 			GameLab::RegisterVerb("shop", "[buy <index>]", GameLab::Verb(GameLab::VerbShop));
 			GameLab::RegisterVerb("trinkets", "", GameLab::Verb(GameLab::VerbTrinkets));
+			GameLab::RegisterVerb("prefab", "<file> <dx> <dy>", GameLab::Verb(GameLab::VerbPrefab));
+			GameLab::RegisterVerb("ws", "<type> [commentPrefix]", GameLab::Verb(GameLab::VerbWs));
+			GameLab::RegisterVerb("usews", "<comment> [ifType ifComment]", GameLab::Verb(GameLab::VerbUseWs));
+			GameLab::RegisterVerb("goto", "<type> <comment> [dx dy]", GameLab::Verb(GameLab::VerbGoto));
 			GameLab::RegisterVerb("timescale", "<x>", GameLab::Verb(GameLab::VerbTimescale));
 			GameLab::RegisterVerb("cull", "", GameLab::Verb(GameLab::VerbCull));
 			GameLab::RegisterVerb("teleport", "<x> <y>", GameLab::Verb(GameLab::VerbTeleport));

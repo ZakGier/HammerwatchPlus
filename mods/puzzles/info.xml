@@ -1,0 +1,5 @@
+<dict>
+	<string name="name">HammerwatchPlus Puzzles</string>
+	<string name="author">Ryan Bower</string>
+	<string name="description">Puts the puzzle rooms back in the dungeons (Heroes of Hammerwatch 2 ships 88 of them but never places any) and brings back Heroes of Hammerwatch 1's Constellation puzzle: press the stars of the class constellation shown on the chart, and only those. It joins the larger puzzle rooms as one more puzzle they can roll. Part of HammerwatchPlus; requires HWP Core.</string>
+</dict>

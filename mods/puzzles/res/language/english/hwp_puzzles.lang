@@ -1,0 +1,4 @@
+<lang name="English" official="false">
+	<string name="hwp.puzzles.constellation.solved">The constellation shines</string>
+	<string name="hwp.puzzles.constellation.failed">The stars fade</string>
+</lang>
