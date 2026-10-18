@@ -182,8 +182,9 @@ namespace GameLab
 		Emit(r);
 	}
 
-	const uint TRAIL_CAP = 32;
+	const uint TRAIL_CAP = 128;   // the NG+1 Warden throws ~30 bombs in 24 s (events come in parts)
 	const uint TRAIL_POINTS = 200;
+	const uint TRAIL_PART = 13000;   // chars per trail event, under Json.as EMIT_MAX
 
 	string RunsPoint(vec2 p, int t)
 	{
@@ -278,9 +279,27 @@ namespace GameLab
 					.Raw("pts", "[" + m_pts[i] + "]");
 				items.insertLast(e.Close());
 			}
-			Json j;
-			Emit(j.Str("ev", "trail").Str("tag", m_tag).Int("ms", m_t).Int("truncated", m_truncated)
-				.Raw("plr", RawArray(m_plr)).Raw("units", RawArray(items)));
+			// one event per part, each under the print limit (Json.as EMIT_MAX): the player's
+			// points in part 0, the units after them in order
+			array<array<string>> parts(1);
+			uint used = 2000 + m_plr.length() * 24;
+			for (uint i = 0; i < items.length(); i++)
+			{
+				if (used + items[i].length() + 1 > TRAIL_PART && parts[parts.length() - 1].length() > 0)
+				{
+					parts.insertLast(array<string>());
+					used = 400;
+				}
+				parts[parts.length() - 1].insertLast(items[i]);
+				used += items[i].length() + 1;
+			}
+			for (uint k = 0; k < parts.length(); k++)
+			{
+				Json j;
+				Emit(j.Str("ev", "trail").Str("tag", m_tag).Int("ms", m_t).Int("truncated", m_truncated)
+					.Int("part", int(k)).Int("parts", int(parts.length()))
+					.Raw("plr", k == 0 ? RawArray(m_plr) : "[]").Raw("units", RawArray(parts[k])));
+			}
 			return true;
 		}
 	}
@@ -289,8 +308,9 @@ namespace GameLab
 	// within radius of the player whose behavior type or .unit path contains filter (as near):
 	// first and last sight (time, position) and a point [x,y,ms] every stepMs (default 100), the
 	// player's own points too. One {"ev":"trail","tag":...} event when the time is up (a
-	// QueuedTasks updating task, so only while a gameplay module ticks). Capped at TRAIL_CAP units,
-	// TRAIL_POINTS points each.
+	// QueuedTasks updating task, so only while a gameplay module ticks), split into "parts" events
+	// ("part" 0..) when it would pass the print limit. Capped at TRAIL_CAP units, TRAIL_POINTS
+	// points each.
 	void VerbTrail(const string &in id, array<string>@ args)
 	{
 		if (args.length() < 4)

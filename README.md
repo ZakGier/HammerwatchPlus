@@ -72,9 +72,11 @@ Before merging to main, run `python -m gamelab run mod-all --mode lab` (every co
 mod loaded together; GUI textures must be power-of-two sized or the game won't boot).
 
 The in-game test plan's steps each have a `gamelab/scenarios/plan-*.json` scenario. As of
-2026-10-18, every solo step passes in GameLab except three that can't pass as the content
-stands (Weapon Swap's "only you can pick it up" needs a real lobby; the Warden's bombs and the
-Vampire Lord's bat arc are HoH1 NG+ boss variants, which the port does not swap in yet). The co-op steps need two players:
+2026-10-18, every solo step passes in GameLab except Weapon Swap's "only you can pick it up",
+which needs a real lobby. The Forsaken Tower now swaps HoH1's bosses and enemies for their
+NG+ copies as HoH1 did (the Warden's bomb fan from NG+1, the Vampire Lord's Bat Spray from
+NG+2), and HoH1 burst attacks that never fired (the ice trolls', ballista towers', the NG+
+Warden's club and ballista) now do. The co-op steps need two players:
 GameLab runs one game, and HoH2 only connects through Steam/GOG lobbies. Repeat runs of the
 pet scenarios found three more bugs, now fixed: a pet could stall after waiting by a
 puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wild plot

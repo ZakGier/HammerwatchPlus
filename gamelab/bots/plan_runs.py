@@ -22,6 +22,13 @@ HOH1 = "hwp_forsaken_tower_hoh1"
 # 0-based floors of missions_hwp_forsaken_tower_hoh1.sval
 FLOOR_MINES_BOSS, FLOOR_PRISON_BOSS, FLOOR_ARMORY_BOSS, FLOOR_ARCHIVES_BOSS = 2, 5, 8, 11
 FLOOR_CHAMBERS_BOSS, FLOOR_BATTLEMENTS_1, FLOOR_BATTLEMENTS_2, FLOOR_DRAGON = 14, 15, 16, 17
+# a boss and its NG+ copies (HWP/Campaign/HoH1/UnitMap.as: _t2 from NG+1, t3 3, t4 5, t5 10)
+WARDEN_UNITS = ("warden.unit",) + tuple(f"warden_t{i}.unit" for i in range(2, 6))
+VAMPIRE_UNITS = ("vampire.unit",) + tuple(f"vampire_t{i}.unit" for i in range(2, 6))
+
+
+def tier_of(ngp):
+    return "" if not ngp else "_t" + str(2 + sum(ngp >= n for n in (3, 5, 10)))
 # boss_chambers.lvl: the BossLichNodes the vampire flies between, and its VampireCenterNode last
 VAMPIRE_NODES = [(-128, -64), (96, -64), (-16, -128), (-96, 80), (64, 80), (-16, -16)]
 # the exits' UseTrigger areas (Physics_Rectangle 48x16): battlements_1 'right' (area 8) and
@@ -98,15 +105,31 @@ class Checks(Base):
             return None
         if during:
             during(time.time() + ms / 1000.0)
-        return self.g.wait_gl(lambda o: o.get("ev") == "trail" and o.get("tag") == tag, ms / 1000 + 15)
+        # a long trail comes in parts (gl trail: each event under the print limit)
+        ev = self.g.wait_gl(lambda o: o.get("ev") == "trail" and o.get("tag") == tag, ms / 1000 + 15)
+        if ev is None:
+            return None
+        ev = dict(ev, units=list(ev.get("units") or []))
+        for k in range(1, ev.get("parts") or 1):
+            more = self.g.wait_gl(lambda o: o.get("ev") == "trail" and o.get("tag") == tag and o.get("part") == k, 10)
+            if more is None:
+                self.notes.append(f"trail {filt}: part {k} of {ev.get('parts')} missing")
+                break
+            ev["units"] += more.get("units") or []
+        return ev
+
+    ngp = None      # run(ngp=...): the floors start at this NG+
 
     def boss_floor(self, floor, level, tag):
-        r = self.gl("mission", HOH1, floor)
+        r = self.gl("mission", HOH1, floor, *([self.ngp] if self.ngp is not None else []))
         ok = bool(r.get("ok")) and self.wait_phase("mission", 120)
         time.sleep(3)
-        lv = self.gl("state").get("level", "")
+        st = self.gl("state")
+        lv = st.get("level", "")
         ok = ok and level in lv
-        self.flag(f"{tag}_floor", ok, f"mission {r.get('ok')}, level {lv}")
+        self.flag(f"{tag}_floor", ok, f"mission {r.get('ok')}, level {lv}, ngp {st.get('ngp')}")
+        if self.ngp is not None:
+            self.flag(f"{tag}_ngp", abs((st.get("ngp") or 0) - self.ngp) < 0.01, f"ngp {st.get('ngp')}, want {self.ngp}")
         if ok:
             self.god_on()
         return ok
@@ -435,16 +458,19 @@ class Checks(Base):
             return
         # AreaTrigger 'ActivateBoss' (rect at (0,-152), 320x32) spawns the Warden at (0,-304)
         self.gl("teleport", 0, -150)
-        w = self.wait_units(700, "bosses/warden/warden", names=("warden.unit",), timeout=20)
+        w = self.wait_units(700, "bosses/warden/", names=WARDEN_UNITS, timeout=20)
         self.flag("warden_spawned", bool(w), f"{w[:1]}")
         if not w:
             return
+        if self.ngp is not None:
+            want = f"warden{tier_of(self.ngp)}.unit"
+            self.flag("warden_tier", w[0].get("name", "").endswith("/" + want), f"{w[0].get('name')}, want {want} at NG+{self.ngp}")
         seen = {"casting": set(), "scenes": set()}
         spots = []
 
         def warden():
-            a = [x for x in self.gl("actors", 800, "bosses/warden/warden").get("actors") or []
-                 if x.get("name", "").endswith("warden.unit")]
+            a = [x for x in self.gl("actors", 800, "bosses/warden/").get("actors") or []
+                 if x.get("name", "").split("/")[-1] in WARDEN_UNITS]
             if a:
                 seen["casting"].update(a[0].get("casting") or [])
                 seen["scenes"].add(a[0].get("scene", ""))
@@ -472,9 +498,16 @@ class Checks(Base):
                 spot = (clear or cands)[0]
                 spots.append((int(spot[0] - wx), int(spot[1] - wy), bool(clear)))
                 self.gl("teleport", spot[0], spot[1])
+                # held at that offset: the NG+ copies' ballista is a burst skill, which restarts
+                # its 4 s cooldown at every check out of range (70-260), and warden_t2 walks
+                # the 160 px in under that (HoH1's CompositeActorBurstSkill does the same)
+                off = (spot[0] - wx, spot[1] - wy)
                 far_end = time.time() + 6
                 while time.time() < min(far_end, until - 0.5):
-                    warden()
+                    a = warden()
+                    if a and abs(math.hypot(a["x"] - spot[0], a["y"] - spot[1]) - 160) > 40:
+                        spot = (a["x"] + off[0], a["y"] + off[1])
+                        self.gl("teleport", spot[0], spot[1])
                     time.sleep(0.3)
 
         # step 120: 200 player points cover the 24 s (an arrow's first and last sight are per frame anyway)
@@ -496,7 +529,7 @@ class Checks(Base):
         self.flag("warden_whirlwind", whirl, f"casting {sorted(seen['casting'])}, scenes {sorted(seen['scenes'])[:12]}")
         self.flag("warden_shoots", bool(arrows), f"{len(arrows)}/{len(shots)} arrows flew: {detail}; far spots {spots}; "
                   f"units {sorted(set(names))}")
-        self.flag("warden_bombs", bool(bombs), f"bomb units {bombs} (warden.inc: the bomb fan is NG only)")
+        self.flag("warden_bombs", bool(bombs), f"bomb units {bombs[:6]} ({len(bombs)}; warden.inc: the bomb fan is in the NG+ copies only)")
 
     def boss_councilors(self):
         """hoh1floors s4: the three Councilors (wraiths) appear together, move node to node
@@ -668,15 +701,23 @@ class Checks(Base):
         # Setup (100 ms after load) finds no vampire_cross flags and enables AreaTrigger
         # 'ActivateBoss' on the circle (-16,-170) r64: the boss spawns at (-16,-168) 1 s later
         self.gl("teleport", -16, -150)
-        v = self.wait_units(700, "bosses/vampire/vampire", names=("vampire.unit",), timeout=15)
+        v = self.wait_units(700, "bosses/vampire/", names=VAMPIRE_UNITS, timeout=15)
         self.flag("vampire_spawned", bool(v), f"{v[:1]}")
         if not v:
             return
+        vname = v[0].get("name", "")
+        if self.ngp is not None:
+            want = f"vampire{tier_of(self.ngp)}.unit"
+            self.flag("vampire_tier", vname.endswith("/" + want), f"{vname}, want {want} at NG+{self.ngp}")
+        # the Bat Spray (vampire_skills.inc) needs NG+2, charges (BATCHARGES: 0 in vampire.unit,
+        # 1 in vampire_t2) and the boss under 20% health, and fires within 120 px: on NG+2 the
+        # health goes to 12% (a feed heals 5-10%) and the player keeps to him while he stands
+        spray = (self.ngp or 0) >= 2
         # Roaming needs flag vampire_roaming, which the level sets when a feed (at the center
         # node, every 5th hop) ends with the boss under half health (CheckFeed -> CheckActorHealth
         # < 0.5 -> SetFlag 'vampire_roaming', FlagState Level). Health to 35% (a feed heals 5-10%)
         # and the flag set now the same way, so the next node arrivals may start a roam (40%).
-        hurt = self.gl("kill", 900, "vampire/vampire.unit", 0.35)
+        hurt = self.gl("kill", 900, vname.split("/")[-1], 0.12 if spray else 0.35)
         self.g.console("cht_set_flag vampire_roaming 1 0")
         spot = (-16, 112)  # south side of the hall, between the nodes (-96,80) and (64,80)
         self.gl("teleport", *spot)
@@ -688,19 +729,22 @@ class Checks(Base):
             while time.time() < until - 0.8:
                 r = self.g.gl_multi([["actors", 900, "HoH1BossVampire"], ["near", 900, "fire_area"],
                                      ["near", 900, "bat_projectile_spawn"], ["near", 900, "summon_bat_swarm"]])
-                samples.extend(a for a in r[0].get("actors") or [] if a.get("name", "").endswith("/vampire.unit"))
+                now = [a for a in r[0].get("actors") or [] if a.get("name", "").split("/")[-1] in VAMPIRE_UNITS]
+                samples.extend(now)
                 for u in r[1].get("units") or []:
                     fires.setdefault(u["unit"], (u["x"], u["y"]))
                 for u in r[2].get("units") or []:
                     bats.setdefault(u["unit"], (u["x"], u["y"]))
                 swarm[0] += len(r[3].get("units") or [])
-                if time.time() - last >= 3:
+                if spray and now and not now[0].get("moving"):
+                    self.gl("teleport", now[0]["x"], now[0]["y"] + 60)
+                elif time.time() - last >= 3:
                     self.gl("teleport", *spot)
                     last = time.time()
                 time.sleep(0.4)
 
         ev = self.trail(48000, 900, "HoH1BossVampire", 240, watch) or {}
-        track = [(x, y) for u in ev.get("units") or [] if u.get("name", "").endswith("/vampire.unit")
+        track = [(x, y) for u in ev.get("units") or [] if u.get("name", "").split("/")[-1] in VAMPIRE_UNITS
                  for x, y, _ in u.get("pts") or []]
         nodes = self.gl("ws", "BossLichNode").get("scripts") or []
         node_pos = [(n["x"], n["y"]) for n in nodes] + [VAMPIRE_NODES[-1]] if nodes else VAMPIRE_NODES
@@ -731,7 +775,7 @@ class Checks(Base):
             vx, vy = track[-1]
             ang = sorted(math.degrees(math.atan2(y - vy, x - vx)) for x, y in bats.values())
             note += f", angles {[int(a) for a in ang]}"
-        self.flag("vampire_bats", bool(bats), note + " (charges BATCHARGES 0 in vampire.unit)")
+        self.flag("vampire_bats", bool(bats), note + f" at NG+{self.ngp or 0} (charges BATCHARGES 0 in vampire.unit, 1+ in the NG+ copies)")
 
     def wait_level(self, part, timeout=90):
         """Until the state's level path has part and the phase is mission (gl may not answer
@@ -805,8 +849,9 @@ class Checks(Base):
         time.sleep(1.5)
 
 
-def run(p, sections="keys_padlock", **_):
+def run(p, sections="keys_padlock", ngp=None, **_):
     c = Checks(p)
+    c.ngp = ngp
     for s in sections.split(","):
         try:
             getattr(c, s)()

@@ -814,3 +814,22 @@ class HoH1WhirlNovaSkill : HoH1Skill
 			m_cooldownC = m_cooldown;
 	}
 }
+
+// HoH1's CompositeActorBurstSkill starts whenever it is available. HoH2's added a
+// fail-chance roll that, without an anim-begin, runs backwards: it skips the
+// burst when AttemptUse succeeds (every time, at fail chance 0), so a burst
+// skill with no begin anim never fires. HoH2's own two burst skills both have
+// one; HoH1's (the NG+ Warden's club and ballista among them) do not. Inverting
+// the chance makes that roll start the burst with the chance the unit meant.
+class HoH1BurstSkill : CompositeActorBurstSkill
+{
+	HoH1BurstSkill(UnitPtr unit, SValue& params)
+	{
+		super(unit, params);
+		if (m_animBegin is null)
+		{
+			m_restrictions.m_failChance = 1.0f - m_restrictions.m_failChance;
+			m_restrictions.m_useChargeOnFail = false;
+		}
+	}
+}

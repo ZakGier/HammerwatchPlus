@@ -951,21 +951,45 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   1, 60 on floor 2; the levels place none). HoH1 called the generator's
   `EnemyPlacement.PlaceGroup`; the port now spawns `int(2*PI*Radius/40*0.5)` ice trolls
   plus one shaman per group at weight 0.8 (measured: 19 trolls, 4 shamans on floor 1,
-  plan-runs-d 20261018-141935). HoH1's NG+ tier swaps are not ported.
+  plan-runs-d 20261018-141935). The ice trolls are on the NG+ map too (below).
 - **The Warden's bomb fan and the Vampire Lord's Bat Spray are NG+ attacks.** The base
   units leave them out (warden.unit defines NORMAL and the fan is `%if !NORMAL`;
   vampire.unit has `BATCHARGES 0`), and HoH1 swaps each boss for a tier copy by NG+ level
   (`tweak/dungeons/unitmap_base.sval`: `_t2` at NG+1, `_t3` at 3, `_t4` at 5, `_t5` at 10;
   warden_t2 sets `WHIRLBOMBS 4`, vampire_t2..t5 1/3/5/7 bat charges). The Golem and the
-  three Wraiths get the same swap. Our port does not read that map yet, so its bosses play
-  as NG+0 at every NG. (An earlier version of this note called the attacks off at any NG:
-  wrong, the tier files were missed.)
+  three Wraiths get the same swap. (An earlier version of this note called the attacks off
+  at any NG: wrong, the tier files were missed.)
+- **HoH1's NG+ swap is in its spawners, and the port does it the same way (2026-10-18).**
+  HoH1 `UnitMap::Replace` runs inside SpawnUnit, SpawnUnitWithEffect, SpawnDropUnit and
+  EnemyPlacement, not on placed units; every mapped unit in our levels comes from the first
+  three (76 SpawnUnit, 20 SpawnDropUnit, 9 SpawnUnitWithEffect references). `import_hoh1.py
+  campaign` now imports the tier copies of the 21 mapped units the levels reach and writes
+  the map, without HoH1's loader, to `hoh1/tweak/hwp_unitmap.sval`;
+  `HWP/Campaign/HoH1/UnitMap.as` rewrites those scripts' `UnitType` once per level by
+  `g_ngp`, the thresholds HoH1 uses. Verified, plan-runs-ng 20261018-171057: NG+1 spawns
+  warden_t2, whose whirlwind threw 80 bombs and whose ballista shot; NG+2 spawns
+  vampire_t2, whose Bat Spray (needs NG+2, under 20% health, within 120 px; HoH2's
+  conditionals handle `ngp`) fired 11 bats. GameLab's `mission` verb takes an `ngp`.
+- **HoH2's `CompositeActorBurstSkill` never fires without an `anim-begin`.** HoH2 added
+  `if (m_restrictions.AttemptUse()) { cooldown; return; }` to the no-begin path, and
+  AttemptUse is true unless the fail-chance roll hits, so the burst is skipped every time
+  (HoH1's version has no such check). Vanilla's two burst skills both have an anim-begin;
+  HoH1's six (ice troll melee, ice elemental ranged, both ballista towers, the big arrow
+  turret, the Warden's NG+ club and ballista) do not, so none of them attacked. The import
+  maps them to `HoH1BurstSkill`, which inverts the fail chance when there is no begin
+  anim. Verified: warden_t2 clubs and shoots (plan-runs-ng 20261018-171057, 'attack-2' and
+  'shoot-4' scenes); plan-runs-b and plan-runs-d still pass. A burst skill also restarts
+  its cooldown at every check out of range, so a fast boss that closes in rarely shoots
+  (HoH1 does the same).
 - **The firearms decoy taunts through `AlertActors make-aggro`**: `SetTarget(decoy, -1,
   true)`, and aggro < 0 always replaces the target unless the enemy is mid-attack
   (`CompositeActorBehavior.SetTarget`). Measured: all three brutes targeted it and two
   beat it to 19 % hp (plan-firearms-a 20261018-140742). A first failure was the test:
   brutes spawned behind a wall never saw anything.
 - **GameLab gotchas:**
+  - A `[GL]` line over 15000 chars is dropped (Json.as EMIT_MAX). `trail` now sends its
+    report in parts ("part"/"parts") and keeps up to 128 units; the NG+1 Warden's bombs
+    overflowed both the old single event and the old 32-unit cap.
   - `e_cheats` is per process: after a scenario's `restart` step every `cht_*` command
     is refused ("can only be executed with e_cheats = 1") until it is set again.
   - When the console misses a line, the typed characters and Enter go to the game as

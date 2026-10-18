@@ -2,13 +2,14 @@
 // the game's own UI calls for the same action, never a screen coordinate.
 namespace GameLab
 {
-	// mission <missionId> [floorIndex]: what the mission board's start does
-	// (MissionManager::SetMission + StartMission); floor 0 when omitted.
+	// mission <missionId> [floorIndex] [ngp]: what the mission board's start does
+	// (MissionManager::SetMission + StartMission); floor 0 when omitted. ngp is
+	// what the loadout menu would set (g_ngp, saved into the level by the mode).
 	void VerbMission(const string &in id, array<string>@ args)
 	{
 		if (args.length() < 1)
 		{
-			Fail(id, "usage: mission <missionId> [floorIndex]");
+			Fail(id, "usage: mission <missionId> [floorIndex] [ngp]");
 			return;
 		}
 		auto def = MissionDef::Get(args[0]);
@@ -23,7 +24,9 @@ namespace GameLab
 			Fail(id, "mission '" + args[0] + "' has " + def.m_levels.length() + " floor(s)");
 			return;
 		}
-		Emit(Reply(id, true).Str("mission", args[0]).Int("floor", floor).Str("level", def.m_levels[floor].m_level));
+		if (args.length() > 2)
+			g_ngp = float(parseInt(args[2]));
+		Emit(Reply(id, true).Str("mission", args[0]).Int("floor", floor).Str("level", def.m_levels[floor].m_level).Int("ngp", int(g_ngp + 0.5f)));
 		MissionManager::SetMission(HashString(args[0]), randi());
 		MissionManager::g_module.m_missionLevelIndex = floor;
 		MissionManager::g_module.StartMission();
@@ -341,7 +344,7 @@ namespace Modules
 			super("gamelab-hands");
 			GameLab::RegisterVerb("spawn", "<unitFile> <dx> <dy>", GameLab::Verb(GameLab::VerbSpawn));
 			GameLab::RegisterVerb("pick", "[index] [town|resume]", GameLab::Verb(GameLab::VerbPick));
-			GameLab::RegisterVerb("mission", "<missionId> [floorIndex]", GameLab::Verb(GameLab::VerbMission));
+			GameLab::RegisterVerb("mission", "<missionId> [floorIndex] [ngp]", GameLab::Verb(GameLab::VerbMission));
 			GameLab::RegisterVerb("build", "<buildingId>", GameLab::Verb(GameLab::VerbBuild));
 			GameLab::RegisterVerb("townrefresh", "", GameLab::Verb(GameLab::VerbTownRefresh));
 			GameLab::RegisterVerb("save", "", GameLab::Verb(GameLab::VerbSave));

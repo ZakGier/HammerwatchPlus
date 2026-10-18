@@ -1,0 +1,107 @@
+{
+ "name": "plan-runs-ng",
+ "about": "Test plan, runs group, through the plan_runs bot: hoh1floors s3 and s6 at NG+, where HoH1 swaps its bosses for their tier copies (HWP/Campaign/HoH1/UnitMap.as). Floor 6 at NG+1: the Warden is warden_t2 and its whirlwind throws the bomb fan. Floor 15 at NG+2: the Vampire Lord is vampire_t2 (BATCHARGES 1); health set to 12% and the player kept beside him while he stands, so the Bat Spray (NG+2, under 20% health, 120 px) fires. God mode.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_setup"
+   },
+   "name": "boss test character",
+   "expect": {
+    "boss_char": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_warden",
+    "ngp": 1
+   },
+   "name": "NG+1 warden bombs",
+   "expect": {
+    "warden_floor": true,
+    "warden_ngp": true,
+    "warden_spawned": true,
+    "warden_tier": true,
+    "warden_whirlwind": true,
+    "warden_shoots": true,
+    "warden_bombs": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-warden-ng1"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_vampire",
+    "ngp": 2
+   },
+   "name": "NG+2 vampire bat spray",
+   "expect": {
+    "vampire_floor": true,
+    "vampire_ngp": true,
+    "vampire_spawned": true,
+    "vampire_tier": true,
+    "vampire_bats": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-vampire-ng2"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -186,13 +186,22 @@ namespace Modules
 			HWP::Campaign::g_checked = false;
 			HWP::Campaign::SelfCheck();
 			HWP::Campaign::g_portal.OnLoad();
+			HWP::HoH1::ApplyUnitMap();     // again on the first frame, in case the scene was not up yet
+			m_tiered = false;
 		}
+
+		bool m_tiered;          // this level's HoH1 spawn units are on their NG+ tier
 
 		// the town starts with a null save, so Load never runs there (docs/RE_NOTES.md,
 		// mod lifecycle): run the check on the first gameplay frame as well
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
 		{
 			HWP::Campaign::SelfCheck();
+			if (!m_tiered)
+			{
+				m_tiered = true;
+				HWP::HoH1::ApplyUnitMap();
+			}
 			HWP::Campaign::g_portal.Update(ms, HWP::Campaign::g_enabled);
 		}
 	}
