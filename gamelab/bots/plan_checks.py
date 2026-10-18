@@ -5,8 +5,8 @@ commands and the game's own windows (gl use / press / shop), never real input.
 
 Sections: gambler (reroll gold/tokens/refusals), sell (wares at the Gambler), merchant
 (bag slot), traps (pirate fish traps), full_bag (a catch with a full bag), mission (start
-Bandit Keep), chests (silver key loot, ace chest legendary and epic), swap (weapon sets
-with the X key)."""
+Bandit Keep), floor_chests (the floor's own locked chests), chests (silver key loot, ace chest legendary and epic), swap (weapon sets
+with the X key), swap_sets (the other set's slots and HUD tip, a bow, R as the key, swapdrop)."""
 import json
 import re
 import time
@@ -52,11 +52,11 @@ class Checks:
     def widget_text(self):
         return json.dumps(self.gl("widgets", 12))
 
-    def widget(self, wid):
+    def widget(self, wid, depth=12):
         """The first open widget with this id (the widgets dump: type, visible, text for
         TextWidgets, enabled for buttons), or {}. A button's own caption is a BitmapString
         the dump can't read back."""
-        for root in self.gl("widgets", 12).get("roots", []):
+        for root in self.gl("widgets", depth).get("roots", []):
             for n in root.get("nodes", []):
                 if n.get("id") == wid:
                     return n
@@ -200,6 +200,23 @@ class Checks:
         self.flag("bag_slot_bought", bool(b0 and b1 and int(b1[-1]) == int(b0[-1]) + 1), f"cap {b0} -> {b1}")
         self.flag("bag_slot_paid", g0 - g1 == p0, f"gold {g0} -> {g1}, price {p0}")
         self.flag("bag_slot_price_rises", p1 > p0, f"{p0} -> {p1}")
+        # buy to the full 32: the entry is then unavailable (greyed) and a press does nothing
+        self.hwp("material gold 5000000")
+        for _ in range(10):
+            it = self.gl("shop")["items"][4]
+            if not it.get("available", True):
+                break
+            self.gl("shop", "buy", 4)
+            time.sleep(0.4)
+        it = self.gl("shop")["items"][4]
+        cap = re.findall(r"Bag: \d+/(\d+) items", self.hwp("bag", 0.3, until="Bag:"))
+        g2 = self.gold()
+        r = self.gl("shop", "buy", 4)
+        time.sleep(0.4)
+        cap2 = re.findall(r"Bag: \d+/(\d+) items", self.hwp("bag", 0.3, until="Bag:"))
+        self.flag("bag_slot_full_greyed", it.get("available") is False and cap[-1:] == ["32"], f"{it}, cap {cap[-1:]}")
+        self.flag("bag_slot_full_refused", cap2[-1:] == ["32"] and self.gold() == g2 and not r.get("changed"),
+                  f"cap {cap2[-1:]}, gold {g2} -> {self.gold()}")
         self.g.key("escape")
         time.sleep(0.4)
 
@@ -224,18 +241,26 @@ class Checks:
             got = self.hwp("fishing catch 1", 0.4)
             if "Your bag is full" in got:
                 break
-        near = self.gl("near", 60)
+        near = self.gl("near", 60, "items/base.unit")  # a dropped item is an items/base.unit
         self.flag("full_bag_feet", "Your bag is full" in got, got.strip()[-200:])
-        self.flag("full_bag_fish_on_ground", near.get("count", 0) > 0, json.dumps(near.get("units", [])[:3]))
+        units = near.get("units") or []
+        self.flag("full_bag_fish_on_ground", bool(units) and units[0]["dist"] <= 60, json.dumps(units[:3]))
         self.hwp("sell")
 
     def mission(self):
-        r = self.gl("mission", "bandit_keep", 0)
-        self.flag("mission_started", r.get("ok") and self.wait_phase("mission"))
+        # locks roll when a floor's chests appear: every one locked, none ace
+        self.hwp("set keys.lock_chance 1")
+        self.hwp("set keys.ace_chance 0")
+        self.flag("mission_started", self.start_floor(0))
+
+    def start_floor(self, floor):
+        r = self.gl("mission", "bandit_keep", floor)
+        ok = bool(r.get("ok")) and self.wait_phase("mission")
         time.sleep(3)
         pl = self.gl("state").get("player", {})
         self.start = (pl.get("x", 0.0), pl.get("y", 0.0))
         self.used = []
+        return ok
 
     def chest_spot(self):
         """Clear the enemies and teleport back to the mission start (opening a chest walks the player off), then
@@ -267,6 +292,76 @@ class Checks:
         dx, dy = maybe[0] if maybe else (90, 0)
         self.used.append((dx, dy))
         return dx, dy
+
+    def floor_chests(self):
+        """keys s3: the floor's own reward chests are all locked; without the key a use does
+        nothing, with it the chest opens and its loot appears."""
+        # Bandit Keep floors roll 0 or 1 equipment chests (min-equipment "0 1"): next floor
+        # until one has some
+        self.hwp("set keys.debug 1")  # keygive is a debug command
+        tiers = {"bronze": 0, "silver": 1, "gold": 2, "platinum": 2}
+        for floor in range(5):
+            if floor and not self.start_floor(floor):
+                break
+            self.gl("cull")
+            st = self.hwp("keys", 0.3, until="locked chests this level")
+            locked = re.findall(r"locked chests this level: (\d+)", st)
+            counts = re.findall(r"Keys: bronze (\d+), silver (\d+), gold (\d+), ace (\d+)", st)
+            chests = [u for u in self.gl("near", 5000, "items/chests/chest_").get("units", [])
+                      if u.get("name", "").split("/")[-1].split("_")[1] in tiers]
+            if chests:
+                break
+        names = sorted({u["name"].split("/")[-1] for u in chests})
+        n = int(locked[-1]) if locked else -1
+        self.flag("floor_all_locked", n > 0 and n == len(chests), f"floor {floor}: locked {n}, chests {len(chests)}: {names}")
+        if not chests or not counts:
+            self.notes.append(f"floor_chests: nothing to open ({st.strip()[-200:]})")
+            return
+        # the nearest chest can sit where the pathfinder finds no route (seen 080325): the
+        # first chest the Pilot reaches, else teleport beside the nearest
+        c = None
+        for cand in chests:
+            tier = cand["name"].split("/")[-1].split("_")[1]
+            key = "gold" if tier == "platinum" else tier
+            have = int(counts[-1][tiers[tier]])
+            if have:
+                continue
+            mark = len(self.g.read_log())
+            r = self.p.use(cand["unit"], timeout=40)
+            if r.result != "no_route":
+                c = cand
+                break
+            self.notes.append(f"floor: no route to {cand['name']} at {cand.get('x')},{cand.get('y')}")
+        if c is None:
+            c = chests[0]
+            tier = c["name"].split("/")[-1].split("_")[1]
+            key = "gold" if tier == "platinum" else tier
+            have = int(counts[-1][tiers[tier]])
+            self.gl("teleport", c["x"], c["y"] + 20)
+            time.sleep(0.5)
+            mark = len(self.g.read_log())
+            r = self.p.use(c["unit"], timeout=20) if not have else None
+        around = None
+        if not have:
+            time.sleep(1.5)
+            log = self.g.read_log()[mark:]
+            still = [u for u in self.gl("near", 5000, "items/chests/chest_").get("units", []) if u["unit"] == c["unit"]]
+            self.flag("floor_no_key_nothing", "unlocked a" not in log and bool(still), f"{r.result}: {r.reason}")
+            around = len(self.gl("near", 80).get("units") or [])  # standing at the chest now
+        else:
+            self.notes.append(f"floor_no_key_nothing: already had {have} {key} key(s)")
+        give = self.hwp(f"keygive {key} 1", 0.3, until="key(s)")
+        time.sleep(0.5)
+        self.notes.append("floor keygive: " + " ".join(re.findall(r"\[HWP\] [^\n]*", give))[-160:])
+        self.notes.append("floor keys: " + " ".join(re.findall(r"Keys: [^\n]*", self.hwp("keys", 0.3, until="Keys:")))[-200:])
+        self.notes.append("floor usables: " + json.dumps(self.gl("usables"))[:600])
+        mark = len(self.g.read_log())
+        r = self.p.use(c["unit"], timeout=40)
+        time.sleep(2.5)
+        log = self.g.read_log()[mark:]
+        after = len(self.gl("near", 80).get("units") or [])
+        self.flag("floor_key_opens", f"unlocked a {key} chest" in log, f"{c['name']}: {r.result}: {r.reason}")
+        self.flag("floor_loot_spawned", around is not None and after > around, f"units within 80: {around} -> {after}")
 
     def open_chest(self, unit_name, mark):
         units = self.gl("near", 300, unit_name).get("units") or []
@@ -325,6 +420,85 @@ class Checks:
         self.flag("swap_empty_hands", e0[0] is not None and e1[0] is None, f"{e0[0]} -> {e1[0]}")
         self.flag("swap_back_once", e2[0] == e0[0], f"{e2[0]}")
         self.notes.append("swap status: " + st.strip()[-200:])
+
+    def status(self):
+        """hwp swapkey's line: (set in hand, other main, other off)."""
+        st = self.hwp("swapkey", 0.3, until="[HWP] Weapon set")
+        m = re.findall(r"\[HWP\] Weapon set (\d) in hand; other set: (.*?) / (.*?); key", st)
+        return m[-1] if m else ("", "", "")
+
+    def alt_slots(self):
+        """The character screen's other-set slots, opened with C: {id: item name, "" when
+        empty, None when the slot widget isn't there}."""
+        self.g.key("c")
+        time.sleep(1.0)
+        dump = self.gl("widgets", 20).get("roots", [])
+        out = {}
+        for k in ("hwp-alt-main", "hwp-alt-off"):
+            out[k] = next((n for root in dump for n in root.get("nodes", []) if n.get("id") == k), None)
+        window = "/".join(r.get("root", "") for r in dump if not r.get("root", "").startswith("HUD"))
+        self.g.key("escape")
+        time.sleep(0.6)
+        return {k: (None if v is None else v.get("item", "")) for k, v in out.items()}, window, out
+
+    def swap_sets(self):
+        """weaponswap s1, s2, s6 on top of `swap` (which leaves set 1 in hand, the other empty)."""
+        r = self.gl("equip", "mainhand_longsword_01", "common", 1)
+        self.flag("sword_equipped", r.get("ok"), json.dumps(r)[:200])
+        sword = self.main_hand()
+        time.sleep(1.2)
+        self.g.key("x")
+        time.sleep(0.8)
+        hands = self.main_hand()
+        st = self.status()
+        hud = [root for root in self.gl("widgets", 4).get("roots", []) if root.get("root") == "HUD:HWPWeaponSwapHUD"]
+        tip_visible = bool(hud and hud[0].get("visible"))
+        tip_text = json.dumps(hud[0].get("nodes", []))[:300] if hud else ""
+        slots, window, raw = self.alt_slots()
+        self.flag("s1_hands_empty", sword is not None and hands is None, f"{sword} -> {hands}")
+        self.flag("s1_sword_stored", "Sword" in st[1] or "sword" in st[1].lower(), str(st))
+        self.flag("s1_tip_shown", tip_visible and "press X to swap" in tip_text, tip_text)
+        self.flag("s1_alt_slot_shows_sword", bool(slots["hwp-alt-main"]) and slots["hwp-alt-main"] == st[1],
+                  f"{window}: {json.dumps(raw)[:300]}")
+
+        # s2: a bow into the empty hands, X: the sword comes back, the bow goes to the other set
+        r = self.gl("equip", "twohanded_longbow_01", "common", 1)
+        self.flag("bow_equipped", r.get("ok"), json.dumps(r)[:200])
+        bow = self.main_hand()
+        time.sleep(1.2)
+        self.g.key("x")
+        time.sleep(0.8)
+        back = self.main_hand()
+        st2 = self.status()
+        slots2, _, raw2 = self.alt_slots()
+        self.flag("s2_sword_back", bool(back and sword and back[1] == sword[1]), f"{back}")
+        self.flag("s2_bow_stored", bool(bow) and "bow" in st2[1].lower(), str(st2))
+        # s5 (part): a two-hander shows in both other-set slots
+        self.notes.append("two-hander in the other set, slots: " + json.dumps(raw2)[:300])
+        self.flag("s5_twohander_both_slots", bool(slots2["hwp-alt-main"]) and slots2["hwp-alt-off"] == slots2["hwp-alt-main"],
+                  json.dumps(slots2))
+
+        # s6: R swaps instead of X; swapdrop puts the other set in the bag
+        rep = self.hwp("swapkey 21 R", 0.3, until="[HWP]")
+        time.sleep(1.2)
+        mark = len(self.g.read_log())
+        self.g.key("x")
+        time.sleep(1.3)
+        x_ignored = "[HWP:weaponswap] set" not in self.g.read_log()[mark:]
+        self.g.key("r")
+        time.sleep(0.8)
+        r_swapped = "[HWP:weaponswap] set" in self.g.read_log()[mark:]
+        self.flag("s6_r_swaps", r_swapped, rep.strip()[-160:])
+        self.flag("s6_x_no_longer", x_ignored)
+        self.hwp("swapkey 27 X", 0.3, until="[HWP]")
+        bag0 = re.findall(r"Bag: (\d+)/", self.hwp("bag", 0.3, until="Bag:"))
+        drop = self.hwp("swapdrop", 0.3, until="[HWP]")
+        bag1 = re.findall(r"Bag: (\d+)/", self.hwp("bag", 0.3, until="Bag:"))
+        st3 = self.status()
+        slots3, _, _ = self.alt_slots()
+        self.flag("s6_swapdrop", "moved to your inventory" in drop and bool(bag0 and bag1) and int(bag1[-1]) > int(bag0[-1]),
+                  f"bag {bag0[-1:]} -> {bag1[-1:]}, {st3}")
+        self.flag("s6_alt_slots_empty", slots3["hwp-alt-main"] == "" and slots3["hwp-alt-off"] == "", json.dumps(slots3))
 
 
 def run(p, sections="gambler,sell,merchant,traps,full_bag", **_):

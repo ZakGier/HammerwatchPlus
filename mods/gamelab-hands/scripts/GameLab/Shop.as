@@ -61,18 +61,20 @@ namespace GameLab
 	string ShopJson(ShopWindow@ shop)
 	{
 		array<string> items;
+		auto rec = GetLocalPlayerRecord();
 		for (uint i = 0; i < shop.m_shopItems.length(); i++)
 		{
 			auto it = shop.m_shopItems[i];
 			auto cost = it.GetCost();
 			Json e;
-			e.Str("id", it.GetID()).Int("gold", cost is null ? 0 : cost.GetCost(MaterialType::Gold));
+			e.Str("id", it.GetID()).Int("gold", cost is null ? 0 : cost.GetCost(MaterialType::Gold))
+				.Bool("available", it.IsAvailable(rec)).Str("sub", it.GetSubTitle());
 			items.insertLast(e.Close());
 		}
 		return RawArray(items);
 	}
 
-	// shop [buy <index>]: the open shop's entries (id, gold price); buy presses
+	// shop [buy <index>]: the open shop's entries (id, gold price, IsAvailable, subtitle); buy presses
 	// entry <index> the way a click does (ShopWindow.OnFunc "buy")
 	void VerbShop(const string &in id, array<string>@ args)
 	{

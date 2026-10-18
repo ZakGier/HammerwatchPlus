@@ -78,14 +78,16 @@
     "traps_fourth_refused": true,
     "traps_listed": true,
     "full_bag_feet": true,
-    "full_bag_fish_on_ground": true
+    "full_bag_fish_on_ground": true,
+    "bag_slot_full_greyed": true,
+    "bag_slot_full_refused": true
    }
   },
   {
    "do": "bot",
    "bot": "plan_checks",
    "kwargs": {
-    "sections": "mission,chests,swap"
+    "sections": "mission,floor_chests,chests,swap,swap_sets"
    },
    "save_as": "run",
    "name": "run checks",
@@ -97,7 +99,24 @@
     "ace_epic_unlocked": true,
     "ace_epic_no_legendary": true,
     "swap_empty_hands": true,
-    "swap_back_once": true
+    "swap_back_once": true,
+    "floor_all_locked": true,
+    "floor_no_key_nothing": true,
+    "floor_key_opens": true,
+    "floor_loot_spawned": true,
+    "sword_equipped": true,
+    "s1_hands_empty": true,
+    "s1_sword_stored": true,
+    "s1_tip_shown": true,
+    "s1_alt_slot_shows_sword": true,
+    "bow_equipped": true,
+    "s2_sword_back": true,
+    "s2_bow_stored": true,
+    "s5_twohander_both_slots": true,
+    "s6_r_swaps": true,
+    "s6_x_no_longer": true,
+    "s6_swapdrop": true,
+    "s6_alt_slots_empty": true
    }
   },
   {

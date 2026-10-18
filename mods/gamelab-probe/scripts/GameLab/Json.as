@@ -75,8 +75,27 @@ namespace GameLab
 		return res + "]";
 	}
 
+	// The game died right after printing a 16,401-char reply (plan-t8 074605, exit
+	// 0xE06D7363); every longer-than-14,596 reply before it was fine. Assumed: a log line
+	// over 16 KB is fatal. A reply over EMIT_MAX is replaced by a short failure that keeps
+	// its id, so the caller sees an error instead of a dead game.
+	const uint EMIT_MAX = 15000;
+
 	void Emit(Json@ j)
 	{
-		print("[GL] " + j.Close());
+		string line = j.Close();
+		if (line.length() > EMIT_MAX)
+		{
+			string id = "";
+			if (line.findFirst("{\"id\":") == 0)
+			{
+				int end = line.findFirst(",");
+				if (end > 6)
+					id = line.substr(6, end - 6);
+			}
+			line = "{\"id\":" + (id == "" ? "\"\"" : id) + ",\"ok\":false,\"error\":\"reply of " + line.length()
+				+ " chars is over the " + EMIT_MAX + "-char print limit\"}";
+		}
+		print("[GL] " + line);
 	}
 }

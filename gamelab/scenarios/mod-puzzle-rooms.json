@@ -139,7 +139,8 @@
    "do": "gl",
    "verb": "near",
    "args": [
-    "48"
+    "6000",
+    "items/"
    ],
    "save_as": "before"
   },
@@ -485,7 +486,8 @@
    "do": "gl",
    "verb": "near",
    "args": [
-    "48"
+    "6000",
+    "items/"
    ],
    "save_as": "after"
   },
@@ -494,7 +496,7 @@
    "than": "before",
    "now": "after",
    "path": "count",
-   "name": "the room's reward spawned at the reward spot"
+   "name": "the room's reward spawned (more items/ units on the level)"
   },
   {
    "do": "shot",

@@ -25,7 +25,7 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `stash` | `[tab]` | stash [tab]: the tab's items in order, "<baseId>@<ilvl>" |
 | `press` | `<widgetId>` | press <widgetId>: click an interactable widget of the top window |
 | `use` | `<filter>` | use <filter>: IUsable.Use of the nearest usable unit whose unit path or behaviour matches, from wherever the player stands |
-| `shop` | `[buy <index>]` | shop [buy <index>]: the open shop's entries (id, gold price); buy presses entry <index> the way a click does (ShopWindow.OnFunc "buy") |
+| `shop` | `[buy <index>]` | shop [buy <index>]: the open shop's entries (id, gold price, IsAvailable, subtitle); buy presses entry <index> the way a click does (ShopWindow.OnFunc "buy") |
 | `trinkets` |  | trinkets: the local character's run trinkets, by id |
 | `prefab` | `<file> <dx> <dy>` | prefab <file> <dx> <dy>: Prefab.Fabricate at the player + (dx, dy) |
 | `ws` | `<type> [commentPrefix]` | ws <type> [commentPrefix]: every world script of that type whose comment starts with the prefix: comment, enabled, trigger times, position, value (Variables) |
@@ -66,7 +66,7 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `overlays` |  | overlays: everything drawn over the world at this moment, so a scenario can require the set to be empty or expected (repro playbook 1.3). Windows (bottom to top), the tutorial panel (Tutorials::TutorialModule.m_showing, drawn by HUDTutorials), live announce / loot-log entries (HUDAnnounce subclasses, style id + text) and the boss bar. HUD notifications are not listed: HoH2's AddNotification is a stub ("TODO: Add notifications", WorldScript/GUI/AddNotification.as). |
 | `buildings` |  | buildings: the current town record's buildings (id -> variation), as the town builder and the gambler read them (TownRecord.GetVariationOnBuilding) |
 | `clock` |  | clock: scene time (g_scene.GetTime(), what behaviours time themselves with), the probe's own frame count, and the time-scale / hour cvars |
-| `widgets` | `[depth]` | widgets [depth]: the UI widget tree of every open window and the HUD, capped, with truncation reported. |
+| `widgets` | `[depth]` | widgets [depth]: the UI widget tree of every open window (and its open tab) and the HUD, capped, with truncation reported. |
 | `terrain` | `[radius] [step]` | terrain [radius] [step]: occupancy grid around the player from the game's own point query (g_scene.QueryRect(pos, 1, 1, ~0, RaycastType::Any), the test SpawnPrefab uses for "can something stand here"). Rows north to south: '.' free, '#' blocked, '@' the player. At most TERRAIN_CELLS x TERRAIN_CELLS; "truncated" when clipped. |
 | `members` | `<TypeName>` | members <TypeName>: the script type's properties (name + type) through the engine's reflection (Reflect::GetType / TypeInfo.GetProperties). Read-only by construction: it never touches an instance. Capped at MEMBERS_CAP; reports truncation. |
 | `inspect` | `<player\|town> [dotted.path]` | inspect <player/town> [dotted.path]: read-only. A field of the player or town save record by dotted path, JSON-encoded, capped. |

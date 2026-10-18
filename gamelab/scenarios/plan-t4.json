@@ -504,8 +504,8 @@
    "a": "sb2",
    "b": "cr2",
    "path": "match",
-   "min": 300,
-   "name": "strongbox and crack 300+ apart"
+   "min": 298.5,
+   "name": "strongbox and crack 300+ apart (log coords are truncated: 1.5 px slack)"
   },
   {
    "do": "console",

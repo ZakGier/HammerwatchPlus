@@ -309,12 +309,16 @@ namespace GameLab
 		{
 			if (!units[i].IsValid() || units[i].IsDestroyed() || units[i] == plr.m_unit)
 				continue;
+			// FetchAllUnits' radius doesn't bound what it returns ("near 60" in town gave 764
+			// units, plan-t8 075319), so the distance is checked here
+			float d = dist(center, xy(units[i].GetPosition()));
+			if (d > radius)
+				continue;
 			ref@ b = units[i].GetScriptBehavior();
 			// the filter matches the behavior's type name or the unit's debug name (its .unit path)
 			if (filter != "" && (b is null || Reflect::GetTypeName(b).findFirst(filter) < 0)
 				&& units[i].GetDebugName().findFirst(filter) < 0)
 				continue;
-			float d = dist(center, xy(units[i].GetPosition()));
 			uint at = 0;
 			while (at < dists.length() && dists[at] <= d)
 				at++;
@@ -445,14 +449,17 @@ namespace GameLab
 
 	// widgets [depth]: the UI widget tree of every open window (top last) and the HUD,
 	// depth-first, capped at WIDGET_CAP nodes and `depth` levels (default 6); reports
-	// truncation. Per node: depth, script class, id, visible, size, text (TextWidget).
+	// truncation. Per node: depth, script class, id, visible, size, text (TextWidget),
+	// enabled (buttons), item (item slots). A tabbed window's open tab is a root of its own.
 	int g_widgetCut = 0;    // nodes left out by the current widgets call
+	uint g_widgetChars = 0; // characters the current widgets call has used
+	const uint WIDGET_CHARS = 13000; // under Json's EMIT_MAX, with room for the roots
 
 	void WidgetNodes(Widget@ w, int depth, int maxDepth, array<string>@ acc)
 	{
 		if (w is null)
 			return;
-		if (acc.length() >= WIDGET_CAP)
+		if (acc.length() >= WIDGET_CAP || g_widgetChars >= WIDGET_CHARS)
 		{
 			g_widgetCut++;
 			return;
@@ -466,7 +473,12 @@ namespace GameLab
 		auto iw = cast<AInteractableWidget>(w);
 		if (iw !is null)
 			n.Bool("enabled", iw.m_enabled);
-		acc.insertLast(n.Close());
+		auto slot = cast<ItemWidgetBase>(w);
+		if (slot !is null && slot.m_item !is null)
+			n.Str("item", slot.m_item.GetName());
+		string node = n.Close();
+		g_widgetChars += node.length() + 1;
+		acc.insertLast(node);
 		if (w.m_children is null)
 			return;
 		if (depth >= maxDepth)
@@ -478,12 +490,54 @@ namespace GameLab
 			WidgetNodes(w.m_children[i], depth + 1, maxDepth, acc);
 	}
 
-	// widgets [depth]: the UI widget tree of every open window and the HUD, capped, with truncation reported.
+	// A tabbed window's open tab is its own AWindowObject (GUI/MenuTabSystem.as), whose
+	// widget tree isn't under the window's: the character screen's gear slots live there.
+	MenuTabSystem@ TabsOf(IWidgetHoster@ w)
+	{
+		auto pm = cast<PlayerMenu>(w);
+		if (pm !is null)
+			return pm.m_tabSystem;
+		auto gh = cast<GuildHall>(w);
+		if (gh !is null)
+			return gh.m_tabSystem;
+		auto om = cast<WindowOptionsMenu>(w);
+		if (om !is null)
+			return om.m_tabSystem;
+		auto cc = cast<CreateCharacterWindow>(w);
+		if (cc !is null)
+			return cc.m_tabSystem;
+		auto mt = cast<MenuTab>(w);
+		if (mt !is null)
+			return mt.m_tabSystem;
+		return null;
+	}
+
+	// a MenuTab's own m_tabSystem is the one it sits in, unless it has tabs of its own:
+	// only a different system is a nested row
+	void TabRoots(IWidgetHoster@ w, const string &in name, int maxDepth, array<string>@ roots, MenuTabSystem@ parent)
+	{
+		auto tabs = TabsOf(w);
+		if (tabs is null || tabs is parent || tabs.m_currentIndex < 0 || tabs.m_currentIndex >= int(tabs.m_tabs.length()))
+			return;
+		auto tab = tabs.m_tabs[tabs.m_currentIndex];
+		if (tab is null)
+			return;
+		string tname = name + ":" + Reflect::GetTypeName(tab);
+		array<string> nodes;
+		WidgetNodes(tab.m_widget, 0, maxDepth, nodes);
+		Json r;
+		r.Str("root", tname).Raw("nodes", RawArray(nodes));
+		roots.insertLast(r.Close());
+		TabRoots(tab, tname, maxDepth, roots, tabs);
+	}
+
+	// widgets [depth]: the UI widget tree of every open window (and its open tab) and the HUD, capped, with truncation reported.
 	void VerbWidgets(const string &in id, array<string>@ args)
 	{
 		int maxDepth = args.length() > 0 ? int(parseInt(args[0])) : 6;
 		array<string> roots;
 		g_widgetCut = 0;
+		g_widgetChars = 0;
 		auto gm = cast<BaseGameMode>(g_gameMode);
 		if (gm !is null && gm.m_windowManager !is null)
 		{
@@ -496,6 +550,8 @@ namespace GameLab
 				Json r;
 				r.Str("root", Reflect::GetTypeName(gm.m_windowManager.m_objects[i])).Raw("nodes", RawArray(nodes));
 				roots.insertLast(r.Close());
+				if (win !is null)
+					TabRoots(win, Reflect::GetTypeName(gm.m_windowManager.m_objects[i]), maxDepth, roots, null);
 			}
 		}
 		auto hud = GetHUD();

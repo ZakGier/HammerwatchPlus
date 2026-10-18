@@ -720,9 +720,12 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - **The Pilot finds no route from the town arrival point (1984,598) into town.** Both
   `Pathfind` and the partial `NavRoute` end in the forest. Town scenarios teleport near the
   target first. Not traced further.
-- **GameLab `near <r> <filter>` doesn't apply the radius when a filter is given**; results are
-  still sorted by distance. A "nothing within r" check uses `units.0.dist` with
-  `{"between": [lo, hi]}` instead.
+- **`Scene.FetchAllUnits(mask, center, radius)` doesn't bound what it returns by the radius.**
+  First seen as "`near <r> <filter>` ignores the radius"; it was the same without a filter
+  (`near 60` in town: 764 units, plan-t8 075319), so every `near` count was the whole level.
+  `near` now drops units past the radius itself. mod-puzzle-rooms' reward check counted the
+  whole level that way and now counts `near 6000 items/`; the other 14 scenarios that use
+  `near` pass unchanged (081413-082914).
 - **The dark column over a window in the lower-left is the in-game chat history panel**
   (x 19-250, y 136-360 at 640x360). It shows while recent chat lines are up (any `[HWP]`
   message) and fades with them. It isn't part of the HWP window under it (probe 063142).
@@ -759,3 +762,18 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   backtick) and did nothing; `plan_checks.hwp(..., until=)` resends once when the reply
   doesn't come. The Bandit Keep's bandits killed the player during the third chest, so the
   chest checks `cull` first.
+- **A log line over 16 KB looks fatal.** The game exited with 0xE06D7363 right after printing
+  a 16,401-char `widgets` reply (plan-t8 074605); no earlier reply was over 14,596. Assumed
+  from that one case, not reproduced. GameLab's `Emit` now replaces a reply over 15,000 chars
+  with a short failure that keeps its id, and `widgets` stops at 13,000 chars of nodes.
+- **A tabbed window's open tab is its own window object.** `PlayerMenu`, `GuildHall`,
+  `WindowOptionsMenu` and `CreateCharacterWindow` keep their tabs in a `MenuTabSystem`; each
+  `MenuTab` is an `AWindowObject` whose widget tree isn't under the window's, and its own
+  `m_tabSystem` is the one it sits in. `widgets` now dumps the open tab as a root named
+  `PlayerMenu:PlayerMenuCharacterTab`, which is where the gear and alt-weapon slots are.
+- **A locked chest is not usable without its key.** Vanilla `Chest.CanUse` is false while
+  `GetKeys(m_key) <= 0`, so a use attempt finds the chest as the top usable but can't use it
+  (the Pilot reports "top usable is not the target"). With the key it opens (plan-t8 081413).
+- **open-chest and open-chest-minimized fail before and after this session's probe changes**
+  (081200 with the old probe): the "f" key press doesn't open the spawned cache. Those are
+  GameLab self-tests of real key input, not HWP features; not traced.
