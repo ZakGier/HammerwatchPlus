@@ -953,6 +953,200 @@ class Checks:
                   f"phase {stt.get('phase')}, level {stt.get('level')}, ngp {stt.get('ngp')}")
 
 
+    def crusaders(self):
+        us = self.gl("near", 600, "players/priest/units/crusader").get("units") or []
+        return [u for u in us if not u.get("dead")]
+
+    def next_floor(self, timeout=60):
+        """hwp finishlevel, then wait for the new floor's boot line (not a [preload] one) and
+        the mission phase; the log text since the command."""
+        mark = len(self.g.read_log())
+        self.hwp("finishlevel", 0.3)
+        end = time.time() + timeout
+        while time.time() < end:
+            new = self.g.read_log()[mark:]
+            if any('[GL] {"ev":"boot"' in ln and "[preload]" not in ln for ln in new.splitlines()):
+                break
+            time.sleep(0.25)
+        self.wait_phase("mission", 20)
+        return self.g.read_log()[mark:]
+
+    def summons(self):
+        """summons s1-s3: a Crusader Priest's crusaders come along to the next floor with the
+        HP they had; dead ones don't; none follow into town."""
+        self.gl("char", "priest", "LabPriest")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+        sc = self.gl("subclass", "priest_crusader")
+        self.hwp("skillpoints 20")
+        sk = self.gl("skill", "call_crusaders", 1)  # level 2: two crusaders at most, so the skill adds none on the next floor
+        self.flag("crusader_setup", sc.get("class") == "priest_crusader" and sk.get("level", 0) == 2, f"{sc} {sk}")
+        if not self.start_floor(0):
+            self.flag("summons_mission", False)
+            return
+        self.hwp("god")
+        end = time.time() + 50
+        cs = []
+        while time.time() < end:
+            cs = self.crusaders()
+            if len(cs) >= 2:
+                break
+            time.sleep(2)
+        self.hwp("killall")  # no fighting from here on, so their HP holds still through the exit
+        self.gl("kill", 2000, "players/priest/units/crusader", 0.5)  # set to half health: the HP to carry
+        time.sleep(1.5)  # the 500 ms snapshot tick
+        cs = self.crusaders()
+        before = sorted(round(c.get("hp", 0), 3) for c in cs)
+        self.notes.append(f"before exit: {len(cs)} crusader(s) {[c['name'].split('/')[-1] for c in cs]} hp {before}")
+        st = self.hwp("summons", 0.5, until="restored on this floor")
+        log = self.next_floor()
+        after = self.crusaders()
+        hp_after = sorted(round(c.get("hp", 0), 3) for c in after)
+        time.sleep(3)
+        later = self.crusaders()
+        m = re.findall(r"restored (\d+) summon", log)
+        # exactly the ones that went in (the game carries them; HWP fills only a shortfall)
+        self.flag("summons_follow", len(cs) == 2 and len(after) == len(cs) and len(later) == len(cs),
+                  f"HWP restored {m or 0}, on arrival {len(after)} hp {hp_after}, 3 s later {len(later)}")
+        self.flag("summons_keep_hp", len(after) == len(cs) and all(abs(a - b) < 0.02 for a, b in zip(hp_after, before)),
+                  f"hp before {before} on arrival {hp_after}")
+        st2 = self.hwp("summons", 0.5, until="restored on this floor")
+        self.notes.append(f"status on floor 2: {st2.strip()[-140:]}")
+        # s2: kill them all, then exit: the dead don't come through. Below its cap the passive
+        # skill summons a fresh one at once (its timer already ran out), and that one may.
+        self.hwp("killall")
+        doomed = [c.get("hp") for c in self.crusaders()]
+        k = self.gl("kill", 2000, "players/priest/units/crusader")
+        time.sleep(0.4)
+        left = self.crusaders()
+        log = self.next_floor()
+        arrived = self.crusaders()
+        m = re.findall(r"restored (\d+) summon", log)
+        st3 = self.hwp("summons", 0.5, until="restored on this floor")
+        # the killed ones carried damage from floor 1; anything on the new floor is a fresh full-HP summon
+        self.flag("dead_summons_stay", k.get("killed", 0) >= 2 and any(h < 0.999 for h in doomed)
+                  and all(c.get("hp", 0) >= 0.999 for c in arrived) and not m and "0 restored" in st3,
+                  f"killed {k.get('killed')} hp {doomed}, fresh before the exit {len(left)} hp {[c.get('hp') for c in left]}, "
+                  f"on arrival {len(arrived)} hp {[c.get('hp') for c in arrived]}, restore lines {m}, {st3.strip()[-80:]}")
+        # s3: back to town: no crusaders there
+        time.sleep(3)
+        self.gl("abort")
+        ok = self.wait_phase("town", 90)
+        town = self.crusaders()  # within ~1 s of arriving: the passive skill summons anew after that
+        st4 = self.hwp("summons", 0.5, until="restored on this floor")
+        self.flag("no_summons_in_town", ok and not town, f"town {ok}, crusaders on arrival {len(town)} {[c.get('hp') for c in town]}, {st4.strip()[-80:]}")
+
+    def farm_runs(self):
+        st = self.hwp("farm", 0.5, until="Farm:")
+        runs = re.findall(r"(\d+) run\(s\) counted", st)
+        planted = re.findall(r"Planted: (.*)", st)
+        return (int(runs[-1]) if runs else -1), (planted[-1].strip() if planted else "")
+
+    def farm_abort(self):
+        """farming s14: a run abandoned on its first floor grows nothing; a failed one does."""
+        self.set_gold(5000)
+        self.npc("npc_misc_farmer_man", "actors/npcs/town/npc_misc_farmer_man.unit")
+        self.gl("use", "npc_misc_farmer_man")
+        time.sleep(0.5)
+        self.gl("press", "row-1")  # a cabbage seed (row 0 is the can)
+        time.sleep(0.5)
+        self.g.key("escape")
+        time.sleep(0.4)
+        plots = self.gl("near", 4000, "farm_plot").get("units") or []
+        if plots:
+            self.gl("teleport", plots[0]["x"], plots[0]["y"] + 4)
+            time.sleep(0.4)
+            self.gl("use", "farm_plot")
+            time.sleep(0.5)
+            self.gl("press", "row-0")
+            time.sleep(0.8)
+        r0, p0 = self.farm_runs()
+        self.notes.append(f"before: {r0} run(s), planted {p0}")
+        results = {}
+        for how in ("aborted", "failed"):
+            if not self.start_floor(0):
+                self.flag("farm_abort_mission", False)
+                return
+            mark = len(self.g.read_log())
+            self.gl("abort", *(["failed"] if how == "failed" else []))
+            ok = self.wait_phase("town", 90)
+            time.sleep(2)
+            log = self.g.read_log()[mark:]
+            r, pl = self.farm_runs()
+            said = re.findall(r"\[HWP:farming\] (a run finished.*|the run was not finished.*)", log)
+            results[how] = (ok, r, pl, said)
+            self.notes.append(f"{how}: town {ok}, {r} run(s), planted {pl}, {said}")
+            if self.gl("state").get("window"):
+                self.g.key("escape")  # the mission end menu
+                time.sleep(0.5)
+        ok_a, ra, pa, sa = results["aborted"]
+        ok_f, rf, pf, sf = results["failed"]
+        self.flag("abort_grows_nothing", bool(p0) and ok_a and ra == r0 and pa == p0 and any("not finished" in x for x in sa),
+                  f"{r0} -> {ra} runs, {p0!r} -> {pa!r}")
+        self.flag("failed_run_grows", ok_f and rf == r0 + 1 and pf != pa and any("a run finished" in x for x in sf),
+                  f"{ra} -> {rf} runs, {pa!r} -> {pf!r}")
+
+    def plot_look(self, plot):
+        """The farm visuals standing on a plot: sprout, sprout2, wet or a crops/ unit."""
+        self.gl("teleport", plot["x"], plot["y"] + 4)
+        time.sleep(0.5)
+        us = self.gl("near", 40, "doodads/hwp/").get("units") or []
+        return sorted({u["name"].replace("doodads/hwp/", "").replace(".unit", "") for u in us} - {"farm_plot"})
+
+    def failed_run(self):
+        if not self.start_floor(0):
+            return False
+        self.gl("abort", "failed")
+        ok = self.wait_phase("town", 90)
+        time.sleep(2)
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.5)
+        return ok
+
+    def farm_cycle(self):
+        """farming s6 (after farm_abort, whose cabbage has had one run): unwatered it is a
+        bigger sprout after one run and ready after the next; a watered plot is ready after one."""
+        plots = self.gl("near", 4000, "farm_plot").get("units") or []
+        if len(plots) < 2:
+            self.flag("farm_cycle_plots", False, f"{len(plots)} plots")
+            return
+        p_dry, p_wet = plots[0], plots[1]
+        look1 = self.plot_look(p_dry)
+        _, pl1 = self.farm_runs()
+        # a can and a second seed; plant and water the second plot
+        self.set_gold(5000)
+        self.npc("npc_misc_farmer_man", "actors/npcs/town/npc_misc_farmer_man.unit")
+        self.gl("use", "npc_misc_farmer_man")
+        time.sleep(0.5)
+        self.gl("press", "row-0")
+        time.sleep(0.4)
+        self.gl("press", "row-1")
+        time.sleep(0.4)
+        self.g.key("escape")
+        time.sleep(0.4)
+        look_new = self.plot_look(p_wet)
+        self.gl("use", "farm_plot")
+        time.sleep(0.5)
+        self.gl("press", "row-0")
+        time.sleep(0.8)
+        self.gl("use", "farm_plot")
+        time.sleep(0.8)
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.3)
+        look_wet = self.plot_look(p_wet)
+        _, pl2 = self.farm_runs()
+        self.notes.append(f"after one run (dry): {look1}, {pl1}; new plot {look_new} -> watered {look_wet}, {pl2}")
+        ok = self.failed_run()
+        _, pl3 = self.farm_runs()
+        dry2, wet2 = self.plot_look(p_dry), self.plot_look(p_wet)
+        self.notes.append(f"after the next run: dry {dry2}, watered {wet2}, {pl3}")
+        self.flag("dry_bigger_sprout", "farm_sprout2" in look1 and "1/2" in pl1, f"{look1} {pl1}")
+        self.flag("watered_shows_wet", "farm_wet" in look_wet and "watered" in pl2, f"{look_wet} {pl2}")
+        self.flag("dry_ready_after_two", ok and any(n.startswith("crops/") for n in dry2), f"{dry2}")
+        self.flag("watered_ready_after_one", ok and any(n.startswith("crops/") for n in wet2) and pl3.count("ready") >= 2, f"{wet2} {pl3}")
+
 def run(p, sections="gambler,sell,merchant,traps,full_bag", **_):
     c = Checks(p)
     for s in sections.split(","):

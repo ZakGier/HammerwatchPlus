@@ -128,7 +128,23 @@ namespace HWP
 			if (count <= 0)
 				return;
 
-			dictionary spawned; // prod name -> count produced this restore
+			// The game itself brings summons through a floor change (Player's constructor
+			// produces the record's summons from their save data, HP included: GameLab
+			// probe-summons-off 20261018-095747), so only the shortfall of each kind is
+			// produced: snapshot count minus what is already live. Producing every entry gave
+			// the player one crusader too many (plan-t12 095531: 2 in, 3 out).
+			dictionary missing; // prod name -> how many more to produce
+			for (int i = 0; i < count; i++)
+			{
+				string prodName = HWP::SV::Str(saved, "p" + i);
+				if (prodName.isEmpty())
+					continue;
+				int n = 0;
+				if (!missing.get(prodName, n))
+					n = -LiveCount(rec, prodName);
+				n++; // a named int: dictionary.set keeps a temporary by reference
+				missing.set(prodName, n);
+			}
 			vec2 pos = xy(rec.actor.m_unit.GetPosition());
 			for (int i = 0; i < count; i++)
 			{
@@ -137,19 +153,12 @@ namespace HWP
 				auto prod = prodName.isEmpty() ? null : Resources::GetUnitProducer(prodName);
 				if (prod is null || data is null)
 					continue;
-
-				// If the game already restored some of this kind (save game load), don't double up.
-				int already = 0;
-				if (spawned.exists(prodName))
-					spawned.get(prodName, already);
-				if (already == 0 && LiveCount(rec, prodName) > 0)
-				{
-					int live = LiveCount(rec, prodName); // dictionary.set keeps a temporary by reference
-					spawned.set(prodName, live);
+				int left = 0;
+				missing.get(prodName, left);
+				if (left <= 0)
 					continue;
-				}
-				int count = already + 1;
-				spawned.set(prodName, count);
+				left--;
+				missing.set(prodName, left);
 
 				vec2 p = pos + randdir() * (12.0f + randf() * 16.0f);
 				bool remote = (!Network::IsServer() && IsNetsyncedExistance(prod.GetNetSyncMode()));

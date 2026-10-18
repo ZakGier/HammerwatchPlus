@@ -817,3 +817,10 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - **Escape with no window open opens the pause menu**, and a paused game ignores the next
   steps (the wave statue run sat in the pause menu after a failed portal use). Bots only
   press Escape when `state.window` is set.
+- **The game carries a player's summons through a floor change** (with their HP): the
+  record keeps each summon's `SaveUnit` data and `Player`'s constructor produces them on
+  the new floor. GameLab probe-summons-off 095747: with mods/summons off, 2 damaged
+  crusaders came through. The summons module produced its own snapshot on top, so 2 went
+  in and 3 came out (plan-t12 095531). It now produces only what is missing per kind.
+  Call Crusaders is a passive skill: below its cap it summons one about 1 s after a level
+  loads (town too) and at once when its 15 s timer has already run out.

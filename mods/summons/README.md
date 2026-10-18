@@ -1,10 +1,17 @@
 # summons
 
-Priest improvement: **Crusader summons persist between floors**. Vanilla
-destroys every summon with the old level and the Crusader has to re-summon
-them one by one (15 s each) on the new floor. With this module the pikemen,
-crossbowmen and boon pikemen that were alive when you took the exit are
-produced again next to you on the next floor, with the HP they had.
+Priest improvement: **Crusader summons persist between floors**. The pikemen,
+crossbowmen and boon pikemen that were alive when you took the exit are there
+next to you on the next floor, with the HP they had.
+
+**The current game does this itself** (verified in GameLab, probe-summons-off
+2026-10-18: with this module off, 2 damaged crusaders came through a floor
+change at the HP they had). `Player`'s constructor produces the record's
+summons from their save data. The module was built on the belief that the
+game drops them (never checked then), and it now only fills a shortfall:
+per kind, the snapshot count minus what is already live. Before that fix it
+produced every snapshot entry on top of the game's own, giving one crusader
+too many (plan-t12: 2 in, 3 out).
 
 - **How.** Every 500 ms during a run, the local player's tracked summons are
   snapshotted with the game's own `SaveUnit()` (the same data a save game
@@ -26,8 +33,10 @@ produced again next to you on the next floor, with the HP they had.
 
 1. `python -m gamelab run mod-summons --mode lab`: `[HWP:summons] self-check done: 3/3 tracked units`.
 2. Priest with Call Crusaders: summon 2-3 crusaders, take the exit. On the
-   next floor they appear next to you within a second; the log has
-   `[HWP:summons] restored N summon(s)`. `hwp summons` agrees.
+   next floor the same number are next to you at once, with their HP, and
+   no more than that (`hwp summons`: "0 restored" while the game carries
+   them). `python -m gamelab run plan-t12 --mode lab` runs steps 2-4.
 3. Let them all die before the exit: nothing is restored.
-4. Return to town: no crusaders in town.
+4. Return to town: no crusaders in town on arrival (the passive skill
+   summons a fresh one in town a second later, as in vanilla).
 5. Co-op: a client Priest's crusaders also come through (host produces them).

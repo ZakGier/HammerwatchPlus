@@ -349,6 +349,10 @@ namespace Modules
 			GameLab::RegisterVerb("xp", "<amount>", GameLab::Verb(GameLab::VerbXp));
 			GameLab::RegisterVerb("material", "<type> <n>", GameLab::Verb(GameLab::VerbMaterial));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));
+			GameLab::RegisterVerb("subclass", "<classId>", GameLab::Verb(GameLab::VerbSubclass));
+			GameLab::RegisterVerb("skill", "<skillId> [times]", GameLab::Verb(GameLab::VerbSkill));
+			GameLab::RegisterVerb("kill", "<radius> <filter> [hp]", GameLab::Verb(GameLab::VerbKill));
+			GameLab::RegisterVerb("abort", "[failed]", GameLab::Verb(GameLab::VerbAbort));
 			GameLab::RegisterVerb("assign", "<str|dex|int|foc|vit> <n|all>", GameLab::Verb(GameLab::VerbAssign));
 			GameLab::RegisterVerb("upgrade", "<shopId> <upgradeId> <step>", GameLab::Verb(GameLab::VerbUpgrade));
 			GameLab::RegisterVerb("equip", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbEquip));

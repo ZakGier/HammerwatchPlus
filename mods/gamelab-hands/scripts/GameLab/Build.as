@@ -62,6 +62,130 @@ namespace GameLab
 		Emit(Reply(id, true).Str("flag", args[0]).Int("hash", HashString(args[0])));
 	}
 
+	// subclass <classId>: PlayerRecord.ChangeClass, what the subclass picker's switch does
+	// (Town/SubclassPickShopContent.as:131-140). Only a subclass of the current class (or the
+	// parent itself) is taken; the picker's level gate is skipped.
+	void VerbSubclass(const string &in id, array<string>@ args)
+	{
+		auto rec = FixtureRecord(id);
+		if (rec is null)
+			return;
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: subclass <classId>");
+			return;
+		}
+		auto cls = PlayerClass::Get(args[0]);
+		if (cls is null)
+		{
+			Fail(id, "no class " + args[0]);
+			return;
+		}
+		uint root = rec.playerClass.parent != 0 ? rec.playerClass.parent : rec.playerClass.m_idHash;
+		if (cls.m_idHash != root && cls.parent != root)
+		{
+			Fail(id, args[0] + " is not a subclass of " + rec.playerClass.m_id);
+			return;
+		}
+		rec.ChangeClass(cls);
+		Emit(Reply(id, true).Str("class", rec.playerClass.m_id));
+	}
+
+	// skill <skillId> [times]: PlayerRecord.SkillUp, what the skill tree's level-up calls
+	// (it checks max level and free points; `hwp skillpoints` gives points). The reply has
+	// the level GetSkillLevel reports after.
+	void VerbSkill(const string &in id, array<string>@ args)
+	{
+		auto rec = FixtureRecord(id);
+		if (rec is null)
+			return;
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: skill <skillId> [times]");
+			return;
+		}
+		int times = args.length() > 1 ? int(parseInt(args[1])) : 1;
+		int done = 0;
+		for (int i = 0; i < times; i++)
+			if (rec.SkillUp(args[0]))
+				done++;
+		auto def = rec.playerClass.GetSkillDef(HashString(args[0]));
+		if (def is null)
+		{
+			Fail(id, "no skill " + args[0] + " in " + rec.playerClass.m_id);
+			return;
+		}
+		Emit(Reply(id, done == times).Str("skill", args[0]).Int("raised", done).Int("level", rec.GetSkillLevel(def)));
+	}
+
+	// kill <radius> <filter> [hp]: Actor.Kill(null, 0) on every live actor within radius whose
+	// .unit path or behavior type contains filter (as `near`), never the local player.
+	// A real death: the unit's own death handling runs (summons leave the owner's list).
+	// With hp (0-1) the actors are set to that health fraction instead of killed.
+	void VerbKill(const string &in id, array<string>@ args)
+	{
+		auto plr = GetLocalPlayer();
+		if (plr is null)
+		{
+			Fail(id, "no spawned local player");
+			return;
+		}
+		if (args.length() < 2)
+		{
+			Fail(id, "usage: kill <radius> <filter>");
+			return;
+		}
+		int radius = int(parseInt(args[0]));
+		float hp = args.length() > 2 ? float(parseFloat(args[2])) : -1.0f;
+		vec2 center = xy(plr.m_unit.GetPosition());
+		auto units = g_scene.FetchAllUnits(~0, center, radius);
+		int n = 0;
+		for (uint i = 0; i < units.length(); i++)
+		{
+			if (!units[i].IsValid() || units[i].IsDestroyed() || units[i] == plr.m_unit)
+				continue;
+			if (dist(center, xy(units[i].GetPosition())) > radius)
+				continue;
+			auto actor = cast<Actor>(units[i].GetScriptBehavior());
+			if (actor is null || actor.IsDead())
+				continue;
+			if (units[i].GetDebugName().findFirst(args[1]) < 0 && Reflect::GetTypeName(actor).findFirst(args[1]) < 0)
+				continue;
+			if (hp < 0)
+				actor.Kill(null, 0);
+			else
+			{
+				// not a game code path: the health fraction is written directly (the HP a
+				// save or a floor change carries is this same m_hp: CompositeActorBehavior.as:375-413)
+				auto comp = cast<CompositeActorBehavior>(actor);
+				if (comp is null)
+					continue;
+				comp.m_hp = hp;
+			}
+			n++;
+		}
+		Emit(Reply(id, n > 0).Int(hp < 0 ? "killed" : "hurt", n));
+	}
+
+	// abort [failed]: leave the run the way the pause menu's abandon does: it sets GlobalCache
+	// "main_restart", which HWR2GameMode.UpdateFrame turns into
+	// MissionManager::AbortMission(Aborted) and a change to the town (GameModes/HWR2GameMode.as:187-192).
+	// "failed" ends it the way the death screen's accept does: AbortMission(Failed) (GUI/DeadMenu.as:89).
+	void VerbAbort(const string &in id, array<string>@ args)
+	{
+		if (cast<MissionGameModeBase>(g_gameMode) is null)
+		{
+			Fail(id, "not in a run");
+			return;
+		}
+		bool failed = args.length() > 0 && args[0] == "failed";
+		if (failed)
+			MissionManager::AbortMission(MissionManager::MissionState::Failed);
+		else
+			GlobalCache::Set("main_restart", "1");
+		Emit(Reply(id, true).Str("state", failed ? "failed" : "aborted"));
+	}
+
 	// equip <baseItemId> <qualityMask> [ilvl]: Equipment::Generator.GenerateItem (the
 	// spawnequipment cheat's path, Console/Cheats.as), then equipped.Equip like a new
 	// character's starting gear (PlayerRecord.as:451-465). The quality is the generator's:

@@ -243,6 +243,10 @@ hash; the first run after a change does two extra boots.
   `press <id>` clicks a widget of the top window (real ClickDown/ClickUp), so give rows ids.
   `func <name...>` runs the top window's `OnFunc` as a key-bound action would (the loadout's
   Play is `func play`, bound to MenuAdditional). `state` carries `ngp` (`g_ngp`) too.
+  `subclass <id>` (ChangeClass, e.g. priest_crusader) and `skill <id> [n]` (SkillUp; give points
+  with `hwp skillpoints`) build a spec; `kill <r> <filter> [hp]` kills actors (or sets their
+  health fraction); `abort [failed]` leaves a run the pause menu's way (Aborted) or the death
+  screen's (Failed). `near` entries of actors carry `hp` (fraction) and `dead`.
   A reply over 15,000 chars comes back as an error (a longer log line looked fatal).
 - Read the game's own data:
   - `inspect player|town <dotted.path>`: the save record.

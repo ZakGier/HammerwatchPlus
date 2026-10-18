@@ -284,6 +284,9 @@ namespace GameLab
 		ref@ b = u.GetScriptBehavior();
 		e.Str("behavior", b is null ? "" : Reflect::GetTypeName(b));
 		e.Bool("usable", cast<IUsable>(b) !is null);
+		auto actor = cast<Actor>(b);
+		if (actor !is null)
+			e.Num("hp", actor.GetHealth()).Bool("dead", actor.IsDead());
 		e.Num("x", pos.x).Num("y", pos.y).Num("dist", dist(from, xy(pos)));
 		return e.Close();
 	}

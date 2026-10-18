@@ -1,0 +1,99 @@
+{
+ "name": "plan-t12",
+ "about": "Test plan through the plan_checks bot: summons s1-s3. A new Priest switched to the Crusader spec (gl subclass) with Call Crusaders raised to level 3 (gl skill) gathers crusaders on a Bandit Keep floor; they come through the exit with their HP, killed ones (gl kill) don't, and none follow into town (gl abort, the pause menu's abandon); farming s14: a run abandoned on floor 1 (gl abort) grows nothing, a failed one (gl abort failed) grows the crops; farming s6: the real cycle (unwatered: bigger sprout after one run, ready after two; watered: ready after one).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "summons"
+   },
+   "name": "persistent summons",
+   "expect": {
+    "crusader_setup": true,
+    "summons_follow": true,
+    "summons_keep_hp": true,
+    "dead_summons_stay": true,
+    "no_summons_in_town": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "farm_abort"
+   },
+   "name": "abandoned run, crops",
+   "expect": {
+    "abort_grows_nothing": true,
+    "failed_run_grows": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "farm_cycle"
+   },
+   "name": "crop cycle",
+   "expect": {
+    "dry_bigger_sprout": true,
+    "watered_shows_wet": true,
+    "dry_ready_after_two": true,
+    "watered_ready_after_one": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "crops-ready"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}
