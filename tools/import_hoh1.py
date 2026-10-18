@@ -197,11 +197,13 @@ def write(path: Path, data: bytes | str, force: bool, written: list[str]) -> Non
 
 
 # The shop icon of the living flame is HoH2's candle pet (a wax candle); HoH1's
-# unit is only the flame, so it gets our own candle (committed art, 7x10, wick
-# at the top) under it: the flame and its lights move up onto the wick.
-FLAME_LIFT = 9
-CANDLE_SPRITE = ('\t\t\t<sprite origin="3 9" texture="doodads/hwp/living_flame_candle.png" '
-                 'material="system/default.mats:default"><frame>0 0 7 10</frame></sprite>\n')
+# unit is only the flame, so it stands on that pet's body: the thin candle and
+# its melted wax base from frame 0 of the vanilla players/pets/pet_candle.png
+# (rows 13-29 below its own flame, wick 2 rows down; in the base game archive,
+# nothing new shipped). The flame and its lights move up onto the wick.
+FLAME_LIFT = 15
+CANDLE_SPRITE = ('\t\t\t<sprite origin="3 16" texture="players/pets/pet_candle.png" '
+                 'material="system/default.mats:default"><frame>12 13 8 17</frame></sprite>\n')
 
 
 def candle_body(unit_text: str) -> str:

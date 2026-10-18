@@ -469,13 +469,32 @@ namespace HWP
 			return one;
 		}
 
-		// the farm well: next to the pet feeding bowl unless farm.well_x/y are set
+		// the farm well: farm.well_x/y when set; else just under the bottom left
+		// corner of the field beside the farmhouse (the cabbage field from farm
+		// level 3), found from the wheat field, which every farm level has: in
+		// the farm prefab the wheat's left column is x -3 and its bottom row
+		// y -258, the cabbage field's bottom left corner 5,2; the well goes at
+		// 8,30. Without fields: next to the pet feeding bowl.
+		const float WELL_DX = 11.0f;
+		const float WELL_DY = 288.0f;
+
 		vec3 WellPos()
 		{
 			int x = HWP::Settings::GetInt("farm.well_x", -99999);
 			int y = HWP::Settings::GetInt("farm.well_y", -99999);
 			if (x != -99999 && y != -99999)
 				return vec3(float(x), float(y), 0);
+			float minX = 1e9f, maxY = -1e9f;
+			for (uint i = 0; i < g_grooves.length(); i++)
+			{
+				auto g = g_grooves[i];
+				if (g.field != 1 || g.vertical)
+					continue;
+				if (g.lo < minX) minX = g.lo;
+				if (g.fixed > maxY) maxY = g.fixed;
+			}
+			if (minX < 1e8f)
+				return vec3(minX + WELL_DX, maxY + WELL_DY, 0);
 			return vec3(float(HWP::Settings::GetInt("pets.bowl_x", -600) - 48),
 				float(HWP::Settings::GetInt("pets.bowl_y", 980)), 0);
 		}
@@ -1360,6 +1379,13 @@ namespace HWP
 				if (rec is null || rec.actor is null)
 					return;
 				auto p = rec.actor.m_unit.GetPosition();
+				if (a == "well" && args.length() >= 2 && args[1] == "reset")
+				{
+					// back to the default spot under the field corner (WellPos)
+					MoveSetting("farm.well_x", "farm.well_y", vec3(-99999, -99999, 0));
+					HWP::Commands::Reply(Resources::GetString(".hwp.farming.well_reset"));
+					return;
+				}
 				if (a == "well")
 				{
 					MoveSetting("farm.well_x", "farm.well_y", p);
@@ -1940,7 +1966,7 @@ namespace Modules
 			HWP::Net::OnEvent(HWP::Farming::WATERED, HWP::Net::EventHandler(HWP::Farming::OnWatered));
 			HWP::Net::OnEvent(HWP::Farming::REFUSED, HWP::Net::EventHandler(HWP::Farming::OnRefused));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Farming::OnSettingChanged));
-			HWP::Commands::Register("farm", " farm status; host: 'here' moves the plots off the fields to you, 'fields' puts them back, 'well' moves the well to you, 'grow' counts a run, 'wild [seed]' places a wild plot (debug)", HWP::Commands::Handler(HWP::Farming::CmdFarm));
+			HWP::Commands::Register("farm", " farm status; host: 'here' moves the plots off the fields to you, 'fields' puts them back, 'well' moves the well to you ('well reset' puts it back by the field), 'grow' counts a run, 'wild [seed]' places a wild plot (debug)", HWP::Commands::Handler(HWP::Farming::CmdFarm));
 			HWP::Commands::Register("smoke", " <herb> smoke a Holy Herb strain for a buff on your next run", HWP::Commands::Handler(HWP::Farming::CmdSmoke));
 			HWP::Farming::SelfCheck();
 		}

@@ -25,9 +25,20 @@ generated floors in the closest HoH2 theme plus a vanilla boss level.
   interact is the vanilla `MissionShopContent` limited to set `hwp_campaign`
   (`num` 2: both missions when the HoH1 one is imported), so the host picks the mission and the normal loadout menu
   opens. Clients see the host's portal (netsynced doodad). The host spawns
-  it (`HWP::Town::Placeable` in core) 0.6 s after the town loads at setting `campaign.portal_x/y`
-  (default -1700,250, next to the fishing spot); `hwp campaign here`
-  moves it to where you stand. `campaign.enabled` turns it off.
+  it (`HWP::Town::Placeable` in core) 0.6 s after the town loads, **in the
+  chapel courtyard in place of its campfire** (the unbuilt Pyre). Every
+  machine finds that campfire (`LocatePortal`): each chapel tier places
+  `pyre_tier_0.pfb` at a fixed spot and has a stone coffin
+  (`coffin_stone_v.unit`) no other town prefab uses, so coffin + (-152, 424)
+  is the campfire, which is hidden locally while the portal stands on it.
+  Once the Pyre is built (a real building: it lowers shadow-curse gain) it
+  stays and the portal stands 72 px below it. After a building upgrade
+  rebuilds the town, the portal is placed again within a second.
+  `hwp campaign here` saves the spot where you stand instead (setting
+  `campaign.portal_x/y`; the campfire shows again), `hwp campaign reset` goes
+  back to the courtyard. Only when no chapel is found is it at the old fixed
+  default -1700,250 (in the sea west of the coast). `campaign.enabled` turns
+  it off.
 - The mission is conditional on `mission_story_intro_find_npcs` like the
   vanilla boards. Every floor uses `diff-level-ngp` = diff + 8 like the
   vanilla tower chain.
@@ -139,14 +150,18 @@ What that means for a real port, in order:
 
 1. `python -m gamelab run mod-campaign --mode lab`: `[HWP:campaign] self-check done: mission ok, N/N schemes`
    and no "missing unit" line for the portal.
-2. Town: a glowing portal stands left of the fishing spot; the minimap
-   shows a portal pip. Interact opens the mission picker with only
+2. Town: the log says `portal spot: the chapel campfire at X,Y`; a glowing
+   portal stands in the chapel courtyard where the campfire was (no
+   campfire under it), the minimap shows a portal pip. Upgrade any
+   building: `the town was rebuilt, placing ... again` and the portal is
+   back on the spot. Interact opens the mission picker with only
    "The Forsaken Tower" (18 floors, diff 5-22).
 3. Start it: Mines floor 1 is a dark cave with goblins; the exit leads to
    floor 2, then the totem boss, then the Prison (cultists, bats)...
 4. `hwp campaign` prints the mission, floors, span and the portal position;
-   `hwp campaign here` moves the portal and the new spot survives a
-   restart (town record).
+   `hwp campaign here` moves the portal (the campfire shows again) and the
+   new spot survives a restart (town record); `hwp campaign reset` puts it
+   back on the campfire.
 5. Co-op: a client sees the portal and can read the mission; only the host
    can start it (vanilla rule).
 6. With HoH1 installed: `python tools/import_hoh1.py campaign`, then the

@@ -52,9 +52,12 @@ watered.
   is planted, growing and still dry in that area, and refuses when nothing
   is. Seeds cost 15-250 g each. The farmer has a sprout icon on the minimap
   (`gui/hwp/map_farmer.png`).
-- **Well.** A well (`doodads/hwp/farm_well.unit`, vanilla well sprites) next
-  to the pet feeding bowl (`pets.bowl_x - 48`, `pets.bowl_y`; `hwp farm well`
-  moves it to you, saved as `farm.well_x/y`) refills the can.
+- **Well.** A well (`doodads/hwp/farm_well.unit`, vanilla well sprites) just
+  under the bottom left corner of the field beside the farmhouse (the cabbage
+  field), south-east of the house: placed from the wheat field's corner, so it
+  stands in the same spot at every farm level (`WellPos`). Without fields it
+  goes next to the pet feeding bowl. `hwp farm well` moves it to you (saved as
+  `farm.well_x/y`, which then wins; `hwp farm well reset` clears it). It refills the can.
 - **Seeds and growth.** Food crops (cabbage, carrot, onion, potato, wheat)
   need 2 growth, Holy Herb strains (Lucky Leaf, Ember Kush, Saint's Sage,
   Gambler's Gold) 4. A completed run adds 1 growth, 2 if the plot was watered
@@ -121,7 +124,8 @@ watered.
    log says `the town was rebuilt`, the fields are still empty and the
    plots keep their crops. `farm.debug 1`, `hwp farm grow` -> the crop is ready
    (2 growth); interact -> harvested 2-4 cabbages, sometimes +1/+2 seeds.
-5. Well near the pet bowl refills the can; without a can it says so.
+5. Well just under the bottom left corner of the field beside the farmhouse
+   refills the can; without a can it says so.
    `hwp farm well` moves it.
 6. Real cycle: plant without watering, run a mission, return -> half grown
    (bigger sprout); run again -> ready.

@@ -47,7 +47,7 @@ rank, and the rank is the arena's NG+ level next time.
 
 1. `python -m gamelab run mod-wavemode --mode lab`: `[HWP:wave] self-check done: mission ok, boon ok, 4/4 spawn
    actions, rank 0`; no missing unit lines.
-2. Town: the statue stands right of the portal. Interact opens the survival
+2. Town: the statue stands by the coast fishing spots (-1500,250). Interact opens the survival
    window with "Wave Arena", the Arena Champion boon and rank 0; Start
    opens the loadout menu and the run begins on a keep floor with the
    survival bar on the HUD.

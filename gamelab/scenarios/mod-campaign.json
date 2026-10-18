@@ -1,6 +1,6 @@
 {
  "name": "mod-campaign",
- "about": "mods/campaign loads in town: the self-check lines from mods/campaign/README.md Testing step 1, no script errors in our files.",
+ "about": "mods/campaign loads in town: the self-check lines from mods/campaign/README.md Testing step 1, the portal replaces the chapel campfire (step 2), no script errors in our files.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -12,6 +12,16 @@
    "do": "log_has",
    "pattern": "\\[HWP:campaign\\] self-check done: mission ok, \\d+/\\d+ schemes",
    "timeout": 20
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:campaign\\] portal spot: the chapel campfire at -?\\d+,-?\\d+",
+   "timeout": 20
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:campaign\\] doodads/hwp/forsaken_portal\\.unit spawned at",
+   "timeout": 10
   },
   {
    "do": "gl",

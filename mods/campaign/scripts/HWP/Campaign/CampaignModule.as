@@ -1,7 +1,8 @@
 // Forsaken Tower campaign. The mission itself is data
 // (tweak/hwp/missions/missions_hwp_forsaken_tower.sval, set hwp_campaign); this
-// module spawns the town portal (doodads/hwp/forsaken_portal.unit) on the host,
-// self-checks the data and answers hwp campaign.
+// module spawns the town portal (doodads/hwp/forsaken_portal.unit) on the host
+// in place of the chapel courtyard's campfire, self-checks the data and answers
+// hwp campaign.
 namespace HWP
 {
 	namespace Campaign
@@ -16,9 +17,89 @@ namespace HWP
 		const int FLOORS_PER_ACT = 3;
 		const int FLOORS = 18;
 
+		// The portal stands in the chapel courtyard on the unbuilt Pyre: every
+		// chapel_tier_0..5.pfb places pyre_tier_0.pfb (its campfire at +8,+8) at
+		// 336,-240 and has a stone coffin at 496,-656 in its graveyard, a unit no
+		// other town prefab uses. Tiers 3-5 have more coffins, so a coffin only
+		// counts when the campfire (or the built pyre) is where it says.
+		const string CAMPFIRE_UNIT = "doodads/generic/campfire.unit";
+		const string PYRE_UNIT = "doodads/generic/pyre.unit";
+		const string ANCHOR_UNIT = "doodads/furniture/coffin_stone_v.unit";
+		const vec2 ANCHOR_TO_FIRE = vec2(344 - 496, -232 + 656);
+		const float MATCH = 12.0f;
+		// a built Pyre is a real building (shadow curses): the portal stands below it
+		const vec2 BELOW_PYRE = vec2(0, 72);
+
 		bool g_enabled = true;
 		bool g_checked = false;
 		HWP::Town::Placeable@ g_portal;
+		UnitPtr g_campfire;  // hidden while the portal stands on it (local, every machine)
+
+		array<UnitPtr>@ FetchUnits(const string &in path)
+		{
+			auto prod = Resources::GetUnitProducer(path);
+			if (prod is null)
+				return array<UnitPtr>();
+			return g_scene.FetchAllUnitsOfType(prod);
+		}
+
+		UnitPtr NearestTo(array<UnitPtr>@ units, vec2 p)
+		{
+			for (uint i = 0; i < units.length(); i++)
+			{
+				if (dist(xy(units[i].GetPosition()), p) <= MATCH)
+					return units[i];
+			}
+			return UnitPtr();
+		}
+
+		void ShowCampfire()
+		{
+			if (g_campfire.IsValid() && !g_campfire.IsDestroyed())
+				g_campfire.SetHidden(false);
+			g_campfire = UnitPtr();
+		}
+
+		// HWP::Town::PlaceableLocate: the unbuilt Pyre's campfire (hidden while
+		// the portal has no saved spot) or the spot below the built Pyre
+		bool LocatePortal(vec3 &out pos)
+		{
+			ShowCampfire();
+			auto anchors = FetchUnits(ANCHOR_UNIT);
+			auto fires = FetchUnits(CAMPFIRE_UNIT);
+			auto pyres = FetchUnits(PYRE_UNIT);
+			for (uint i = 0; i < anchors.length(); i++)
+			{
+				vec2 spot = xy(anchors[i].GetPosition()) + ANCHOR_TO_FIRE;
+				auto fire = NearestTo(fires, spot);
+				if (fire.IsValid())
+				{
+					pos = fire.GetPosition();
+					if (!g_portal.Custom())
+					{
+						fire.SetHidden(true);
+						g_campfire = fire;
+					}
+					HWP::Log("campaign", "portal spot: the chapel campfire at " + int(pos.x) + "," + int(pos.y));
+					return true;
+				}
+				auto pyre = NearestTo(pyres, spot);
+				if (pyre.IsValid())
+				{
+					pos = pyre.GetPosition() + xyz(BELOW_PYRE);
+					HWP::Log("campaign", "portal spot: below the chapel pyre at " + int(pos.x) + "," + int(pos.y));
+					return true;
+				}
+			}
+			HWP::LogError("campaign", "no chapel campfire or pyre found (" + anchors.length() + " anchors), portal at the default spot");
+			return false;
+		}
+
+		// HWP::Town::PlaceableStale: a rebuild brings a fresh campfire back
+		bool PortalStale()
+		{
+			return g_campfire.IsValid() && g_campfire.IsDestroyed();
+		}
 
 		void RefreshSettings()
 		{
@@ -29,6 +110,12 @@ namespace HWP
 		{
 			if (key.findFirst("campaign.") == 0)
 				RefreshSettings();
+			// moved away ('here') or back ('reset'): show or hide the campfire
+			if (key == "campaign.portal_y" && g_inTown && g_portal !is null && g_portal.m_spawnDone)
+			{
+				vec3 p;
+				LocatePortal(p);
+			}
 		}
 
 		MissionDef@ Find()
@@ -77,6 +164,11 @@ namespace HWP
 				g_portal.MoveHere();
 				return;
 			}
+			if (args.length() >= 1 && args[0] == "reset")
+			{
+				g_portal.Reset();
+				return;
+			}
 			auto rec = GetLocalPlayerRecord();
 			auto def = Find();
 			auto pos = g_portal.Pos();
@@ -106,8 +198,10 @@ namespace Modules
 			HWP::Settings::Sync("campaign.");
 			HWP::Campaign::RefreshSettings();
 			@HWP::Campaign::g_portal = HWP::Town::Placeable("campaign", "campaign.portal", HWP::Campaign::PORTAL_UNIT, -1700, 250);
+			@HWP::Campaign::g_portal.m_locate = HWP::Town::PlaceableLocate(HWP::Campaign::LocatePortal);
+			@HWP::Campaign::g_portal.m_stale = HWP::Town::PlaceableStale(HWP::Campaign::PortalStale);
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Campaign::OnSettingChanged));
-			HWP::Commands::Register("campaign", " Forsaken Tower status; 'here' moves the town portal (host)", HWP::Commands::Handler(HWP::Campaign::CmdCampaign));
+			HWP::Commands::Register("campaign", " Forsaken Tower status; 'here' moves the town portal (host), 'reset' puts it back on the chapel campfire", HWP::Commands::Handler(HWP::Campaign::CmdCampaign));
 			HWP::CheckUnits("campaign", { HWP::Campaign::PORTAL_UNIT });
 			HWP::HoH1::RegisterNet();       // boss sync for the HoH1 levels (hoh1.* events)
 		}

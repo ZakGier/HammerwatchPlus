@@ -55,6 +55,7 @@
 	<string name="hwp.farming.refused.not_ready">That is not ready yet.</string>
 	<string name="hwp.farming.fields_on">Farm plots go back on the fields.</string>
 	<string name="hwp.farming.well_moved">Farm well moved to %x%,%y% (saved).</string>
+	<string name="hwp.farming.well_reset">Farm well back at its spot under the field by the farmhouse.</string>
 	<string name="hwp.farming.seed.cabbage">Cabbage</string>
 	<string name="hwp.farming.seed.carrot">Carrot</string>
 	<string name="hwp.farming.seed.onion">Onion</string>
