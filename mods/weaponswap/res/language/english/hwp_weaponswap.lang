@@ -1,4 +1,5 @@
 <lang name="English" official="false">
+	<string name="hwp.weaponswap.option">Swap weapons</string>
 	<string name="hwp.weaponswap.swapped">Weapon set %set%</string>
 	<string name="hwp.weaponswap.cannot">Cannot equip %item% (requirements), it stays in the other set</string>
 	<string name="hwp.weaponswap.nav">[%key%] Swap to weapon set %set%</string>

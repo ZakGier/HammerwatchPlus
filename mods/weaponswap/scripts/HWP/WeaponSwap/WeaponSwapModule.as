@@ -34,8 +34,30 @@ namespace HWP
 
 		void RefreshSettings()
 		{
+			int was = g_scancode;
 			g_scancode = HWP::Settings::GetInt("weaponswap.key", DEFAULT_SCANCODE);
-			g_keyName = HWP::Settings::GetString("weaponswap.keyname", g_scancode == DEFAULT_SCANCODE ? "X" : "key " + g_scancode);
+			g_keyName = HWP::Settings::GetString("weaponswap.keyname", HWP::Options::KeyName(g_scancode));
+			// a new key that is held right now (just pressed to bind it) must not swap
+			if (g_scancode != was)
+				g_wasDown = true;
+		}
+
+		// the row in the player menu's Plus tab: click, then press the new key
+		class SwapKeyOption : HWP::Options::KeyOption
+		{
+			string Title() override { return Resources::GetString(".hwp.weaponswap.option"); }
+			int Scancode() override { return g_scancode; }
+			string Value() override { return g_keyName; }
+			void SetScancode(int scancode) override
+			{
+				if (scancode == DEFAULT_SCANCODE)
+					HWP::Settings::Reset("weaponswap.key");
+				else
+					HWP::Settings::SetInt("weaponswap.key", scancode);
+				HWP::Settings::Reset("weaponswap.keyname");
+				RefreshSettings();
+				Changed();
+			}
 		}
 
 		void OnSettingChanged(const string &in key)
@@ -409,6 +431,7 @@ namespace Modules
 			HWP::Commands::Register("swapkey", "[scancode [name]]  show or set the swap hotkey", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwapKey));
 			HWP::Commands::Register("swapdrop", " move the other weapon set back into your inventory", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwapDrop));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::WeaponSwap::OnSettingChanged));
+			HWP::Options::Register("swapkey", HWP::WeaponSwap::SwapKeyOption());
 		}
 
 		void Start(StartMode sMode)

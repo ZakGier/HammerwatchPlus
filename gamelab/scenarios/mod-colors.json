@@ -1,23 +1,22 @@
 {
  "name": "mod-colors",
- "about": "mods/colors loads in town: the self-check lines from mods/colors/README.md Testing step 1, no script errors in our files.",
+ "about": "mods/colors tints real projectiles (class_swaps, not the ignored info.xml classmaps): hwp colors contrast, a spawned undead guard sentry shoots its crossbow at the player (god mode), and the first tinted shot is logged as enemy #ff5959. Then no script errors in our files.",
  "fixture": "town-paladin",
  "mods": [
   "core",
   "colors"
  ],
- "timeout": 120,
+ "timeout": 150,
  "steps": [
-  {
-   "do": "gl",
-   "verb": "state",
-   "expect": {
-    "phase": "town"
-   },
-   "name": "still in town"
-  },
-  {
-   "do": "log_clean"
-  }
+  {"do": "gl", "verb": "state", "expect": {"phase": "town"}, "name": "still in town"},
+  {"do": "console", "line": "e_cheats 1"},
+  {"do": "console", "line": "hwp god"},
+  {"do": "console", "line": "hwp colors contrast"},
+  {"do": "log_has", "pattern": "Projectile colours: preset contrast", "timeout": 5},
+  {"do": "gl", "verb": "spawn", "args": ["actors/undead/guard/guard_sentry.unit", "90", "0"]},
+  {"do": "log_has", "pattern": "\\[HWP:colors\\] tinted \\S+ enemy #ff5959", "timeout": 20},
+  {"do": "shot", "name": "tinted"},
+  {"do": "gl", "verb": "cull"},
+  {"do": "log_clean"}
  ]
 }

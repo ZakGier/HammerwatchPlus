@@ -161,13 +161,27 @@ namespace GameLab
 			.Int("variation", g_myTownRecord.GetVariationOnBuilding(def.m_idHash)));
 	}
 
-	// menu [tab] [subtab] [widget]: open the player menu the way its key does
+	// every TextWidget text under w, depth first (the menu verb's "texts")
+	void CollectTexts(Widget@ w, array<string>@ acc)
+	{
+		auto t = cast<TextWidget>(w);
+		if (t !is null)
+			acc.insertLast(t.m_str);
+		if (w.m_children is null)
+			return;
+		for (uint i = 0; i < w.m_children.length(); i++)
+			CollectTexts(w.m_children[i], acc);
+	}
+
+	// menu [tab] [subtab|-] [widget] [func...]: open the player menu the way its key does
 	// (HWR2GameMode::TogglePlayerMenu, when it is not open yet), then press the
 	// tab buttons: PlayerMenu::OnFunc("set-tab <tab>") and the open tab's own
 	// OnFunc("set-tab <subtab>") (the character tab's sub-tab checkboxes, e.g.
-	// material-inventory). Replies with the open tab's class. [widget]: a widget id in
-	// that tab: scrolls its scrollbar to the end, replies shown (it and every parent
-	// visible), its size and its "count" text (the core hwp-material cells).
+	// material-inventory; "-" for none). Replies with the open tab's class. [widget]: a
+	// widget id in that tab: scrolls its scrollbar to the end, replies shown (it and every
+	// parent visible), its size, its "count" text (the core hwp-material cells) and every
+	// text under it in "texts" (joined with " | "). [func...]: first the open tab's
+	// OnFunc(<func>) as if a button with that func was clicked (e.g. "hwp-opt colors").
 	void VerbMenu(const string &in id, array<string>@ args)
 	{
 		auto gm = cast<HWR2GameMode>(g_gameMode);
@@ -194,8 +208,15 @@ namespace GameLab
 			menu.OnFunc(null, "set-tab " + args[0]);
 		auto tabs = menu.m_tabSystem;
 		MenuTab@ tab = tabs.m_tabs[tabs.m_currentIndex];
-		if (args.length() > 1)
+		if (args.length() > 1 && args[1] != "-")
 			tab.OnFunc(null, "set-tab " + args[1]);
+		if (args.length() > 3)
+		{
+			string func = args[3];
+			for (uint i = 4; i < args.length(); i++)
+				func += " " + args[i];
+			tab.OnFunc(null, func);
+		}
 		Json@ r = Reply(id, true).Str("tab", Reflect::GetTypeName(tab)).Int("index", tabs.m_currentIndex);
 		// [widget]: find it in the tab, scroll its scrollbar to the end (where our sections
 		// sit) and report whether it and every parent are visible, plus its "count" text
@@ -216,8 +237,10 @@ namespace GameLab
 					sb.m_handleValue = 1.0f;
 			}
 			auto count = cast<TextWidget>(w.GetWidgetById("count"));
+			array<string> texts;
+			CollectTexts(w, texts);
 			r.Str("widget", args[2]).Bool("shown", shown).Int("w", w.m_width).Int("h", w.m_height)
-				.Str("count", count !is null ? count.m_str : "");
+				.Str("count", count !is null ? count.m_str : "").Str("texts", join(texts, " | "));
 		}
 		Emit(r);
 	}
@@ -249,7 +272,7 @@ namespace Modules
 			GameLab::RegisterVerb("mission", "<missionId> [floorIndex]", GameLab::Verb(GameLab::VerbMission));
 			GameLab::RegisterVerb("build", "<buildingId>", GameLab::Verb(GameLab::VerbBuild));
 			GameLab::RegisterVerb("save", "", GameLab::Verb(GameLab::VerbSave));
-			GameLab::RegisterVerb("menu", "[tab] [subtab] [widget]", GameLab::Verb(GameLab::VerbMenu));
+			GameLab::RegisterVerb("menu", "[tab] [subtab|-] [widget] [func...]", GameLab::Verb(GameLab::VerbMenu));
 			GameLab::RegisterVerb("xp", "<amount>", GameLab::Verb(GameLab::VerbXp));
 			GameLab::RegisterVerb("material", "<type> <n>", GameLab::Verb(GameLab::VerbMaterial));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));

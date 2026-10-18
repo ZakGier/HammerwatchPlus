@@ -18,6 +18,7 @@ Shared library every other HammerwatchPlus module depends on. It adds no gamepla
 | `scripts/HWP/Core/Market.as` | `HWP::Market`: wares (crops, herbs, fish) registered by modules, counted from your HWP data and bag items, sold for gold or **bet tokens** (`bet_tokens` per character; `Tokens`, `AddTokens`, `SpendTokens`, `Sell`, `Price`); `hwp wares`, `hwp sell` |
 | `scripts/HWP/Core/MapIcons.as` + `gui/hwp/map_icons.png` | Minimap icons: a dye-pot marker over every dye bucket of a floor (`mapicons.dyes`, default on); the sheet also has the fish and crop icons the fishing and farming units use (`tools/make_map_icons.py`; textures must be power-of-two sized) |
 | `scripts/HWP/Core/Materials.as` + `gui/playermenu/character.gui` | `HWP::Materials`: a "Supplies" section in the materials tab for things a module keeps per character (gambler bet tokens, the three fishing baits, farming seeds). Cells are `hwp-material` widgets inside `hwp-materials` (a wrapping grid that grows to as many rows as it needs); a module registers a `HWP::Materials::Material` (icon, count, tooltip title and text) by cell id. Cells without one, or with none in stock, are hidden; hovering a cell shows its tooltip at the mouse (the player menu's tooltip anchor would put it top centre) |
+| `scripts/HWP/Core/Options.as` + `gui/hwp/options.gui` + `gui/playermenu/playermenu.gui` | `HWP::Options`: the player menu's **Plus** tab, our settings screen. `playermenu.gui` (declared override) adds the tab button (tab padding 12 -> 8 so four fit) and an `hwp-options-hook` widget that adds `HWPOptionsTab` to the PlayerMenu on its first update. The tab has a row per option id (`hwp-opt-<id>`); a module registers an `HWP::Options::Option` (title, value, `Next()` on click) or a `KeyOption` (click, then the next key pressed is bound; Esc cancels) under that id, and rows without one hide. Rows now: `colors`, `swapkey` |
 | `scripts/HWP/Core/CoreModule.as` | boot self-checks; prints every mod id's save hash for `gamelab/hps.py` |
 
 ## Why character.gui is overridden
@@ -35,9 +36,14 @@ and gives the bag view a fourth row (every grid height +27; the window had
 weaponswap (the other set); Supplies: gambler (bet tokens), fishing (bait), farming (seeds). Each module still works without the others; its
 slot just stays hidden.
 
-## Console commands are the settings UI
+## Settings: the Plus tab and the console
 
-There is no settings GUI yet. `hwp set <key> <value>` writes a
+The game's Options menu (main menu and pause menu) runs in the menu script,
+which never loads mod scripts or mod gui files, so a mod cannot add to it
+(GameLab `probe-options-menu`: a `gui/options/game.gui` override never shows),
+and its Controls list is a fixed action table in the exe. Settings with a
+row in the player menu's Plus tab (`Options.as`) are changed there; the rest
+by console. `hwp set <key> <value>` writes a
 `HWP::Settings` value (`true`/`false` -> bool, number -> int, else string) and
 notifies every listener, so modules pick the change up live. Replies print
 to the console prefixed `[HWP]` (and to the chat log, which shows in a lobby).

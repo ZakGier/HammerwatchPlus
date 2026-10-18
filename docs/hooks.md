@@ -81,8 +81,8 @@ a posted Enter key, which starts Singleplayer/Continue. It never uses the real m
   base unit that names one of those classes into the module with ours in its
   place. The copies are generated overrides: remade from `gamecode/sdk/hoh2/` on every
   build and gitignored. Used by `mods/pets` (`MiniPetWalking`,
-  `MiniPetFlying`, `EquipmentDyerShopContent`) and `mods/keys` (`Chest`).
-  `mods/colors` still lists projectile classmaps, so its tints do nothing.
+  `MiniPetFlying`, `EquipmentDyerShopContent`), `mods/keys` (`Chest`) and
+  `mods/colors` (`NewProjectile`, `RayProjectile`, `BeamProjectile`: 184 units).
 - **`.sval` `<loader>`** – data files with a loader tag merge into the base
   tables instead of replacing them.
 - **Game events** – `Events.mas` declares `interface IEvent<Name>` with

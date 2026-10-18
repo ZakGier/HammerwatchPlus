@@ -1,0 +1,32 @@
+<gui>
+	<!-- HammerwatchPlus core: the HammerwatchPlus tab of the player menu (HWPOptionsTab, scripts/HWP/Core/Options.as).
+	     One row per option id; a module fills its row by registering an HWP::Options::Option under the same id, and a
+	     row without one hides (the list closes up). Rows stay visible here: the menu collects its buttons once, at load.
+	     The value text sits over the button (centred on it) so a script can change it every frame. -->
+	<sprites>
+		%include "gui/scalablebutton_sprites.inc"
+	</sprites>
+
+	<doc>
+		<group>
+			<group anchor="1 0.5" width="251" height="292" offset="0 17" >
+				<text text=".hwp.options.title" anchor="0.5 0" offset="0 4" font="title" color="#ffffff" />
+				<group id="rows" width="231" height="200" offset="10 22" flow="vbox" spacing="2" >
+					<!-- Projectile colours (colors) -->
+					<group id="hwp-opt-colors" width="231" height="24" >
+						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />
+						<scalebutton id="button" func="hwp-opt colors" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
+						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
+					</group>
+					<!-- Swap weapons key (weaponswap) -->
+					<group id="hwp-opt-swapkey" width="231" height="24" >
+						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />
+						<scalebutton id="button" func="hwp-opt swapkey" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
+						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
+					</group>
+				</group>
+				<text id="hint" text="" anchor="0.5 1" offset="0 -8" font="text" color="#a6a6a6" />
+			</group>
+		</group>
+	</doc>
+</gui>

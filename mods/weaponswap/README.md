@@ -27,6 +27,11 @@ Two weapon sets per character, toggled with a hotkey.
   slot (or press X) to swap; the tooltip shows the stored item or how to use it.
 - **HUD tip:** while you are empty-handed with weapons in the other set, an
   on-screen line says to press X.
+- **Rebinding:** player menu > **Plus** tab > "Swap weapons": click the
+  button, then press the new key (Esc cancels); the key name is shown on the
+  button and in the HUD tip. The game's Controls list cannot take it: its
+  actions are a fixed table in the exe. A key you bind is ignored until you
+  let go of it, so binding does not swap.
 - Commands: `hwp swap`, `hwp swapkey` (show), `hwp swapkey 21 R` (set
   scancode + label), `hwp swapdrop` (other set back to the inventory if it
   fits).
@@ -41,6 +46,7 @@ Two weapon sets per character, toggled with a hotkey.
 3. Click the alt main-hand slot in the character screen: the sets swap.
 4. Save and reload: the alt slots still show the other set; swap works.
 5. A two-hander in the other set: the alt off-hand slot mirrors it, dimmed.
-6. `hwp swapkey 21 R`: R swaps, X does not. `hwp swapdrop`: items land in
+6. Plus tab: click "Swap weapons", press R: the button says R, R swaps, X
+   does not (`mod-options-tab` covers the rebind). `hwp swapkey 21 R` does the same. `hwp swapdrop`: items land in
    the inventory, the alt slots empty.
 7. Co-op: the other player sees your weapon change on swap.

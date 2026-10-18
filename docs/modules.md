@@ -104,9 +104,9 @@ in a 2-player lobby for anything networked.
 | `pets` | pet XP + skill tree, feeding bowl, per-pet pickup toggles, HoH1 pets in the Pet Shop, pets wait outside puzzle rooms | class swaps `MiniPetWalking`/`MiniPetFlying`/`EquipmentDyerShopContent`; `tools/import_hoh1.py pets`, `tools/make_pet_dyes.py`; `hwp pet` |
 | `architect` | everyone can pick + pay architect buffs, host share split | overrides `Missions/MissionArchitect.as` |
 | `chatlinks` | linked items as persistent chat lines, `hwp link` | |
-| `colors` | accessibility projectile tints; preset picker in Options > Game (cvar `hwp_projectile_colors`) | classmaps the projectile classes (**ignored by the engine: tints do not apply yet**); overrides `gui/options/game.gui` |
+| `colors` | accessibility projectile tints; preset picker in the player menu's Plus tab | class_swaps the three projectile classes (184 generated units); `hwp colors` |
 | `groupcombo` | party-wide combo bonus + unity invulnerability | `tweak/hwp/buffs_groupcombo.sval` |
-| `weaponswap` | second weapon set on a hotkey | `hwp swap`, `hwp swapkey` |
+| `weaponswap` | second weapon set on a hotkey (rebind in the player menu's Plus tab) | `hwp swap`, `hwp swapkey` |
 | `keys` | every chest locked (key per tier), ace chests, key drops, exit guard key shop, legendaries | class swap `Chest` -> `HWPChest`; `tweak/hwp/legendaries.sval`; `hwp keys` |
 | `firearms` | Firearms Specialist class (3 subclasses, rifles) | pure data via `PlayerClass`/`ItemSkillDef`/`BaseItem` loaders; `hwp firearms` |
 | `fishing` | town fishing minigame, in-run fishing holes | `tweak/hwp/loot_fishing.sval`; wares via core `HWP::Market`; `hwp fishing` |

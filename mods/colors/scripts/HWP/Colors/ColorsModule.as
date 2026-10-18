@@ -1,8 +1,11 @@
-// Accessibility projectile colours. info.xml classmaps swap the three base
-// projectile behaviours for the subclasses at the bottom; each tints its unit
-// right after Initialize, by team: friendly when the owner is a player or a
-// player-owned actor (GetPlayerOwner), enemy otherwise. Colours come from a
-// preset plus optional per-team overrides, stored in HWP settings (per machine).
+// Accessibility projectile colours. module.json class_swaps point every base
+// projectile unit (NewProjectile, RayProjectile, BeamProjectile) at the
+// subclasses at the bottom (tools/class_units.py; info.xml classmaps are
+// ignored by the engine); each tints its unit right after Initialize, by team:
+// friendly when the owner is a player or a player-owned actor
+// (GetPlayerOwner), enemy otherwise. Colours come from a preset plus optional
+// per-team overrides, stored in HWP settings (per machine). The preset is
+// picked in the player menu's Plus tab (core HWP::Options) or with hwp colors.
 namespace HWP
 {
 	namespace Colors
@@ -19,8 +22,9 @@ namespace HWP
 		vec4 g_enemy = vec4(1, 1, 1, 1);
 		vec4 g_friendly = vec4(1, 1, 1, 1);
 		bool g_active = false;
+		bool g_loggedTint = false;
 		string g_presetName = "default";
-		const string CVAR = "hwp_projectile_colors";
+		const string KEY_PRESET = "colors.preset";
 
 		void InitPresets()
 		{
@@ -94,16 +98,8 @@ namespace HWP
 		void Refresh()
 		{
 			InitPresets();
-			// the preset is the Game options cvar; older builds kept it in HWP settings
-			auto old = HWP::Settings::GetString("colors.preset", "");
-			if (!old.isEmpty())
-			{
-				HWP::Settings::Reset("colors.preset");
-				if (old != "default" && GetVarInt(CVAR) == 0 && PresetIndex(old) > 0)
-					SetVar(CVAR, PresetIndex(old));
-			}
-			int idx = GetVarInt(CVAR);
-			if (idx < 0 || idx >= int(g_presets.length()))
+			int idx = PresetIndex(HWP::Settings::GetString(KEY_PRESET, "default"));
+			if (idx < 0)
 				idx = 0;
 			auto p = g_presets[idx];
 			g_presetName = p.name;
@@ -129,22 +125,36 @@ namespace HWP
 			return -1;
 		}
 
-		// picked in Options > Game: a preset there replaces custom colours
-		void OnCvarChanged(int val)
+		bool Custom() { return HWP::Settings::GetString("colors.enemy", "") != "" || HWP::Settings::GetString("colors.friendly", "") != ""; }
+
+		// a preset replaces custom colours
+		void SetPreset(const string &in name)
 		{
-			InitPresets();
-			if (val >= 0 && val < int(g_presets.length()) && g_presets[val].name != g_presetName)
-			{
-				HWP::Settings::Reset("colors.enemy");
-				HWP::Settings::Reset("colors.friendly");
-			}
+			if (name == "default")
+				HWP::Settings::Reset(KEY_PRESET);
+			else
+				HWP::Settings::SetString(KEY_PRESET, name);
+			HWP::Settings::Reset("colors.enemy");
+			HWP::Settings::Reset("colors.friendly");
 			Refresh();
 		}
 
-		[Hook]
-		void BaseGameModeConstructor(BaseGameMode@ gm)
+		// the row in the player menu's Plus tab: click for the next preset
+		class PresetOption : HWP::Options::Option
 		{
-			AddVar(CVAR, 0, OnCvarChanged, cvar_flags::TriggerChanged);
+			string Title() override { return Resources::GetString(".hwp.colors.option"); }
+			string Value() override
+			{
+				if (Custom())
+					return Resources::GetString(".hwp.colors.custom");
+				return Resources::GetString(".hwp.colors.preset." + g_presetName);
+			}
+			void Next() override
+			{
+				InitPresets();
+				int idx = PresetIndex(g_presetName);
+				SetPreset(g_presets[(idx + 1) % g_presets.length()].name);
+			}
 		}
 
 		void OnSettingChanged(const string &in key)
@@ -162,6 +172,12 @@ namespace HWP
 			if (IsWhite(c))
 				return;
 			unit.SetMultiplyColor(c);
+			// once per level, so a test (and a bug report) can see the swap reached real shots
+			if (!g_loggedTint)
+			{
+				g_loggedTint = true;
+				HWP::Log("colors", "tinted " + unit.GetDebugName() + (friendly ? " friendly #" : " enemy #") + ToHex(c));
+			}
 		}
 
 		void ReplyCurrent()
@@ -182,11 +198,7 @@ namespace HWP
 
 			auto what = args[0].toLower();
 			if (what == "off")
-			{
-				SetVar(CVAR, 0);
-				HWP::Settings::Reset("colors.enemy");
-				HWP::Settings::Reset("colors.friendly");
-			}
+				SetPreset("default");
 			else if ((what == "enemy" || what == "friendly") && args.length() >= 2)
 			{
 				vec4 c;
@@ -198,11 +210,7 @@ namespace HWP
 				HWP::Settings::SetString("colors." + what, ToHex(c));
 			}
 			else if (Find(what) !is null)
-			{
-				SetVar(CVAR, PresetIndex(what));
-				HWP::Settings::Reset("colors.enemy");
-				HWP::Settings::Reset("colors.friendly");
-			}
+				SetPreset(what);
 			else
 			{
 				HWP::Commands::Reply(Resources::GetString(".hwp.colors.usage"));
@@ -257,14 +265,15 @@ namespace Modules
 			HWP::Colors::InitPresets();
 			HWP::Commands::Register("colors", "[preset|enemy RRGGBB|friendly RRGGBB|off]  projectile colours", HWP::Commands::Handler(HWP::Colors::CmdColors));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Colors::OnSettingChanged));
+			HWP::Options::Register("colors", HWP::Colors::PresetOption());
 		}
 
 		void Start(StartMode sMode)
 		{
 			HWP::Colors::Refresh();
-			HWP::Log("colors", "options cvar " + HWP::Colors::CVAR + " = " + GetVarInt(HWP::Colors::CVAR) + " (" + HWP::Colors::g_presetName + ")");
+			HWP::Log("colors", "preset " + HWP::Colors::g_presetName + (HWP::Colors::g_active ? "" : " (no tint)"));
 			if (HWP::Colors::g_active)
-				HWP::Log("colors", "preset " + HWP::Colors::g_presetName + " enemy #" + HWP::Colors::ToHex(HWP::Colors::g_enemy)
+				HWP::Log("colors", "tint " + HWP::Colors::g_presetName + " enemy #" + HWP::Colors::ToHex(HWP::Colors::g_enemy)
 					+ " friendly #" + HWP::Colors::ToHex(HWP::Colors::g_friendly));
 		}
 	}

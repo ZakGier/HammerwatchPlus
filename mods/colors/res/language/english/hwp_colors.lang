@@ -6,5 +6,6 @@
 	<string name="hwp.colors.preset.deuteranopia">Deuteranopia</string>
 	<string name="hwp.colors.preset.protanopia">Protanopia</string>
 	<string name="hwp.colors.preset.tritanopia">Tritanopia</string>
-	<string name="option.hwp_projectile_colors.title">projectile colors (enemy / ally)</string>
+	<string name="hwp.colors.option">Projectile colors</string>
+	<string name="hwp.colors.custom">Custom</string>
 </lang>

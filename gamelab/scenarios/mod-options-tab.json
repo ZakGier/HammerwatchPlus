@@ -1,0 +1,168 @@
+{
+ "name": "mod-options-tab",
+ "about": "The player menu's Plus tab (core HWPOptionsTab, gui/hwp/options.gui): the hook adds it to the open PlayerMenu, the colors row cycles presets on click, and the weaponswap row rebinds the swap key to the next key pressed (posted R).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "colors",
+  "weaponswap"
+ ],
+ "timeout": 150,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-colors"
+   ],
+   "save_as": "colors0",
+   "expect": {
+    "tab": "HWPOptionsTab",
+    "shown": true,
+    "texts": "Projectile colors | Default"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "expect": {
+    "shown": true,
+    "texts": "Swap weapons | X"
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.3
+  },
+  {
+   "do": "shot",
+   "name": "plus_tab"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-colors",
+    "hwp-opt",
+    "colors"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.2
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-colors"
+   ],
+   "expect": {
+    "texts": "Projectile colors | High contrast"
+   }
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:options\\] colors -> High contrast",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-swapkey",
+    "hwp-opt",
+    "swapkey"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.3
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "expect": {
+    "texts": "Swap weapons | press a key..."
+   }
+  },
+  {
+   "do": "shot",
+   "name": "capture"
+  },
+  {
+   "do": "key",
+   "key": "r",
+   "hold": 0.2
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.3
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:options\\] swapkey key set to 21 \\(R\\)",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp-options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "expect": {
+    "texts": "Swap weapons | R"
+   }
+  },
+  {
+   "do": "console",
+   "line": "hwp colors"
+  },
+  {
+   "do": "log_has",
+   "pattern": "preset contrast",
+   "timeout": 5
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+<gui>
+	<sprites>
+		<sprite name="tab" texture="gui/gui.png"><frame>0 0 0 0</frame></sprite>
+		<sprite name="tab-checked" texture="gui/gui.png"><frame>0 424 11 6</frame></sprite>
+
+		%include "gui/scalablebutton_sprites.inc"
+		%include "gui/panel_decoration.inc"
+	</sprites>
+
+	<doc>
+		<group>
+			<rect anchor="1 0.5" width="251" height="335" offset="0 -7" >
+
+				<!-- Tabs Content -->
+				<panel anchor="0.5 0" width="251" height="335" offset="0 0" style="standard" />
+
+				<!-- Header -->
+				<panel anchor="0.5 0" width="251" height="44" offset="0 0" style="standard_header" >
+
+					<!-- Tabs Container -->
+					<group anchor="0.5 0.5" width="247" height="21" offset="0 2" color="#ffff00" >
+						<menutabgroup id="tabs-container" width="221" height="21" anchor="0.5 0" offset="0 0" flow="hbox" padding="16 0" checked-sprite="tab-checked" dynamic-size="false" >
+							<menutab id="character" text=".menu.player.char" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab character" />
+							<menutab id="mods" text=".menu.player.mods" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab mods" />
+							<menutab id="map" text=".menu.player.map" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab map" />
+							<!-- <menutab id="record" text="record" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab record" /> -->
+						</menutabgroup>
+
+						<binding-display id="binding-tab-p" binding="MenuPreviousTab" anchor="0 0.5" offset="4 0" />
+						<binding-display id="binding-tab-n" binding="MenuNextTab" anchor="1 0.5" offset="-4 0" />
+					</group>
+				</panel>
+
+				%block PlayerMenuDecorations
+
+
+				<tooltip-anchor tooltip-anchor="1 0" offset="-2 0" />
+			</rect>
+		</group>
+	</doc>
+</gui>

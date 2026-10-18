@@ -3,8 +3,11 @@
   "requires": [
     "core"
   ],
-  "overrides": [
-    "gui/options/game.gui"
-  ],
-  "exclude": []
+  "overrides": [],
+  "exclude": [],
+  "class_swaps": {
+    "NewProjectile": "HWPNewProjectile",
+    "RayProjectile": "HWPRayProjectile",
+    "BeamProjectile": "HWPBeamProjectile"
+  }
 }
