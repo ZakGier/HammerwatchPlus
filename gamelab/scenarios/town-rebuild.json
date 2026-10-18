@@ -1,0 +1,144 @@
+{
+ "name": "town-rebuild",
+ "about": "A building upgrade's in-place town rebuild (TownRecord.Refresh via the townrefresh verb) destroys every unit without a new Start: farming lays its fields, plots and well out again (one set, not two: the fixture town has no crop fields, so 4 patch plots) and fishing puts the coast and the pirate back, with no script errors.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "farming",
+  "fishing"
+ ],
+ "timeout": 150,
+ "steps": [
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:farming\\] spawned the farm well",
+   "timeout": 20
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:fishing\\] coast: ",
+   "timeout": 20
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "farm_plot"
+   ],
+   "name": "plots before (4)",
+   "expect": {
+    "count": 4
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "farm_well"
+   ],
+   "name": "well before (1)",
+   "expect": {
+    "count": 1
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "fishing_spot"
+   ],
+   "name": "coast spots before (6)",
+   "expect": {
+    "count": 6
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "pirate_fisher"
+   ],
+   "name": "pirate before (1)",
+   "expect": {
+    "count": 1
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "townrefresh"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:farming\\] the town was rebuilt",
+   "timeout": 10
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:fishing\\] the town changed",
+   "timeout": 10
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "farm_plot"
+   ],
+   "name": "plots after (4)",
+   "expect": {
+    "count": 4
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "farm_well"
+   ],
+   "name": "well after (1)",
+   "expect": {
+    "count": 1
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "fishing_spot"
+   ],
+   "name": "coast spots after (6)",
+   "expect": {
+    "count": 6
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "pirate_fisher"
+   ],
+   "name": "pirate after (1)",
+   "expect": {
+    "count": 1
+   }
+  },
+  {
+   "do": "shot",
+   "name": "rebuilt"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

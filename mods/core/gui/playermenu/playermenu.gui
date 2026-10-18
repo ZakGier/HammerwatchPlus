@@ -26,7 +26,7 @@
 							<!-- HammerwatchPlus core: our settings tab (HWPOptionsTab, scripts/HWP/Core/Options.as). It must stay
 							     the last tab: the tab system matches tabs to these buttons by order. Tab padding 12 -> 8 and the
 							     group padding 16 -> 10 make room for it (three tabs filled 200 of 221 px) -->
-							<menutab id="hwp-options" text=".hwp.options.tab" padding="8 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab hwp-options" />
+							<menutab id="hwp_options" text=".hwp.options.tab" padding="8 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab hwp_options" />
 							<!-- <menutab id="record" text="record" padding="8 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-tab record" /> -->
 						</menutabgroup>
 

@@ -1,0 +1,14 @@
+<gui>
+	<!-- HammerwatchPlus core: the key capture over the Plus tab (HWPKeyCaptureWindow, scripts/HWP/Core/Options.as).
+	     A window of its own, so the player menu underneath gets no input while it waits for the key. -->
+	<sprites>
+	</sprites>
+
+	<doc>
+		<group>
+			<rect width="101%" height="101%" anchor="0.5 0.5" color="#00000080" >
+				<text id="text" text="" font="title" anchor="0.5 0.5" offset="0 0" color="#ffffff" />
+			</rect>
+		</group>
+	</doc>
+</gui>

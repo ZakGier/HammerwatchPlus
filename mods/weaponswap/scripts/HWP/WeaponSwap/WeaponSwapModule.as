@@ -270,6 +270,9 @@ namespace HWP
 			g_wasDown = down;
 			if (!pressed || g_cooldown > 0 || InputBusy())
 				return;
+			// on the Plus tab the key may be getting rebound (or just tried out)
+			if (HWP::Options::TabOpen())
+				return;
 			// a solo game pauses behind the character menu; swapping there is wanted
 			if (paused && !InPlayerMenu())
 				return;

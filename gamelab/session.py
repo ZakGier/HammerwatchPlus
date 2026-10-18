@@ -168,12 +168,14 @@ class Game:
             time.sleep(0.25)
         return False
 
-    def wait_gl(self, pred, timeout: float = 30, echo: str | None = None, beats: int = 0) -> dict | None:
+    def wait_gl(self, pred, timeout: float = 30, echo: str | None = None, beats: int = 0,
+                fresh: bool = False) -> dict | None:
         """The first [GL] object matching pred, or None after timeout. With echo=<id> and
         beats=n, also None once n heartbeats arrived and <id> was never echoed (the line did
-        not reach the console), or once it was echoed (received; the reply may follow)."""
+        not reach the console), or once it was echoed (received; the reply may follow).
+        fresh (implied by beats): only objects that arrive from now on."""
         end = time.time() + timeout
-        seen = len(self.gl) if beats else 0
+        seen = len(self.gl) if beats or fresh else 0
         start = seen
         while time.time() < end:
             self.pump()

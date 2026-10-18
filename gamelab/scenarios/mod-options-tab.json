@@ -1,6 +1,6 @@
 {
  "name": "mod-options-tab",
- "about": "The player menu's Plus tab (core HWPOptionsTab, gui/hwp/options.gui): the hook adds it to the open PlayerMenu, the colors row cycles presets on click, and the weaponswap row rebinds the swap key to the next key pressed (posted R).",
+ "about": "The player menu's Plus tab (core HWPOptionsTab, gui/hwp/options.gui): the hook adds it to the open PlayerMenu, the colors row cycles presets on click, and the weaponswap row rebinds the swap key to the next key pressed (posted R). The swap key does nothing while the Plus tab is up, and Esc during a capture closes only the capture window (the menu stays, the key is kept).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -31,7 +31,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-colors"
    ],
@@ -46,7 +46,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-swapkey"
    ],
@@ -67,7 +67,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-colors",
     "hwp-opt",
@@ -82,7 +82,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-colors"
    ],
@@ -99,7 +99,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-swapkey",
     "hwp-opt",
@@ -114,7 +114,7 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-swapkey"
    ],
@@ -144,13 +144,91 @@
    "do": "gl",
    "verb": "menu",
    "args": [
-    "hwp-options",
+    "hwp_options",
     "-",
     "hwp-opt-swapkey"
    ],
    "expect": {
     "texts": "Swap weapons | R"
    }
+  },
+  {
+   "do": "key",
+   "key": "r",
+   "hold": 0.2
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "\\[HWP:weaponswap\\] set \\d in hand",
+   "name": "the swap key does nothing on the Plus tab"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-swapkey",
+    "hwp-opt",
+    "swapkey"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.3
+  },
+  {
+   "do": "key",
+   "key": "escape",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.3
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:options\\] swapkey key capture cancelled",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "name": "Esc closed only the capture: the menu is still on the Plus tab, key kept",
+   "expect": {
+    "tab": "HWPOptionsTab",
+    "shown": true,
+    "texts": "Swap weapons | R"
+   }
+  },
+  {
+   "do": "key",
+   "key": "escape",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.6
+  },
+  {
+   "do": "key",
+   "key": "r",
+   "hold": 0.2
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:weaponswap\\] set \\d in hand",
+   "timeout": 5,
+   "name": "control: with the menu closed the new key swaps"
   },
   {
    "do": "console",

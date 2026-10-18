@@ -110,6 +110,93 @@ namespace HWP
 			}
 			return -1;
 		}
+
+		// the HammerwatchPlus tab is the current tab of the open character menu
+		// (a key a module polls should not fire while it is being set there)
+		bool TabOpen()
+		{
+			auto gm = cast<BaseGameMode>(g_gameMode);
+			if (gm is null || gm.m_windowManager is null)
+				return false;
+			for (uint i = 0; i < gm.m_windowManager.m_objects.length(); i++)
+			{
+				auto w = gm.m_windowManager.m_objects[i];
+				if (cast<HWPKeyCaptureWindow>(w) !is null)
+					return true;
+				auto menu = cast<PlayerMenu>(w);
+				if (menu !is null && menu.m_tabSystem.m_tabs.length() > 0
+					&& cast<HWPOptionsTab>(menu.m_tabSystem.GetCurrentTab()) !is null)
+					return true;
+			}
+			return false;
+		}
+	}
+}
+
+// Over the Plus tab while a KeyOption waits for its key. Only the top window
+// gets input (WindowManager), so the menu underneath cannot switch tabs or
+// close on the key being bound, and the character-menu toggle is refused
+// while another window is on top. Esc is the game's menu back, which closes
+// only this top window (Back): that cancels.
+class HWPKeyCaptureWindow : AWindowObject
+{
+	HWPOptionsTab@ m_tab;
+	string m_id;
+	bool m_armed;      // every key was up since the capture started
+
+	HWPKeyCaptureWindow(GUIBuilder@ b, HWPOptionsTab@ tab, const string &in id)
+	{
+		super(b, "gui/hwp/keycapture.gui");
+		@m_tab = tab;
+		m_id = id;
+		auto opt = HWP::Options::Get(id);
+		auto text = cast<TextWidget>(m_widget.GetWidgetById("text"));
+		if (text !is null && opt !is null)
+			text.SetText(Resources::GetString(".hwp.options.capture", { { "what", opt.Title() } }));
+	}
+
+	// no AWindowObject::Update: no navigation, and Esc must not close the menu
+	bool Update(int ms, GameInput& gameInput, MenuInput& menuInput) override
+	{
+		IWidgetHoster::Update(ms);
+		auto opt = cast<HWP::Options::KeyOption>(HWP::Options::Get(m_id));
+		if (opt is null)
+			return Done();
+		int sc = HWP::Options::AnyKeyDown();
+		if (!m_armed)
+		{
+			// the key that pressed the row's button (Enter) must come up first
+			m_armed = sc < 0;
+			return false;
+		}
+		if (sc < 0 || sc == HWP::Options::SC_ESCAPE)
+			return false;
+		opt.SetScancode(sc);
+		HWP::Log("options", m_id + " key set to " + sc + " (" + HWP::Options::KeyName(sc) + ")");
+		return Done();
+	}
+
+	bool Back() override
+	{
+		HWP::Log("options", m_id + " key capture cancelled");
+		return true; // the window manager closes us (Cleanup ends the capture)
+	}
+
+	bool Done()
+	{
+		if (m_tab !is null)
+			m_tab.CaptureEnded();
+		@m_tab = null;
+		return true;
+	}
+
+	void Cleanup() override
+	{
+		// closed from outside (the menu force-closed): the tab stops showing it
+		if (m_tab !is null)
+			m_tab.CaptureEnded();
+		@m_tab = null;
+		AWindowObject::Cleanup();
 	}
 }
 
@@ -117,8 +204,7 @@ class HWPOptionsTab : MenuTab
 {
 	array<Widget@> m_rows;
 	TextWidget@ m_hint;
-	string m_capture;          // id of the KeyOption waiting for a key, or ""
-	bool m_captureArmed;       // every key was up since the capture started
+	string m_capture;          // id of the KeyOption waiting for a key (HWPKeyCaptureWindow), or ""
 
 	HWPOptionsTab(GUIBuilder@ b, uint id)
 	{
@@ -134,8 +220,8 @@ class HWPOptionsTab : MenuTab
 
 	void Initialize() override
 	{
-		RefreshInteractableWidgets(m_widget);
 		Refresh();
+		RefreshInteractableWidgets(m_widget);
 	}
 
 	string RowId(Widget@ row) { return row.m_id.substr(8); } // "hwp-opt-<id>"
@@ -149,6 +235,7 @@ class HWPOptionsTab : MenuTab
 
 	void Refresh()
 	{
+		bool relist = false;
 		for (uint i = 0; i < m_rows.length(); i++)
 		{
 			auto row = m_rows[i];
@@ -158,6 +245,7 @@ class HWPOptionsTab : MenuTab
 			if (row.m_visible != show)
 			{
 				row.m_visible = show;
+				relist = true;
 				Invalidate();
 			}
 			if (!show)
@@ -174,53 +262,29 @@ class HWPOptionsTab : MenuTab
 			if (m_hint.m_str != hint)
 				m_hint.SetText(hint);
 		}
+		// hidden rows' buttons leave the keyboard/gamepad navigation
+		if (relist)
+			RefreshInteractableWidgets(m_widget);
 	}
 
-	void StopCapture()
+	void CaptureEnded()
 	{
 		m_capture = "";
-		m_captureArmed = false;
+		Refresh();
 	}
 
-	void PollCapture()
+	void StartCapture(const string &in id)
 	{
-		auto opt = cast<HWP::Options::KeyOption>(HWP::Options::Get(m_capture));
-		if (opt is null)
-		{
-			StopCapture();
+		if (m_manager is null)
 			return;
-		}
-		int sc = HWP::Options::AnyKeyDown();
-		if (!m_captureArmed)
-		{
-			// the key that pressed the button (Enter) must come up first
-			m_captureArmed = sc < 0;
-			return;
-		}
-		if (sc < 0)
-			return;
-		if (sc != HWP::Options::SC_ESCAPE)
-		{
-			opt.SetScancode(sc);
-			HWP::Log("options", m_capture + " key set to " + sc + " (" + HWP::Options::KeyName(sc) + ")");
-		}
-		StopCapture();
+		m_capture = id;
+		m_manager.AddWindowObject(HWPKeyCaptureWindow(m_builder, this, id));
 	}
 
 	bool Update(int ms, GameInput& gameInput, MenuInput& menuInput) override
 	{
-		if (m_capture != "")
-			PollCapture();
 		Refresh();
 		return AWindowObject::Update(ms, gameInput, menuInput);
-	}
-
-	// no StopCapture in OnShow: MenuTabSystem calls it on every hover change, so
-	// moving the mouse off the button would cancel. Closing the menu cancels.
-	void Cleanup() override
-	{
-		StopCapture();
-		AWindowObject::Cleanup();
 	}
 
 	void OnFunc(Widget@ sender, const string &in name) override
@@ -234,17 +298,11 @@ class HWPOptionsTab : MenuTab
 			return;
 		if (cast<HWP::Options::KeyOption>(opt) !is null)
 		{
-			if (m_capture == id)
-				StopCapture();
-			else
-			{
-				m_capture = id;
-				m_captureArmed = false;
-			}
+			if (m_capture.isEmpty())
+				StartCapture(id);
 		}
 		else
 		{
-			StopCapture();
 			opt.Next();
 			HWP::Log("options", id + " -> " + opt.Value());
 		}
@@ -287,7 +345,7 @@ class HWPOptionsHookWidget : GroupWidget
 			if (menu is null || menu.m_widget !is root)
 				continue;
 			m_done = true;
-			uint id = HashString("hwp-options");
+			uint id = HashString("hwp_options");
 			for (uint j = 0; j < menu.m_tabSystem.m_tabs.length(); j++)
 			{
 				if (menu.m_tabSystem.m_tabs[j].m_id == id)

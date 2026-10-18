@@ -33,6 +33,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "tools"))
 from gamelab import env, lock, winproc  # noqa: E402
+from gamelab.runner import restore_written  # noqa: E402
 import gamepaths  # noqa: E402
 import hidden_desktop  # noqa: E402
 import pin_build  # noqa: E402
@@ -90,16 +91,22 @@ def run(scenario_name: str, mode: str, accept_drift: bool = False) -> int:
     scenario_path = Path(scenario_name) if scenario_name.endswith(".json") else SCENARIOS / f"{scenario_name}.json"
     scenario_name = scenario_path.stem
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
-    errors, drift = preflight(mode, accept_drift, scenario.get("mods"))
-    if errors:
-        for e in errors:
-            print("PREFLIGHT", e)
-        return 2
+    # the lock comes first: preflight relinks the shared lab game dir's mods
     try:
         lock.acquire(scenario_name, mode)
     except lock.Refused as e:
         print("REFUSED", e)
         return lock.EXIT_REFUSED
+    try:
+        errors, drift = preflight(mode, accept_drift, scenario.get("mods"))
+    except BaseException:
+        lock.release(scenario_name, [])  # the build gate (sys.exit): nothing ran
+        raise
+    if errors:
+        for e in errors:
+            print("PREFLIGHT", e)
+        lock.release(scenario_name, [])
+        return 2
     try:
         return _run(scenario_path, scenario_name, scenario, mode, drift)
     except BaseException as e:
@@ -127,6 +134,10 @@ def _run(scenario_path: Path, scenario_name: str, scenario: dict, mode: str, dri
             inner_code, stdout, stderr = None, str(e.stdout or ""), f"timeout after {timeout}s"
             timed_out = True
     (results / "runner.out.txt").write_text(f"{stdout}\n--- stderr ---\n{stderr}", encoding="utf-8")
+    # a killed runner never reached its finally: put back what its write_* steps edited
+    restored = restore_written(results)
+    if restored:
+        print("restored after the runner died:", ", ".join(restored))
     inner_path = results / "inner.json"
     inner = json.loads(inner_path.read_text(encoding="utf-8")) if inner_path.exists() else {"error": "runner wrote no inner.json"}
     assertions = list(inner.get("assertions", []))

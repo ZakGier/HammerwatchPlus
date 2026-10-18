@@ -45,7 +45,7 @@ namespace HWP
 		const string APPLE_UNIT = "doodads/terrain/tree_oak_apple.unit";
 		const string PLANT = "farm.plant";     // client -> host: { plot, seed }
 		const string HARVEST = "farm.harvest"; // client -> host: { plot }
-		const string WATER = "farm.water";     // client -> host: { plot, rows }
+		const string WATER = "farm.water";     // client -> host: { plot, tier }
 		const string PULL = "farm.pull";       // client -> host: send me the state
 		const string SYNC = "farm.sync";       // host -> all: { runs, plots: [ { seed, g, w } ] }
 		const string YIELD = "farm.yield";     // host -> peer: { seed, n, seeds }
@@ -57,6 +57,7 @@ namespace HWP
 		const string KEY_PENDING = "farm.pending";
 		const string KEY_CAN = "farm.can";     // per character: watering can tier (0 = none)
 		const string KEY_WATER = "farm.water"; // per character: water charges in the can
+		const string KEY_CAN_V = "farm.can_v"; // per character: CAN_* table version of KEY_CAN
 		const string KEY_SEED = "farm.seed.";  // per character: seeds owned, + seed id
 		const string HERB_SLOT = "hwp_herb";   // SetMissionBuff slot id
 		const int MAX_PLOTS = 48;
@@ -69,6 +70,10 @@ namespace HWP
 		const array<int> CAN_SIZE = { 0, 4, 6, 8, 10, 12 };
 		const array<int> CAN_PRICE = { 0, 200, 1500, 5000, 15000, 50000 };
 		const array<int> CAN_ROWS = { 0, 1, 2, 3, 4, 5 };
+		// version 1 had four cans (4, 6, 9, 12 water): its tiers, mapped up to
+		// one at least as big (a save already on this table can gain a tier)
+		const int CAN_VERSION = 2;
+		const array<int> CAN_V1_TIER = { 0, 1, 2, 4, 5 };
 		// the can icons in doodads/hwp/farm.png, by tier (0: the mahogany one, dimmed)
 		const array<vec4> CAN_ICON = { vec4(64, 16, 16, 16), vec4(64, 16, 16, 16), vec4(64, 0, 16, 16),
 			vec4(80, 16, 16, 16), vec4(96, 16, 16, 16), vec4(112, 16, 16, 16) };
@@ -260,7 +265,7 @@ namespace HWP
 		{
 			for (uint i = 0; i < g_hiddenCrops.length(); i++)
 			{
-				if (!g_hiddenCrops[i].IsValid())
+				if (!g_hiddenCrops[i].IsValid() || g_hiddenCrops[i].IsDestroyed())
 					continue;
 				g_hiddenCrops[i].SetHidden(hidden);
 				g_hiddenCrops[i].SetShouldCollide(!hidden);
@@ -345,6 +350,7 @@ namespace HWP
 
 		// a town rebuild (building upgrade) destroys our units and the hidden
 		// crops and places fresh vanilla crops: true when that happened
+		int g_cropCheck = 0;
 		bool FieldsStale()
 		{
 			for (uint i = 0; i < g_hiddenCrops.length(); i++)
@@ -360,6 +366,11 @@ namespace HWP
 				return true;
 			if (!HWP::Settings::GetBool("farm.fields", true))
 				return false;
+			// a rebuild that only adds crops (a farm upgrade) leaves all of ours
+			// alive: the five whole-scene counts catch it, every few checks
+			if (++g_cropCheck < 5)
+				return false;
+			g_cropCheck = 0;
 			int total = 0;
 			total += FetchUnits(ONION_UNIT).length();
 			total += FetchUnits(WHEAT_UNIT).length();
@@ -624,7 +635,21 @@ namespace HWP
 
 		int CanTier()
 		{
-			int t = HWP::SaveData::Local().GetInt(KEY_CAN, 0);
+			auto bag = HWP::SaveData::Local();
+			if (bag.GetInt(KEY_CAN_V, 1) < CAN_VERSION)
+			{
+				int old = bag.GetInt(KEY_CAN, 0);
+				if (old > 0)
+				{
+					int now = CAN_V1_TIER[clamp(old, 0, int(CAN_V1_TIER.length()) - 1)];
+					bag.SetInt(KEY_CAN, now);
+					if (bag.GetInt(KEY_WATER, 0) > CAN_SIZE[now])
+						bag.SetInt(KEY_WATER, CAN_SIZE[now]);
+					HWP::Log("farming", "watering can tier " + old + " -> " + now + " (new can table)");
+				}
+				bag.SetInt(KEY_CAN_V, CAN_VERSION);
+			}
+			int t = bag.GetInt(KEY_CAN, 0);
 			if (t < 0)
 				return 0;
 			if (t >= int(CAN_SIZE.length()))
@@ -727,6 +752,7 @@ namespace HWP
 			if (!Pay(CAN_PRICE[next]))
 				return;
 			HWP::SaveData::Local().SetInt(KEY_CAN, next);
+			HWP::SaveData::Local().SetInt(KEY_CAN_V, CAN_VERSION);
 			SetWater(CAN_SIZE[next]);
 			Say(Resources::GetString(next == 1 ? ".hwp.farming.can_bought" : ".hwp.farming.can_upgraded", {
 				{ "name", CanName(next) }, { "max", CAN_SIZE[next] }, { "area", CanArea(next) } }));
@@ -757,7 +783,7 @@ namespace HWP
 		void ClearVisuals()
 		{
 			for (uint i = 0; i < g_visual.length(); i++)
-				if (g_visual[i].IsValid())
+				if (g_visual[i].IsValid() && !g_visual[i].IsDestroyed())
 					g_visual[i].Destroy();
 			g_visual.removeRange(0, g_visual.length());
 		}
@@ -851,7 +877,11 @@ namespace HWP
 			if (!Network::IsServer() || !g_inTown)
 				return;
 			int plot = HWP::SV::Int(data, "plot", -1);
-			int rows = clamp(HWP::SV::Int(data, "rows", 1), 1, CAN_ROWS[CAN_ROWS.length() - 1]);
+			// the area comes from the can tier, not a client row count. (The can is
+			// per-character save data the host cannot see, so the tier is still
+			// the client's word, like the rest of its inventory.)
+			int tier = clamp(HWP::SV::Int(data, "tier", 1), 1, int(CAN_ROWS.length()) - 1);
+			int rows = CAN_ROWS[tier];
 			if (plot < 0 || plot >= PlotCount())
 			{
 				Refuse(peer, "not_growing");
@@ -976,15 +1006,15 @@ namespace HWP
 
 		// ---- actions (any machine) ----------------------------------------------
 
-		void RequestPlot(const string &in name, int plot, const string &in seed = "", int rows = 0)
+		void RequestPlot(const string &in name, int plot, const string &in seed = "", int tier = 0)
 		{
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushInteger("plot", plot);
 			if (!seed.isEmpty())
 				b.PushString("seed", seed);
-			if (rows > 0)
-				b.PushInteger("rows", rows);
+			if (tier > 0)
+				b.PushInteger("tier", tier);
 			b.PopDictionary();
 			HWP::Net::Request(name, b.Build());
 		}
@@ -1037,7 +1067,7 @@ namespace HWP
 			if (Waiting() || !CanWater(plot))
 				return;
 			g_waitMs = WAIT_MS;
-			RequestPlot(WATER, plot, "", CanRows()); // the water is used in OnWatered
+			RequestPlot(WATER, plot, "", CanTier()); // the water is used in OnWatered
 		}
 
 		string ActiveHerbName(PlayerRecord@ rec)
@@ -1081,7 +1111,7 @@ namespace HWP
 		void ClearPlots()
 		{
 			for (uint i = 0; i < g_plotUnits.length(); i++)
-				if (g_plotUnits[i].IsValid())
+				if (g_plotUnits[i].IsValid() && !g_plotUnits[i].IsDestroyed())
 					g_plotUnits[i].Destroy();
 			g_plotUnits.removeRange(0, g_plotUnits.length());
 		}
@@ -1128,7 +1158,7 @@ namespace HWP
 
 		void SpawnWell()
 		{
-			if (g_wellUnit.IsValid())
+			if (g_wellUnit.IsValid() && !g_wellUnit.IsDestroyed())
 				g_wellUnit.Destroy();
 			g_wellUnit = UnitPtr();
 			auto prod = Resources::GetUnitProducer(WELL_UNIT);
@@ -1161,7 +1191,8 @@ namespace HWP
 		{
 			HWP::Log("farming", "the town was rebuilt: laying the fields out again");
 			g_treeMoved = false;
-			g_visual.removeRange(0, g_visual.length());
+			g_cropCheck = 0;
+			ClearVisuals(); // the survivors of a partial rebuild go too
 			DetectFields();
 			SpawnPlots();
 			if (!g_wellUnit.IsValid() || g_wellUnit.IsDestroyed())

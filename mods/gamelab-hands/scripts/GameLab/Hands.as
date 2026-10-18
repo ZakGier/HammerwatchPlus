@@ -161,6 +161,20 @@ namespace GameLab
 			.Int("variation", g_myTownRecord.GetVariationOnBuilding(def.m_idHash)));
 	}
 
+	// townrefresh: what a building upgrade does once its cutscene ends
+	// (TownRecord.Refresh, Town/TownRecord.as): QuickReloadLevel and SpawnTown in
+	// the same scene, without a new Start, so mods see their units destroyed
+	void VerbTownRefresh(const string &in id, array<string>@ args)
+	{
+		if (g_currTownRecord is null || !g_inTown || !Network::IsServer())
+		{
+			Fail(id, "not the host in town");
+			return;
+		}
+		g_currTownRecord.Refresh();
+		Emit(Reply(id, true));
+	}
+
 	// every TextWidget text under w, depth first (the menu verb's "texts")
 	void CollectTexts(Widget@ w, array<string>@ acc)
 	{
@@ -271,6 +285,7 @@ namespace Modules
 			GameLab::RegisterVerb("pick", "[index] [town|resume]", GameLab::Verb(GameLab::VerbPick));
 			GameLab::RegisterVerb("mission", "<missionId> [floorIndex]", GameLab::Verb(GameLab::VerbMission));
 			GameLab::RegisterVerb("build", "<buildingId>", GameLab::Verb(GameLab::VerbBuild));
+			GameLab::RegisterVerb("townrefresh", "", GameLab::Verb(GameLab::VerbTownRefresh));
 			GameLab::RegisterVerb("save", "", GameLab::Verb(GameLab::VerbSave));
 			GameLab::RegisterVerb("menu", "[tab] [subtab|-] [widget] [func...]", GameLab::Verb(GameLab::VerbMenu));
 			GameLab::RegisterVerb("xp", "<amount>", GameLab::Verb(GameLab::VerbXp));

@@ -155,8 +155,15 @@ class Run:
     def materialize(self, name: str) -> dict:
         recipe = json.loads((FIXTURES / f"{name}.json").read_text(encoding="utf-8"))
         build = pin_build.live()["build_id"]
-        # a changed recipe is a different fixture
-        digest = hashlib.sha256(json.dumps(recipe, sort_keys=True).encode()).hexdigest()[:8]
+        # a changed recipe, or a change to the GameLab mods whose verbs build it, is a
+        # different fixture
+        h = hashlib.sha256(json.dumps(recipe, sort_keys=True).encode())
+        for mod in sorted(recipe.get("binary_edits", {}).get("enable_mods", [])):
+            root = REPO / "mods" / mod
+            for f in sorted(p for p in root.rglob("*") if p.is_file()) if root.is_dir() else []:
+                h.update(f.relative_to(REPO).as_posix().encode())
+                h.update(f.read_bytes())
+        digest = h.hexdigest()[:8]
         cache = CACHE / f"{name}.{build}.{digest}"
         saves = env.GAME / "saves"
         info = {"name": name, "cache_key": cache.name, "recipe": recipe}
@@ -326,7 +333,7 @@ class Run:
             f = pilotlib.BOTS / s["path"]
             if f.parent.resolve() != pilotlib.BOTS.resolve():
                 raise GameError(f"write_bot_file: {s['path']} is not directly in gamelab/bots/")
-            self.written.setdefault(f, f.read_bytes() if f.is_file() else None)
+            self.remember(f)
             f.write_text(f.read_text(encoding="utf-8").replace(s["replace"], s["with"]), encoding="utf-8")
             self.assert_(s.get("name", f"edited gamelab/bots/{s['path']}"), s["with"] in f.read_text(encoding="utf-8"))
         elif kind == "same_process":
@@ -340,7 +347,9 @@ class Run:
                              was.get("pid") == game.proc.pid and was.get("pass") == self.passes,
                              f"pid {was.get('pid')} -> {game.proc.pid}, pass {was.get('pass')} -> {self.passes}")
         elif kind == "wait_phase":
-            hb = game.wait_gl(lambda o: o.get("ev") == "hb" and o.get("phase") == s["phase"], s.get("timeout", 60))
+            # a new heartbeat: an old one from before a level change would pass at once
+            hb = game.wait_gl(lambda o: o.get("ev") == "hb" and o.get("phase") == s["phase"], s.get("timeout", 60),
+                              fresh=True)
             self.assert_(f"phase {s['phase']}", hb is not None)
         elif kind == "shot":
             png = game.shot(s["name"], settle=s.get("settle", True))
@@ -444,12 +453,13 @@ class Run:
         elif kind == "write_mod_file":
             # an edit made while the game runs (the reload-mark scenario). GameLab mods only;
             # the original bytes go back in run()'s finally, whatever happens.
-            if not s["mod"].startswith("gamelab-"):
+            if not re.fullmatch(r"gamelab-[A-Za-z0-9_-]+", s["mod"]):
                 raise GameError("write_mod_file is limited to gamelab-* mods")
-            f = REPO / "mods" / s["mod"] / s["path"]
-            if f.resolve().parent != f.parent.resolve() or (REPO / "mods" / s["mod"]) not in f.parents:
+            base = (REPO / "mods" / s["mod"]).resolve()
+            f = (base / s["path"]).resolve()   # real paths: '..' and links cannot leave the mod
+            if base not in f.parents:
                 raise GameError(f"write_mod_file: {s['path']} escapes mods/{s['mod']}")
-            self.written.setdefault(f, f.read_bytes() if f.is_file() else None)
+            self.remember(f)
             f.write_text(f.read_text(encoding="utf-8").replace(s["replace"], s["with"]), encoding="utf-8")
             self.assert_(s.get("name", f"edited mods/{s['mod']}/{s['path']}"), s["with"] in f.read_text(encoding="utf-8"))
         elif kind == "log_has":
@@ -534,8 +544,10 @@ class Run:
             self.assert_(f"boundary {b['name']}", not problems, "; ".join(problems))
         return rows
 
+    def remember(self, f: Path) -> None:
+        remember_written(self.results, f)
+
     def run(self) -> dict:
-        self.written: dict[Path, bytes | None] = {}
         out = self.out = {"scenario": self.scenario["name"], "mode": self.mode,
                           "started": time.strftime("%Y-%m-%dT%H:%M:%S"),
                           # the travel graph this run planned against (gamelab/travel/)
@@ -571,13 +583,43 @@ class Run:
         finally:
             if self.game is not None:
                 self.finish(self.game)
-            for f, data in self.written.items():
-                if data is None:
-                    f.unlink(missing_ok=True)
-                else:
-                    f.write_bytes(data)
+            restore_written(self.results)
         self.flush(final=True)
         return json.loads((self.results / "inner.json").read_text(encoding="utf-8"))
+
+
+def remember_written(results: Path, f: Path) -> None:
+    """Journal a file's original bytes in the results dir before a step edits it, so the
+    launcher can put it back (restore_written) even if it had to kill this runner."""
+    journal = results / "written.json"
+    entries = json.loads(journal.read_text(encoding="utf-8")) if journal.is_file() else []
+    if any(e["path"] == str(f) for e in entries):
+        return
+    orig = None
+    if f.is_file():
+        orig = str(results / f"written-{len(entries)}.orig")
+        Path(orig).write_bytes(f.read_bytes())
+    entries.append({"path": str(f), "orig": orig})
+    journal.write_text(json.dumps(entries, indent=1), encoding="utf-8")
+
+
+def restore_written(results: Path) -> list[str]:
+    """Put back every file a write_* step edited (journal from remember_written); the
+    restored paths. Safe to call twice."""
+    journal = results / "written.json"
+    if not journal.is_file():
+        return []
+    done = []
+    for e in json.loads(journal.read_text(encoding="utf-8")):
+        f = Path(e["path"])
+        if e["orig"] is None:
+            f.unlink(missing_ok=True)
+        else:
+            f.write_bytes(Path(e["orig"]).read_bytes())
+            Path(e["orig"]).unlink()
+        done.append(str(f))
+    journal.unlink()
+    return done
 
 
 def frame_size(png: Path) -> tuple[int, int]:
