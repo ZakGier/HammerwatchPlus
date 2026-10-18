@@ -1071,3 +1071,10 @@ A /code-review xhigh on the work since 28b14c8 gave 15 findings, all fixed:
   plan-runs-b 183829. Two first tries failed on bot geometry, not on the fixes, and passed
   on retry: in pets-b 175413 the pet followed (2.5 px off) but no clear 150 px walk was
   found; in runs-b 183228 every spike hit the player or timed out before a wall.
+- **Trinket map web app** (https://claude.ai/artifact/5BP7XozLjkK9N445LKCYw9, built from
+  scratchpad files outside the repo) was reviewed too. Its data was clean: no duplicate ids,
+  set items all resolve, and every grouping set exists. Four page bugs were fixed and checked
+  in jsdom against the old build. (1) Another viewer's verdicts were dropped while you typed
+  a note. (2) Two quick edits lost the first one. (3) A partial saved filter in localStorage
+  left the page empty. (4) Without the shared store, the verdict dropdown dropped changes
+  silently. Orb of Restoration is now flagged as flat (+10 mana regen).
