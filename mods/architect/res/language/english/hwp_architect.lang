@@ -2,4 +2,18 @@
 	<string name="hwp.architect.status">Architect: %count% alteration(s) picked, split host cost %split%, %players% player(s)</string>
 	<string name="hwp.architect.pick">%name% picks %buff%</string>
 	<string name="hwp.architect.unpick">%name% drops %buff%</string>
+	<string name="hwp.architect.challenge.crowded.name">Challenge: Crowded Halls</string>
+	<string name="hwp.architect.challenge.crowded.desc">35% more enemies on every floor. Alterations cost 15% less.</string>
+	<string name="hwp.architect.challenge.champions.name">Challenge: Champions</string>
+	<string name="hwp.architect.challenge.champions.desc">Elites and minibosses can appear on every floor. Alterations cost 15% less.</string>
+	<string name="hwp.architect.challenge.lean_pickups.name">Challenge: Lean Pickups</string>
+	<string name="hwp.architect.challenge.lean_pickups.desc">Health and mana pickups restore half as much. Alterations cost 10% less.</string>
+	<string name="hwp.architect.challenge.bitter_draughts.name">Challenge: Bitter Draughts</string>
+	<string name="hwp.architect.challenge.bitter_draughts.desc">Drinking a potion confuses you for 5 seconds. Alterations cost 10% less.</string>
+	<string name="hwp.architect.challenge.glass_bones.name">Challenge: Glass Bones</string>
+	<string name="hwp.architect.challenge.glass_bones.desc">You take 40% more damage. Alterations cost 25% less.</string>
+	<string name="hwp.architect.challenge.sharp_traps.name">Challenge: Sharpened Traps</string>
+	<string name="hwp.architect.challenge.sharp_traps.desc">Traps deal double damage. Alterations cost 10% less.</string>
+	<string name="hwp.architect.challenge.slim_pickings.name">Challenge: Slim Pickings</string>
+	<string name="hwp.architect.challenge.slim_pickings.desc">Half the wood, stone, iron, crystals, dust and ore. Alterations cost 15% less.</string>
 </lang>

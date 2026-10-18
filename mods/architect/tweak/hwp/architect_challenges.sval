@@ -1,0 +1,116 @@
+<!-- HWP architect challenges: Heroes of Hammerwatch 1's "bad wishes" as free
+     Architect alterations (no cost = a debuff to the vanilla cost code). Each one
+     discounts the alterations you buy by its share (HWP::Architect::CHALLENGES in
+     scripts/HWP/Architect/Challenges.as, which also runs the two generation ones);
+     the discount stops at a free run and never pays out. -->
+<loader>MissionBuff::LoadMultiple</loader>
+<array>
+	<!-- HoH1 more_enemies, -15% -->
+	<dict>
+		<string name="id">hwp_challenge_crowded</string>
+		<string name="name">.hwp.architect.challenge.crowded.name</string>
+		<string name="description">.hwp.architect.challenge.crowded.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+	</dict>
+
+	<!-- HoH1 more_elites + minibosses_everywhere, -15% -->
+	<dict>
+		<string name="id">hwp_challenge_champions</string>
+		<string name="name">.hwp.architect.challenge.champions.name</string>
+		<string name="description">.hwp.architect.challenge.champions.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+	</dict>
+
+	<!-- HoH1 bad_pickups, -10% -->
+	<dict>
+		<string name="id">hwp_challenge_lean_pickups</string>
+		<string name="name">.hwp.architect.challenge.lean_pickups.name</string>
+		<string name="description">.hwp.architect.challenge.lean_pickups.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::PickupScale</string>
+				<float name="health-mul">0.5</float>
+				<float name="mana-mul">0.5</float>
+			</dict>
+		</array>
+	</dict>
+
+	<!-- HoH1 potion_confuse, -10% -->
+	<dict>
+		<string name="id">hwp_challenge_bitter_draughts</string>
+		<string name="name">.hwp.architect.challenge.bitter_draughts.name</string>
+		<string name="description">.hwp.architect.challenge.bitter_draughts.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::TriggerEffect</string>
+				<string name="trigger">potion</string>
+				<bool name="target-self">true</bool>
+				<float name="chance">1</float>
+				<int name="timeout">0</int>
+				<array name="effects">
+					<dict>
+						<string name="class">ApplyBuff</string>
+						<string name="buff">tweak/buffs/status_effects.sval:confusion</string>
+						<bool name="target-self">true</bool>
+					</dict>
+				</array>
+			</dict>
+		</array>
+	</dict>
+
+	<!-- HoH1 1_hp, -25% -->
+	<dict>
+		<string name="id">hwp_challenge_glass_bones</string>
+		<string name="name">.hwp.architect.challenge.glass_bones.name</string>
+		<string name="description">.hwp.architect.challenge.glass_bones.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::Armor</string>
+				<float name="dmg-taken-mul">1.4</float>
+			</dict>
+		</array>
+	</dict>
+
+	<!-- HoH1 more_trap_damage, -10% -->
+	<dict>
+		<string name="id">hwp_challenge_sharp_traps</string>
+		<string name="name">.hwp.architect.challenge.sharp_traps.name</string>
+		<string name="description">.hwp.architect.challenge.sharp_traps.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::HWPTrapDamage</string>
+				<float name="mul">2</float>
+			</dict>
+		</array>
+	</dict>
+
+	<!-- HoH1 no_ore, -15% -->
+	<dict>
+		<string name="id">hwp_challenge_slim_pickings</string>
+		<string name="name">.hwp.architect.challenge.slim_pickings.name</string>
+		<string name="description">.hwp.architect.challenge.slim_pickings.desc</string>
+		<string name="set">architect</string>
+		<bool name="blueprint">false</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::MaterialGain</string>
+				<float name="wood-mul">0.5</float>
+				<float name="stone-mul">0.5</float>
+				<float name="iron-mul">0.5</float>
+				<float name="crystals-mul">0.5</float>
+				<float name="dust-mul">0.5</float>
+				<float name="ore-mul">0.5</float>
+			</dict>
+		</array>
+	</dict>
+</array>

@@ -1,0 +1,118 @@
+{
+ "name": "mod-architect-challenges",
+ "about": "mods/architect challenges: the seven HoH1 bad-wish challenges load as free architect alterations; their discounts multiply the vanilla cost curve and stop at a free run (0%, never below). Picked for a run (hwp architect try, the loadout Play's effect), the generation ones reach the floor (Crowded Halls + Champions set on the enemy placer) and the picks are on the player record. Then no script errors in our files.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "architect"
+ ],
+ "timeout": 240,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:architect\\] challenge setup added to \\d+ mission level generator",
+   "timeout": 5
+  },
+  {
+   "do": "console",
+   "line": "hwp architect challenges"
+  },
+  {
+   "do": "log_has",
+   "pattern": "- hwp_challenge_glass_bones -25% Challenge: Glass Bones",
+   "timeout": 5,
+   "name": "challenges loaded with names and discounts"
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "\\(not loaded\\)",
+   "name": "every challenge is a loaded mission buff"
+  },
+  {
+   "do": "console",
+   "line": "hwp architect challenges architect_far_sight"
+  },
+  {
+   "do": "log_has",
+   "pattern": "cost multiplier 100% for 1 pick",
+   "timeout": 5,
+   "name": "one alteration: vanilla 100%"
+  },
+  {
+   "do": "console",
+   "line": "hwp architect challenges architect_far_sight hwp_challenge_glass_bones"
+  },
+  {
+   "do": "log_has",
+   "pattern": "cost multiplier 75% for 2 pick",
+   "timeout": 5,
+   "name": "Glass Bones takes 25% off"
+  },
+  {
+   "do": "console",
+   "line": "hwp architect challenges architect_far_sight architect_fewer_enemies architect_more_maps hwp_challenge_crowded hwp_challenge_champions hwp_challenge_lean_pickups hwp_challenge_bitter_draughts hwp_challenge_glass_bones hwp_challenge_sharp_traps hwp_challenge_slim_pickings"
+  },
+  {
+   "do": "log_has",
+   "pattern": "cost multiplier 0% for 10 pick",
+   "timeout": 5,
+   "name": "all seven challenges: free, not below"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp architect try hwp_challenge_crowded hwp_challenge_champions hwp_challenge_glass_bones"
+  },
+  {
+   "do": "log_has",
+   "pattern": "architect buffs for the next level: 3",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:architect\\] challenges on this floor: crowded champions",
+   "timeout": 5,
+   "name": "generation saw Crowded Halls + Champions"
+  },
+  {
+   "do": "gl",
+   "verb": "inspect",
+   "args": [
+    "player",
+    "architect-buffs"
+   ],
+   "save_as": "picks",
+   "name": "picks on the player record"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

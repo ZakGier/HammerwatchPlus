@@ -167,19 +167,7 @@ class SelectArchitectLoadout : MissionGUILoadout
 	// matter who pays, like vanilla; rounding is per item, shares round up.
 	ShopCost@ CalcMyCost()
 	{
-		int numBuffs = 0;
-		int numDebuffs = 0;
-		for (uint i = 0; i < m_buffs.length(); i++)
-		{
-			auto missionBuff = MissionBuff::Get(m_buffs[i]);
-			if (missionBuff is null)
-				continue;
-			if (missionBuff.m_cost.GetTotalCost() == 0)
-				numDebuffs++;
-			else
-				numBuffs++;
-		}
-		float mul = CalcArchitectCostMul(numBuffs, numDebuffs);
+		float mul = HWP::Architect::CostMul(m_buffs); // HWP: challenges discount
 
 		uint8 me = uint8(m_player.peer);
 		int players = HWP::Architect::ActivePlayers();
@@ -434,21 +422,7 @@ class SelectArchitectSelector : AWindowObject
 		cost.SetText(m_host.CalcMyCost().GetText(m_host.m_player)); // HWP: your share
 		
 		
-		int numBuffs = 0;
-		int numDebuffs = 0;
-		for (uint i = 0; i < m_buffs.length(); i++)
-		{
-			auto missionBuff = MissionBuff::Get(m_buffs[i]);
-			if (missionBuff is null)
-				continue;
-			
-			if (missionBuff.m_cost.GetTotalCost() == 0)
-				numDebuffs++;
-			else
-				numBuffs++;
-		}
-		
-		float mul = CalcArchitectCostMul(numBuffs, numDebuffs);
+		float mul = HWP::Architect::CostMul(m_buffs); // HWP: challenges discount
 		auto costMul = cast<TextWidget>(m_widget.GetWidgetById("cost-mul"));
 		costMul.SetText(Resources::GetString(".architect.cost_mul", {{ "mul", int(mul * 100.0f + 0.5f) + "%" }}));
 	}

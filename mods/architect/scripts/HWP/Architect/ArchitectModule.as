@@ -232,10 +232,63 @@ namespace HWP
 
 		void CmdStatus(array<string>@ args)
 		{
+			if (args.length() > 0 && args[0] == "challenges")
+			{
+				CmdChallenges(args);
+				return;
+			}
+			if (args.length() > 0 && args[0] == "try")
+			{
+				CmdTry(args);
+				return;
+			}
 			HWP::Commands::Reply(Resources::GetString(".hwp.architect.status", {
 				{ "count", "" + g_ids.length() }, { "split", g_split ? "on" : "off" }, { "players", "" + ActivePlayers() } }));
 			for (uint i = 0; i < g_ids.length(); i++)
 				HWP::Commands::Reply("- " + BuffName(g_ids[i]) + " (" + PayerName(uint8(i < g_payers.length() ? g_payers[i] : 0)) + ")");
+		}
+
+		// hwp architect challenges [id...]: every challenge with its discount,
+		// and the cost multiplier of the given pick list (alteration or challenge ids)
+		void CmdChallenges(array<string>@ args)
+		{
+			for (uint i = 0; i < CHALLENGES.length(); i++)
+			{
+				auto buff = MissionBuff::Get(HashString(CHALLENGES[i]));
+				HWP::Commands::Reply("- " + CHALLENGES[i] + " -" + int(DISCOUNTS[i] * 100 + 0.5f) + "% "
+					+ (buff is null ? "(not loaded)" : Resources::GetString(buff.m_name)));
+			}
+			array<uint> ids;
+			for (uint i = 1; i < args.length(); i++)
+				ids.insertLast(HashString(args[i]));
+			HWP::Commands::Reply("cost multiplier " + int(CostMul(ids) * 100 + 0.5f) + "% for " + (args.length() - 1) + " pick(s)");
+		}
+
+		// hwp architect try <id...> (cheats, host): put these alterations or
+		// challenges on your record for the next level, as the loadout's Play does
+		void CmdTry(array<string>@ args)
+		{
+			if (!HWP::Cheats::On())
+				return;
+			auto plr = GetLocalPlayerRecord();
+			if (plr is null || !Network::IsServer())
+			{
+				HWP::Commands::Reply("hwp architect try is host only");
+				return;
+			}
+			plr.architectBuffs.removeRange(0, plr.architectBuffs.length());
+			for (uint i = 1; i < args.length(); i++)
+			{
+				auto buff = MissionBuff::Get(HashString(args[i]));
+				if (buff is null)
+				{
+					HWP::Commands::Reply("no mission buff '" + args[i] + "'");
+					continue;
+				}
+				plr.architectBuffs.insertLast(buff);
+			}
+			plr.RefreshModifiers();
+			HWP::Commands::Reply("architect buffs for the next level: " + plr.architectBuffs.length());
 		}
 	}
 }
@@ -250,8 +303,11 @@ namespace Modules
 			HWP::Net::OnRequest(HWP::Architect::PICK, HWP::Net::RequestHandler(HWP::Architect::OnPick));
 			HWP::Net::OnRequest(HWP::Architect::QUERY, HWP::Net::RequestHandler(HWP::Architect::OnQuery));
 			HWP::Net::OnEvent(HWP::Architect::SYNC, HWP::Net::EventHandler(HWP::Architect::OnSync));
-			HWP::Commands::Register("architect", " show the party's architect picks", HWP::Commands::Handler(HWP::Architect::CmdStatus));
+			HWP::Commands::Register("architect", " [challenges [id...] | try <id...>] show the party's architect picks, the challenges and a cost multiplier", HWP::Commands::Handler(HWP::Architect::CmdStatus));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Architect::OnSettingChanged));
+			int n = HWP::Architect::AddChallengeSetup();
+			if (n > 0)
+				HWP::Log("architect", "challenge setup added to " + n + " mission level generator(s)");
 		}
 
 		bool m_menuOpen = false;

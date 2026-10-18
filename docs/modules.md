@@ -102,7 +102,7 @@ in a 2-player lobby for anything networked.
 | `bufftips` | hover tooltips on the HUD buff icons (name, description, seconds left) | hooks `HUDConstructor`; hit-tests `HUDBuffs` icons itself |
 | `legacy` | Title Bonuses: one buff listing every hero title bonus; Guild Hall > Titles lists every class | local husk buff kept up by script; rebuilds `GuildHallHeroTitlesTab` in place; `hwp legacy` |
 | `pets` | pet XP + skill tree, feeding bowl, per-pet pickup toggles, HoH1 pets in the Pet Shop, pets wait outside puzzle rooms | class swaps `MiniPetWalking`/`MiniPetFlying`/`EquipmentDyerShopContent`; `tools/import_hoh1.py pets`, `tools/make_pet_dyes.py`; `hwp pet` |
-| `architect` | everyone can pick + pay architect buffs, host share split | overrides `Missions/MissionArchitect.as` |
+| `architect` | everyone can pick + pay architect buffs, host share split, 7 HoH1 challenges (free picks, % off, capped at free) | overrides `Missions/MissionArchitect.as` |
 | `chatlinks` | linked items as persistent chat lines, `hwp link` | |
 | `colors` | accessibility projectile tints; preset picker in the player menu's Plus tab | class_swaps the three projectile classes (184 generated units); `hwp colors` |
 | `groupcombo` | party-wide combo bonus + unity invulnerability | `tweak/hwp/buffs_groupcombo.sval` |
