@@ -1,0 +1,6 @@
+{
+  "id": "stash",
+  "requires": ["core"],
+  "overrides": ["gui/player_stash/player_stash.gui"],
+  "exclude": []
+}

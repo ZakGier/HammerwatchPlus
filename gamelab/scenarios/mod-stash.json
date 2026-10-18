@@ -1,0 +1,185 @@
+{
+ "name": "mod-stash",
+ "about": "mods/stash: the Sort button on the town stash (dbg_show_stash) orders tab 0 by class (main requirement), slot, weapon family, then item level (highest first); a second press logs already in order. Then no script errors in our files.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "stash"
+ ],
+ "timeout": 150,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "back_2a",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "mainhand_mace_01",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "chest_str_t1a",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "twohanded_shortbow_01",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "mainhand_longsword_01",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "mainhand_mace_01",
+    "common",
+    "12"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "twohanded_maul_01",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stashitem",
+   "args": [
+    "mainhand_wand_fire_01",
+    "common",
+    "5"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "expect": {
+    "items": [
+     "back_2a@5",
+     "mainhand_mace_01@5",
+     "chest_str_t1a@5",
+     "twohanded_shortbow_01@5",
+     "mainhand_longsword_01@5",
+     "mainhand_mace_01@12",
+     "twohanded_maul_01@5",
+     "mainhand_wand_fire_01@5"
+    ]
+   },
+   "name": "stash tab 0 holds the 8 items unsorted"
+  },
+  {
+   "do": "console",
+   "line": "dbg_show_stash"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "window": "PlayerStashWindow"
+   },
+   "name": "stash window open"
+  },
+  {
+   "do": "shot",
+   "name": "before"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-stash-sort"
+   ],
+   "expect": {
+    "widget": "HWPStashSortButton"
+   },
+   "name": "sort button pressed"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:stash\\] sorted 8 item\\(s\\) in tab 'tab 1'",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "expect": {
+    "items": [
+     "twohanded_maul_01@5",
+     "mainhand_longsword_01@5",
+     "mainhand_mace_01@12",
+     "mainhand_mace_01@5",
+     "chest_str_t1a@5",
+     "twohanded_shortbow_01@5",
+     "mainhand_wand_fire_01@5",
+     "back_2a@5"
+    ]
+   },
+   "name": "class > slot > family > ilvl order"
+  },
+  {
+   "do": "shot",
+   "name": "after"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-stash-sort"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "sorted 8 item\\(s\\) in tab 'tab 1' \\(already in order\\)",
+   "timeout": 5
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

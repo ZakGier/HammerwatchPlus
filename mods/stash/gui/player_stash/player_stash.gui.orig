@@ -1,0 +1,116 @@
+<gui>
+	<sprites>
+		<sprite name="tab" texture="gui/gui.png"><frame>0 0 0 0</frame></sprite>
+		<sprite name="tab-checked" texture="gui/gui.png"><frame>0 424 11 6</frame></sprite>
+
+		<sprite name="sub-tab" texture="gui/gui.png"><frame>190 76 73 15</frame></sprite>
+		<sprite name="sub-tab-checked" texture="gui/gui.png"><frame>263 76 73 15</frame></sprite>
+
+		<sprite name="equipped-slot" texture="gui/gui.png"><frame>190 40 28 28</frame></sprite>
+		<sprite name="equipped-slot-hover" texture="gui/gui.png"><frame>217 40 28 28</frame></sprite>
+
+		<sprite name="inventory-slot" texture="gui/gui.png"><frame>190 40 27 27</frame></sprite>
+		<sprite name="inventory-slot-hover" texture="gui/gui.png"><frame>217 40 27 27</frame></sprite>
+
+		<sprite name="selector-left" texture="gui/panelstyles.png"><frame>198 158 6 7</frame></sprite>
+		<sprite name="selector-right" texture="gui/panelstyles.png"><frame>203 158 6 7</frame></sprite>
+		
+		<!-- Buttons -->
+		<sprite name="button-left" texture="gui/gui.png"><frame>388 175 16 11</frame></sprite>
+		<sprite name="button-left-down" texture="gui/gui.png"><frame>388 186 16 11</frame></sprite>
+		<sprite name="button-right" texture="gui/gui.png"><frame>404 175 16 11</frame></sprite>
+		<sprite name="button-right-down" texture="gui/gui.png"><frame>404 186 16 11</frame></sprite>
+
+		%include "gui/scrollbar_sprites.inc"
+		%include "gui/panel_decoration.inc"
+	</sprites>
+
+	<doc>
+		<group>
+			<panel anchor="0.5 0.5" width="253" height="326" offset="1 -5" color="#ff00ff" style="standard" >
+
+				<!-- Header -->
+				<panel anchor="0.5 0" width="253" height="44" offset="0 0" style="standard_header" >
+
+					<!-- Modes -->
+					<group anchor="0.5 0.5" width="247" height="21" offset="0 2" color="#ffff00" >
+						<menutabgroup id="tabs-mode" width="221" height="21" anchor="0.5 0" offset="0 0" flow="hbox" padding="0 0" checked-sprite="tab-checked" dynamic-size="false" >
+							<menutab text=".menu.player_stash.withdraw" value="withdraw-content" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-mode withdraw-content" />
+							<menutab text=".menu.player_stash.deposit" value="deposit-content" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="set-mode deposit-content" />
+						</menutabgroup>
+					</group>
+				</panel>
+
+				%block PlayerStashDecorations
+
+				<!-- Withdraw Content -->
+				<group id="withdraw-content" anchor="0 0" width="251" height="300" offset="1 44" color="#ff00ff" visible="true" >
+
+					<!-- Tabs -->
+					<group width="233" height="19" anchor="0.5 0" offset="0 2" flow="hbox" >
+						<rect width="233" height="19" spriteset="gui/sprite_rect.sval:square-roundedbot">
+							<spritebutton func="button left" only-mouse="true" sprite="button-left" sprite-down="button-left-down" anchor="0 0" offset="4 4" />
+							<spritebutton func="button right" only-mouse="true" sprite="button-right" sprite-down="button-right-down" anchor="1 0" offset="-4 4" />
+							<text id="tab-picks" anchor="0.5 0.5" offset="0 1" width="133" height="18" font="gui/fonts/empire_7p.fnt" text="tab 1" color="#ed9331" />
+						</rect>
+					</group>
+					
+					<rect width="233" height="249" anchor="0.5 0" offset="0 21" spriteset="gui/sprite_rect.sval:square-roundedleft" >
+						<panel width="223" height="247" anchor="0 0.5" >
+							<scrollbar nav-pos="0 0" spriteset="angular-scrollbar" width="219" height="243" offset="2 2"  flow="vbox" >
+								<stashinventory id="stash-inventory" width="222" height="243" anchor="0 0" offset="1 0" />
+							</scrollbar>
+						</panel>
+					</rect>
+					
+					%//<rect width="229" height="245" anchor="0.5 0" offset="0 40" color="#1b1e1c" >
+					%//	<panel width="217" height="243" anchor="0 0.5" offset="1 0" color="#0000ff" style="info_box" >
+					%//		<scrollbar nav-pos="0 0" spriteset="scrollbar" width="217" height="243"  flow="vbox" >
+					%//			<stashinventory id="stash-inventory" width="216" height="243" anchor="0 0" offset="0 0" />
+					%//		</scrollbar>
+					%//	</panel>
+					%//</rect>
+					
+				</group>
+
+				<!-- Deposit Content -->
+				<group id="deposit-content" anchor="0 0" width="251" height="300" offset="1 42" color="#ff00ff" visible="false" >
+
+					<!-- Equipment -->
+					<group id="equipment-group" width="147" height="84" anchor="0.5 0" offset="0 40" >
+						<stashitem id="mainhand" nav-pos="0 0" offset="0 0" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+						<stashitem id="offhand" nav-pos="4 0" offset="120 0" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+
+						<stashitem id="head" nav-pos="0 1" offset="0 56" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+						<stashitem id="chest" nav-pos="1 1" offset="30 56" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+						<stashitem id="back" nav-pos="2 1" offset="60 56" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+						<stashitem id="hands" nav-pos="3 1" offset="90 56" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+						<stashitem id="feet" nav-pos="4 1" offset="120 56" width="28" height="28" anchor="0 0" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="stash-equipped" />
+					</group>
+
+				%//	<rect width="229" height="83" anchor="0.5 1" offset="0 -15" color="#1b1e1c" >
+				%//		<panel width="217" height="81" anchor="0 0.5" offset="1 0" color="#0000ff" style="info_box" >
+				%//			<scrollbar nav-pos="0 2" spriteset="scrollbar" width="217" height="81" >
+				%//				<stashinventory id="player-inventory" width="216" height="81" anchor="0 0" offset="0 0" />
+				%//			</scrollbar>
+				%//		</panel>
+				%//	</rect>
+					
+					<rect width="233" height="87" anchor="0.5 1" offset="0 -28" spriteset="gui/sprite_rect.sval:square-roundedleft" >
+						<panel width="223" height="85" anchor="0 0.5" offset="0 0" >
+							<scrollbar nav-pos="0 2" spriteset="angular-scrollbar" width="219" height="81" offset="2 2" >
+								<stashinventory id="player-inventory" width="222" height="81" anchor="0 0" offset="1 0" />
+							</scrollbar>
+						</panel>
+					</rect>
+				</group>
+
+				<!-- Template -->
+				<stashitem id="player-item-template" offset="0 27" width="27" height="27" anchor="0 0" visible="false" background-src="inventory-slot" hover-src="inventory-slot-hover" type="stash-inventory" />
+				<stashitem id="stash-item-template" offset="0 27" width="27" height="27" anchor="0 0" visible="false" background-src="inventory-slot" hover-src="inventory-slot-hover" type="stash-town" />
+
+				<tooltip-anchor tooltip-anchor="1 0" offset="-2 0" />
+			</panel>
+		</group>
+	</doc>
+</gui>

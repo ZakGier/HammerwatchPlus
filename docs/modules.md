@@ -107,6 +107,7 @@ in a 2-player lobby for anything networked.
 | `colors` | accessibility projectile tints; preset picker in the player menu's Plus tab | class_swaps the three projectile classes (184 generated units); `hwp colors` |
 | `groupcombo` | party-wide combo bonus + unity invulnerability | `tweak/hwp/buffs_groupcombo.sval` |
 | `weaponswap` | second weapon set on a hotkey (rebind in the player menu's Plus tab) | `hwp swap`, `hwp swapkey` |
+| `stash` | Sort button on the town stash (class > slot > weapon family > ilvl) | overrides `gui/player_stash/player_stash.gui`; widget producer `hwp-stash-sort` |
 | `keys` | every chest locked (key per tier), ace chests, key drops, exit guard key shop, legendaries | class swap `Chest` -> `HWPChest`; `tweak/hwp/legendaries.sval`; `hwp keys` |
 | `firearms` | Firearms Specialist class (3 subclasses, rifles) | pure data via `PlayerClass`/`ItemSkillDef`/`BaseItem` loaders; `hwp firearms` |
 | `fishing` | town fishing minigame, in-run fishing holes | `tweak/hwp/loot_fishing.sval`; wares via core `HWP::Market`; `hwp fishing` |

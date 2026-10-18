@@ -326,6 +326,9 @@ namespace Modules
 			GameLab::RegisterVerb("assign", "<str|dex|int|foc|vit> <n|all>", GameLab::Verb(GameLab::VerbAssign));
 			GameLab::RegisterVerb("upgrade", "<shopId> <upgradeId> <step>", GameLab::Verb(GameLab::VerbUpgrade));
 			GameLab::RegisterVerb("equip", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbEquip));
+			GameLab::RegisterVerb("stashitem", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbStashItem));
+			GameLab::RegisterVerb("stash", "[tab]", GameLab::Verb(GameLab::VerbStash));
+			GameLab::RegisterVerb("press", "<widgetId>", GameLab::Verb(GameLab::VerbPress));
 			GameLab::RegisterVerb("timescale", "<x>", GameLab::Verb(GameLab::VerbTimescale));
 			GameLab::RegisterVerb("cull", "", GameLab::Verb(GameLab::VerbCull));
 			GameLab::RegisterVerb("teleport", "<x> <y>", GameLab::Verb(GameLab::VerbTeleport));

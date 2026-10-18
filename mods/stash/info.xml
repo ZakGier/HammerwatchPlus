@@ -1,0 +1,5 @@
+<dict>
+	<string name="name">HammerwatchPlus Stash Sort</string>
+	<string name="author">Ryan Bower</string>
+	<string name="description">A Sort button in the town stash: sorts the open tab by class (main stat), then weapon or armour type, then item level. Part of HammerwatchPlus; requires HWP Core.</string>
+</dict>
