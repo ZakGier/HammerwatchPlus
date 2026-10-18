@@ -350,6 +350,7 @@ namespace Modules
 			GameLab::RegisterVerb("material", "<type> <n>", GameLab::Verb(GameLab::VerbMaterial));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));
 			GameLab::RegisterVerb("subclass", "<classId>", GameLab::Verb(GameLab::VerbSubclass));
+			GameLab::RegisterVerb("classskills", "<classId>", GameLab::Verb(GameLab::VerbClassSkills));
 			GameLab::RegisterVerb("skill", "<skillId> [times] [combo]", GameLab::Verb(GameLab::VerbSkill));
 			GameLab::RegisterVerb("kill", "<radius> <filter> [hp|me]", GameLab::Verb(GameLab::VerbKill));
 			GameLab::RegisterVerb("abort", "[failed]", GameLab::Verb(GameLab::VerbAbort));

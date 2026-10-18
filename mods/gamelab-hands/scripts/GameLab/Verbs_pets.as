@@ -2,7 +2,8 @@
 // list whose rows have no id (the pet dye menu clones its rows with SetID("")), compare
 // what the scene queries find around the player (PetWait's QueryCircle against the other
 // fetches), and remove a unit (a pet gone missing). Each drives the game's own calls,
-// never a screen coordinate. (A building's tier: buildup, Verbs_farming.as.)
+// never a screen coordinate; and give a fixture character the portrait the tailor's preview
+// needs. (A building's tier: buildup, Verbs_farming.as.)
 namespace GameLab
 {
 	const uint PETS_CAP = 24;
@@ -194,10 +195,54 @@ namespace GameLab
 		Emit(Reply(id, true).Int("count", gone.length()).Raw("units", StrArray(gone)));
 	}
 
+	// portrait: give the local character the default portrait pieces it lacks (class, hair,
+	// nose, eyes, mouth: what CreateCharacterWindow passes to SetPortrait). Characters made by
+	// the char fixture verb have none, and the vanilla tailor's preview
+	// (EquipmentDyerWindow.RefreshUnit -> PlayerCreating.GetPortraitModels ->
+	// GetPortraitModel(null)) throws on a missing piece.
+	void VerbPortrait(const string &in id, array<string>@ args)
+	{
+		auto rec = GetLocalPlayerRecord();
+		if (rec is null)
+		{
+			Fail(id, "no local player record");
+			return;
+		}
+		uint before = rec.portrait.length();
+		array<PlayerPortraitCategory> cats = { PlayerPortraitCategory::Class, PlayerPortraitCategory::Hair,
+			PlayerPortraitCategory::Nose, PlayerPortraitCategory::Eyes, PlayerPortraitCategory::Mouth };
+		array<PlayerPortraitPiece@> pieces;
+		array<string> added;
+		for (uint c = 0; c < cats.length(); c++)
+		{
+			PlayerPortraitPiece@ have = null;
+			for (uint i = 0; i < rec.portrait.length(); i++)
+			{
+				if (rec.portrait[i] !is null && rec.portrait[i].m_category == cats[c])
+				{
+					@have = rec.portrait[i];
+					break;
+				}
+			}
+			if (have is null)
+			{
+				@have = PlayerPortraitPiece::GetDefaultPiece(cats[c]);
+				if (have !is null)
+					added.insertLast(have.m_id);
+			}
+			if (have !is null)
+				pieces.insertLast(have);
+		}
+		if (added.length() > 0)
+			rec.SetPortrait(pieces);
+		Emit(Reply(id, true).Int("before", before).Int("after", rec.portrait.length()).Raw("added", StrArray(added)));
+	}
+
 	void Register_pets()
 	{
 		RegisterVerb("presslist", "<widgetId> [index]", Verb(VerbPressList));
 		RegisterVerb("querycmp", "<radius> <unitFile>", Verb(VerbQueryCmp));
 		RegisterVerb("unitdestroy", "<radius> <filter>", Verb(VerbUnitDestroy));
+		RegisterVerb("portrait", "", Verb(VerbPortrait));
 	}
 }

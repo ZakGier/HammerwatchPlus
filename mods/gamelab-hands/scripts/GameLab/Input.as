@@ -18,7 +18,43 @@ namespace GameLab
 	HeldInput g_held;
 	uint g_inputFrames = 0;      // frames this process wrote input on
 
-	const array<string> BUTTONS = { "use", "potion", "dash", "main", "off", "skill1", "skill2", "skill3" };
+	const array<string> BUTTONS = { "use", "potion", "dash", "main", "off", "skill1", "skill2", "skill3",
+		"hwp_skill4", "hwp_skill5", "hwp_skill6" };
+
+	// core's extra skill keys (mods/core/scripts/HWP/Core/SkillKeys.as) are raw keyboard keys,
+	// no GameInput button: a held hwp_skillN goes to GlobalCache "hwp_skillkeys_held" as "4,5",
+	// which SkillKeys.Poll reads as the key being down. No symbol is shared, so hands still
+	// loads without core.
+	const array<string> HWP_SKILL_KEYS = { "hwp_skill4", "hwp_skill5", "hwp_skill6" };
+	const string SKILLKEYS_HELD = "hwp_skillkeys_held";
+
+	void WriteSkillKeys(array<string>@ buttons)
+	{
+		string held = "";
+		for (uint i = 0; i < HWP_SKILL_KEYS.length(); i++)
+		{
+			if (buttons !is null && buttons.find(HWP_SKILL_KEYS[i]) >= 0)
+				held += (held.isEmpty() ? "" : ",") + HWP_SKILL_KEYS[i].substr(9); // "hwp_skill4" -> "4"
+		}
+		if (GlobalCache::Get(SKILLKEYS_HELD) != held)
+			GlobalCache::Set(SKILLKEYS_HELD, held);
+	}
+
+	// the button the idx-th active spell (0 = first, the GetSkillInput count) listens on: the
+	// 4th to 6th have their own key once core swapped in HWPSkillKeysHelper, else (vanilla
+	// PlayerTargetingHelper.GetSkillInput) every spell from the 3rd on shares Skill3
+	string SpellButton(PlayerBase@ plr, int idx)
+	{
+		if (idx == 0)
+			return "skill1";
+		if (idx == 1)
+			return "skill2";
+		auto p = cast<Player>(plr);
+		if (idx >= 3 && idx < 6 && p !is null && p.m_targetHelper !is null
+			&& Reflect::GetTypeName(p.m_targetHelper).findFirst("HWPSkillKeysHelper") >= 0)
+			return "hwp_skill" + (idx + 1);
+		return "skill3";
+	}
 
 	void SetButton(GameInput@ gi, const string &in name, bool down, bool pressed)
 	{
@@ -94,6 +130,7 @@ namespace GameLab
 		SeeInput(gi);
 		for (uint i = 0; i < g_inputs.length(); i++)
 			WriteOne(g_inputs[i], move, aimSet, aim, buttons, pressed);
+		WriteSkillKeys(buttons);
 		g_inputFrames++;
 	}
 

@@ -72,6 +72,7 @@
    "expect": {
     "spec_pick_open": true,
     "spec_pick_three": true,
+    "picker_skill_labels": true,
     "spec_pick_takes": true
    }
   },

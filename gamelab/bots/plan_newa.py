@@ -29,27 +29,28 @@ REPO = Path(__file__).resolve().parents[2]
 
 # stash tab 0 and tab 1, in the order they are put in ("<baseId>@<ilvl>", all common)
 TAB0_IN = ["back_2b@8", "mainhand_mace_01@4", "chest_dex_t1a@8", "twohanded_shortbow_01@6",
-           "mainhand_scepter_01@8", "feet_str_t1a@8", "mainhand_wand_fire_01@8", "mainhand_mace_01@14",
+           "back_4a@12", "feet_str_t1a@8", "mainhand_wand_fire_01@8", "mainhand_mace_01@14",
            "offhand_shield_01@8", "twohanded_shortbow_01@16", "head_int_t1a@8", "back_2a@8",
            "mainhand_longsword_01@8", "twohanded_maul_01@8", "chest_str_t1a@8"]
-TAB1_IN = ["offhand_lantern_01@8", "twohanded_shortbow_01@9", "head_str_t1a@9", "mainhand_mace_01@9"]
+TAB1_IN = ["back_2b@9", "twohanded_shortbow_01@9", "head_str_t1a@9", "mainhand_mace_01@9"]
 # the order the plan's rule gives: class (str, dex, int, foc, vit), then type, then ilvl
 TAB0_SORTED = ["twohanded_maul_01@8", "mainhand_longsword_01@8", "mainhand_mace_01@14", "mainhand_mace_01@4",
                "offhand_shield_01@8", "chest_str_t1a@8", "feet_str_t1a@8",
                "twohanded_shortbow_01@16", "twohanded_shortbow_01@6", "chest_dex_t1a@8",
                "mainhand_wand_fire_01@8", "head_int_t1a@8",
-               "mainhand_scepter_01@8", "back_2a@8",
+               "back_4a@12", "back_2a@8",
                "back_2b@8"]
-TAB1_SORTED = ["mainhand_mace_01@9", "head_str_t1a@9", "twohanded_shortbow_01@9", "offhand_lantern_01@8"]
-# base id -> (its only requirement, slot), from gamecode/datatables/tweak/items/equipment
+TAB1_SORTED = ["mainhand_mace_01@9", "head_str_t1a@9", "twohanded_shortbow_01@9", "back_2b@9"]
+# base id -> (its only requirement, slot), from gamecode/datatables/tweak/items/equipment. Not the
+# scepters or lanterns: their conditionals want the holy DLC, so the generator returns null
+# (EquipmentGenerator.VerifyItem -> CheckGlobalConditionals; plan-newa-a 20261018-122829)
 BASES = {
     "twohanded_maul_01": ("str", "twohand"), "mainhand_longsword_01": ("str", "mainhand"),
     "mainhand_mace_01": ("str", "mainhand"), "offhand_shield_01": ("str", "offhand"),
     "chest_str_t1a": ("str", "chest"), "feet_str_t1a": ("str", "feet"), "head_str_t1a": ("str", "head"),
     "twohanded_shortbow_01": ("dex", "twohand"), "chest_dex_t1a": ("dex", "chest"),
     "mainhand_wand_fire_01": ("int", "mainhand"), "head_int_t1a": ("int", "head"),
-    "mainhand_scepter_01": ("foc", "mainhand"), "offhand_lantern_01": ("foc", "offhand"),
-    "back_2a": ("foc", "back"), "back_2b": ("vit", "back"),
+    "back_4a": ("foc", "back"), "back_2a": ("foc", "back"), "back_2b": ("vit", "back"),
 }
 CLASS_ORDER = ["str", "dex", "int", "foc", "vit"]
 SLOT_ORDER = ["twohand", "mainhand", "offhand", "head", "chest", "hands", "feet", "back"]
@@ -90,6 +91,12 @@ def item_key(entry):
     fam = base.split("_")[1] if slot in WEAPONS else ""
     return (CLASS_ORDER.index(cls) if cls in CLASS_ORDER else 9,
             SLOT_ORDER.index(slot) if slot in SLOT_ORDER else 9, fam, int(ilvl or 0))
+
+
+def rule_sorted(entries):
+    """The plan's order for these stash entries: class, then type (weapons by family), then
+    item level, highest first. The lists above have no ties past that."""
+    return sorted(entries, key=lambda e: (*item_key(e)[:3], -item_key(e)[3]))
 
 
 class Checks(Base):
@@ -168,13 +175,17 @@ class Checks(Base):
         put = [["stashput", t, *e.split("@")[:1], "common", e.split("@")[1]]
                for t, lst in ((0, TAB0_IN), (1, TAB1_IN)) for e in lst]
         rs = self.g.gl_multi(put)
-        bad = [r for r in rs if not r.get("ok")]
+        bad = [r.get("error", r) for r in rs if not r.get("ok")]
         t0, name0 = self.stash_items(0)
         t1, name1 = self.stash_items(1)
         self.flag("stash_filled", not bad and t0 == TAB0_IN and t1 == TAB1_IN,
-                  f"{len(rs)} put, {len(bad)} failed {bad[:2]}; tab0 {t0}; tab1 {t1}")
-        if bad or t0 != TAB0_IN or t1 != TAB1_IN:
+                  f"{len(rs)} put, {len(bad)} failed {bad[:3]}; tab0 {t0}; tab1 {t1}")
+        if not t0 or not t1:
+            self.notes.append("stash: a tab is empty, nothing to sort")
             return
+        # a put that failed leaves the rest: sort and check whatever the tabs hold, against
+        # the rule applied to that (the same as TAB*_SORTED when every put landed)
+        want0, want1 = rule_sorted(t0), rule_sorted(t1)
         # the vanilla display options re-sort / hide the grid (StashInventoryWidget.Refresh):
         # a plain display shows the tab's own order
         srt = self.gl("inspect", "town", "stash-sorting").get("value")
@@ -192,9 +203,9 @@ class Checks(Base):
         _, said = self.press_sort("sort tab 2")
         a0, _ = self.stash_items(0)
         a1, _ = self.stash_items(1)
-        self.flag("sort_second_tab_sorted", a1 == TAB1_SORTED and any(f"sorted 4 item(s) in tab '{name1}'" in s for s in said),
-                  f"{a1}; {said}")
-        self.flag("sort_first_tab_untouched", a0 == TAB0_IN, f"{a0}")
+        self.flag("sort_second_tab_sorted", a1 == want1 and any(f"sorted {len(t1)} item(s) in tab '{name1}'" in s for s in said),
+                  f"{a1}, want {want1}; {said}")
+        self.flag("sort_first_tab_untouched", a0 == t0, f"{a0}")
 
         # stash s1: back to the first tab, Sort
         self.gl("func", "button", "left")
@@ -203,10 +214,10 @@ class Checks(Base):
         self.flag("stash_first_tab_shown", pick == name0, f"tab-picks {pick!r}, tab 0 is {name0!r}")
         _, said = self.press_sort("sort tab 1")
         s0, _ = self.stash_items(0)
-        self.flag("sort_logged", any(f"sorted {len(TAB0_IN)} item(s) in tab '{name0}'" in s and "already" not in s for s in said),
+        self.flag("sort_logged", any(f"sorted {len(t0)} item(s) in tab '{name0}'" in s and "already" not in s for s in said),
                   f"{said}")
         keys = [item_key(e) for e in s0 or []]
-        cls_ok = len(keys) == len(TAB0_IN) and all(keys[i][0] <= keys[i + 1][0] for i in range(len(keys) - 1))
+        cls_ok = len(keys) == len(t0) and all(keys[i][0] <= keys[i + 1][0] for i in range(len(keys) - 1))
         type_ok, ilvl_ok, seen = cls_ok, cls_ok, set()
         for i in range(len(keys) - 1):
             a, b = keys[i], keys[i + 1]
@@ -223,10 +234,10 @@ class Checks(Base):
         self.flag("sort_class_first", cls_ok, f"class ranks {[k[0] for k in keys]}")
         self.flag("sort_type_second", type_ok, f"slot ranks {[k[1] for k in keys]}, families {[k[2] for k in keys]}")
         self.flag("sort_ilvl_third", ilvl_ok, f"{s0}")
-        self.flag("sort_exact", s0 == TAB0_SORTED, f"{s0}")
+        self.flag("sort_exact", s0 == want0, f"{s0}, want {want0}")
         # the grid on screen shows the new order (the same names, moved as the items were)
         grid1, cut = self.stash_grid()
-        want = [grid0[TAB0_IN.index(e)] for e in TAB0_SORTED] if grid0 and len(grid0) == len(TAB0_IN) else None
+        want = [grid0[t0.index(e)] for e in want0] if grid0 and len(grid0) == len(t0) else None
         self.flag("sort_grid_follows", want is not None and grid1 == want, f"grid {grid1} (truncated {cut})")
 
         # stash s2: a second press changes nothing and says so
@@ -240,7 +251,7 @@ class Checks(Base):
         r0, _ = self.stash_items(0)
         r1, _ = self.stash_items(1)
         grid2, _ = self.stash_grid()
-        self.flag("sort_kept_reopen", r0 == TAB0_SORTED and r1 == TAB1_SORTED and grid2 == grid1,
+        self.flag("sort_kept_reopen", r0 == want0 and r1 == want1 and grid2 == grid1,
                   f"tab0 {r0}; tab1 {r1}; grid same {grid2 == grid1}")
         self.close_windows()
 
@@ -363,8 +374,19 @@ class Checks(Base):
 
     # --- General Merchant, Trinkets tab
     def open_trinkets(self):
+        """Use the exit guard until his shop is up. Closing the shop starts his second
+        interact, the "Be careful out there!" bubble (NPCBehavior.NPCUpdate, about 2 s),
+        and a Use while it shows only dismisses it (NPCBehavior.Use), so retry."""
         self.npc("npc_misc_guard_exit", "actors/npcs/town/npc_misc_guard_exit.unit")
-        u = self.gl("use", "npc_misc_guard_exit")
+        u = {}
+        for _ in range(4):
+            u = self.gl("use", "npc_misc_guard_exit")
+            if u.get("window") == "HWPMerchantWindow":
+                break
+            if self.gl("state").get("window") == "HWPMerchantWindow":
+                u = dict(u, window="HWPMerchantWindow")
+                break
+            time.sleep(0.4)
         time.sleep(0.5)
         self.gl("press", "hwp-tab-trinkets")
         time.sleep(0.3)

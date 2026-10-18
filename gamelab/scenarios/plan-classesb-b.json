@@ -57,6 +57,7 @@
    "expect": {
     "priest_char": true,
     "priest_four_specs": true,
+    "priest_picker_skill_labels": true,
     "priest_spec_learned": true,
     "smite_own_button": true,
     "smite_cast": true,
@@ -77,6 +78,7 @@
    "expect": {
     "paladin_char": true,
     "paladin_four_specs": true,
+    "paladin_picker_skill_labels": true,
     "paladin_spec_learned": true,
     "holy_storm_own_button": true,
     "holy_storm_cast": true,

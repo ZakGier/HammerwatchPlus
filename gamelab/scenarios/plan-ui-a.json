@@ -73,7 +73,7 @@
    },
    "name": "debuff and stacks tooltips",
    "expect": {
-    "vanilla_debuff_in_bar": true,
+    "vanilla_debuffs_have_no_icon": true,
     "debuff_icon": true,
     "debuff_tip_shown": true,
     "debuff_name_red": true,

@@ -1,6 +1,6 @@
 {
  "name": "plan-fishing-a",
- "about": "Test plan through the plan_fishing bot, in town: fishing s5 (fish as bag items: stars, quality, town ilvl; wielded with the longsword swing; the equipped fish's tooltip), fishing s6 (an uncommon fish at the enchanter: Upgrade, Enchant, the worked fish no ware and kept by Sell; Enchant on fresh uncommon / rare fish), gambler s7 (the Sell caption, tokens for fish, gold for crops, the token line, a worked fish kept), fishing s13 (the rod slot and its tooltip; shot rod-slot: the character screen with the rod icon bottom left of the gear grid).",
+ "about": "Test plan through the plan_fishing bot, in town: fishing s5 (fish as bag items: stars, quality, town ilvl; wielded with the longsword swing; the equipped fish's tooltip), fishing s6 (an uncommon fish at the enchanter: Upgrade, Enchant with the town's blueprints (cht_add_all_blueprints) and a new modifier, the same modifier pool as a vanilla longsword, the worked fish no ware and kept by Sell; Enchant on fresh uncommon / rare fish), fishing s13 (the rod slot and its tooltip; shot rod-slot: the character screen with the rod icon bottom left of the gear grid).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -59,7 +59,7 @@
     "fish_name_stars": true,
     "fish_quality_by_stars": true,
     "fish_town_ilvl": true,
-    "fish_mods_none": true,
+    "fresh_fish_has_mods": true,
     "fish_wields": true,
     "fish_longsword_attack": true,
     "fish_tooltip_stars": true,
@@ -78,28 +78,15 @@
     "enchanter_open": true,
     "fish_offers_both": true,
     "fish_upgrade_works": true,
+    "fish_enchant_pool": true,
     "fish_enchant_view": true,
     "fish_enchant_works": true,
     "worked_not_ware": true,
     "worked_kept_on_sell": true,
+    "fresh_mod_fish_sold": true,
     "fresh_uncommon_enchant": true,
-    "fresh_rare_enchant": true
-   }
-  },
-  {
-   "do": "bot",
-   "bot": "plan_fishing",
-   "kwargs": {
-    "sections": "gambler_sell"
-   },
-   "name": "gambler sell",
-   "expect": {
-    "sell_caption": true,
-    "sell_message": true,
-    "sell_fish_tokens": true,
-    "sell_crops_gold": true,
-    "token_line_up": true,
-    "sell_keeps_worked": true
+    "fresh_rare_enchant": true,
+    "fish_pool_like_longsword": true
    }
   },
   {

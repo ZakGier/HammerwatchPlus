@@ -1,6 +1,6 @@
 {
  "name": "plan-fishing-d",
- "about": "Test plan through the plan_fishing bot: fishing s9 (three traps, a Bandit Keep run at g_timescale 16 until 20+ game minutes, back in town: the rolls, at most 3 fish a trap, the full-trap units and their minimap icon, walking up to one puts its fish in the bag; the step's quick test `hwp fishing traps 60` if the run's rolls gave nothing).",
+ "about": "Test plan through the plan_fishing bot: fishing s9 (three traps, a Bandit Keep run at g_timescale 16 until 20+ game minutes, back in town: the rolls, at most 3 fish a trap, the full-trap units and their minimap icon, the live full-trap unit's minimap icon (gl mapicons) and shot trap-full-map: the map tab centred on the player beside the full trap, a fish icon at it; walking up to it (from a clear spot beside it) puts its fish in the bag; the step's quick test `hwp fishing traps 60` if the run's rolls gave nothing).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -60,8 +60,23 @@
     "traps_resolved": true,
     "traps_cap_3": true,
     "traps_full_shown": true,
-    "traps_full_icon": true,
-    "trap_collected": true
+    "traps_full_icon": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "trap-full-map"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "traps_walk"
+   },
+   "name": "walk up to a full trap",
+   "expect": {
+    "trap_collected": true,
+    "trap_emptied": true
    }
   },
   {

@@ -476,6 +476,40 @@ namespace GameLab
 		Emit(r);
 	}
 
+	// what walking onto a pickup does: its own Collide handler, with the local player as the unit
+	void VerbPickup(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: pickup <unitId>");
+			return;
+		}
+		auto plr = GetLocalPlayer();
+		if (plr is null)
+		{
+			Fail(id, "no spawned local player");
+			return;
+		}
+		UnitPtr u = g_scene.GetUnit(int(parseInt(args[0])));
+		if (!u.IsValid() || u.IsDestroyed())
+		{
+			Fail(id, "no unit " + args[0]);
+			return;
+		}
+		auto p = cast<Pickup>(u.GetScriptBehavior());
+		if (p is null)
+		{
+			Fail(id, "unit " + args[0] + " is not a Pickup");
+			return;
+		}
+		bool was = p.m_visible;
+		p.Collide(plr.m_unit, xy(u.GetPosition()), vec2());
+		Json@ r = Reply(id, true);
+		r.Int("unit", u.GetId()).Bool("wasVisible", was).Bool("visible", p.m_visible)
+			.Bool("destroyed", !u.IsValid() || u.IsDestroyed());
+		Emit(r);
+	}
+
 	void Register_ui()
 	{
 		RegisterVerb("mouse", "[x y | buff <match> | off]", Verb(VerbMouse));
@@ -485,6 +519,7 @@ namespace GameLab
 		RegisterVerb("tintwatch", "<tag> <ms>", Verb(VerbTintWatch));
 		RegisterVerb("shootproj", "<unitFile> <me|none> [dx dy]", Verb(VerbShootProj));
 		RegisterVerb("unitsof", "<unitFile...>", Verb(VerbUnitsOf));
+		RegisterVerb("pickup", "<unitId>", Verb(VerbPickup));
 	}
 }
 

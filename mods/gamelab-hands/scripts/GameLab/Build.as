@@ -91,6 +91,68 @@ namespace GameLab
 		Emit(Reply(id, true).Str("class", rec.playerClass.m_id));
 	}
 
+	// the Skills::TargetingMode of a level-1 skill built from the def the way the picker's
+	// MakeSkillTemp builds one (Town/SubclassPickShopContent.as:107-129); -1 when none builds
+	int DefMode(PlayerSkillDef@ def)
+	{
+		if (def.m_levelParams.length() == 0 || def.m_levelParams[0] is null)
+			return -1;
+		auto@ skillParams = def.m_levelParams[0];
+		array<SValue@>@ p = { @skillParams };
+		UnitPtr u;
+		string c = GetParamString(u, p, "class"); // the 3-argument array form MakeSkillTemp uses
+		auto skill = cast<Skills::Skill>(InstantiateClass(c, u, skillParams));
+		if (skill is null)
+			return -1;
+		skill.Initialize(null, u, p, def.m_idHash);
+		return int(skill.GetTargetingMode());
+	}
+
+	// classskills <classId>: the class's skill defs as PlayerClass loaded them, in class order:
+	// id, the shown name (Resources::GetString of m_name), m_type (PlayerSkillType; a passive
+	// def is a Spell too, PlayerClass.as:91-92), inherited (its parent class has the same
+	// def), mode (DefMode) and passive (mode 0, TargetingMode::Passive: no button, the
+	// GetSkillInput / HUDPlayer test). What the Subclass Picker's skill row is checked
+	// against (core SubclassPick.as).
+	void VerbClassSkills(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: classskills <classId>");
+			return;
+		}
+		auto cls = PlayerClass::Get(args[0]);
+		if (cls is null)
+		{
+			Fail(id, "no class " + args[0]);
+			return;
+		}
+		PlayerClass@ parent = null;
+		if (cls.parent != 0)
+			@parent = PlayerClass::Get(cls.parent);
+		array<string> items;
+		for (uint i = 0; i < cls.m_skillDefs.length(); i++)
+		{
+			auto def = cls.m_skillDefs[i];
+			if (def is null)
+				continue;
+			bool inherited = false;
+			for (uint k = 0; parent !is null && k < parent.m_skillDefs.length(); k++)
+			{
+				if (parent.m_skillDefs[k].m_idHash == def.m_idHash)
+					inherited = true;
+			}
+			int mode = DefMode(def);
+			Json j;
+			j.Str("id", def.m_id).Str("name", Resources::GetString(def.m_name)).Int("type", int(def.m_type))
+				.Bool("inherited", inherited).Int("mode", mode)
+				.Bool("passive", mode == int(Skills::TargetingMode::Passive));
+			items.insertLast(j.Close());
+		}
+		Emit(Reply(id, true).Str("class", cls.m_id).Str("name", Resources::GetString(cls.m_name))
+			.Str("parent", parent is null ? "" : parent.m_id).Raw("skills", RawArray(items)));
+	}
+
 	// skill <skillId> [times] [combo]: PlayerRecord.SkillUp, what the skill tree's level-up
 	// calls (it checks max level and free points; `hwp skillpoints` gives points). "combo"
 	// picks a combo skill (SkillUp(id, true), e.g. combo_kills). The reply has the level

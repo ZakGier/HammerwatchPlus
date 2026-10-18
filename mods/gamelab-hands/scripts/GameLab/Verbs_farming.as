@@ -1,6 +1,7 @@
 // gamelab-hands: verbs the farming plan checks need (gamelab/bots/plan_farming.py): a town
 // grown big enough for the farm's crop fields and farmer (buildup), and the tooltip a widget
-// shows when it is hovered, read back as text (tooltip).
+// shows when it is hovered, read back as text (tooltip), and which units near a spot draw
+// an icon on the minimap (mapicons).
 namespace GameLab
 {
 	// buildup <buildingId> [steps]: the town builder's upgrade (Town/BuildingBuilder.as
@@ -146,9 +147,67 @@ namespace GameLab
 			.Str("tooltip", ttType).Raw("texts", StrArray(texts)));
 	}
 
+	// mapicons <x> <y> [radius] [filter]: read-only. The units within radius (default 24) of
+	// x,y, whose debug name contains filter when given, and whether each one's current scene
+	// has a minimap sprite (UnitScene.GetMinimapSprite, PingBehavior.as:28): the engine draws
+	// those on the minimap and the map tab (MinimapQuery.Prepare). Also whether the game mode
+	// has the minimap (OverlayModule.m_minimap) and the HUD minimap cvar (ui_minimap). Capped
+	// at FARM_ICONS_CAP; "count" is every match.
+	const uint FARM_ICONS_CAP = 24;
+	void VerbFarmMapIcons(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 2)
+		{
+			Fail(id, "usage: mapicons <x> <y> [radius] [filter]");
+			return;
+		}
+		vec2 center(parseFloat(args[0]), parseFloat(args[1]));
+		int radius = args.length() > 2 ? int(parseInt(args[2])) : 24;
+		string filter = args.length() > 3 ? args[3] : "";
+		bool minimap = false;
+		auto gm = cast<AGameplayGameMode>(g_gameMode);
+		if (gm !is null)
+		{
+			for (uint i = 0; i < gm.m_modules.length(); i++)
+			{
+				auto om = cast<OverlayModule>(gm.m_modules[i]);
+				if (om !is null && om.m_minimap !is null)
+					minimap = true;
+			}
+		}
+		auto units = g_scene.FetchAllUnits(~0, center, radius);
+		array<string> rows;
+		uint count = 0;
+		for (uint i = 0; i < units.length(); i++)
+		{
+			if (!units[i].IsValid() || units[i].IsDestroyed())
+				continue;
+			vec2 pos = xy(units[i].GetPosition());
+			float d = dist(center, pos);
+			if (d > radius)
+				continue;
+			string name = units[i].GetDebugName();
+			if (!filter.isEmpty() && name.findFirst(filter) < 0)
+				continue;
+			auto scene = units[i].GetCurrentUnitScene();
+			bool icon = scene !is null && scene.GetMinimapSprite() !is null;
+			count++;
+			if (rows.length() >= FARM_ICONS_CAP)
+				continue;
+			Json e;
+			e.Int("unit", units[i].GetId()).Str("name", name).Num("x", pos.x).Num("y", pos.y).Num("dist", d)
+				.Bool("icon", icon).Bool("hidden", units[i].IsHidden());
+			rows.insertLast(e.Close());
+		}
+		Emit(Reply(id, true).Bool("minimap", minimap).Bool("uiMinimap", GetVarBool("ui_minimap")).Int("radius", radius)
+			.Int("count", count).Int("truncated", count > rows.length() ? int(count - rows.length()) : 0)
+			.Raw("units", RawArray(rows)));
+	}
+
 	void Register_farming()
 	{
 		RegisterVerb("buildup", "<buildingId> [steps]", Verb(VerbFarmBuildUp));
 		RegisterVerb("tooltip", "<widgetId>", Verb(VerbFarmTooltip));
+		RegisterVerb("mapicons", "<x> <y> [radius] [filter]", Verb(VerbFarmMapIcons));
 	}
 }

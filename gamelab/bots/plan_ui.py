@@ -144,10 +144,45 @@ class Checks(Base):
         x, y = list(a.crop(box).getdata()), list(b.crop(box).getdata())
         return sum(1 for p, q in zip(x, y) if pred(p) != pred(q))
 
+    @staticmethod
+    def tip_frame(on, off, box):
+        """The tooltip's top border in box: the first row whose new orange run (orange in `on`,
+        not in `off`) is at least 60% of the longest. (x0, top, x1) or None. The frame itself
+        is orange, so orange counts over the whole box say nothing about the header."""
+        rows = []
+        for y in range(box[1], box[3]):
+            xs = [x for x in range(box[0], box[2]) if orange(on.getpixel((x, y))) and not orange(off.getpixel((x, y)))]
+            rows.append((y, xs))
+        best = max((len(xs) for _, xs in rows), default=0)
+        if best < 30:
+            return None
+        y, xs = next((y, xs) for y, xs in rows if len(xs) >= 0.6 * best)
+        return min(xs), y, max(xs)
+
+    @staticmethod
+    def header_strip(fr, above, below):
+        """Rows `above` over to `below` under the top border, the middle 60% of its width (the
+        corner ornaments left out): where ToolTip.Draw puts the header (pos.y - 7, centred)."""
+        x0, top, x1 = fr
+        w = x1 - x0
+        return (x0 + int(w * 0.2), top - above, x1 - int(w * 0.2) + 1, top + below + 1)
+
+    @staticmethod
+    def moved_px(a, b, box):
+        """Pixels in box that moved by more than 40 in some channel between a and b, uneroded
+        (a digit that changed is a few 1 px strokes)."""
+        from PIL import ImageChops
+        r, g, bl = ImageChops.difference(a.crop(box), b.crop(box)).split()
+        d = ImageChops.lighter(ImageChops.lighter(r, g), bl)
+        return sum(1 for v in d.getdata() if v > 40)
+
     def tip_measure(self, tag, ic, countdown=False):
-        """The cursor stays pinned; two shots with bufftips off, then on (two more 1.3 s apart
+        """The cursor stays pinned; two shots with bufftips off, then on (two more 2 s apart
         with countdown). Measures in the tooltip box: changed (off vs on, eroded), noise (off vs
-        off), new orange / red / light pixels, the orange that flipped between the on shots."""
+        off), new orange / red / light pixels; over the box's top border (tip_frame): header,
+        the new orange pixels in the rows above it (bg_header the same between the off shots),
+        and with countdown tick, the pixels of the header line that moved between the on shots
+        (bg_tick between the off shots)."""
         m = self.gl("mouse")
         self.hwp("set bufftips.enabled false", 0.4, until="bufftips.enabled = false")
         time.sleep(0.5)
@@ -159,7 +194,7 @@ class Checks(Base):
         on1 = self.snap(f"ui-{tag}-on")
         on2 = None
         if countdown:
-            time.sleep(1.3)
+            time.sleep(2.0)
             on2 = self.snap(f"ui-{tag}-on2")
         if not (off1 and off2 and on1):
             return {"ok": False}
@@ -172,13 +207,22 @@ class Checks(Base):
              "light": self.new_px(on1, off1, box, light),
              "bg_orange": self.flip_px(off1, off2, box, orange), "bg_red": self.flip_px(off1, off2, box, red),
              "bg_light": self.flip_px(off1, off2, box, light)}
-        if on2 is not None:
-            r["flip_orange"] = self.flip_px(on1, on2, box, orange)
+        fr = self.tip_frame(on1, off1, box)
+        r["frame"] = fr
+        if fr:
+            above = self.header_strip(fr, 4, -1)
+            r["header"] = self.new_px(on1, off1, above, orange)
+            r["bg_header"] = self.new_px(off2, off1, above, orange)
+            if on2 is not None:
+                line = self.header_strip(fr, 4, 4)
+                r["tick"] = self.moved_px(on1, on2, line)
+                r["bg_tick"] = self.moved_px(off1, off2, line)
         return r
 
     @staticmethod
     def fmt(r):
-        keys = ("changed", "noise", "orange", "red", "light", "bg_orange", "bg_red", "bg_light", "flip_orange", "bbox")
+        keys = ("changed", "noise", "orange", "red", "light", "bg_orange", "bg_red", "bg_light", "bbox",
+                "frame", "header", "bg_header", "tick", "bg_tick")
         return ", ".join(f"{k} {r[k]}" for k in keys if k in r)
 
     def hover(self, match):
@@ -206,22 +250,21 @@ class Checks(Base):
                   f"window {m.get('wndW')}x{m.get('wndH')} scale {m.get('scale')}")
         r = self.tip_measure("shrine", ic, countdown=True)
         self.notes.append("shrine tip: " + self.fmt(r))
-        self._shrine_orange = r.get("orange", 0)
         self.flag("tip_shown", r.get("shown"), self.fmt(r))
-        self.flag("tip_header_line", r.get("orange", 0) >= max(6, 3 * r.get("bg_orange", 0) + 4)
+        self.flag("tip_header_line", r.get("header", 0) >= max(5, 3 * r.get("bg_header", 0) + 3)
                   and r.get("red", 99) <= max(5, 2 * r.get("bg_red", 0) + 2),
-                  f"new orange px {r.get('orange')}, red {r.get('red')}")
+                  f"header px over the border {r.get('header')} (bg {r.get('bg_header')}), frame {r.get('frame')}, red {r.get('red')}")
         self.flag("tip_name_desc", r.get("light", 0) >= max(30, 3 * r.get("bg_light", 0) + 10)
                   and bool(ic.get("name")) and bool(ic.get("desc")),
                   f"light px {r.get('light')}; name {ic.get('name')!r}, desc {ic.get('desc')!r}")
-        # the countdown: the header text changed between the two "on" shots, beyond what the
-        # background's orange did between the "off" ones; the buff's own ms left went down
+        # the countdown: the header line changed between the two "on" shots (2 s apart), beyond
+        # what it did between the "off" ones; the buff's own ms left went down
         b1 = self.bar()
         ic1 = self.icon(b1, lambda e: e.get("key") == ".blessing.damage.name") or {}
         secs0, secs1 = -(-ic.get("left", 0) // 1000), -(-ic1.get("left", 0) // 1000)
-        self.flag("tip_counts_down", r.get("flip_orange", 0) >= max(3, 2 * r.get("bg_orange", 0) + 2)
+        self.flag("tip_counts_down", r.get("tick", 0) >= max(3, 2 * r.get("bg_tick", 0) + 2)
                   and secs0 - secs1 >= 2,
-                  f"header orange flipped {r.get('flip_orange')} (bg {r.get('bg_orange')}), secs {secs0} -> {secs1}")
+                  f"header line px changed {r.get('tick')} (bg {r.get('bg_tick')}), secs {secs0} -> {secs1}")
         self.snap("ui-shrine-tip")
 
     # --- bufftips s2: a debuff's name is red; a stacking buff says "x N"
@@ -232,9 +275,11 @@ class Checks(Base):
         time.sleep(0.5)
         b = self.bar()
         vanilla = self.icon(b, lambda e: e.get("debuff"))
-        # the plan's premise: a vanilla debuff (slow, poison) shows in the buff bar to hover.
-        # No vanilla debuff def has a "hud" sprite (HUD.ShowBuffIcon skips them), so expected false.
-        self.flag("vanilla_debuff_in_bar", vanilla is not None,
+        # the plan has a vanilla debuff (slow, poison) in the buff bar to hover, but no vanilla or
+        # HWP debuff def has a "hud" sprite (the only hud arrays, shrine_buffs.sval and
+        # players/*/stacks_*.sval, are all debuff false) and HUD.ShowBuffIcon skips defs without
+        # one: slow is applied, has no icon and none shows. Not bufftips dropping it.
+        self.flag("vanilla_debuffs_have_no_icon", bool(g.get("applied")) and g.get("hud") is False and vanilla is None,
                   f"slow applied {g.get('applied')}, hud {g.get('hud')}, debuff icons {vanilla}")
         # bufftips' own red path, with a test-only copy of slow that has an icon
         g2 = self.gl("givebuff", SLOW, 20000, "icon")
@@ -285,10 +330,11 @@ class Checks(Base):
         ok, m = self.hover(CROWN_KEY)
         r = self.tip_measure("crown", ic)
         self.notes.append("crown tip: " + self.fmt(r))
-        shrine = getattr(self, "_shrine_orange", 0)
         self.flag("crown_tip_shown", ok and r.get("shown"), self.fmt(r))
-        self.flag("crown_no_countdown", secs == 0 and r.get("orange", 99) <= max(2, 2 * r.get("bg_orange", 0) + 2, shrine // 5),
-                  f"secs {secs} (left {left}, max {mx}), new orange px {r.get('orange')} (shrine tip {shrine})")
+        self.flag("crown_no_countdown", secs == 0 and r.get("frame") is not None
+                  and r.get("header", 99) <= max(1, r.get("bg_header", 0)),
+                  f"secs {secs} (left {left}, max {mx}), header px over the border {r.get('header')} "
+                  f"(bg {r.get('bg_header')}), frame {r.get('frame')}")
         self.gl("mouse", "off")
 
     # --- bufftips s4: no buff tooltip over the character menu; Effects lists HWP buffs with text
@@ -361,16 +407,27 @@ class Checks(Base):
         # pick the first up: stand next to it and walk over it
         target = next((d for d in ours if d["unit"] == a.get("unit")), None)
         if target:
-            self.gl("teleport", target["x"] - 14, target["y"])
+            # walk over it first (teleport 20 left, hold right past it); if the walk misses it,
+            # run the dye's own Collide handler with the player (gl pickup), as touching it does
+            t = self.gl("teleport", target["x"] - 20, target["y"])
             time.sleep(0.3)
-            self.gl("input", 500, 1, 0)
-            time.sleep(2.5)
+            self.gl("input", 900, 1, 0)
+            time.sleep(1.5)
+            p = self.gl("state").get("player") or {}
+            walked = f"teleported to {t.get('x')},{t.get('y')}, walked to {p.get('x')},{p.get('y')}"
+            dyes2, _ = self.dye_state()
+            how = "walking"
+            if any(d["unit"] == target["unit"] for d in dyes2):
+                pk = self.gl("pickup", target["unit"])
+                how = f"gl pickup ({pk})"
+                time.sleep(1.5)
             dyes2, marks2 = self.dye_state()
             gone = all(d["unit"] != target["unit"] for d in dyes2)
+            self.notes.append(f"dye pickup: {walked}; picked by {how}")
             self.flag("dye_marker_gone_on_pickup", gone and not self.marked(target, marks2)
                       and pot is not None and self.marked(pot, marks2),
-                      f"dye picked {gone}; {len(marks) - len(marks2)} markers fewer, the pot's kept "
-                      f"{pot is not None and self.marked(pot, marks2)}")
+                      f"dye picked {gone} by {how}; {len(marks) - len(marks2)} markers fewer, the pot's kept "
+                      f"{pot is not None and self.marked(pot, marks2)}; {walked}")
         else:
             self.flag("dye_marker_gone_on_pickup", False, "the spawned dye is not there")
         self.hwp("set mapicons.dyes 0", 0.4, until="mapicons.dyes = 0")
@@ -434,10 +491,18 @@ class Checks(Base):
         if not self.ensure_run("ranger", "LabTint"):
             return
         self.hwp("colors contrast", 0.5, until="preset contrast")
-        row0 = self.gl("menu", "hwp_options", "-", "hwp-opt-colors")
+        # the first `gl menu` opens the player menu and asks for the tab, but looks the widget up
+        # in the tab that was open (plan-ui-b 20261018-125222: "no widget 'hwp-opt-colors' in
+        # PlayerMenuCharacterTab"; the same call a frame later found it): ask until it answers
+        row0 = {}
+        for _ in range(4):
+            row0 = self.gl("menu", "hwp_options", "-", "hwp-opt-colors")
+            if row0.get("ok"):
+                break
+            time.sleep(0.5)
         title, _, v0 = row0.get("texts", "").partition(" | ")
         self.flag("option_row", row0.get("shown") and title == "Projectile colors",
-                  f"tab {row0.get('tab')}, texts {row0.get('texts')!r}")
+                  f"tab {row0.get('tab')}, texts {row0.get('texts')!r}, error {row0.get('error')!r}")
         mark = len(self.g.read_log())
         self.gl("menu", "hwp_options", "-", "hwp-opt-colors", "hwp-opt", "colors")
         time.sleep(0.5)
@@ -448,9 +513,10 @@ class Checks(Base):
         time.sleep(0.6)
         r = self.hwp("colors", 0.5, until="Projectile colours")
         cur = re.findall(r"Projectile colours: preset (\w+)", r)
+        said = re.findall(r"Projectile colours: [^\n]*", r)
         preset = cur[-1] if cur else ""
         # contrast's next preset in InitPresets order
-        self.flag("option_command_agrees", preset == "deuteranopia", f"hwp colors: {r.strip()[-140:]!r}")
+        self.flag("option_command_agrees", preset == "deuteranopia", f"hwp colors: {said[-1:]}")
         enemy, friendly = PRESETS.get(preset, PRESETS["deuteranopia"])
         s1 = (self.gl("shootproj", TRAP_RAY, "none", 0, 1).get("projectile") or {}).get("color") or {}
         s2 = (self.gl("shootproj", HYDRA_RAY, "me", 0, -1).get("projectile") or {}).get("color") or {}
@@ -465,16 +531,32 @@ class Checks(Base):
         self.gl("kill", 6000, "tag:enemy")
         self.gl("cull")
         self.god(False)
+        god = self.cvar("cht_god")
         mark = len(self.g.read_log())
+        # hazards spawned on a player who stands still never touch it (plan-ui-b
+        # 20261018-125222: 80 s in a floor fire and 6 poison clouds, hp 166/166 throughout,
+        # "No damage recorded"): the static sensors only report a contact with a body that
+        # moves. So the player steps left and right inside them (the fire's damage rect is
+        # +-14, a cloud's radius 16), which also re-enters them.
         self.gl("spawn", FLOOR_FIRE, 0, 0)
-        died = []
+        died, hps = [], []
         end = time.time() + 75
         while time.time() < end and not died:
             for _ in range(6):
                 self.gl("spawn", CLOUD, 0, 0)
-            time.sleep(4)
+            for _ in range(4):
+                self.gl("input", 200, 1, 0)
+                time.sleep(0.3)
+                self.gl("input", 200, -1, 0)
+                time.sleep(0.3)
+            p = self.gl("state").get("player") or {}
+            hps.append((p.get("hp"), round(p.get("x", 0))))
+            if p.get("dead"):
+                time.sleep(1.5)
             died = re.findall(r"\[HWP:deathrecap\] (\S+) died: ([^\n|]*)\|([^\n]*)", self.log_since(mark))
-        self.flag("hazard_death", bool(died), f"{died[-1:]}")
+            if p.get("dead"):
+                break
+        self.flag("hazard_death", bool(died), f"{died[-1:]}; cht_god {god}, (hp, x) over time {hps}")
         if died:
             summary = died[-1][1].strip()
             sources = [s.strip() for s in re.split(r",\s*", summary) if s.strip()]
@@ -484,7 +566,8 @@ class Checks(Base):
         time.sleep(2)
         self.snap("ui-recap-hazards")
         r = self.hwp("recap", 0.5, until="Last death")
-        self.flag("recap_cmd_hazards", "Hazards" in r, r.strip()[-160:])
+        said = re.findall(r"\[HWP\] ((?:Last death|No damage recorded)[^\n]*)", r)
+        self.flag("recap_cmd_hazards", bool(said) and "Hazards" in said[-1], f"hwp recap: {said}")
         self.g.key("enter")
         self.wait_phase("town", 120)
         time.sleep(2)

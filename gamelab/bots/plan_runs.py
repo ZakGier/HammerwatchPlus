@@ -46,12 +46,21 @@ class Checks(Base):
             self.hwp("god", 0.4)
 
     def new_char(self, cls, name):
+        """A fresh character, in town. gl char swaps the record and respawns the player on the
+        level already loaded (no level change): in a run the new character would stand in that
+        run (plan-runs-a 124403), so the old one leaves the run first."""
+        was = self.gl("state").get("phase")
+        if was != "town":
+            self.to_town()
         self.gl("char", cls, name)
         ok = self.wait_phase("town", 60)
+        if not ok:
+            self.to_town()
+            ok = self.wait_phase("town", 30)
         time.sleep(2)
         st = self.gl("state")
-        ok = ok and st.get("player", {}).get("class") == cls
-        self.notes.append(f"char {name}: phase {st.get('phase')}, class {st.get('player', {}).get('class')}")
+        ok = ok and st.get("phase") == "town" and st.get("player", {}).get("class") == cls
+        self.notes.append(f"char {name}: phase {was} -> {st.get('phase')}, class {st.get('player', {}).get('class')}")
         return ok
 
     def window(self):
@@ -206,7 +215,10 @@ class Checks(Base):
         """architect s1: the Architect row of the run-start loadout is clickable; picks
         register; the picker's cost and multiplier are vanilla's (CalcCost: the summed cost
         times CalcArchitectCostMul); starting the run takes that cost."""
-        self.new_char("paladin", "LabArchitect")
+        town = self.new_char("paladin", "LabArchitect")
+        self.flag("arch_town", town, "the new character is in town" if town else "the new character is not in town")
+        if not town:
+            return
         b = self.gl("build", "architect")
         lvl = (self.gl("buildings").get("buildings") or {}).get("architect", -1)
         self.flag("arch_building", lvl is not None and lvl >= 0, f"build {b.get('ok')} {b.get('error', '')}, variation {lvl}")
@@ -283,7 +295,10 @@ class Checks(Base):
     def portal_minimap(self):
         """campaign s1 (the minimap pip; the portal's text is section portal): the portal is in
         town, the HUD minimap on (ui_minimap 1) and the player 70 px south of it, for the shot."""
-        self.new_char("paladin", "LabPortal")
+        town = self.new_char("paladin", "LabPortal")
+        self.flag("pip_town", town, "the new character is in town" if town else "the new character is not in town")
+        if not town:
+            return
         p = self.gl("near", 8000, "forsaken_portal").get("units") or []
         self.flag("pip_portal_in_town", bool(p), f"{p[:1]}")
         if not p:
@@ -375,30 +390,62 @@ class Checks(Base):
         if not w:
             return
         seen = {"casting": set(), "scenes": set()}
+        spots = []
+
+        def warden():
+            a = [x for x in self.gl("actors", 800, "bosses/warden/warden").get("actors") or []
+                 if x.get("name", "").endswith("warden.unit")]
+            if a:
+                seen["casting"].update(a[0].get("casting") or [])
+                seen["scenes"].add(a[0].get("scene", ""))
+            return a[0] if a else None
 
         def watch(until):
-            t0 = time.time()
+            # 3 s in melee (whirlwind range 80), then 6 s standing still 160 px off in a clear
+            # line of fire (ballista range 70-260, castpoint 400): a target that keeps moving
+            # or a flip to melee mid-cast is what an arrow would otherwise end on
             while time.time() < until - 0.5:
-                # a gl round trip is ~0.3 s: phases go by the clock, not by loop count
-                a = [x for x in self.gl("actors", 800, "bosses/warden/warden").get("actors") or []
-                     if x.get("name", "").endswith("warden.unit")]
-                if a:
-                    seen["casting"].update(a[0].get("casting") or [])
-                    seen["scenes"].add(a[0].get("scene", ""))
-                    # close (whirlwind range 80) for 4 s, then 180 px off (the ballista's 70-260)
-                    off = 40 if (time.time() - t0) % 8 < 4 else 180
-                    self.gl("teleport", a[0]["x"], a[0]["y"] + off)
-                time.sleep(0.2)
+                near_end = time.time() + 3
+                while time.time() < min(near_end, until - 0.5):
+                    a = warden()
+                    if a:
+                        self.gl("teleport", a["x"], a["y"] + 40)
+                    time.sleep(0.2)
+                a = warden()
+                if not a or time.time() >= until - 1:
+                    continue
+                wx, wy = a["x"], a["y"]
+                cands = [(wx, wy + 160), (wx - 160, wy), (wx + 160, wy), (wx, wy - 160)]
+                # one gl multi for the four rays (each gl command is a ~0.3 s round trip)
+                rays = self.g.gl_multi([["rayhit", round(wx, 1), round(wy, 1), round(cx, 1), round(cy, 1)] for cx, cy in cands])
+                clear = [c for c, r in zip(cands, rays) if not r.get("wall")]
+                spot = (clear or cands)[0]
+                spots.append((int(spot[0] - wx), int(spot[1] - wy), bool(clear)))
+                self.gl("teleport", spot[0], spot[1])
+                far_end = time.time() + 6
+                while time.time() < min(far_end, until - 0.5):
+                    warden()
+                    time.sleep(0.3)
 
-        ev = self.trail(20000, 800, "bosses/warden/", 100, watch) or {}
+        # step 120: 200 player points cover the 24 s (an arrow's first and last sight are per frame anyway)
+        ev = self.trail(24000, 800, "bosses/warden/", 120, watch) or {}
         units = ev.get("units") or []
+        plr = ev.get("plr") or []
         names = [u.get("name", "").split("/")[-1] for u in units]
-        arrows = [u for u in units if u.get("name", "").endswith("arrow.unit")
-                  and math.hypot(u["x1"] - u["x0"], u["y1"] - u["y0"]) > 30]
+        shots = [u for u in units if u.get("name", "").endswith("/arrow.unit")]
+        # flown: seen at two positions (trail sees every frame, so even one that hits at once counts)
+        arrows = [u for u in shots if math.hypot(u["x1"] - u["x0"], u["y1"] - u["y0"]) >= 2
+                  or len({(x, y) for x, y, _ in u.get("pts") or []}) >= 2]
+        detail = []
+        for u in shots[:8]:
+            pp = min(plr, key=lambda q: abs(q[2] - u["t1"])) if plr else None
+            to_plr = int(math.hypot(pp[0] - u["x1"], pp[1] - u["y1"])) if pp else -1
+            detail.append(f"{int(math.hypot(u['x1'] - u['x0'], u['y1'] - u['y0']))}px/{u['t1'] - u['t0']}ms end {to_plr}px from player")
         bombs = [n for n in names if "bomb" in n]
         whirl = any("Whirlwind" in c for c in seen["casting"]) or any("whirlwind" in s for s in seen["scenes"])
         self.flag("warden_whirlwind", whirl, f"casting {sorted(seen['casting'])}, scenes {sorted(seen['scenes'])[:12]}")
-        self.flag("warden_shoots", bool(arrows), f"{len(arrows)} arrows flew; units {sorted(set(names))}")
+        self.flag("warden_shoots", bool(arrows), f"{len(arrows)}/{len(shots)} arrows flew: {detail}; far spots {spots}; "
+                  f"units {sorted(set(names))}")
         self.flag("warden_bombs", bool(bombs), f"bomb units {bombs} (warden.inc: the bomb fan is NG only)")
 
     def boss_councilors(self):
@@ -418,30 +465,44 @@ class Checks(Base):
         nodes = self.gl("ws", "BossLichNode").get("scripts") or []
         node_pos = [(n["x"], n["y"]) for n in nodes] or LICH_NODES
         samples = []
-
-        def watch(until):
-            while time.time() < until - 0.5:
-                a = [x for x in self.gl("actors", 900, "HoH1BossLich").get("actors") or []
-                     if x.get("name", "").split("/")[-1] in WRAITHS]
-                samples.append(a)
-                self.gl("teleport", 0, -144)  # the room's middle (BossLichRoom (0,-144) 288x224)
-                time.sleep(0.4)
-
-        ev = self.trail(20000, 900, "HoH1BossLich", 100, watch) or {}
-        tracks = [u for u in ev.get("units") or [] if u.get("name", "").split("/")[-1] in WRAITHS]
         visits = {}
-        for u in tracks:
-            hit = set()
-            for px, py, _ in u.get("pts") or []:
-                for i, (nx, ny) in enumerate(node_pos):
-                    if math.hypot(px - nx, py - ny) <= 16:
-                        hit.add(i)
-            visits[u["name"].split("/")[-1]] = sorted(hit)
+
+        # The scythe's attack (max-range 100, melee 35, period 1500-2250, castpoint 2200) holds it
+        # still for 2.2 s each time it is near the player: at the room's middle, which 53 of the
+        # level's 82 node-to-node legs pass within 100 px, it barely got past one node in 20 s
+        # (plan-runs-c 124854). So 20 s at the middle (everyone attacks), then 20 s at
+        # (-120,-40), still in the room, near 29 legs, where the walks between nodes show.
+        for spot in ((0, -144), (-120, -40)):
+            def watch(until, spot=spot):
+                last = 0
+                while time.time() < until - 0.5:
+                    a = [x for x in self.gl("actors", 900, "HoH1BossLich").get("actors") or []
+                         if x.get("name", "").split("/")[-1] in WRAITHS]
+                    samples.append(a)
+                    # stand still; put back every 2 s in case something pushed the player
+                    if time.time() - last >= 2:
+                        self.gl("teleport", *spot)
+                        last = time.time()
+                    time.sleep(0.3)
+
+            ev = self.trail(20000, 900, "HoH1BossLich", 100, watch) or {}
+            for u in ev.get("units") or []:
+                name = u.get("name", "").split("/")[-1]
+                if name not in WRAITHS:
+                    continue
+                hit = visits.setdefault(name, set())
+                for px, py, _ in u.get("pts") or []:
+                    for i, (nx, ny) in enumerate(node_pos):
+                        if math.hypot(px - nx, py - ny) <= 16:
+                            hit.add(i)
+        visits = {k: sorted(v) for k, v in visits.items()}
+        still = {w: f"{sum(1 for s in samples for a in s if a['name'].endswith(w) and not a.get('moving'))}/"
+                    f"{sum(1 for s in samples for a in s if a['name'].endswith(w))}" for w in WRAITHS}
         alive3 = sum(1 for s in samples if len([a for a in s if not a.get("dead")]) == 3)
         moving = [a for s in samples for a in s if a.get("moving")]
         casters = {a["name"].split("/")[-1] for s in samples for a in s if a.get("casting")}
-        self.flag("council_node_to_node", len(tracks) == 3 and all(len(v) >= 2 for v in visits.values()),
-                  f"nodes passed within 16 px: {visits} ({len(node_pos)} nodes)")
+        self.flag("council_node_to_node", len(visits) == 3 and all(len(v) >= 2 for v in visits.values()),
+                  f"nodes passed within 16 px over 40 s: {visits} ({len(node_pos)} nodes); samples standing still: {still}")
         self.flag("council_untargetable_moving", bool(moving) and not any(a.get("targetable") for a in moving),
                   f"{len(moving)} moving samples, targetable while moving {sum(1 for a in moving if a.get('targetable'))}")
         self.flag("council_fight_together", alive3 > 0 and len(casters) >= 2,

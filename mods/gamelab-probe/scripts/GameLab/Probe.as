@@ -843,6 +843,18 @@ namespace GameLab
 			return;
 		}
 		plr.CreateCharacter(pClass, args[1], PlayerVoice::Instances[0]);
+		// CreateCharacter leaves the portrait empty; the vanilla dyer and HUD expect one piece per category.
+		array<PlayerPortraitCategory> cats = { PlayerPortraitCategory::Class, PlayerPortraitCategory::Hair,
+			PlayerPortraitCategory::Nose, PlayerPortraitCategory::Eyes, PlayerPortraitCategory::Mouth };
+		array<PlayerPortraitPiece@> pieces;
+		for (uint c = 0; c < cats.length(); c++)
+		{
+			auto piece = PlayerPortraitPiece::GetDefaultPiece(cats[c]);
+			if (piece !is null)
+				pieces.insertLast(piece);
+		}
+		if (pieces.length() > 0)
+			plr.SetPortrait(pieces);
 		gm.SpawnLocalPlayers();
 		gm.m_windowManager.QueueClear();
 		GetHUD().RefreshPortrait(plr);

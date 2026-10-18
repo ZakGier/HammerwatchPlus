@@ -76,6 +76,7 @@
    },
    "name": "architect loadout row",
    "expect": {
+    "arch_town": true,
     "arch_building": true,
     "arch_loadout_open": true,
     "arch_row_clickable": true,
@@ -94,6 +95,7 @@
    },
    "name": "portal minimap pip",
    "expect": {
+    "pip_town": true,
     "pip_portal_in_town": true,
     "pip_minimap_on": true
    }

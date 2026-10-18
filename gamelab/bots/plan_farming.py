@@ -16,6 +16,7 @@ Sections, in this order:
 import json
 import re
 import time
+from pathlib import Path
 
 from gamelab.bots.plan_checks import Checks as Base
 from gamelab.hps import hash_string
@@ -29,6 +30,9 @@ YIELD = {"cabbage": (2, 4), "carrot": (3, 5), "onion": (2, 4), "potato": (3, 6),
          "lucky_leaf": (1, 2), "ember_kush": (1, 2), "saints_sage": (1, 2), "gamblers_gold": (1, 2)}
 HERB_SLOT = hash_string("hwp_herb")
 LUCKY_BUFF = hash_string("hwp_herb_lucky_leaf")
+REPO = Path(__file__).resolve().parents[2]
+# the wild plot units' minimap sprite (tools/make_wild_plots.py): the crop icon of core's map icons
+WILD_ICON = 'texture="gui/hwp/map_icons.png" frame="24 0 9 11"'
 WILD_LINE = r"\[HWP:farming\] (wild (\w+) plot at (-?\d+),(-?\d+)|no spot for a wild plot on this floor)"
 
 
@@ -65,10 +69,14 @@ class Checks(Base):
             time.sleep(0.5)
         return not self.gl("state").get("window")
 
+    def windows(self, depth=12):
+        """The widgets dump's window roots (top last), without the HUD's ("HUD", "HUD:<x>":
+        listed after the windows; HWPDeathRecapHUD has a "title" too)."""
+        return [r for r in self.gl("widgets", depth).get("roots", []) if not (r.get("root") or "").startswith("HUD")]
+
     def top_widget(self, wid, depth=12):
-        """The widget with this id in the top-most window that has one (the widgets dump lists
-        the windows top last), or {}."""
-        for root in reversed(self.gl("widgets", depth).get("roots", [])):
+        """The widget with this id in the top-most window that has one, or {}."""
+        for root in reversed(self.windows(depth)):
             for n in root.get("nodes", []):
                 if n.get("id") == wid:
                     return n
@@ -76,7 +84,7 @@ class Checks(Base):
 
     def row_ids(self):
         ids = set()
-        for root in self.gl("widgets", 12).get("roots", []):
+        for root in self.windows():
             for n in root.get("nodes", []):
                 m = re.fullmatch(r"row-(\d+)", n.get("id") or "")
                 if m:
@@ -107,12 +115,44 @@ class Checks(Base):
         us = [u for g in grooves for u in g["units"]]
         return (min(u["x"] for u in us), min(u["y"] for u in us), max(u["x"] for u in us), max(u["y"] for u in us))
 
+    def stand(self, x, y, tries=6):
+        """Teleport and stay: in run 20261018-120212 the player walked off a teleport in the
+        half second before a use (c122 to -441,688, at -325,820 by c125: the plant landed on
+        another row). Teleport until the position holds."""
+        for _ in range(tries):
+            self.gl("teleport", x, y)
+            time.sleep(0.5)
+            pl = self.gl("state").get("player") or {}
+            if dist((pl.get("x", 1e9), pl.get("y", 1e9)), (x, y)) <= 3:
+                return True
+            time.sleep(1.0)
+        return False
+
     def on_groove(self, g):
         """Stand on a groove (its middle plot unit): PlotIndexAt reads the player's position."""
         u = g["units"][len(g["units"]) // 2]
-        self.gl("teleport", u["x"], u["y"] + 2)
-        time.sleep(0.4)
+        self.stand(u["x"], u["y"] + 2)
         return u
+
+    @staticmethod
+    def plot_order(gr):
+        """The grooves in plot index order (DetectFields: the onion columns by x, then the
+        wheat rows by y): plot i is "Farm Plot i+1" and "on plot i" in the log."""
+        return gr["v"] + gr["h"]
+
+    def use_plot(self, g, title=""):
+        """Use a groove; with a title ("Farm Plot N"), until its window has that title. Returns
+        (window, title read)."""
+        win, got = "", ""
+        for _ in range(3):
+            self.on_groove(g)
+            win = self.gl("use", "farm_groove").get("window", "")
+            time.sleep(0.5)
+            got = self.top_widget("title").get("text", "") if win == "HWPFarmMenu" else ""
+            if not title or got == title:
+                break
+            self.close_windows()
+        return win, got
 
     def farm_status(self):
         """hwp farm: the planted list, the seeds owned, the can line."""
@@ -375,31 +415,44 @@ class Checks(Base):
             return
         names = self.seed_names()
         row = names.index("Lucky Leaf") if "Lucky Leaf" in names else -1
-        self.on_groove(gr["h"][0])
-        self.gl("use", "farm_groove")
-        time.sleep(0.5)
-        if row >= 0:
+        order = self.plot_order(gr)
+        want = order.index(gr["h"][0])
+        mark = len(self.g.read_log())
+        win, title = self.use_plot(gr["h"][0], f"Farm Plot {want + 1}")
+        if row >= 0 and title == f"Farm Plot {want + 1}":
             self.gl("press", f"row-{row}")
             time.sleep(1.0)
         self.close_windows()
         planted, _, _ = self.farm_status()
-        self.flag("s7_planted", g0 - g1 == 150 and "Lucky Leaf" in planted, f"paid {g0 - g1}, seeds {names}, planted {planted!r}")
+        on = re.findall(r"planted lucky_leaf on plot (\d+)", self.g.read_log()[mark:])
+        plot = int(on[-1]) if on else -1
+        self.flag("s7_planted", g0 - g1 == 150 and "Lucky Leaf" in planted and 0 <= plot < len(order),
+                  f"paid {g0 - g1}, seeds {names}, {win} {title!r}, planted {planted!r} (log: plot {plot}, aimed at {want})")
+        if not 0 <= plot < len(order):
+            return
         for _ in range(6):
             if "Lucky Leaf ready" in planted:
                 break
             self.hwp("farm grow", 0.5, until="runs counted")
             planted, _, _ = self.farm_status()
+        # a ready plot harvests on use (HWPFarmPlot.Interact: RequestHarvest, no window); a
+        # window means the use hit another plot
         mark = len(self.g.read_log())
-        self.on_groove(gr["h"][0])
-        self.gl("use", "farm_groove")
-        time.sleep(1.0)
-        self.close_windows()
-        got = re.findall(r"harvested (\d+)x lucky_leaf \(\+(\d+) seeds\)", self.g.read_log()[mark:])
-        self.flag("s7_harvested", bool(got) and 1 <= int(got[-1][0]) <= 2, f"{planted!r}; {got}")
+        got, missed = [], []
+        for _ in range(3):
+            win, title = self.use_plot(order[plot])
+            time.sleep(1.0)
+            if win:
+                missed.append(title)
+                self.close_windows()
+            got = re.findall(r"harvested (\d+)x lucky_leaf \(\+(\d+) seeds\)", self.g.read_log()[mark:])
+            if got:
+                break
+        self.flag("s7_harvested", bool(got) and 1 <= int(got[-1][0]) <= 2,
+                  f"{planted!r}; plot {plot}; {got}; windows instead {missed}")
         # smoke it from an empty plot's window (the herb rows come after the plant rows)
-        self.on_groove(gr["h"][-1])
-        w = self.gl("use", "farm_groove").get("window", "")
-        time.sleep(0.5)
+        empty = order.index(gr["h"][-1])
+        w, _ = self.use_plot(gr["h"][-1], f"Farm Plot {empty + 1}")
         rows = self.row_ids()
         active0 = self.top_widget("active").get("text", "")
         if rows:
@@ -414,7 +467,7 @@ class Checks(Base):
 
     def herb_loadout(self):
         """s7: the mission board's loadout (vanilla mission_start: SetMission + the loadout
-        menu); it should list the herb (no loadout segment does: not implemented). Its
+        menu); the farming loadout segment lists the herb (HWPHerbLoadout). Its
         constructor empties the mission buffs (ResetForNewMission, GUI/MissionLoadoutMenu.as:207):
         the farming fix puts the herb back. Then the run has it; after the run it is gone."""
         self.close_windows()
@@ -422,10 +475,14 @@ class Checks(Base):
         self.g.console("mission_start bandit_keep")
         time.sleep(2.0)
         w = self.gl("state").get("window")
-        listed = "Lucky Leaf" in self.widget_text()
+        line = ""  # the farming loadout segment's text (HWPHerbLoadout)
+        for root in self.windows():
+            if root.get("root") == "MissionLoadoutMenu":
+                line = next((n.get("text", "") for n in root.get("nodes", []) if n.get("id") == "hwp-herb"), "")
+        listed = "Lucky Leaf" in line
         kept, _ = self.herb_buff()
         back = re.findall(r"\[HWP:farming\] the loadout cleared the mission buffs: (.*)", self.g.read_log()[mark:])
-        self.flag("s7_loadout_lists_herb", w == "MissionLoadoutMenu" and listed, f"{w}, 'Lucky Leaf' in its widgets: {listed}")
+        self.flag("s7_loadout_lists_herb", w == "MissionLoadoutMenu" and listed, f"{w}, herb line {line!r}")
         self.flag("s7_herb_survives_loadout", w == "MissionLoadoutMenu" and kept, f"buff after the loadout opened {kept}, {back}")
         self.gl("func", "play")
         ok = self.wait_phase("mission", 150)
@@ -458,7 +515,7 @@ class Checks(Base):
     def wild_floor(self):
         """s11: at farm.run_chance 100 the first floor gets a wild plot, beside a pot, crate or
         chest (FindWildSpot: FreeSpot 56 px from one). The player is left on it for the shot
-        (its minimap icon)."""
+        (its minimap icon: the map tab is left open on it)."""
         mark = len(self.g.read_log())
         ok = self.start_floor(0)
         self.god_on()
@@ -476,10 +533,28 @@ class Checks(Base):
         dmin = min((dist((u["x"], u["y"]), (x, y)) for u in anchors), default=-1)
         self.flag("s11_wild_beside_anchor", bool(plots) and 0 <= dmin <= 60,
                   f"plot {plots[:1]}, nearest anchor {dmin:.0f} px {[(a['name'], a['behavior']) for a in anchors[:3]]}")
+        # the minimap icon: the plot unit's scene has a minimap sprite (Verbs_farming mapicons),
+        # the unit file's sprite is the crop icon; the containers beside it draw none. Each query
+        # is filtered: mapicons lists FetchAllUnits order, capped at 24 (20261018-130613: 52
+        # units within 80 px, the plot was cut)
+        r = self.gl("mapicons", x, y, 24, "doodads/hwp/wild/")
+        mine = r.get("units") or []
+        ctl = self.gl("mapicons", x, y, 80, "doodads/containers/")
+        boxes = ctl.get("units") or []
+        unit_file = REPO / "mods" / "farming" / "doodads" / "hwp" / "wild" / f"{wild[-1][1]}.unit"
+        sprite = unit_file.read_text(encoding="utf-8") if unit_file.is_file() else ""
+        crop = WILD_ICON in sprite and (REPO / "mods" / "core" / "gui" / "hwp" / "map_icons.png").is_file()
+        self.flag("s11_wild_minimap_icon", bool(r.get("minimap")) and bool(mine) and all(u["icon"] and not u["hidden"] for u in mine)
+                  and crop, f"minimap {r.get('minimap')} (ui_minimap {r.get('uiMinimap')}); plot {mine[:1]}; crop icon in "
+                  f"{unit_file.name}: {crop}; containers within 80 px with an icon {sum(1 for u in boxes if u.get('icon'))} "
+                  f"of {len(boxes)}")
+        self.gl("menu", "map")
+        time.sleep(0.8)
 
     def wild_use(self):
         """s11: using it gives the crop's usual yield, opens no window (no planting), and it is
         gone for this player: not usable, a second use yields nothing."""
+        self.close_windows()  # the map tab, left open for the shot
         mark = len(self.g.read_log())
         u = self.gl("use", "doodads/hwp/wild/")
         time.sleep(0.8)

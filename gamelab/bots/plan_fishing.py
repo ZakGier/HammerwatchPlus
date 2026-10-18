@@ -10,7 +10,8 @@ Sections:
 - fish_hit: a wielded fish's swing on a Bandit Keep floor takes a dummy's HP (fishing s5).
 - fish_enchant: an uncommon fish at an enchanter (shop level set, as the town's prefab
   does): Upgrade, then Enchant and a new modifier; the worked fish is no ware any more and
-  Sell leaves it in the bag; Enchant on a fresh (unworked) uncommon / rare fish (fishing s6).
+  Sell leaves it in the bag while fresh 1/2/3-star fish sell; Enchant on a fresh (unworked)
+  uncommon / rare fish, which is caught with its quality's modifiers (fishing s6).
 - gambler_sell: fish of 1/2/3 stars, crops and a worked fish at the Gambler: the Sell
   caption, gold for crops, tokens for fish, the token line, the worked fish kept (gambler s7).
 - rod_slot: the character screen's rod slot and its tooltip, before and after a rod (fishing s13).
@@ -25,6 +26,7 @@ Sections:
 Verbs: bagitems, wield, shoplevel, wcaption, wchildren, pressin, sweepclick
 (mods/gamelab-hands/scripts/GameLab/Verbs_fishing.as) and tooltip (Verbs_farming.as)."""
 import json
+import math
 import re
 import time
 from pathlib import Path
@@ -37,12 +39,15 @@ TIER = {"perch": 1, "carp": 1, "trout": 2, "pike": 2, "salmon": 3, "sturgeon": 3
         "golden_carp": 4, "abyssal_eel": 4}
 STARS = {1: 1, 2: 1, 3: 2, 4: 3}            # StarOf
 QUALITY = {1: 1, 2: 2, 3: 4}                # stars -> Item::Quality bits (common, uncommon, rare)
+MODS = {1: 0, 2: 1, 4: 2}                   # Equipment::EquipmentModifiersPerQuality by quality
 TOKENS = {1: 1, 2: 3, 3: 5}                 # bet tokens per fish by stars
 FISH_ILVL = {1: 1, 2: 5, 3: 10, 4: 15}      # town catches, per tier
 ZONE_WIDTH = [40, 26, 16, 10]
 MARKER_SPEED = [0.18, 0.23, 0.28, 0.34]
 BAR_WIDTH, MARKER_WIDTH, BITE_WINDOW = 240, 3, 2500
 ROD_NAMES = {1: "Driftwood Rod", 2: "Sturdy Rod", 3: "Sea Rod", 4: "Captain's Rod"}
+TRAP_FULL = "doodads/hwp/fish_trap_full.unit"
+TRAP_TO_SPOT = (44, -40)                    # a trap sits at its coast spot + (TRAP_DX, TRAP_DY) = (-44, 40)
 WELLS = ("well_default", "well_dark_halls", "barrel_refill", "crypt_refill", "fountain")
 
 
@@ -106,12 +111,56 @@ class Checks(Base):
             time.sleep(0.5)
 
     def exceptions_since(self, mark):
-        lines = self.g.read_log()[mark:].splitlines()
+        """Script exceptions since the log offset mark. A verb's own call chain is caught by
+        the probe ("exception in verb ..." reply, no "Script exception" line), so the
+        heartbeat's exceptions count is compared too (waits for a heartbeat after mark)."""
+        end = time.time() + 2.5
+        while time.time() < end and '"ev":"hb"' not in self.g.read_log()[mark:]:
+            time.sleep(0.2)
+        log = self.g.read_log()
+        lines = log[mark:].splitlines()
         out = []
         for i, ln in enumerate(lines):
-            if "Script exception" in ln:
+            if "Script exception" in ln or "exception in verb" in ln:
                 out.append(" / ".join(x.strip()[-110:] for x in lines[i:i + 3]))
+        before = re.findall(r'"ev":"hb".*?"exceptions":(\d+)', log[:mark])
+        after = re.findall(r'"ev":"hb".*?"exceptions":(\d+)', log[mark:])
+        if before and after and int(after[-1]) > int(before[-1]):
+            out.append(f"heartbeat exceptions {before[-1]} -> {after[-1]}")
         return out
+
+    def enchant_view(self):
+        """Enchant on the main hand (entry 0) of the open enchanter: (modifier entries
+        [{id, caption, selected}], candidates the generator offered ("Num item mods" print),
+        exceptions, top-level groups {id: visible})."""
+        btns, _ = self.entry_buttons()
+        mark = len(self.g.read_log())
+        key = next((b for b, fn in btns.items() if fn == "enchant"), None)
+        if key:
+            self.gl("pressin", "0", key)
+            time.sleep(0.6)
+        ex = self.exceptions_since(mark)
+        cand = re.findall(r"Num item mods: (\d+)", self.g.read_log()[mark:])
+        # the window's own print: which item the view is for
+        self.enchanting = (re.findall(r"Now enchanting: ([^\r\n]*)", self.g.read_log()[mark:]) or [""])[-1].strip()
+        groups = {n["id"]: n["visible"] for n in self.gl("wchildren", "^enchant", 1).get("nodes", [])}
+        entries, cur = [], None
+        for n in self.gl("wchildren", "enchant-list", 2).get("nodes", []):
+            if n["depth"] == 1:
+                cur = {"id": n["id"], "caption": n["caption"], "selected": False}
+                entries.append(cur)
+            elif cur is not None and n["id"] == "selected":
+                cur["selected"] = n["visible"]
+        return entries, int(cand[-1]) if cand else -1, ex, groups, btns
+
+    def blueprints(self):
+        """Every modifier blueprint in the town (base cheat; the scenario sets e_cheats 1)."""
+        mark = len(self.g.read_log())
+        self.g.console("cht_add_all_blueprints")
+        end = time.time() + 4
+        while time.time() < end and "adding ItemModifier to town" not in self.g.read_log()[mark:]:
+            time.sleep(0.25)
+        return len(re.findall(r"adding ItemModifier to town", self.g.read_log()[mark:]))
 
     def reel(self, rod, timeout_ms=9000, report="log,casts"):
         """One cast and reel through gl sweepclick; the sweepclick event (result, zx, zw, texts)."""
@@ -186,7 +235,10 @@ class Checks(Base):
         # worms catch tiers 1-2 only (BAIT_MAX_TIER): those are the town's usual fish
         self.flag("fish_town_ilvl", all(1 <= lv.get(t, 0) <= 6 for t in (1, 2)),
                   f"ilvl by tier {lv} (FISH_ILVL {FISH_ILVL}; shrimp/squid catches, tiers 3-4, are 10/15)")
-        self.flag("fish_mods_none", all(not f["mods"] for f in fish), json.dumps([f["mods"] for f in fish]))
+        # a fresh 2/3-star fish has the modifiers its quality has (the enchanter reads them)
+        self.flag("fresh_fish_has_mods", len(by_tier) == 4 and all(
+            len(f["mods"]) == MODS.get(f["quality"], -1) for f in by_tier.values()),
+            "; ".join(f"t{t} q{f['quality']}: {f['mods']}" for t, f in sorted(by_tier.items())))
 
         # wielded: the bag click's path; each star's tooltip on the character screen
         tips = {}
@@ -238,7 +290,7 @@ class Checks(Base):
         dx, dy = u["x"] - pl.get("x", 0), u["y"] - pl.get("y", 0)
         n = max((dx * dx + dy * dy) ** 0.5, 1e-3)
         hp0 = u.get("hp")
-        main = self.main_hand()
+        main = self.bag().get("main", {}).get("id")
         for _ in range(3):
             self.gl("input", 500, 0, 0, round(dx / n, 3), round(dy / n, 3), "main")
             time.sleep(0.9)
@@ -274,25 +326,23 @@ class Checks(Base):
                   and not self.exceptions_since(mark),
                   f"q{main0.get('quality')} -> q{main1.get('quality')}, mods {main1.get('mods')}, dust {paid}, {how}")
 
-        # Enchant: the view of the rare fish's modifier slot, then a different modifier
-        btns, _ = self.entry_buttons()
-        mark = len(self.g.read_log())
-        if "enchant" in btns.values():
-            key = next(b for b, fn in btns.items() if fn == "enchant")
-            self.gl("pressin", "0", key)
-            time.sleep(0.6)
-        ex = self.exceptions_since(mark)
-        groups = {n["id"]: n["visible"] for n in self.gl("wchildren", "^enchant", 1).get("nodes", [])}
-        lst = self.gl("wchildren", "enchant-list", 2).get("nodes", [])
-        entries, cur = [], None
-        for n in lst:
-            if n["depth"] == 1:
-                cur = {"id": n["id"], "caption": n["caption"], "selected": False}
-                entries.append(cur)
-            elif cur is not None and n["id"] == "selected":
-                cur["selected"] = n["visible"]
+        # Enchant: the view of the rare fish's modifier slot, then a different modifier. The
+        # list only shows modifiers whose blueprint the town owns (every one in
+        # modifiers_equipment.sval needs one); the fixture town has none, so first without
+        # (the generator's candidates vs the list), then with every blueprint
+        entries0, cand0, _, _, _ = self.enchant_view()
+        self.close_windows()
+        added = self.blueprints()
+        self.gl("use", "npc_enchanter")
+        time.sleep(0.8)
+        entries, cand, ex, groups, _ = self.enchant_view()
+        cand_fish, listed_fish = cand, len(entries)
+        self.flag("fish_enchant_pool", cand > 0 and len(entries) > 0,
+                  f"no blueprints: {len(entries0)} listed of {cand0} candidates; {added} blueprints added: "
+                  f"{len(entries)} listed of {cand}")
         self.flag("fish_enchant_view", groups.get("enchant") is True and not ex,
-                  f"groups {groups}, {len(entries)} modifiers, exceptions {ex[:1]}")
+                  f"groups {groups}, {len(entries)} modifiers, exceptions {ex[:2]}")
+        lst = entries
         pick = next((x for x in entries if not x["selected"] and x["id"]), None)
         if pick:
             m0 = self.bag().get("main", {})
@@ -311,46 +361,69 @@ class Checks(Base):
         self.close_windows()
         worked = self.bag().get("main", {})
 
-        # the worked fish back in the bag, a fresh 1-star fish beside it: wares and Sell
+        # the worked fish back in the bag, fresh 1/2/3-star fish beside it: wares and Sell.
+        # Fresh 2/3-star fish have modifiers too: the worked one is told apart by its own
+        def is_worked(x):
+            return (x.get("id") == worked.get("id") and x.get("mods") == worked.get("mods")
+                    and x.get("quality") == worked.get("quality"))
+
         if orig:
             self.gl("wield", orig)
-        self.catch(1)
+        for t in (1, 3, 4):
+            self.catch(t)
         b = self.bag()
-        kept = [x for x in b.get("bag", []) if x["id"] == worked.get("id") and x.get("mods")]
-        fresh_ids = [x["id"] for x in b.get("bag", []) if fish_tier(x) and not x.get("mods")]
+        kept = [x for x in b.get("bag", []) if is_worked(x)]
+        fresh = [x for x in b.get("bag", []) if fish_tier(x) and not is_worked(x)]
         wares = self.hwp("wares", 0.4, until="Bet tokens")
         line = (re.findall(r"\[HWP\] (Wares: [^\n]*|You carry no wares\.)", wares) or [""])[-1]
-        base_name = worked.get("id", "?")[len("hwp_fish_"):].replace("_", " ").title()
-        self.flag("worked_not_ware", bool(kept) and base_name not in line and bool(fresh_ids),
-                  f"worked {worked.get('id')} mods {worked.get('mods')} in bag: {bool(kept)}; {line}")
+        n_wares = sum(int(n) for n in re.findall(r"(\d+)x ", line))
+        self.flag("worked_not_ware", bool(kept) and bool(worked.get("mods")) and n_wares == len(fresh) == 3,
+                  f"worked {worked.get('id')} q{worked.get('quality')} mods {worked.get('mods')} in bag: {bool(kept)}; "
+                  f"fresh {[(x['id'], x['quality'], len(x['mods'])) for x in fresh]}; {line}")
+        t0 = self.tokens()
         sold = self.hwp("sell", 0.5, until="[HWP]")
+        t1 = self.tokens()
         b2 = self.bag()
-        still = [x for x in b2.get("bag", []) if x["id"] == worked.get("id") and x.get("mods")]
-        gone = not [x for x in b2.get("bag", []) if fish_tier(x) and not x.get("mods")]
-        self.flag("worked_kept_on_sell", bool(still) and gone,
-                  f"{' '.join(re.findall(r'Sold your wares[^\n]*', sold))[-120:]}; worked kept {bool(still)}, fresh sold {gone}")
+        still = [x for x in b2.get("bag", []) if is_worked(x)]
+        left = [x for x in b2.get("bag", []) if fish_tier(x) and not is_worked(x)]
+        self.flag("worked_kept_on_sell", bool(still) and not left,
+                  f"{' '.join(re.findall(r'Sold your wares[^\n]*', sold))[-120:]}; worked kept {bool(still)}, fresh left {left}")
+        self.flag("fresh_mod_fish_sold", not left and t1 - t0 == 9 and any(x.get("mods") for x in fresh),
+                  f"tokens {t0} -> {t1} (1 + 3 + 5) for {[(x['id'], len(x['mods'])) for x in fresh]}")
 
-        # Enchant on fresh fish (no modifiers), uncommon and rare
+        # Enchant on fresh (unworked) uncommon and rare fish
         for t, flag in ((3, "fresh_uncommon_enchant"), (4, "fresh_rare_enchant")):
             self.catch(t)
-            f = [x for x in self.fish() if fish_tier(x) == t and not x.get("mods")]
+            f = [x for x in self.fish() if fish_tier(x) == t and not is_worked(x)]
             if not f:
                 self.flag(flag, False, "no fresh fish")
                 continue
             self.gl("wield", f[-1]["id"])
             self.gl("use", "npc_enchanter")
             time.sleep(0.8)
-            btns, _ = self.entry_buttons()
-            key = next((b for b, fn in btns.items() if fn == "enchant"), None)
-            mark = len(self.g.read_log())
-            if key:
-                self.gl("pressin", "0", key)
-                time.sleep(0.8)
-            ex = self.exceptions_since(mark)
-            groups = {n["id"]: n["visible"] for n in self.gl("wchildren", "^enchant", 1).get("nodes", [])}
-            self.flag(flag, bool(key) and not ex and groups.get("enchant") is True,
-                      f"{f[-1]['id']} q{f[-1]['quality']} buttons {btns}; exceptions {ex[:2]}")
+            ents, cand_f, ex, groups, btns = self.enchant_view()
+            self.flag(flag, "enchant" in btns.values() and not ex and groups.get("enchant") is True and len(ents) > 0,
+                      f"{f[-1]['id']} q{f[-1]['quality']} mods {f[-1].get('mods')} buttons {btns}; "
+                      f"{len(ents)} listed of {cand_f}; exceptions {ex[:2]}")
             self.close_windows()
+
+        # control: a vanilla longsword of the same quality and item level offers the same pool
+        # (its strength requirement grows with the item level: 18 at ilvl 10; a fish has none)
+        il = worked.get("ilvl", 10)
+        self.hwp("levelup 20", 1.0)
+        self.gl("assign", "str", "all")
+        e = self.gl("equip", "mainhand_longsword_01", "rare", il)
+        main = self.bag().get("main", {})
+        self.gl("use", "npc_enchanter")
+        time.sleep(0.8)
+        ents_v, cand_v, ex_v, _, _ = self.enchant_view()
+        self.close_windows()
+        on_sword = (main.get("id") == "mainhand_longsword_01" and bool(self.enchanting)
+                    and plain(self.enchanting) == plain(main.get("name", "")))
+        self.flag("fish_pool_like_longsword", e.get("ok") and on_sword and cand_v == cand_fish and len(ents_v) == listed_fish,
+                  f"equip {e.get('ok')} {e.get('error', '')}; main {main.get('id')} {main.get('name')!r}, "
+                  f"enchanting {self.enchanting!r}: {len(ents_v)} listed of {cand_v} "
+                  f"(fish: {listed_fish} of {cand_fish}); {ex_v[:1]}")
 
     # --- gambler s7
     def gambler_sell(self):
@@ -379,8 +452,13 @@ class Checks(Base):
         wares = self.hwp("wares", 0.4, until="Bet tokens")
         wl = (re.findall(r"\[HWP\] (Wares: [^\n]*)", wares) or [""])[-1]
         t0, g0 = self.tokens(), self.gold()
+        # the Gambler stands in the tavern (fixture town-tavern); a town without one gets him
+        # beside the player, the unit the gambler module places
+        self.npc("hwp_gambler", "actors/npcs/town/hwp_gambler.unit")
         u = self.gl("use", "hwp_gambler")
         time.sleep(0.6)
+        if "Gambler" not in self.window():
+            self.notes.append(f"gambler_sell: gl use hwp_gambler: {u}, window {self.window()!r}")
         cap = self.gl("wcaption", "sell-btn", "token-amount").get("texts", {})
         sell = plain(cap.get("sell-btn", ""))
         line0 = plain(cap.get("token-amount", ""))
@@ -403,7 +481,8 @@ class Checks(Base):
         self.flag("sell_crops_gold", g1 > g0 and (not gm or g1 - g0 == int(gm.group(1))),
                   f"gold {g0} -> {g1}, caption {gm.group(0) if gm else '-'}")
         self.flag("token_line_up", bool(n0 and n1) and int(n1[0]) - int(n0[0]) == 9, f"{line0!r} -> {line1!r}")
-        kept = [x for x in self.bag().get("bag", []) if x["id"] == worked.get("id") and x.get("mods")]
+        kept = [x for x in self.bag().get("bag", []) if x["id"] == worked.get("id") and x.get("mods") == worked.get("mods")
+                and x.get("quality") == worked.get("quality")]
         self.flag("sell_keeps_worked", bool(kept) and bool(worked.get("mods")),
                   f"{worked.get('id')} mods {worked.get('mods')}, caption after {plain(cap1.get('sell-btn', ''))!r}")
 
@@ -489,25 +568,118 @@ class Checks(Base):
         full = self.gl("near", 8000, "fish_trap_full").get("units") or []
         self.flag("traps_full_shown", len(full) == sum(1 for n in per if n), f"{len(full)} full trap units, {per}")
         src = (REPO / "mods/fishing/doodads/hwp/fish_trap_full.unit").read_text(encoding="utf-8")
-        self.flag("traps_full_icon", "<minimap_sprite" in src and "gui/hwp/map_icons.png" in src, "fish_trap_full.unit (file)")
+        # the live unit's minimap icon (Verbs_farming mapicons: its scene draws a minimap
+        # sprite, not hidden); filtered to the full-trap unit (the reply is capped, FetchAllUnits order)
+        icons = []
+        mi = {}
+        if full:
+            mi = self.gl("mapicons", round(full[0]["x"]), round(full[0]["y"]), 24, TRAP_FULL)
+            icons = mi.get("units") or []
+        file_icon = "<minimap_sprite" in src and "gui/hwp/map_icons.png" in src
+        self.flag("traps_full_icon", bool(mi.get("minimap")) and bool(icons)
+                  and all(u.get("icon") and not u.get("hidden") for u in icons) and file_icon,
+                  f"minimap {mi.get('minimap')} (ui_minimap {mi.get('uiMinimap')}); units {icons[:2]}; "
+                  f"fish_trap_full.unit has a minimap_sprite: {file_icon}")
+        if not full:
+            return
+        # beside the trap, on a clear line to it; the map tab open on it for the scenario's shot
+        spot, tried = self.trap_approach(full[0])
+        self.notes.append(f"traps_run: approach {spot} for the trap at {full[0]['x']},{full[0]['y']} ({tried})")
+        self.gl("menu", "map")
+        time.sleep(0.8)
+
+    def trap_counts(self):
+        st = self.hwp("fishing traps", 0.3, until="[HWP] Fish traps")
+        lists = re.findall(r"Fish traps \d+/\d+: (.*?)\. This run", st)
+        per = []
+        for part in (lists[-1].split("; ") if lists else []):
+            ids = part.split(": ", 1)[-1]
+            per.append(0 if ids == "-" else len(ids.split(",")))
+        return per
+
+    def trap_approach(self, u, skip=()):
+        """A start beside a trap for the walk-up. The trap sits in the sea off its coast spot (the
+        long walk from the town got stuck, 131626) and is used once the player is on its sensor
+        (fish_trap_full.unit rect -20 -20 72 40: x -20..52, y -20..20 from it), so the
+        candidates are 20-48 px outside that rect on the land side (+x, -y; the coast spot
+        is at +44,-40), nearest the coast spot first, with no wall or hard tile on the line to
+        the rect (gl rayhit), not already on the sensor, and where a teleport stays put.
+        The player is left there. (x, y) or None, and what was tried."""
+        tx, ty = round(u["x"]), round(u["y"])
+        sx, sy = TRAP_TO_SPOT
+        cands = [(sx, sy)]
+        for gap in (20, 32, 48):
+            cands += [(52 + gap, 0), (52 + gap, -12), (52 + gap, 12), (36, -20 - gap), (16, -20 - gap),
+                      (0, -20 - gap), (52 + gap * 7 // 10, -20 - gap * 7 // 10)]
+        cands = sorted(set(cands), key=lambda c: math.hypot(c[0] - sx, c[1] - sy))
+        tried = []
+        for dx, dy in cands:
+            cx, cy = tx + dx, ty + dy
+            if (cx, cy) in skip:
+                continue
+            ex, ey = tx + min(max(dx, -20), 52), ty + min(max(dy, -20), 20)
+            h = self.gl("rayhit", cx, cy, ex, ey)
+            if h.get("tile") or (h.get("wall") and not h.get("wsensor") and h.get("wname") != TRAP_FULL):
+                tried.append(f"{cx},{cy} blocked ({h.get('wname') or h.get('th')})")
+                continue
+            self.gl("teleport", cx, cy)
+            time.sleep(0.6)
+            pl = self.p.state().get("player", {})
+            px, py = pl.get("x", 0), pl.get("y", 0)
+            if math.hypot(px - cx, py - cy) > 12:
+                tried.append(f"{cx},{cy} teleport ended at {round(px)},{round(py)}")
+                continue
+            tops = [x for x in self.gl("usables").get("usables") or [] if x.get("top")]
+            if tops and (tops[0].get("unit") or {}).get("unit") == u["unit"]:
+                tried.append(f"{cx},{cy} already on the sensor")
+                continue
+            return (cx, cy), "; ".join(tried[-4:]) or "first candidate"
+        return None, "; ".join(tried[-6:])
+
+    def traps_walk(self):
+        """fishing s9: walking up to a full trap empties it into the bag. traps_run left the player
+        at a clear spot beside it (the map shot); a walk that fails is retried from the next
+        spot (up to 4 starts), then gl use is the labelled fallback (trap_collected fails then)."""
+        self.close_windows()
+        full = self.gl("near", 8000, TRAP_FULL).get("units") or []
         if not full:
             self.flag("trap_collected", False, "no full trap")
             return
+        u = full[0]
+        per = self.trap_counts()
         n0 = len(self.fish())
-        r = self.p.use(full[0]["unit"], timeout=60)
-        time.sleep(1.2)
-        how = f"{r.result}: {r.reason}"
-        n1 = len(self.fish())
-        if n1 == n0:
+        walked, tries, done = 0, [], set()
+        for attempt in range(4):
+            pl = self.p.state().get("player", {})
+            here = (round(pl.get("x", 0)), round(pl.get("y", 0)))
+            near = 40 <= math.hypot(here[0] - u["x"], here[1] - u["y"]) <= 120
+            if attempt > 0 or not near:
+                spot, why = self.trap_approach(u, skip=done)
+                if spot is None:
+                    tries.append(f"no start left ({why})")
+                    break
+                here = spot
+            done.add(here)
+            r = self.p.use(u["unit"], timeout=30)
+            time.sleep(1.2)
+            pl = self.p.state().get("player", {})
+            walked = len(self.fish()) - n0
+            tries.append(f"from {here[0]},{here[1]} ({round(math.hypot(here[0] - u['x'], here[1] - u['y']))} px"
+                         f" from the trap) to {round(pl.get('x', 0))},{round(pl.get('y', 0))}: {r.result}: {r.reason}"
+                         f", {walked} fish")
+            if walked > 0:
+                break
+        fallback = 0
+        if walked <= 0:
             self.gl("use", "fish_trap_full")
             time.sleep(1.0)
-            n1 = len(self.fish())
-            how += " (then gl use)"
-        st2 = self.hwp("fishing traps", 0.3, until="[HWP] Fish traps")
-        lists2 = re.findall(r"Fish traps \d+/\d+: (.*?)\. This run", st2)
-        per2 = [0 if p.split(": ", 1)[-1] == "-" else len(p.split(": ", 1)[-1].split(",")) for p in (lists2[-1].split("; ") if lists2 else [])]
-        self.flag("trap_collected", n1 - n0 > 0 and sum(per) - sum(per2) == n1 - n0,
-                  f"bag fish {n0} -> {n1}, traps {per} -> {per2}, {how}")
+            fallback = len(self.fish()) - n0
+            tries.append(f"FALLBACK gl use: {fallback} fish (not a walk-up)")
+        per2 = self.trap_counts()
+        self.flag("trap_collected", walked > 0 and sum(per) - sum(per2) == walked,
+                  f"walk-up: bag fish {n0} -> {n0 + walked + fallback}, traps {per} -> {per2}; " + " | ".join(tries))
+        left = self.gl("near", 8000, TRAP_FULL).get("units") or []
+        self.flag("trap_emptied", u["unit"] not in [x["unit"] for x in left], f"full trap units after: {len(left)}")
 
     # --- fishing s10
     def run_spot(self):
@@ -628,7 +800,7 @@ class Checks(Base):
         self.flag("stars_boss_3star", len(f5) >= 5 and all(STARS[t] == 3 for t in f5), f"boss floor tiers {f5}")
 
 
-def run(p, sections="fish_sword,fish_enchant,gambler_sell,rod_slot", **_):
+def run(p, sections="fish_sword,fish_enchant,rod_slot", **_):
     c = Checks(p)
     for s in sections.split(","):
         try:

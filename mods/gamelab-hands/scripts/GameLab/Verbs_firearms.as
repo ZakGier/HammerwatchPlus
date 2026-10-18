@@ -72,7 +72,8 @@ namespace GameLab
 	// (PlayerSkillType), targeting mode (Skills::TargetingMode: 0 Passive, 1 Direction,
 	// 4 TargetAOE), flat mana cost (GetCost), cooldown progress, and the button the input
 	// helper reads it from: PlayerTargetingHelper.GetSkillInput (744-749) counts the non-passive
-	// spells after the dash, 0 Skill1, 1 Skill2, 2 and beyond Skill3. With mana as a fraction
+	// spells after the dash, 0 Skill1, 1 Skill2, 2 Skill3, 3-5 core's extra keys hwp_skill4..6
+	// (SpellButton, Input.as; Skill3 without core). With mana as a fraction
 	// of the record (m_record.mana) times the maximum, unrounded.
 	void VerbSkillbar(const string &in id, array<string>@ args)
 	{
@@ -99,7 +100,7 @@ namespace GameLab
 				button = "dash";
 			else if (i >= 1 && mode != Skills::TargetingMode::Passive && sk.m_type == PlayerSkillType::Spell)
 			{
-				button = spell == 0 ? "skill1" : (spell == 1 ? "skill2" : "skill3");
+				button = SpellButton(plr, spell);
 				spell++;
 			}
 			auto cost = sk.GetCost();

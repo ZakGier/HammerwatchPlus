@@ -26,6 +26,12 @@ CHALLENGES = {  # id -> discount, mods/architect/scripts/HWP/Architect/Challenge
     "hwp_challenge_glass_bones": 0.25, "hwp_challenge_sharp_traps": 0.10,
     "hwp_challenge_slim_pickings": 0.15,
 }
+EFFECTS = {  # what each challenge's tooltip says it does (hwp_architect.lang)
+    "hwp_challenge_crowded": "more enemies", "hwp_challenge_champions": "Elites and minibosses",
+    "hwp_challenge_lean_pickups": "restore half", "hwp_challenge_bitter_draughts": "confuses you",
+    "hwp_challenge_glass_bones": "40% more damage", "hwp_challenge_sharp_traps": "double damage",
+    "hwp_challenge_slim_pickings": "Half the wood",
+}
 MATS = ["gold", "wood", "stone", "iron", "crystals", "dust", "ore"]
 STARS = [(r, c) for r in range(5) for c in range(5)]
 
@@ -249,10 +255,11 @@ class Checks(Base):
         w1 = self.gl("state").get("window")
         return w0, w1, f
 
-    def press_picks(self, picks, arch_lvl, label):
+    def press_picks(self, picks, arch_lvl, label, start=()):
         """Press each row; after every press the picker's Mul line must be CostMul of the list
-        so far. Returns (all matched, the picks now, the % shown after each press)."""
-        chosen, steps, shown_all, good = [], [], [], True
+        so far (`start`: what the picker already has picked). Returns (all matched, the picks
+        now, the % shown after each press)."""
+        chosen, steps, shown_all, good = list(start), [], [], True
         for pid in picks:
             r = self.gl("press", pid)
             if pid in chosen:
@@ -302,7 +309,8 @@ class Checks(Base):
         return b.get("ok"), lvl
 
     def architect_paid(self):
-        """architect s6/s7: the picker lists the seven challenges at no cost; Far Sight alone
+        """architect s6/s7: the picker lists the seven challenges at no cost, and hovering one
+        shows its effect and its discount ("Alterations cost 25% less"); Far Sight alone
         is vanilla (Mul 100%, 1000 gold 10 wood), Glass Bones takes 25% off (750 gold, 7
         wood); the start takes exactly that from the town."""
         built, lvl = self.architect_setup()
@@ -312,6 +320,18 @@ class Checks(Base):
                   f"build {built}, windows {w0} -> {w1}, func {f}")
         rows = self.wtext(*CHALLENGES)  # the picker's rows have the buff ids (SetID)
         self.flag("ar_challenges_listed", all(k in rows for k in CHALLENGES), f"missing {[k for k in CHALLENGES if k not in rows]}")
+        tips_ok, free_ok, seen = True, True, []
+        for cid, d in CHALLENGES.items():
+            t = self.gl("hovertip", cid)  # the row hovered: its func-hover sets the tooltip
+            text = re.sub(r"\\c[0-9a-fA-F]{6}|\\d", "", " ".join(t.get("texts") or []))
+            cost = (t.get("children") or {}).get("cost")
+            want = f"Alterations cost {int(d * 100 + 0.5)}% less"
+            tip = bool(t.get("ok")) and text.startswith("Challenge: ") and EFFECTS[cid] in text and want in text
+            tips_ok, free_ok = tips_ok and tip, free_ok and cost == ""
+            if not tip or cost != "":
+                seen.append(f"{cid}: {t.get('error') or text[:90]!r} cost {cost!r}")
+        self.flag("ar_challenge_tips", tips_ok, "; ".join(seen)[:600] or "all 7 say their effect and discount")
+        self.flag("ar_challenges_free", free_ok, "; ".join(seen)[:600] or "all 7 rows: no cost")
         good, chosen, _ = self.press_picks(["architect_far_sight", "hwp_challenge_glass_bones"], lvl, "paid picks")
         shown, cost, line = self.picker_line()
         self.flag("ar_glass_discount", good and shown == 75 and cost == {"gold": 750, "wood": 7}, f"{line!r} {cost}")
@@ -339,11 +359,11 @@ class Checks(Base):
         shown, cost, line = self.picker_line()
         self.flag("ar_stack_to_zero", w1 == "SelectArchitectSelector" and good and shown == 0 and not cost,
                   f"{line!r} {cost}")
-        good2, chosen, _ = self.press_picks(["architect_fewer_enemies"], lvl, "second alteration")
+        good2, chosen, _ = self.press_picks(["architect_fewer_enemies"], lvl, "second alteration", chosen)
         s2, c2, _ = self.picker_line()
         self.flag("ar_never_below_zero", good2 and s2 == 0 and not c2, f"Mul {s2}%, cost {c2}")
-        # Glass Bones unpicked: its 25% comes back onto two alterations' curve; picked again: 0%
-        good3, chosen, toggled = self.press_picks(["hwp_challenge_glass_bones", "hwp_challenge_glass_bones"], lvl, "toggle")
+        # Glass Bones unpicked: 25% of two alterations' curve comes back (35% at architect 0); picked again: 0%
+        good3, chosen, toggled = self.press_picks(["hwp_challenge_glass_bones", "hwp_challenge_glass_bones"], lvl, "toggle", chosen)
         self.flag("ar_unpick_restores", good3 and bool(toggled[0]) and toggled[1] == 0, f"Mul {toggled}")
         ok, w, before, after, picks = self.start_from_loadout()
         diff = {m: after.get(m, 0) - before.get(m, 0) for m in MATS} if after else {}

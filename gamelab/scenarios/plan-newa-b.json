@@ -82,13 +82,9 @@
    }
   },
   {
-   "do": "gl",
-   "verb": "spawn",
-   "args": [
-    "actors/npcs/town/npc_misc_guard_exit.unit",
-    "30",
-    "0"
-   ]
+   "do": "sleep",
+   "seconds": 3,
+   "name": "the guard's after-shop bubble (about 2 s) is gone; a Use while it shows only dismisses it"
   },
   {
    "do": "gl",

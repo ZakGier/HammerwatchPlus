@@ -1,6 +1,6 @@
 {
  "name": "plan-newb-b",
- "about": "Test plan through the plan_newb bot: architect s6-s8, the Architect picker (Dark Citadel loadout) lists the seven HoH1 challenges; Far Sight + Glass Bones shows Mul 75% and 750 gold / 7 wood, and the start takes exactly that from the town; every challenge stacked brings Mul to 0% and no lower, unpicking one brings a multiplier back, and the free start takes and pays out nothing.",
+ "about": "Test plan through the plan_newb bot: architect s6-s8, the Architect picker (Dark Citadel loadout) lists the seven HoH1 challenges, each free with a tooltip naming its effect and discount; Far Sight + Glass Bones shows Mul 75% and 750 gold / 7 wood, and the start takes exactly that from the town; every challenge stacked brings Mul to 0% and no lower, unpicking one brings a multiplier back, and the free start takes and pays out nothing.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -58,6 +58,8 @@
     "ar_town_saved": true,
     "ar_picker_open": true,
     "ar_challenges_listed": true,
+    "ar_challenge_tips": true,
+    "ar_challenges_free": true,
     "ar_glass_discount": true,
     "ar_paid_exact": true,
     "ar_picks_on_record": true,

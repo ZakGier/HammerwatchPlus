@@ -18,6 +18,7 @@ import re
 import time
 
 from gamelab.bots.plan_checks import Checks as Base
+from gamelab.hps import hash_string
 
 BRUTE = "actors/humans/bandits/bandit_brute.unit"
 DIRS = [(1, 0), (-1, 0), (0, 1), (0, -1), (0.7071, 0.7071), (-0.7071, 0.7071), (0.7071, -0.7071), (-0.7071, -0.7071)]
@@ -79,6 +80,55 @@ class Checks(Base):
             out.append((clear, (dx, dy)))
         out.sort(key=lambda e: -e[0])
         return out
+
+    def in_wall(self, x, y):
+        """Whether the unit at (x, y) stands inside a wall. gl terrain's point query hits every
+        unit but the player, so the summon's own cells always read '#': test a ring 24 px
+        around the middle of its body (a crusader's colliders reach 15 px up, 8 px aside)
+        instead; in a wall when 7 of its 8 points are blocked. None when off the map."""
+        t = self.gl("terrain", 160, 8)
+        rows, n, step = t.get("rows") or [], t.get("size", 0), t.get("step", 8)
+        hits = 0
+        for dx, dy in DIRS:
+            cx = n // 2 + round((x + dx * 24 - t.get("x", 0)) / step)
+            cy = n // 2 + round((y - 5 + dy * 24 - t.get("y", 0)) / step)
+            if not (0 <= cy < len(rows) and 0 <= cx < len(rows[cy])):
+                return None
+            hits += rows[cy][cx] == "#"
+        return hits >= 7
+
+    def to_open(self, need=48):
+        """Walk to the nearest floor along one of the 8 directions with no wall within `need`
+        px (a passive summon lands within the skill's jitter, 20x30 px, of the player and can
+        land inside a wall when the player stands at one); (ok, note)."""
+        for _ in range(3):
+            t = self.gl("terrain", 160, 8)
+            rows, n, step = t.get("rows") or [], t.get("size", 0), t.get("step", 8)
+            c, k = n // 2, need // step
+
+            def free(cx, cy):
+                return all(0 <= y < len(rows) and 0 <= x < len(rows[y]) and rows[y][x] != "#"
+                           for y in range(cy - k, cy + k + 1) for x in range(cx - k, cx + k + 1))
+
+            best = None
+            for dx, dy in DIRS:
+                for r in range(0, 161 - need, step):
+                    x, y = c + round(dx * r / step), c + round(dy * r / step)
+                    if rows[y][x] == "#":
+                        break
+                    if free(x, y):
+                        if best is None or r < best[0]:
+                            best = (r, (dx, dy))
+                        break
+            if best is None:
+                return False, "no open floor within 160 px"
+            r, (dx, dy) = best
+            if r == 0:
+                return True, f"open floor at {self.me()}"
+            # ~115 px/s on foot (the gladiator walked 175 px in 1.5 s)
+            self.gl("input", int(r / 115 * 1000) + 60, dx, dy)
+            time.sleep(r / 115 + 0.5)
+        return False, f"still next to a wall at {self.me()}"
 
     def brutes(self, r=400):
         return [u for u in self.gl("near", r, "bandit_brute").get("units") or [] if not u.get("dead")]
@@ -157,6 +207,7 @@ class Checks(Base):
     def follows(self, uid, filt, f):
         """Walk 1.5 s along f, wait for the summon to catch up; (ok, note)."""
         p0, s0 = self.me(), self.unit(uid, filt, 800)
+        wall = s0 and self.in_wall(s0["x"], s0["y"])
         self.gl("input", 1500, f[0], f[1])
         time.sleep(1.8 + 2.5)
         p1, s1 = self.me(), self.unit(uid, filt, 800)
@@ -165,7 +216,8 @@ class Checks(Base):
         walked = dist(p0, p1)
         moved = dist((s0["x"], s0["y"]), (s1["x"], s1["y"]))
         gap = dist(p1, (s1["x"], s1["y"]))
-        return walked > 30 and moved > 20 and gap < 100, f"player walked {walked:.0f}, summon moved {moved:.0f}, gap now {gap:.0f}"
+        return walked > 30 and moved > 20 and gap < 100, (f"player walked {walked:.0f}, summon moved {moved:.0f}, gap now {gap:.0f}"
+                                                          + (", the summon stood in a wall" if wall else ""))
 
     # --- sections
     def thief(self):
@@ -244,16 +296,22 @@ class Checks(Base):
         fighter follows you (and comes again ~20 s after one dies)."""
         if not self.new_char("hwp_gladiator", "LabGladiator"):
             return
+        # inspect player equipped: the main hand is a list whose [1] is HashString(item id)
         mh = self.main_hand()
-        self.flag("trident_equipped", "hwp_trident_01" in str(mh), str(mh)[:120])
+        want = hash_string("hwp_trident_01")
+        self.flag("trident_equipped", isinstance(mh, list) and len(mh) > 1 and int(mh[1]) & 0xFFFFFFFF == want,
+                  f"main hand {str(mh)[:120]}, HashString(hwp_trident_01) = {want}")
         if not self.arena("gladiator"):
             return
-        # trident: a thrust (MeleeSwing dist 40, ray-width 16) hits the brute in front, not the
-        # one beside
+        # trident: a thrust (MeleeSwing dist 40, 3 rays over 16 px; HoH1: 6 rays over a 30 deg
+        # arc, dist 30, the same ~16 px at its reach) hits the brute in front, not the one beside
         clear, f = self.open_dirs()[0]
         side = (-f[1], f[0])
-        # spawned and attacked in one frame, the main-hand attack held past its castpoint
-        _, (front, beside) = self.scene([(f[0] * 26, f[1] * 26), (side[0] * 30, side[1] * 30)], aim=f, button="main", hold=700)
+        # spawned and attacked in one frame. The attack is "repeating": a button still down
+        # when the 600 ms animation ends starts a second thrust whose castpoint (800 ms) falls
+        # after a 700 ms hold, aimed by the real mouse (20261018-125943 hit the side brute so).
+        # 350 ms covers the castpoint and update-aim (0-200 ms) and starts one thrust.
+        _, (front, beside) = self.scene([(f[0] * 26, f[1] * 26), (side[0] * 40, side[1] * 40)], aim=f, button="main", hold=350)
         if front and beside:
             fu, bu = front["unit"], beside["unit"]
             h0 = {fu: 1.0, bu: 1.0}  # fresh spawns
@@ -303,6 +361,8 @@ class Checks(Base):
 
         # Pit Fighters (passive summon, starting level 0): the priest's pikeman
         pk = "crusader_pikeman"
+        ok, note = self.to_open()
+        self.notes.append("pit fighter spot: " + note)
         sk = self.gl("skill", "hwp_gladiator_pit_fighters", 1)
         s, waited = self.summon_wait(pk, 30)
         self.flag("pit_fighter_arrives", sk.get("level") == 1 and s is not None,
@@ -310,9 +370,15 @@ class Checks(Base):
         if s:
             ok, note = self.follows(s["unit"], pk, self.open_dirs()[0][1])
             self.flag("pit_fighter_follows", ok, note)
-            # the interval (20 s) runs again once the summon is gone
+            # the interval (20 s) runs again once the summon is gone. The engine reuses unit ids
+            # (20261018-125943: the next pikeman came back as the killed one's id 29587 after
+            # 20.3 s), so wait for the dead one to go and then for any live pikeman
             k = self.gl("kill", 2000, pk)
-            s2, waited = self.summon_wait(pk, 32, exclude={s["unit"]})
+            t_kill = time.time()
+            while time.time() - t_kill < 3 and self.gl("near", 800, pk).get("units"):
+                time.sleep(0.3)
+            s2, _ = self.summon_wait(pk, 30)
+            waited = time.time() - t_kill
             self.flag("pit_fighter_20s", k.get("killed", 0) >= 1 and s2 is not None and 15 <= waited <= 25,
                       f"killed {k.get('killed')}, next pikeman after {waited:.1f} s")
         self.to_town()
@@ -372,6 +438,8 @@ class Checks(Base):
 
         # Hound (passive summon, starting level 0): the ranger's wolf
         wolf = "ranger/units/wolf"
+        ok, note = self.to_open()
+        self.notes.append("hound spot: " + note)
         sk = self.gl("skill", "hwp_witch_hunter_hound", 1)
         s, waited = self.summon_wait(wolf, 30)
         self.flag("hound_arrives", sk.get("level") == 1 and s is not None, f"skill level {sk.get('level')}, hound after {waited:.1f} s")

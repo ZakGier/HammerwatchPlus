@@ -189,6 +189,13 @@ class Checks(Base):
         return b
 
     def use_dyer(self):
+        """Use the tailor. A fixture character (gl char) has no portrait pieces, and the vanilla
+        dyer's preview throws on a missing one (GetPortraitModel(null)) and leaves the game
+        paused with the NPC stuck mid-interaction, so give it the defaults first."""
+        if not getattr(self, "portrait_done", False):
+            r = self.gl("portrait")
+            self.portrait_done = bool(r.get("ok"))
+            self.portrait_note = f"portrait {r.get('before')} -> {r.get('after')} pieces, added {r.get('added')}"
         self.close_windows()
         u = self.gl("use", "npc_dyer")
         time.sleep(0.8)
@@ -198,7 +205,8 @@ class Checks(Base):
         """pets s9: without a pet out the tailor opens the vanilla dyer straight away."""
         b = self.tailor()
         u, w = self.use_dyer()
-        self.flag("dyer_nopet_direct", "EquipmentDyerWindow" in w, f"build {b.get('ok')}, use {u.get('ok')} {u.get('unit')}, window {w!r}")
+        self.flag("dyer_nopet_direct", "EquipmentDyerWindow" in w,
+                  f"build {b.get('ok')}, {getattr(self, 'portrait_note', 'no portrait')}, use {u.get('ok')} {u.get('error') or u.get('unit')}, window {w!r}")
         self.close_windows()
 
     def dyer_choice(self):
@@ -467,7 +475,8 @@ class Checks(Base):
     def puzzle_wait(self):
         """pets s2: the pet follows a walk; with a puzzle (vanilla lights-out) at the end of
         the same walk it stays outside, still, while the player is in, and follows again when
-        the player comes out. querycmp says what PetWait's QueryCircle sees of the buttons."""
+        the player comes out. querycmp says what each scene query sees of the buttons (PetWait
+        fetches with FetchAllUnits: the buttons have no collision, QueryCircle misses them)."""
         self.gl("cull")
         pl = self.player()
         sx, sy = pl.get("x", 0), pl.get("y", 0)
@@ -494,8 +503,13 @@ class Checks(Base):
         self.p.path_to(sx + dx + px, sy + dy + py, tol=6, timeout=6)
         time.sleep(1)
         p2, moved2 = self.pet_samples(1.6)
-        self.flag("pet_waits_outside_puzzle", pf.get("ok") and r.ok and bool(p1) and p1["dist"] > 90 and moved < 10 and moved2 < 10,
-                  f"prefab {pf.get('ok')} at {dx},{dy}; walk {r.result}; pet {p1.get('dist')} px off, moved {moved:.0f} / {moved2:.0f} px; "
+        # the step: where the pet is now against where it was parked before it (a follower
+        # would have walked the 30 px before the samples start)
+        shift = math.hypot(p2["x"] - p1["x"], p2["y"] - p1["y"]) if p1 and p2 else 1e9
+        self.flag("pet_waits_outside_puzzle", pf.get("ok") and r.ok and bool(p1) and p1["dist"] > 90 and moved < 10
+                  and moved2 < 10 and shift < 10,
+                  f"prefab {pf.get('ok')} at {dx},{dy}; walk {r.result}; pet {p1.get('dist')} px off, moved {moved:.0f} / {moved2:.0f} px, "
+                  f"{shift:.0f} px over the step; "
                   f"querycmp {json.dumps({k: q.get(k) for k in ('querySensors', 'querySolid', 'fetchAll', 'fetchType', 'levelType', 'levelNearest', 'queryPuzzle', 'queryUnits')})}")
         r = self.p.path_to(sx, sy, tol=8, timeout=12)
         time.sleep(3)
@@ -592,7 +606,7 @@ class Checks(Base):
         self.flag("gp_cat_in_run", bool(c), str(c[:1]))
         bad, ok, note = set(), False, ""
         for _ in range(3):
-            sp = self.spot(130, bad)
+            sp = self.spot(100, bad)  # inside the cat's 200 px seek radius wherever it stands
             if sp is None:
                 break
             w0 = (self.gl("inv").get("materials") or {}).get("wood", 0)
@@ -622,7 +636,7 @@ class Checks(Base):
         time.sleep(2)
         bad, ok, note = set(), False, ""
         for _ in range(3):
-            sp = self.spot(130, bad)
+            sp = self.spot(100, bad)  # inside the cat's 200 px seek radius wherever it stands
             if sp is None:
                 break
             x0 = self.gl("inspect", "player", "experience").get("value", 0)

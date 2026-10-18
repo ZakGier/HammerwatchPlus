@@ -13,11 +13,13 @@ release). A posted mouse never reaches the game (RE_NOTES 2026-10-18), so `gl cu
 the click is where the cast is expected to land (CalcMouseTargetPos: its direction, the
 distance clamped to the skill's range).
 
-Only three skill buttons exist: GetSkillInput (PlayerTargetingHelper.as:744-749) gives the
-third and every later active spell Skill3, and reload and frag already hold Skill1 and
-Skill2. A doctrine's skills are levelled in reverse class order, so the newest one is the
-first Skill3 skill in m_skills and the one a press casts. `<spec>_own_buttons` reports whether
-the finished doctrine has a button per active skill (`gl skillbar`).
+The game has three skill buttons: vanilla GetSkillInput (PlayerTargetingHelper.as:744-749)
+gives the third and every later active spell Skill3. Core's extra skill keys (mods/core,
+SkillKeys.as) give the 4th to 6th their own key, which `gl input` holds as hwp_skill4..6.
+Reload and frag hold Skill1 and Skill2; a doctrine's skills are levelled in reverse class
+order, so the newest one is the 3rd active (Skill3) when it is tested. `<spec>_own_buttons`:
+the finished doctrine has a button per active skill (`gl skillbar`), and a press of Skill3 and
+of each extra key casts its skill and no other.
 
 Mana is read unrounded from `gl skillbar` (m_record.mana x max, = state manaExact). A costed
 cast starts from a full magazine (topped up with Reload), so regeneration only runs after the
@@ -32,6 +34,7 @@ import re
 import time
 from pathlib import Path
 
+from gamelab.bots import picker_skills
 from gamelab.bots.plan_checks import Checks as Base
 
 MOD = Path(__file__).resolve().parents[2] / "mods" / "firearms"
@@ -220,7 +223,10 @@ class Checks(Base):
         """A TargetAOE cast at player + (dx, dy) as a player makes it: the cursor there, the
         button (the targeting circle opens), then the main-hand click; with g_quickcast the
         button's release casts. Returns the offset the cursor gave at the click, and whether
-        the cursor write held throughout."""
+        the cursor write held throughout. The click is one frame (input 1 ms): the helper casts
+        on MainHandAttack.Pressed and lets go of the skill, so a main button still Down the next
+        frame fires a bullet (1 mana; seen as flashbang's 0.82 "cost", run 20261018-121101).
+        The mana just before the click goes in self.mark for cast_watch."""
         (tx, ty), held, _ = self.cursor_on(dx, dy, rng)
         ax, ay = unit(tx, ty)
         self.gl("input", 60, 0, 0, ax, ay, button)
@@ -228,16 +234,22 @@ class Checks(Base):
         if not self.quickcast:
             (tx, ty), held2, _ = self.cursor_on(dx, dy, rng)  # again, just before the click
             held = held and held2
-            self.gl("input", 60, 0, 0, ax, ay, "main")
+            self.mark = (time.time(), self.bar().get("mana", 0.0))
+            self.gl("input", 1, 0, 0, ax, ay, "main")
         return (tx, ty), held
 
     def cast_watch(self, sid, cast, secs=1.6):
         """Run cast() and watch the skill bar for secs: mana before, the lowest after, this
-        skill's cooldown, and any other skill that went on cooldown with it."""
+        skill's cooldown, and any other skill that went on cooldown with it. A targeted cast
+        (several commands before its click) leaves the mana read just before the click in
+        self.mark: the window starts there."""
         b0 = self.bar()
         cd0 = {s["id"]: s.get("cd", 0) for s in b0.get("skills", [])}
         m0, t0 = b0.get("mana", 0.0), time.time()
+        self.mark = None
         cast()
+        if self.mark:
+            t0, m0 = self.mark
         low, cd, others = m0, 0.0, set()
         samples = [(t0, m0)]
         end = time.time() + secs
@@ -262,7 +274,8 @@ class Checks(Base):
         rate = (rise[-1][1] - rise[0][1]) / (rise[-1][0] - rise[0][0]) if len(rise) > 1 and rise[-1][0] > rise[0][0] else 0.0
         fall = m0 - samples[i][1] if i else 0.0
         return {"m0": round(m0, 2), "low": round(low, 2), "drop": round(fall, 2), "gap": round(gap, 2),
-                "rate": round(max(rate, 0.0), 2), "cd": round(cd, 3), "others": sorted(others)}
+                "rate": round(max(rate, 0.0), 2), "cd": round(cd, 3), "others": sorted(others),
+                "full": m0 >= top, "span": round(samples[-1][0] - t0, 2), "end": round(samples[-1][1], 2)}
 
     def cost_flag(self, tag, sid, sval, w):
         tip, data = tooltip_cost(sval), sval_cost(sval)
@@ -271,8 +284,9 @@ class Checks(Base):
         want = tip * mul
         # the cost lies between the fall and the fall + the regen over the gap it was seen in
         lo, hi = w["drop"] - TOL, w["drop"] + w["rate"] * w["gap"] + TOL
-        self.flag(f"{tag}_cost", lo <= want <= hi and tip == data == live,
-                  f"mana {w['m0']} -> {w['low']} (fall {w['drop']} over {w['gap']} s, regen {w['rate']}/s), "
+        self.flag(f"{tag}_cost", w["full"] and lo <= want <= hi and tip == data == live,
+                  f"from full {w['full']}: mana {w['m0']} -> low {w['low']}, {w['end']} after {w['span']} s "
+                  f"(first fall {w['drop']} within a {w['gap']} s read gap, regen {w['rate']}/s), "
                   f"tooltip {tip} x cost mul {mul}, sval {data}, GetCost {live}")
 
     def level(self, tag, sid):
@@ -283,28 +297,61 @@ class Checks(Base):
             self.flag(f"{tag}_learned", False, str(r))
         return ok
 
-    def buttons_flag(self, spec):
+    def buttons_flag(self, spec, d=(1.0, 0.0)):
         b = self.bar()
         act = [(s["id"], s.get("button")) for s in b.get("skills", []) if s.get("type") == 4 and s.get("mode", 0) != 0]
         btns = [x[1] for x in act]
-        self.flag(f"{spec}_own_buttons", len(btns) == len(set(btns)),
-                  f"active spells {act} (only skill1-3 exist: GetSkillInput gives the 3rd and later Skill3)")
+        # Skill3 and each extra key (hwp_skill4..6): a press casts that doctrine skill alone
+        info = {e[0]: e for v in SPECS.values() for e in v}
+        tried = []
+        for sid, btn in act:
+            if sid not in info or not (btn == "skill3" or (btn or "").startswith("hwp_skill")):
+                continue
+            _, sval, _, rng = info[sid]
+            end = time.time() + 20
+            while self.entry(self.bar(), sid).get("cd", 0) > 0 and time.time() < end:
+                time.sleep(0.5)
+            self.top_up()
+            if rng:
+                w = self.cast_watch(sid, lambda: self.targeted(btn, d[0] * 100, d[1] * 100, rng), secs=1.4)
+            else:
+                w = self.cast_watch(sid, lambda: self.gl("input", hold(sval), 0, 0, d[0], d[1], btn), secs=1.0)
+            tried.append((sid, btn, w["cd"] > 0, w["others"]))
+            time.sleep(0.5)
+        self.flag(f"{spec}_own_buttons", len(btns) == len(set(btns)) and all(c and not o for _, _, c, o in tried),
+                  f"active spells {act}; presses (skill, button, cast, others cooled) {tried}")
 
     # --- direction skills: a dummy in the line of fire
+    def clear_dir(self, pref, dist):
+        """A direction from where the player stands now with a clear shot dist (+16) out (gl
+        rayhit: no wall, no hard tile), pref first. Run 20261018-130918: snipe fired along the
+        direction probed before the decoy walks moved the player, and hit nothing."""
+        px, py = self.pos()
+        cands = [pref] + sorted(((round(math.cos(math.radians(a)), 3), round(math.sin(math.radians(a)), 3))
+                                 for a in range(0, 360, 45)), key=lambda q: -(q[0] * pref[0] + q[1] * pref[1]))
+        r = {}
+        for u in cands:
+            r = self.gl("rayhit", round(px, 1), round(py, 1), round(px + u[0] * (dist + 16), 1), round(py + u[1] * (dist + 16), 1))
+            if r.get("ok") and not r.get("wall") and not r.get("tile"):
+                return u, r
+        self.notes.append(f"no clear line {dist} out from {round(px)},{round(py)}: last rayhit {r}")
+        return pref, r
+
     def direction_test(self, tag, sid, sval, d, dist=80):
         """A Direction skill (snipe, tube, rpg, burst) fired at a dummy `dist` along d: it casts
         (its cooldown starts, the dummy loses HP) and costs the tooltip's mana."""
         self.clear_dummies()
+        d, ray = self.clear_dir(d, dist)
         du = self.dummy(d[0] * dist, d[1] * dist)
-        if tooltip_cost(sval):
-            self.top_up()
+        self.top_up()
         hp0 = self.hps([du])
         w = self.cast_watch(sid, lambda: self.gl("input", hold(sval), 0, 0, d[0], d[1], "skill3"))
         time.sleep(0.3)
         hp1 = self.hps([du])
         hit = hp1[du] < hp0[du] - 0.001
         self.flag(f"{tag}_casts", w["cd"] > 0 and hit,
-                  f"cooldown {w['cd']}, dummy hp {hp0[du]} -> {hp1[du]}, also cooled {w['others']}")
+                  f"aim {d} (line clear: wall {ray.get('wall')}, tile {ray.get('tile')}), cooldown {w['cd']}, "
+                  f"dummy hp {hp0[du]} -> {hp1[du]}, also cooled {w['others']}")
         self.cost_flag(tag, sid, sval, w)
         return w
 
@@ -365,21 +412,24 @@ class Checks(Base):
 
     def firearms_spec_pick(self):
         """firearms s4, first half: at level 21 (`hwp levelup 20`; the picker opens from level
-        10) the Subclass Picker shows the three doctrines, and picking takes each id."""
+        10) the Subclass Picker shows the three doctrines, its skill row shows each doctrine's
+        skills labelled by type (picker_skill_labels), and picking takes each id."""
         self.new_char("LabPick")
         pl = self.gl("state").get("player", {})
         self.npc("npc_subclass_picker", PICKER)
         u = self.gl("use", "npc_subclass_picker")
         time.sleep(0.8)
         win = self.gl("state").get("window")
-        shown = []
+        shown, rows = [], {}
         for _ in range(4):
             texts = {}
-            for root in self.gl("widgets", 12).get("roots", []):
+            roots = self.gl("widgets", 12).get("roots", [])
+            for root in roots:
                 for n in root.get("nodes", []):
                     if n.get("id") in ("class-prev", "class-curr", "class-next", "skill-active-name", "skill-passive-name"):
                         texts.setdefault(n["id"], n.get("text", ""))
             shown.append(texts)
+            rows.setdefault(texts.get("class-curr", ""), picker_skills.read_row(roots))
             self.gl("func", "nextclass")
             time.sleep(0.3)
         if self.gl("state").get("window"):
@@ -393,6 +443,14 @@ class Checks(Base):
                   f"level {pl.get('level')}, use {u.get('ok')}, window {win}")
         self.flag("spec_pick_three", sorted(set(curr[:3])) == sorted(names) and curr[3] == curr[0] and trio == set(names),
                   f"stepped {curr}, prev/curr/next {sorted(trio)}, expected {names}")
+        # the skill row by the skills' real types (core SubclassPick.as), against each spec's defs
+        probs = {}
+        for sub in SPECS:
+            defs = self.gl("classskills", sub)
+            probs[defs.get("name") or sub] = (picker_skills.row_problems(rows.get(defs.get("name"), []), defs)
+                                              if defs.get("ok") else [f"classskills {sub}: {defs.get('error')}"])
+        self.flag("picker_skill_labels", len(probs) == len(SPECS) and not any(probs.values()),
+                  f"rows {rows}; problems {probs}")
         took = []
         for sub in SPECS:
             took.append(self.gl("subclass", sub).get("class"))
@@ -406,11 +464,14 @@ class Checks(Base):
         if not self.enter_floor("sniper"):
             return
         dirs = self.open_dirs(130)
-        d = dirs[0]
+        # the decoy goes along d and the player walks off along -d (run 20261018-121101: a wall
+        # stopped that walk 41 px from it), so d is one whose opposite is open too
+        d = next((v for v in dirs if any(v[0] * u[0] + v[1] * u[1] < -0.9 for u in dirs)), dirs[0])
         perp = next((v for v in dirs if abs(v[0] * d[0] + v[1] * d[1]) < 0.2), (-d[1], d[0]))
         # decoy: Direction, SpawnUnit 24 px along the aim. Cast 1 alone times its life (castpoint
         # 200 + ttl 8000); cast 2, after the 15 s cooldown, gets three brutes beside it.
         if self.level("decoy", "hwp_fs_decoy"):
+            self.top_up()
             c0 = self.gl("clock").get("sceneMs", 0)
             w = self.cast_watch("hwp_fs_decoy", lambda: self.gl("input", hold("sniper_decoy.sval"), 0, 0, d[0], d[1], "skill3"), secs=0.6)
             dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
@@ -429,45 +490,68 @@ class Checks(Base):
                 time.sleep(0.15 if now > 6500 else 0.8)
             self.flag("decoy_vanishes_8s", last is not None and gone is not None and last >= 7200 and gone <= 9500,
                       f"seen until {last} ms after the press (hp {hp_last}), gone at {gone} (castpoint 200 + ttl 8000)")
-            # the 15 s cooldown from the first cast, then cast 2
-            while self.entry(self.bar(), "hwp_fs_decoy").get("cd", 0) > 0 and time.time() < end + 10:
-                time.sleep(0.5)
-            self.gl("input", hold("sniper_decoy.sval"), 0, 0, d[0], d[1], "skill3")
-            time.sleep(0.5)
-            dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
-            if dec:
-                dx0, dy0 = dec[0]["x"], dec[0]["y"]
-                # walk off the other way, then three brutes 100 to the decoy's side
-                self.gl("input", 1200, -d[0], -d[1])
+            # cast 2 (s5 pull). Run 20261018-130918: the walk off the decoy hit walls, took four
+            # 1.2 s tries (8 s) and the decoy's ttl ran out before the brutes came. So the walk is
+            # found first, during the cooldown: a direction the player really covers >= 110 px
+            # in 1.2 s (p0 -> p1). From p1 the decoy is cast along it, the player walks straight
+            # back (-v, just walked: clear) to p0, and three brutes come in beside the player,
+            # not the decoy: a pull is them leaving the player for it.
+            p0 = self.pos()
+            v, moved = None, 0.0
+            for u in sorted(dirs, key=lambda q: q[0] * d[0] + q[1] * d[1]):
+                a = self.pos()
+                self.gl("input", 1200, u[0], u[1])
                 time.sleep(1.4)
-                px, py = self.pos()
-                rx, ry = dx0 - px, dy0 - py
-                spawns = []  # one gl multi: the three land in the same frame
-                for k in (-25, 0, 25):
-                    spawns += ["+", "spawn", BRUTE, round(rx + perp[0] * 100 + d[0] * k, 1), round(ry + perp[1] * 100 + d[1] * k, 1)]
-                self.gl("multi", *spawns[1:])
-                time.sleep(2.5)
-                px, py = self.pos()
-                br = [u for u in self.gl("near", 600, "bandit_brute").get("units") or [] if not u.get("dead")]
-                dd = [round(math.hypot(u["x"] - dx0, u["y"] - dy0)) for u in br]
-                dp = [round(math.hypot(u["x"] - px, u["y"] - py)) for u in br]
-                dhp = [u.get("hp") for u in self.gl("near", 600, DECOY).get("units") or []]
-                self.flag("decoy_pulls", len(br) >= 2 and all(a < b for a, b in zip(dd, dp)) and max(dd) <= 50
-                          and math.hypot(px - dx0, py - dy0) >= 80,
-                          f"brutes to decoy {dd}, to player {dp} (player {round(math.hypot(px - dx0, py - dy0))} from it), "
-                          f"decoy hp {dhp} (a decoy killed by them counts: they went for it)")
-                self.gl("kill", 600, "bandit_brute")
+                b = self.pos()
+                moved = math.hypot(b[0] - a[0], b[1] - a[1])
+                if moved >= 110:
+                    v = u
+                    break
+            while self.entry(self.bar(), "hwp_fs_decoy").get("cd", 0) > 0 and time.time() < end + 25:
+                time.sleep(0.4)
+            if v is None:
+                self.flag("decoy_pulls", False, f"no direction from {[round(x) for x in p0]} walked >= 110 px in 1.2 s (last {round(moved)})")
             else:
-                self.flag("decoy_pulls", False, "no decoy on the second cast")
+                c2 = self.gl("clock").get("sceneMs", 0)
+                self.gl("input", hold("sniper_decoy.sval"), 0, 0, v[0], v[1], "skill3")
+                time.sleep(0.5)
+                dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
+                if not dec:
+                    self.flag("decoy_pulls", False, "no decoy on the second cast")
+                else:
+                    dx0, dy0 = dec[0]["x"], dec[0]["y"]
+                    self.gl("input", 1200, -v[0], -v[1])
+                    time.sleep(1.4)
+                    px, py = self.pos()
+                    side = (-v[1], v[0])
+                    spawns = []  # one gl multi: the three land in the same frame, 70 beside the player
+                    for k in (-25, 0, 25):
+                        spawns += ["+", "spawn", BRUTE, round(side[0] * 70 + v[0] * k, 1), round(side[1] * 70 + v[1] * k, 1)]
+                    self.gl("multi", *spawns[1:])
+                    t_spawn = self.gl("clock").get("sceneMs", 0) - c2
+                    time.sleep(3.2)
+                    px, py = self.pos()
+                    t_check = self.gl("clock").get("sceneMs", 0) - c2
+                    br = [u for u in self.gl("near", 600, "bandit_brute").get("units") or [] if not u.get("dead")]
+                    dd = [round(math.hypot(u["x"] - dx0, u["y"] - dy0)) for u in br]
+                    dp = [round(math.hypot(u["x"] - px, u["y"] - py)) for u in br]
+                    dhp = [u.get("hp") for u in self.gl("near", 600, DECOY).get("units") or []]
+                    away = round(math.hypot(px - dx0, py - dy0))
+                    self.flag("decoy_pulls", len(br) >= 2 and all(a < b for a, b in zip(dd, dp)) and max(dd) <= 60 and away >= 80,
+                              f"walk {v} covered {round(moved)}; player {away} from the decoy; brutes spawned 70 beside "
+                              f"the player at {t_spawn} ms after the cast, at {t_check} ms: to decoy {dd}, to player {dp}, "
+                              f"decoy hp {dhp} (gone = they killed it or its ttl ran out)")
+                    self.gl("kill", 600, "bandit_brute")
         # flashbang: TargetAOE, no damage: its cooldown is the cast
         if self.level("flashbang", "hwp_fs_flashbang"):
             tgt = (d[0] * 100, d[1] * 100)
+            self.top_up()
             w = self.cast_watch("hwp_fs_flashbang", lambda: self.targeted("skill3", tgt[0], tgt[1], (16, 170)))
             self.flag("flashbang_casts", w["cd"] > 0, f"cooldown {w['cd']}, also cooled {w['others']}")
             self.cost_flag("flashbang", "hwp_fs_flashbang", "sniper_flashbang.sval", w)
         if self.level("snipe", "hwp_fs_snipe"):
             self.direction_test("snipe", "hwp_fs_snipe", "sniper_snipe.sval", d)
-        self.buttons_flag("sniper")
+        self.buttons_flag("sniper", d)
         self.clear_dummies()
         self.to_town()
 
@@ -486,6 +570,7 @@ class Checks(Base):
             perp = (-d[1], d[0])
             du = self.dummy(lx + perp[0] * 22, ly + perp[1] * 22)  # inside the 40 burst, off the landing spot
             hp0 = self.hps([du])
+            self.top_up()
             box = {}
             w = self.cast_watch("hwp_fs_jetpack", lambda: box.setdefault("at", self.targeted("skill3", lx, ly, rng)), secs=1.4)
             (tx, ty), held2 = box.get("at", ((lx, ly), False))
@@ -505,7 +590,7 @@ class Checks(Base):
             self.direction_test("rpg", "hwp_fs_rpg", "demo_rpg.sval", d)
         if self.level("tube", "hwp_fs_tube"):
             self.direction_test("tube", "hwp_fs_tube", "demo_tube.sval", d)
-        self.buttons_flag("demo")
+        self.buttons_flag("demo", d)
         self.clear_dummies()
         self.to_town()
 
@@ -525,6 +610,7 @@ class Checks(Base):
             (sx, sy), held, c = self.cursor_on(d[0] * 100, d[1] * 100, rng)
             du = self.dummy(sx, sy)
             hp0 = self.hps([du])
+            self.top_up()
             w = self.cast_watch("hwp_fs_stun", lambda: self.targeted("skill3", sx, sy, rng), secs=1.4)
             time.sleep(0.3)
             hp1 = self.hps([du])
@@ -533,7 +619,7 @@ class Checks(Base):
             self.cost_flag("stun", "hwp_fs_stun", "assault_stun.sval", w)
         if self.level("burst", "hwp_fs_burst"):
             self.direction_test("burst", "hwp_fs_burst", "assault_burst.sval", d, dist=60)
-        self.buttons_flag("assault")
+        self.buttons_flag("assault", d)
         self.clear_dummies()
         self.to_town()
 

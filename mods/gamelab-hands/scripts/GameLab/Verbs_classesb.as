@@ -6,7 +6,8 @@ namespace GameLab
 
 	// the button a learned skill listens on: the same walk as
 	// PlayerTargetingHelper.GetSkillInput (Behaviors/Actors/Player/PlayerTargetingHelper.as:713-750):
-	// spells that are not passive count from m_skills[1] on, the 3rd and later all land on Skill3
+	// spells that are not passive count from m_skills[1] on; the 3rd is Skill3, the 4th to 6th
+	// core's extra keys hwp_skill4..6 (SpellButton, Input.as; all Skill3 without core)
 	string SkillButton(PlayerBase@ plr, Skills::Skill@ skill)
 	{
 		if (skill.m_type == PlayerSkillType::MainHand)
@@ -28,11 +29,7 @@ namespace GameLab
 				break;
 			idx++;
 		}
-		if (idx == 0)
-			return "skill1";
-		if (idx == 1)
-			return "skill2";
-		return "skill3";
+		return SpellButton(plr, idx);
 	}
 
 	// buffs: the local player's active buffs (ActorBuffList.m_buffs): name key, the def's
@@ -74,7 +71,8 @@ namespace GameLab
 
 	// skills: the local player's live skills (PlayerBase.m_skills, built by LoadSkills from
 	// the learned class skills and the equipment): id, type, targeting mode, cooldown left
-	// (ActiveSkill.m_cooldownC, -1 for a non-active skill) and the button it listens on
+	// (PlayerSkill.m_cooldownC, the class PlayerSkillDirectional/Position/Leap derive from;
+	// else ActiveSkill.m_cooldownC; -1 for neither) and the button it listens on
 	// (SkillButton, as GetSkillInput). Read-only, capped.
 	void VerbSkills(const string &in id, array<string>@ args)
 	{
@@ -91,10 +89,19 @@ namespace GameLab
 			auto s = plr.m_skills[i];
 			if (s is null)
 				continue;
-			auto act = cast<Skills::ActiveSkill>(s);
+			int cd = -1;
+			auto ps = cast<Skills::PlayerSkill>(s);
+			if (ps !is null)
+				cd = ps.m_cooldownC;
+			else
+			{
+				auto act = cast<Skills::ActiveSkill>(s);
+				if (act !is null)
+					cd = act.m_cooldownC;
+			}
 			Json j;
 			j.Str("id", s.m_id).Int("type", int(s.m_type)).Int("mode", int(s.GetTargetingMode()))
-				.Int("cd", act is null ? -1 : act.m_cooldownC).Str("button", SkillButton(plr, s));
+				.Int("cd", cd).Str("button", SkillButton(plr, s));
 			items.insertLast(j.Close());
 		}
 		Emit(Reply(id, true).Int("now", int(g_scene.GetTime())).Int("mana", plr.m_record.CurrentMana())

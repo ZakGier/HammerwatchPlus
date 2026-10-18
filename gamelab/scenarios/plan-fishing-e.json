@@ -1,0 +1,70 @@
+{
+ "name": "plan-fishing-e",
+ "about": "Test plan through the plan_fishing bot, fixture town-tavern (the Gambler stands in the tavern): gambler s7 (fish of 1/2/3 stars, crops and an upgraded fish: the Sell caption 'Sell N: G g, T tok', crops pay gold, fish pay 1/3/5 bet tokens, the token line goes up, the worked fish stays in the bag).",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "gambler_sell"
+   },
+   "name": "gambler sell",
+   "expect": {
+    "sell_caption": true,
+    "sell_message": true,
+    "sell_fish_tokens": true,
+    "sell_crops_gold": true,
+    "token_line_up": true,
+    "sell_keeps_worked": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

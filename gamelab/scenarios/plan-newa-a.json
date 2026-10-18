@@ -1,6 +1,6 @@
 {
  "name": "plan-newa-a",
- "about": "Test plan through the plan_newa bot: search s1-s8, the Plus tab's search field (posted chars) filters the rows by title or value, case-blind, Backspace refilters, Esc clears, Enter keeps, a reopened menu is unfiltered; stash s1-s4, two tabs filled by gl stashput in a scrambled order, Sort orders only the tab on screen by class (main requirement), type (two-handed, main hand, off hand, armour; weapons by family), then item level, the grid follows, a second press keeps it, a reopened stash has it; stash s5, the sorted tabs survive a restart (save to load).",
+ "about": "Test plan through the plan_newa bot: search s1-s8, the Plus tab's search field (posted chars) filters the rows by title or value, case-blind, Backspace refilters, Esc clears, Enter keeps, a reopened menu is unfiltered; stash s1-s4, two tabs filled by gl stashput in a scrambled order, Sort orders only the tab on screen by class (main requirement), type (two-handed, main hand, off hand, armour; weapons by family), then item level, the grid follows, a second press keeps it, a reopened stash has it; stash s5, after a restart (save to load) both tabs are still in the sorted order (each compared with the rule's order, not just with the order before the restart).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -130,7 +130,6 @@
    "args": [
     "0"
    ],
-   "save_as": "stash0_before",
    "expect": {
     "items": [
      "twohanded_maul_01@8",
@@ -145,7 +144,7 @@
      "chest_dex_t1a@8",
      "mainhand_wand_fire_01@8",
      "head_int_t1a@8",
-     "mainhand_scepter_01@8",
+     "back_4a@12",
      "back_2a@8",
      "back_2b@8"
     ]
@@ -158,13 +157,12 @@
    "args": [
     "1"
    ],
-   "save_as": "stash1_before",
    "expect": {
     "items": [
      "mainhand_mace_01@9",
      "head_str_t1a@9",
      "twohanded_shortbow_01@9",
-     "offhand_lantern_01@8"
+     "back_2b@9"
     ]
    },
    "name": "tab 2 sorted before the restart"
@@ -186,7 +184,6 @@
    "args": [
     "0"
    ],
-   "save_as": "stash0_after",
    "expect": {
     "items": [
      "twohanded_maul_01@8",
@@ -201,7 +198,7 @@
      "chest_dex_t1a@8",
      "mainhand_wand_fire_01@8",
      "head_int_t1a@8",
-     "mainhand_scepter_01@8",
+     "back_4a@12",
      "back_2a@8",
      "back_2b@8"
     ]
@@ -214,39 +211,18 @@
    "args": [
     "1"
    ],
-   "save_as": "stash1_after",
    "expect": {
     "items": [
      "mainhand_mace_01@9",
      "head_str_t1a@9",
      "twohanded_shortbow_01@9",
-     "offhand_lantern_01@8"
+     "back_2b@9"
     ]
    },
    "name": "stash s5: tab 2 still sorted after save and load"
   },
   {
    "do": "log_clean"
-  }
- ],
- "boundaries": [
-  {
-   "name": "stash tab 1 order survives a restart",
-   "before": "stash0_before",
-   "after": "stash0_after",
-   "survives": [
-    "items",
-    "name"
-   ]
-  },
-  {
-   "name": "stash tab 2 order survives a restart",
-   "before": "stash1_before",
-   "after": "stash1_after",
-   "survives": [
-    "items",
-    "name"
-   ]
   }
  ]
 }
