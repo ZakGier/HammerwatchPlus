@@ -1,0 +1,517 @@
+<dict>
+	<int name="version">1</int>
+	<array name="tiles">
+		<dict>
+			<vec2 name="pos">0 0</vec2>
+			<array name="datasets">
+				<dict>
+					<string name="tileset">tilesets/mud_4_noise_8.tileset</string>
+					<bytes name="data-rle">8282828282828282828282828282828282f60002c20004c30003c40004c30003c30003c30003c30003cc0003ff0007cc0004ff0007cb0002fd000482828282828282828282d5</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/mud_3_noise_8.tileset</string>
+					<bytes name="data-rle">82828282828282828282828282828282828282b102c405c807c707c706c30282828282828282828282d5</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/mud_3.tileset</string>
+					<bytes name="data-rle">9902f304f405f505f401fe01ab</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/mud_2_noise_8.tileset</string>
+					<bytes name="data-rle">8282828282828282828282828904c405c802ff05c903fd01c805c503ff01fd01ff01cb02fe02fe038802fd05ca02fb03c707ca09ca0acb09c802828282828282828282828282c6</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/mud_2.tileset</string>
+					<bytes name="data-rle">8701f301f201fe01f001ab</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/mud_3_grain_offset.tileset</string>
+					<bytes name="data-rle">828282ac01ff02e302e203e602ff01828282aa</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_default.tileset</string>
+					<bytes name="data-rle">9a05f501fd01f501fd01f501fe02f504f401b7</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_sharp_offset.tileset</string>
+					<bytes name="data-rle">9802f101e30299</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_noise_8_offset.tileset</string>
+					<bytes name="data-rle">828282828282828282828282cb02c507c707c804c504c506c707c707c505c40382b001c102c202c202c201c303c605c50482828282828282828282d5</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_noise_8.tileset</string>
+					<bytes name="data-rle">8282828282828282828282d40efc05d705fd01fd02fd06d701f60cd701fd02ff10d701fe0afd07d701fe07f903ff01d601fd03f605d601fe03f606d601fe03f704ff03d701ff03f604ff03d701ff03f604ff03d701fe01f503fe03d701f102fe03d701ee04d701f503fc04d701fb02fc03fa02d701fc03fc03fa02d701fc0afa02d701fb08f902d701f903f602d701fc08fe03fe03d717d616c906ff01828282828282828282da</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_rough.tileset</string>
+					<bytes name="data-rle">9a01fe01f401fd02f201f501fe02f401ff01f401fe01ba</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_grain.tileset</string>
+					<bytes name="data-rle">82829103fe01fe01e401fe01e602c502b901e50001e602e001fe02e101df028282d1</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/stones_granite.tileset</string>
+					<bytes name="data-rle">960182e9</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_sparse_offset.tileset</string>
+					<bytes name="data-rle">828282ca0182828282a9</bytes>
+				</dict>
+				<dict>
+					<string name="tileset">tilesets/grass_1_sparse.tileset</string>
+					<bytes name="data-rle">82828f02ff01fe02e603fd02eb03ff05ea01ff01fc01e702fb01ff01eb01ff02e401f901ff02eb01fa01ff02eb01fe02e601ff03ff01fd02eb01ff04ff01ff01ea03fc038282d2</bytes>
+				</dict>
+			</array>
+		</dict>
+	</array>
+	<dict name="units">
+		<array name="gui/fonts/arial11.fnt">
+			<array>
+				<vec2>4 28</vec2>
+				<int>347</int>
+				<dict>
+					<int name="layer">1000</int>
+					<string name="text">pyre</string>
+					<bool name="editor">f</bool>
+					<bool name="debug">t</bool>
+				</dict>
+			</array>
+		</array>
+		<array name="gui/fonts/arial24.fnt">
+			<array>
+				<vec2>24 28</vec2>
+				<int>412</int>
+				<dict>
+					<int name="layer">1000</int>
+					<string name="text">0</string>
+					<bool name="editor">f</bool>
+					<bool name="debug">t</bool>
+				</dict>
+			</array>
+		</array>
+	</dict>
+	<dict name="statics">
+		<array name="doodads/terrain/clover.unit">
+			<vec2>-68.9433 -3.05045</vec2>
+			<vec2>92.1687 51.9465</vec2>
+			<vec2>-63.9283 9.66322</vec2>
+			<vec2>-73.4223 8.86481</vec2>
+			<vec2>-13.4867 -58.472</vec2>
+			<vec2>-15.6928 -35.3992</vec2>
+			<vec2>91.4353 42.8262</vec2>
+			<vec2>-21.4657 -64.0654</vec2>
+			<vec2>98.1206 45.0565</vec2>
+			<vec2>-12.9284 -66.7119</vec2>
+			<vec2>-9.0379 97.2255</vec2>
+			<vec2>-37.0172 -60.1774</vec2>
+			<vec2>12.9801 -39.6889</vec2>
+			<vec2>-5.58525 -61.2067</vec2>
+			<vec2>-19.8839 -48.7674</vec2>
+			<vec2>-35.7253 -72.1158</vec2>
+			<vec2>-14.9105 90.4447</vec2>
+			<vec2>-54.9724 10.6033</vec2>
+			<vec2>-27.2907 -71.9327</vec2>
+			<vec2>96.2955 36.9604</vec2>
+			<vec2>-4.67117 87.8067</vec2>
+			<vec2>-8.83437 -38.5064</vec2>
+			<vec2>-73.7615 17.5294</vec2>
+			<vec2>-16.5305 -42.988</vec2>
+			<vec2>-11.9232 -49.2676</vec2>
+			<vec2>-37.0074 85.4041</vec2>
+		</array>
+		<array name="doodads/generic/campfire.unit"><vec2>8 8</vec2></array>
+		<array name="doodads/terrain/flower_lupine.unit">
+			<vec2>84.1111 -66.848</vec2>
+			<vec2>69.3683 -58.4627</vec2>
+			<vec2>53.1335 -34.5952</vec2>
+			<vec2>44.7758 -78.2155</vec2>
+			<vec2>76.4511 -61.2375</vec2>
+			<vec2>44.5049 -28.5565</vec2>
+			<vec2>75.3873 -24.2772</vec2>
+			<vec2>47.7306 -55.8001</vec2>
+			<vec2>60.5563 -35.143</vec2>
+			<vec2>40.2778 -50.9589</vec2>
+			<vec2>57.7659 -30.106</vec2>
+			<vec2>84.4953 -77.0513</vec2>
+			<vec2>59.507 -52.5837</vec2>
+			<vec2>56.0248 -65.8203</vec2>
+			<vec2>76.6061 -72.011</vec2>
+			<vec2>77.8001 -7.4136</vec2>
+			<vec2>80.7043 -18.6735</vec2>
+		</array>
+		<array name="doodads/terrain/grass_1_thin.unit">
+			<vec2>68.4602 3.64222</vec2>
+			<vec2>62.1007 -6.45256</vec2>
+			<vec2>-69.7341 66.5981</vec2>
+			<vec2>94.7559 -24.7</vec2>
+			<vec2>66.9557 -48.912</vec2>
+			<vec2>6.77029 -50.4231</vec2>
+			<vec2>18.7693 -48.7099</vec2>
+			<vec2>42.6335 55.7489</vec2>
+			<vec2>33.1482 50.8768</vec2>
+			<vec2>22.8836 51.6766</vec2>
+			<vec2>20.7532 62.4646</vec2>
+			<vec2>44.8796 72.263</vec2>
+			<vec2>45.5928 83.1834</vec2>
+			<vec2>5.08482 61.9243</vec2>
+			<vec2>29.0254 94.0776</vec2>
+			<vec2>-52.7876 86.4001</vec2>
+			<vec2>24.8856 84.2154</vec2>
+			<vec2>-30.2602 75.0079</vec2>
+			<vec2>86.4038 -26.2989</vec2>
+			<vec2>62.2393 101.272</vec2>
+			<vec2>-22.1277 59.0919</vec2>
+			<vec2>32.9642 -51.6654</vec2>
+			<vec2>33.1766 -40.3765</vec2>
+			<vec2>53.178 -51.6403</vec2>
+			<vec2>54.4913 -5.16821</vec2>
+			<vec2>59.7752 2.23993</vec2>
+			<vec2>54.6503 36.1895</vec2>
+			<vec2>61.4921 37.5273</vec2>
+			<vec2>72.1902 32.4165</vec2>
+			<vec2>-28.7443 -51.8363</vec2>
+			<vec2>5.83172 -63.7757</vec2>
+			<vec2>1.10901 -66.9781</vec2>
+			<vec2>-9.07573 -61.0243</vec2>
+			<vec2>-11.2936 -56.6494</vec2>
+			<vec2>37.3009 -58.3438</vec2>
+			<vec2>58.5154 -71.6362</vec2>
+			<vec2>-3.89176 -46.1003</vec2>
+			<vec2>-46.8785 -67.2416</vec2>
+			<vec2>-53.3108 -73.6072</vec2>
+			<vec2>-70.9085 2.38294</vec2>
+			<vec2>-25.2259 -72.4444</vec2>
+			<vec2>-20.7002 -75.5684</vec2>
+			<vec2>-13.2238 -76.7718</vec2>
+			<vec2>74.2754 12.7799</vec2>
+			<vec2>-9.8988 -72.7333</vec2>
+			<vec2>81.0479 -41.6783</vec2>
+			<vec2>-11.4142 82.4006</vec2>
+			<vec2>-5.758 82.5832</vec2>
+			<vec2>-25.923 89.3695</vec2>
+			<vec2>-26.8385 94.7933</vec2>
+			<vec2>-41.9954 84.3459</vec2>
+			<vec2>-47.7705 87.7258</vec2>
+			<vec2>-44.459 91.6176</vec2>
+			<vec2>-72.2181 52.8792</vec2>
+			<vec2>-73.4124 62.2852</vec2>
+			<vec2>-48.1297 60.7449</vec2>
+			<vec2>-57.4675 70.5785</vec2>
+			<vec2>-50.3646 65.3879</vec2>
+			<vec2>-42.7474 64.2567</vec2>
+			<vec2>-49.7012 75.3033</vec2>
+			<vec2>1.54777 78.0869</vec2>
+			<vec2>-58.308 92.2048</vec2>
+			<vec2>-45.4893 81.5807</vec2>
+			<vec2>-61.8179 90.1682</vec2>
+			<vec2>-58.9081 94.4373</vec2>
+			<vec2>-66.0651 85.0357</vec2>
+			<vec2>-61.3648 87.1869</vec2>
+			<vec2>-67.0608 -28.6921</vec2>
+			<vec2>-73.4919 92.9214</vec2>
+			<vec2>-74.0147 94.9323</vec2>
+			<vec2>19.6586 43.2839</vec2>
+			<vec2>5.02412 50.6877</vec2>
+			<vec2>-18.6323 36.6842</vec2>
+			<vec2>-8.60739 49.9501</vec2>
+			<vec2>-19.0012 57.9482</vec2>
+			<vec2>-2.57597 36.4262</vec2>
+			<vec2>-20.1692 45.5901</vec2>
+			<vec2>0.200239 80.7561</vec2>
+			<vec2>76.2656 2.46547</vec2>
+			<vec2>-62.252 57.4848</vec2>
+			<vec2>-54.6883 36.1568</vec2>
+			<vec2>-55.0119 27.3735</vec2>
+			<vec2>-56.3248 8.34987</vec2>
+			<vec2>-50.729 -0.278085</vec2>
+			<vec2>-39.1778 3.04846</vec2>
+			<vec2>-47.5352 -7.02232</vec2>
+			<vec2>-31.7773 -2.69328</vec2>
+			<vec2>-31.6444 7.97514</vec2>
+			<vec2>-45.6714 46.0257</vec2>
+			<vec2>-54.3396 53.2013</vec2>
+			<vec2>-74.9834 28.6126</vec2>
+			<vec2>-63.7251 36.857</vec2>
+			<vec2>-59.227 26.8262</vec2>
+			<vec2>-60.8283 44.0101</vec2>
+			<vec2>-70.9895 34.428</vec2>
+			<vec2>-4.13296 70.3418</vec2>
+			<vec2>-26.9827 -59.3072</vec2>
+			<vec2>-77.2572 8.75844</vec2>
+			<vec2>-72.7258 -77.3704</vec2>
+			<vec2>54.4112 89.4673</vec2>
+			<vec2>46.8761 77.032</vec2>
+			<vec2>-68.9261 -74.8168</vec2>
+			<vec2>-59.7342 -74.76</vec2>
+			<vec2>43.6646 92.9282</vec2>
+			<vec2>60.6713 85.4163</vec2>
+			<vec2>4.21124 93.1659</vec2>
+			<vec2>4.81532 85.2546</vec2>
+			<vec2>37.7222 -71.1885</vec2>
+			<vec2>22.2265 -65.6833</vec2>
+			<vec2>13.03 -61.2435</vec2>
+			<vec2>-54.3536 -17.7279</vec2>
+			<vec2>25.0578 -58.9401</vec2>
+			<vec2>26.7864 -63.1749</vec2>
+			<vec2>22.5517 -54.7994</vec2>
+			<vec2>22.3772 -60.5812</vec2>
+			<vec2>21.1717 -57.2108</vec2>
+			<vec2>13.3163 -72.6128</vec2>
+			<vec2>32.1206 -74.802</vec2>
+			<vec2>-46.2427 -78.2628</vec2>
+			<vec2>-62.6172 0.421364</vec2>
+			<vec2>57.003 -50.0981</vec2>
+			<vec2>72.4128 -55.2012</vec2>
+			<vec2>76.9936 -51.3697</vec2>
+			<vec2>66.7406 -53.6888</vec2>
+			<vec2>62.7833 -48.467</vec2>
+			<vec2>75.7352 -40.4878</vec2>
+			<vec2>71.5594 -27.866</vec2>
+			<vec2>69.0937 -26.439</vec2>
+			<vec2>80.6528 -37.237</vec2>
+			<vec2>84.8156 -23.2138</vec2>
+			<vec2>74.8712 -24.5873</vec2>
+			<vec2>72.9227 -12.3077</vec2>
+			<vec2>86.7936 -2.64414</vec2>
+			<vec2>71.6446 -0.769731</vec2>
+			<vec2>66.6263 -9.90248</vec2>
+			<vec2>74.9406 17.5241</vec2>
+			<vec2>76.938 18.5698</vec2>
+			<vec2>47.6472 38.3536</vec2>
+			<vec2>61.6267 48.1107</vec2>
+			<vec2>64.1625 44.5393</vec2>
+			<vec2>50.8046 56.5633</vec2>
+			<vec2>40.7003 50.2821</vec2>
+			<vec2>37.266 41.5541</vec2>
+			<vec2>-59.8071 61.6407</vec2>
+			<vec2>36.3762 90.156</vec2>
+			<vec2>35.2325 87.4477</vec2>
+			<vec2>-56.7199 -12.2039</vec2>
+			<vec2>-60.2329 -34.0294</vec2>
+			<vec2>-3.02684 89.8968</vec2>
+			<vec2>82.2035 76.2698</vec2>
+			<vec2>67.1137 79.6419</vec2>
+			<vec2>74.9831 68.8244</vec2>
+			<vec2>94.0722 75.1449</vec2>
+			<vec2>-30.0358 53.492</vec2>
+			<vec2>79.6591 64.9188</vec2>
+			<vec2>85.1104 74.7411</vec2>
+			<vec2>70.8925 93.0405</vec2>
+			<vec2>-18.9834 99.8133</vec2>
+			<vec2>92.9711 30.5122</vec2>
+			<vec2>56.5627 100.079</vec2>
+			<vec2>84.8269 22.5576</vec2>
+			<vec2>-35.8392 66.3022</vec2>
+			<vec2>-40.6779 55.6161</vec2>
+			<vec2>-14.607 69.43</vec2>
+			<vec2>-26.3872 66.7461</vec2>
+			<vec2>-34.0196 63.1718</vec2>
+			<vec2>-19.5299 63.4737</vec2>
+			<vec2>-34.0276 74.9462</vec2>
+			<vec2>-17.2118 69.107</vec2>
+			<vec2>-12.2711 67.9613</vec2>
+			<vec2>-22.4625 76.0456</vec2>
+			<vec2>-10.0446 74.1847</vec2>
+			<vec2>1.38241 75.7412</vec2>
+			<vec2>-0.317698 73.2235</vec2>
+			<vec2>-77.3507 19.3165</vec2>
+			<vec2>8.03037 74.5818</vec2>
+			<vec2>84.7268 -63.3553</vec2>
+			<vec2>83.9839 -67.922</vec2>
+			<vec2>88.1638 -63.9312</vec2>
+			<vec2>91.1724 -54.7396</vec2>
+			<vec2>-35.5245 98.8247</vec2>
+			<vec2>43.0724 -24.2271</vec2>
+			<vec2>53.8759 -28.5473</vec2>
+			<vec2>56.3822 -30.5164</vec2>
+			<vec2>47.2541 -33.7115</vec2>
+			<vec2>51.1846 -26.0929</vec2>
+			<vec2>27.8505 -41.3717</vec2>
+			<vec2>-51.2455 -19.4771</vec2>
+			<vec2>-39.2537 -18.2902</vec2>
+			<vec2>28.155 -74.4295</vec2>
+			<vec2>64.5191 -74.6117</vec2>
+			<vec2>-13.4746 -71.9458</vec2>
+			<vec2>-43.3237 101.229</vec2>
+			<vec2>11.2619 99.6972</vec2>
+			<vec2>1.53163 98.1196</vec2>
+			<vec2>-58.4819 100.487</vec2>
+			<vec2>85.9706 100.343</vec2>
+			<vec2>-68.2235 96.8401</vec2>
+			<vec2>4.00394 -77.0779</vec2>
+			<vec2>-6.22468 100.833</vec2>
+			<vec2>-73.4927 -47.0834</vec2>
+			<vec2>89.306 90.7647</vec2>
+			<vec2>94.5982 88.2167</vec2>
+			<vec2>13.0756 85.1005</vec2>
+			<vec2>-40.4545 -13.3867</vec2>
+			<vec2>-67.6195 -64.5181</vec2>
+			<vec2>-51.812 -61.7998</vec2>
+			<vec2>-69.4694 -67.2023</vec2>
+			<vec2>-73.3682 -61.3197</vec2>
+			<vec2>-58.2442 -49.254</vec2>
+			<vec2>-73.7911 -56.493</vec2>
+			<vec2>-74.0574 -28.8105</vec2>
+			<vec2>-63.4633 -19.6735</vec2>
+			<vec2>-46.0513 -37.8684</vec2>
+			<vec2>-39.3654 -33.1108</vec2>
+			<vec2>-63.7579 -35.7852</vec2>
+			<vec2>-57.2958 -27.3896</vec2>
+			<vec2>-71.4395 -29.6673</vec2>
+			<vec2>-63.7739 -17.0252</vec2>
+			<vec2>-71.463 -17.9528</vec2>
+			<vec2>40.6872 -29.9785</vec2>
+			<vec2>44.7789 -60.0299</vec2>
+			<vec2>46.569 -57.4834</vec2>
+			<vec2>35.4023 -61.5641</vec2>
+			<vec2>32.7335 -59.4018</vec2>
+			<vec2>-33.3009 -49.3498</vec2>
+			<vec2>38.6364 -54.2422</vec2>
+			<vec2>26.5094 -35.0315</vec2>
+			<vec2>-38.3488 -47.0485</vec2>
+			<vec2>-28.4624 -48.7319</vec2>
+			<vec2>-42.8237 -53.2425</vec2>
+			<vec2>-19.7397 73.6904</vec2>
+			<vec2>62.6521 14.5304</vec2>
+			<vec2>65.137 17.0983</vec2>
+			<vec2>-11.1018 -70.5004</vec2>
+			<vec2>52.7712 18.2656</vec2>
+			<vec2>64.2157 27.6678</vec2>
+			<vec2>40.5511 70.3737</vec2>
+			<vec2>23.6287 73.0251</vec2>
+			<vec2>38.5819 81.5504</vec2>
+			<vec2>25.0852 69.3668</vec2>
+			<vec2>27.3967 76.5137</vec2>
+			<vec2>36.2862 64.8862</vec2>
+			<vec2>38.246 76.265</vec2>
+			<vec2>17.8902 78.804</vec2>
+			<vec2>30.0534 76.5808</vec2>
+			<vec2>29.5292 61.9212</vec2>
+			<vec2>22.8494 58.2407</vec2>
+			<vec2>15.2461 38.89</vec2>
+			<vec2>27.5162 36.8253</vec2>
+			<vec2>33.0844 35.7702</vec2>
+			<vec2>36.2043 24.2691</vec2>
+			<vec2>41.7647 27.9163</vec2>
+			<vec2>51.4822 30.4639</vec2>
+			<vec2>44.9472 16.7199</vec2>
+			<vec2>48.3454 14.9424</vec2>
+			<vec2>57.7628 11.0374</vec2>
+			<vec2>47.5903 10.4898</vec2>
+			<vec2>44.9438 1.36998</vec2>
+			<vec2>94.6934 -43.1248</vec2>
+			<vec2>86.1714 -40.4193</vec2>
+			<vec2>66.5508 -6.41031</vec2>
+			<vec2>64.8954 -11.2852</vec2>
+			<vec2>75.9399 -9.33595</vec2>
+			<vec2>69.5905 -18.8881</vec2>
+			<vec2>70.6475 -34.3947</vec2>
+			<vec2>60.4441 -23.1076</vec2>
+			<vec2>66.0424 -32.0003</vec2>
+			<vec2>58.8172 -17.7038</vec2>
+			<vec2>54.156 -12.9589</vec2>
+			<vec2>50.6948 5.55423</vec2>
+		</array>
+		<array name="doodads/terrain/flower_poppy.unit">
+			<vec2>-58.0504 -42.7203</vec2>
+			<vec2>-43.9874 -28.186</vec2>
+			<vec2>-43.2461 10.355</vec2>
+			<vec2>-71.9888 -61.5929</vec2>
+			<vec2>-35.9859 -8.09474</vec2>
+			<vec2>-40.7422 -34.4003</vec2>
+			<vec2>-55.0732 -36.4424</vec2>
+			<vec2>-37.4184 1.43436</vec2>
+			<vec2>-66.9529 -52.4689</vec2>
+			<vec2>-64.7369 -44.9749</vec2>
+			<vec2>-47.4482 -41.6854</vec2>
+			<vec2>-49.0455 -10.038</vec2>
+			<vec2>-47.9929 -34.7289</vec2>
+			<vec2>-40.0833 -26.2489</vec2>
+			<vec2>-43.415 -4.14228</vec2>
+		</array>
+		<array name="doodads/walls/______prefab/_special_reserved.unit">
+			<vec2>32 -32</vec2>
+			<vec2>-32 80</vec2>
+			<vec2>-80 -32</vec2>
+			<vec2>32 16</vec2>
+			<vec2>80 64</vec2>
+			<vec2>80 -80</vec2>
+			<vec2>-80 -16</vec2>
+			<vec2>-80 -48</vec2>
+			<vec2>-80 -64</vec2>
+			<vec2>-32 -32</vec2>
+			<vec2>-64 64</vec2>
+			<vec2>-64 -80</vec2>
+			<vec2>-16 -80</vec2>
+			<vec2>0 -80</vec2>
+			<vec2>16 -80</vec2>
+			<vec2>32 -80</vec2>
+			<vec2>48 -80</vec2>
+			<vec2>16 -32</vec2>
+			<vec2>0 -32</vec2>
+			<vec2>-16 -32</vec2>
+			<vec2>32 -16</vec2>
+			<vec2>-48 -80</vec2>
+			<vec2>-32 -80</vec2>
+			<vec2>80 48</vec2>
+			<vec2>80 32</vec2>
+			<vec2>80 16</vec2>
+			<vec2>80 0</vec2>
+			<vec2>80 -16</vec2>
+			<vec2>48 80</vec2>
+			<vec2>80 -48</vec2>
+			<vec2>80 -64</vec2>
+			<vec2>-80 -80</vec2>
+			<vec2>-64 -64</vec2>
+			<vec2>64 -64</vec2>
+			<vec2>64 -80</vec2>
+			<vec2>64 64</vec2>
+			<vec2>80 80</vec2>
+			<vec2>-48 -48</vec2>
+			<vec2>32 32</vec2>
+			<vec2>-80 64</vec2>
+			<vec2>-80 48</vec2>
+			<vec2>-80 32</vec2>
+			<vec2>-80 16</vec2>
+			<vec2>48 -48</vec2>
+			<vec2>-32 -16</vec2>
+			<vec2>48 48</vec2>
+			<vec2>16 32</vec2>
+			<vec2>-80 80</vec2>
+			<vec2>-32 16</vec2>
+			<vec2>-48 48</vec2>
+			<vec2>32 0</vec2>
+			<vec2>-32 32</vec2>
+			<vec2>-16 32</vec2>
+			<vec2>-32 0</vec2>
+			<vec2>0 32</vec2>
+			<vec2>-64 80</vec2>
+			<vec2>80 -32</vec2>
+			<vec2>-48 80</vec2>
+			<vec2>-80 0</vec2>
+			<vec2>-16 80</vec2>
+			<vec2>0 80</vec2>
+			<vec2>16 80</vec2>
+			<vec2>32 80</vec2>
+			<vec2>64 80</vec2>
+		</array>
+		<array name="doodads/terrain/flower_daisy.unit">
+			<vec2>69.4919 77.7733</vec2>
+			<vec2>88.6354 66.8801</vec2>
+			<vec2>82.845 66.1008</vec2>
+			<vec2>67.9409 22.6872</vec2>
+			<vec2>72.6844 19.506</vec2>
+			<vec2>58.8408 30.9317</vec2>
+			<vec2>65.9593 33.3669</vec2>
+			<vec2>81.5824 44.5398</vec2>
+			<vec2>85.5084 45.8005</vec2>
+			<vec2>69.937 67.4729</vec2>
+			<vec2>85.8609 58.7729</vec2>
+		</array>
+		<array name="doodads/terrain/grass_1_medium.unit"><vec2>70.097 -12.941</vec2><vec2>32.163 72.3157</vec2></array>
+		<array name="doodads/terrain/flower_small.unit"><vec2>-21.1061 -50.97</vec2><vec2>-11.6029 -47.892</vec2><vec2>-32.0236 -76.2494</vec2></array>
+	</dict>
+</dict>

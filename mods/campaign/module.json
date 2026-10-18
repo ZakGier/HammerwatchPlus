@@ -4,7 +4,8 @@
     "core"
   ],
   "overrides": [
-    "tweak/missions/missions_dark_citadel.sval"
+    "tweak/missions/missions_dark_citadel.sval",
+    "prefabs/town/buildings/pyre/pyre_tier_0.pfb"
   ],
   "exclude": [],
   "local": [

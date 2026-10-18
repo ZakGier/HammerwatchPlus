@@ -17,15 +17,15 @@ namespace HWP
 		const int FLOORS_PER_ACT = 3;
 		const int FLOORS = 18;
 
-		// The portal stands in the chapel courtyard on the unbuilt Pyre: every
-		// chapel_tier_0..5.pfb places pyre_tier_0.pfb (its campfire at +8,+8) at
-		// 336,-240 and has a stone coffin at 496,-656 in its graveyard, a unit no
-		// other town prefab uses. Tiers 3-5 have more coffins, so a coffin only
-		// counts when the campfire (or the built pyre) is where it says.
+		// The portal stands in the chapel courtyard on the unbuilt Pyre. Where
+		// TownRecord::SpawnTown puts it: the base town segment (set
+		// town_segment_base) places the chapel, any tier, at a grid cell of its
+		// placed-prefabs; the chapel places pyre_tier_0.pfb (or the built pyre)
+		// at its unbuilt-placed-prefabs cell; cells are 16 px. The campfire is
+		// a static in vanilla, which no scene query returns, so our copy of
+		// pyre_tier_0.pfb places it as a unit we can hide.
 		const string CAMPFIRE_UNIT = "doodads/generic/campfire.unit";
-		const string PYRE_UNIT = "doodads/generic/pyre.unit";
-		const string ANCHOR_UNIT = "doodads/furniture/coffin_stone_v.unit";
-		const vec2 ANCHOR_TO_FIRE = vec2(344 - 496, -232 + 656);
+		const vec2 FIRE_IN_PYRE = vec2(8, 8);
 		const float MATCH = 12.0f;
 		// a built Pyre is a real building (shadow curses): the portal stands below it
 		const vec2 BELOW_PYRE = vec2(0, 72);
@@ -35,22 +35,46 @@ namespace HWP
 		HWP::Town::Placeable@ g_portal;
 		UnitPtr g_campfire;  // hidden while the portal stands on it (local, every machine)
 
-		array<UnitPtr>@ FetchUnits(const string &in path)
+		bool IsBuildingPrefab(BuildingManagement::BuildingDef@ def, Prefab@ pfb)
 		{
-			auto prod = Resources::GetUnitProducer(path);
-			if (prod is null)
-				return array<UnitPtr>();
-			return g_scene.FetchAllUnitsOfType(prod);
+			if (def.m_unbuiltPrefab is pfb)
+				return true;
+			for (uint i = 0; i < def.m_variations.length(); i++)
+			{
+				if (def.m_variations[i].m_prefab is pfb)
+					return true;
+			}
+			return false;
 		}
 
-		UnitPtr NearestTo(array<UnitPtr>@ units, vec2 p)
+		// world position of the chapel's pyre slot (the campfire's spot)
+		bool PyreSpot(vec2 &out pos)
 		{
-			for (uint i = 0; i < units.length(); i++)
+			BuildingManagement::BuildingDef@ chapel = null;
+			for (uint i = 0; i < BuildingManagement::BuildingDef::Instances.length(); i++)
 			{
-				if (dist(xy(units[i].GetPosition()), p) <= MATCH)
-					return units[i];
+				if (BuildingManagement::BuildingDef::Instances[i].m_id == "chapel")
+					@chapel = BuildingManagement::BuildingDef::Instances[i];
 			}
-			return UnitPtr();
+			if (chapel is null || chapel.m_unbuiltPlacedPrefabs.length() == 0)
+				return false;
+			uint baseSet = HashString("town_segment_base");
+			for (uint i = 0; i < MissionPrefabDef::Instances.length(); i++)
+			{
+				auto seg = MissionPrefabDef::Instances[i];
+				if (seg.m_set != baseSet)
+					continue;
+				for (uint j = 0; j < seg.m_placedPrefabs.length(); j++)
+				{
+					auto pfb = Resources::GetPrefab(seg.m_placedPrefabs[j].m_id);
+					if (pfb is null || !IsBuildingPrefab(chapel, pfb))
+						continue;
+					ivec2 cell = seg.m_placedPrefabs[j].m_pos + seg.m_gridOffset + chapel.m_unbuiltPlacedPrefabs[0].m_pos;
+					pos = vec2(float(cell.x * 16), float(cell.y * 16)) + FIRE_IN_PYRE;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		void ShowCampfire()
@@ -65,34 +89,30 @@ namespace HWP
 		bool LocatePortal(vec3 &out pos)
 		{
 			ShowCampfire();
-			auto anchors = FetchUnits(ANCHOR_UNIT);
-			auto fires = FetchUnits(CAMPFIRE_UNIT);
-			auto pyres = FetchUnits(PYRE_UNIT);
-			for (uint i = 0; i < anchors.length(); i++)
+			vec2 spot;
+			if (!PyreSpot(spot))
 			{
-				vec2 spot = xy(anchors[i].GetPosition()) + ANCHOR_TO_FIRE;
-				auto fire = NearestTo(fires, spot);
-				if (fire.IsValid())
-				{
-					pos = fire.GetPosition();
-					if (!g_portal.Custom())
-					{
-						fire.SetHidden(true);
-						g_campfire = fire;
-					}
-					HWP::Log("campaign", "portal spot: the chapel campfire at " + int(pos.x) + "," + int(pos.y));
-					return true;
-				}
-				auto pyre = NearestTo(pyres, spot);
-				if (pyre.IsValid())
-				{
-					pos = pyre.GetPosition() + xyz(BELOW_PYRE);
-					HWP::Log("campaign", "portal spot: below the chapel pyre at " + int(pos.x) + "," + int(pos.y));
-					return true;
-				}
+				HWP::LogError("campaign", "chapel pyre slot not found in the town layout, portal at the default spot");
+				return false;
 			}
-			HWP::LogError("campaign", "no chapel campfire or pyre found (" + anchors.length() + " anchors), portal at the default spot");
-			return false;
+			auto prod = Resources::GetUnitProducer(CAMPFIRE_UNIT);
+			array<UnitPtr>@ fires = null;
+			if (prod !is null)
+				@fires = g_scene.FetchUnitsOfType(prod, spot, int(MATCH));
+			if (fires !is null && fires.length() > 0)
+			{
+				pos = fires[0].GetPosition();
+				if (!g_portal.Custom())
+				{
+					fires[0].SetHidden(true);
+					g_campfire = fires[0];
+				}
+				HWP::Log("campaign", "portal spot: the chapel campfire at " + int(pos.x) + "," + int(pos.y));
+				return true;
+			}
+			pos = xyz(spot + BELOW_PYRE);
+			HWP::Log("campaign", "portal spot: below the chapel pyre at " + int(pos.x) + "," + int(pos.y));
+			return true;
 		}
 
 		// HWP::Town::PlaceableStale: a rebuild brings a fresh campfire back

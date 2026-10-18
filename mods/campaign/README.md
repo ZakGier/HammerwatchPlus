@@ -27,10 +27,14 @@ generated floors in the closest HoH2 theme plus a vanilla boss level.
   opens. Clients see the host's portal (netsynced doodad). The host spawns
   it (`HWP::Town::Placeable` in core) 0.6 s after the town loads, **in the
   chapel courtyard in place of its campfire** (the unbuilt Pyre). Every
-  machine finds that campfire (`LocatePortal`): each chapel tier places
-  `pyre_tier_0.pfb` at a fixed spot and has a stone coffin
-  (`coffin_stone_v.unit`) no other town prefab uses, so coffin + (-152, 424)
-  is the campfire, which is hidden locally while the portal stands on it.
+  machine computes that spot from the town layout data the way
+  `TownRecord::SpawnTown` does (`PyreSpot`: the base segment's chapel cell +
+  the chapel's `unbuilt-placed-prefabs` cell for `pyre_tier_0.pfb`, 16 px
+  cells; (984,-232) on the current build) and hides the campfire there
+  locally while the portal stands on it. Vanilla places that campfire as a
+  prefab static, which no scene query returns and nothing can hide, so the
+  module overrides `prefabs/town/buildings/pyre/pyre_tier_0.pfb` (`.orig`
+  committed) with the campfire moved from statics to units.
   Once the Pyre is built (a real building: it lowers shadow-curse gain) it
   stays and the portal stands 72 px below it. After a building upgrade
   rebuilds the town, the portal is placed again within a second.
