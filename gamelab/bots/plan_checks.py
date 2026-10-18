@@ -1282,6 +1282,127 @@ class Checks:
         self.flag("late_boss_ace", ok and ak.get("killed", 0) >= 1 and drops[:1] == ["ace"], f"{drops}")
         self.to_town()
 
+    def mana(self):
+        return self.gl("state").get("player", {}).get("mana", -1)
+
+    def shoot(self, button, ms=60, aim=(1, 0)):
+        """One emulated press of an attack/skill button aimed along `aim`; waits out the cast."""
+        self.gl("input", ms, 0, 0, aim[0], aim[1], button)
+        time.sleep(0.6)
+
+    def firearms_ammo(self):
+        """firearms s2: a shot costs 1 mana, nothing fires at 0, Reload refills, the aimed
+        shot costs 2 and pierces (bullet_aimed penetration 3)."""
+        self.gl("char", "hwp_firearms", "LabGunner")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+        if not self.start_floor(0):
+            self.flag("firearms_mission", False)
+            return
+        self.hwp("god")
+        self.gl("kill", 6000, "tag:enemy")
+        time.sleep(1)
+        pl = self.gl("state").get("player", {})
+        self.notes.append(f"gunner mana {pl.get('mana')}/{pl.get('manaMax')}, main hand {self.main_hand()}")
+        def dummies(r=400):
+            return {u["unit"]: u for u in self.gl("near", r, "bandit_brute").get("units", [])}
+
+        def exact():
+            return self.gl("state").get("player", {}).get("manaExact", -1.0)
+
+        def drops(button, n, gap, regen):
+            """Each cast's cost on the float mana: polled, a fall between two reads is the
+            cost less the regen in between, so that regen (rate x the read gap) is added back."""
+            out = []
+            for _ in range(n):
+                prev, tp = exact(), time.time()
+                self.gl("input", 60, 0, 0, 1, 0, button)
+                best, end = 0.0, time.time() + 0.9
+                while time.time() < end:
+                    cur, tc = exact(), time.time()
+                    if prev - cur > 0.1:
+                        best = (prev - cur) + regen * (tc - tp)
+                        break
+                    prev, tp = cur, tc
+                out.append(round(best, 2))
+                time.sleep(gap)
+            return out
+
+        def regen_rate():
+            self.gl("input", 1200, 0, 0, 1, 0, "main")  # spend a few rounds: regen shows below the cap only
+            time.sleep(1.5)
+            m0, t0 = exact(), time.time()
+            time.sleep(2.5)
+            return (exact() - m0) / (time.time() - t0)
+
+        regen = regen_rate()
+        c1 = drops("main", 5, 0.4, regen)
+        c2 = drops("off", 5, 0.5, regen)  # the aimed shot has an 800 ms cooldown
+        self.notes.append(f"mana regen {regen:.2f}/s")
+        mul = self.gl("state").get("player", {}).get("manaCostMul", 1.0)
+        # the cost is the sval's mana-cost times the modifiers' skill cost multiplier (chapel
+        # blessing, shrines, gear; 1.0 for this character); the median of five, within 0.2
+        med = lambda xs: sorted(xs)[len(xs) // 2]
+        self.flag("shot_costs_1", abs(med(c1) - 1 * mul) < 0.2, f"cost mul {mul:.3f}: drop per shot {c1}")
+        self.flag("aimed_costs_2", abs(med(c2) - 2 * mul) < 0.2, f"drop per aimed shot {c2}")
+        # pierce: three brutes in a line and the aimed shot, all in one frame (gl multi), so the
+        # round (castpoint 420 ms) leaves before they walk in and steer round each other (one gl
+        # command a frame let them break the line; totems took no projectile hits at all)
+        brute = "actors/humans/bandits/bandit_brute.unit"
+        hit, aim = [], (1, 0)
+        for aim in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            self.gl("kill", 600, "tag:enemy")
+            time.sleep(0.5)
+            m = exact()
+            args = []
+            for k in (60, 100, 140):
+                args += ["spawn", brute, aim[0] * k, aim[1] * k, "+"]
+            # held past the 420 ms castpoint: the aimed shot keeps updating its aim until then
+            # (update-aim 0 420), and once the emulated aim lets go the mouse's takes over
+            args += ["input", 500, 0, 0, aim[0], aim[1], "off"]
+            self.gl("multi", *args)
+            time.sleep(1.0)
+            t1 = dummies()
+            hit = [k for k, u in t1.items() if u.get("hp", 1.0) < 1.0]
+            self.notes.append(f"pierce along {aim}: mana {m:.1f} -> {exact():.1f}, hp {[round(u.get('hp', 1), 3) for u in t1.values()]}")
+            if len(hit) >= 2:
+                break
+        self.flag("aimed_pierces", len(hit) >= 2, f"{len(hit)} brutes hit by one aimed round along {aim}")
+        # drain the magazine: hold the trigger until mana reads 0
+        for _ in range(40):
+            if self.mana() <= 0:
+                break
+            self.gl("input", 2000, 0, 0, 1, 0, "main")
+            time.sleep(2.1)
+        empty = self.mana()
+        # 3 s on the trigger from empty: a round goes off only once regen has put its cost
+        # back (Player.CanAfford), so mana never dips below 0 and every fall starts at >= cost
+        self.gl("input", 3000, 0, 0, 1, 0, "main")
+        prev, lows, starts, end = exact(), [], [], time.time() + 3.0
+        tp = time.time()
+        while time.time() < end:
+            cur = exact()
+            lows.append(cur)
+            tc = time.time()
+            if prev - cur > 0.2:
+                starts.append(round(prev + regen * (tc - tp), 2))  # mana when the round went off, at most
+            prev, tp = cur, tc
+        cost = 1 * mul
+        self.flag("no_fire_empty", empty <= 1 and lows and min(lows) >= -0.01 and starts
+                  and all(st >= cost - 0.1 for st in starts),
+                  f"mana {empty}; 3 s on the trigger: {len(starts)} round(s), each fired at mana {starts} "
+                  f"(cost {cost:.2f}), lowest {min(lows) if lows else None}")
+        time.sleep(0.3)
+        self.gl("kill", 600, "tag:enemy")
+        # Reload (the class's first skill): 50 % of the magazine at level 1
+        before = self.mana()
+        self.shoot("skill1", 60)
+        time.sleep(0.5)
+        after = self.mana()
+        mx = self.gl("state").get("player", {}).get("manaMax", 0)
+        self.flag("reload_refills", after - before >= mx // 2 - 1, f"mana {before} -> {after} of {mx}")
+        self.to_town()
+
     def to_town(self):
         """Abandon the run (the pause menu's way) and close the mission end menu."""
         if self.gl("state").get("phase") == "town":

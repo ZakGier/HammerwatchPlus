@@ -1,0 +1,69 @@
+{
+ "name": "plan-t14",
+ "about": "Test plan through the plan_checks bot: firearms s3, a gunner's rounds cost mana (1 a shot, 2 aimed), nothing fires at 0, Reload refills, the aimed shot pierces.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "firearms_ammo"
+   },
+   "name": "firearms ammo",
+   "expect": {
+    "shot_costs_1": true,
+    "aimed_costs_2": true,
+    "no_fire_empty": true,
+    "reload_refills": true,
+    "aimed_pierces": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -201,6 +201,10 @@ namespace GameLab
 			vec3 pos = plr.m_unit.GetPosition();
 			p.Num("x", pos.x).Num("y", pos.y);
 			p.Bool("combo", plr.m_comboActive);
+			// mana as the float the costs come off (CurrentMana truncates), and the modifiers'
+			// skill cost multiplier (chapel blessing, shrines, gear: Player.UsePoints)
+			p.Num("manaExact", record.mana * float(record.MaxMana()));
+			p.Num("manaCostMul", record.GetModifiers().SkillCostMul(plr).y);
 			// active buffs by their name key (ActorBuffDef.m_name, e.g. ".hwp.groupcombo...")
 			array<string> buffs;
 			for (uint i = 0; i < plr.m_buffs.m_buffs.length(); i++)

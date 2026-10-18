@@ -836,3 +836,17 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - **Combo needs a combo skill.** `PlayerStats.ComboCountMax` is 0 until a combo skill
   (`combo_kills` / `combo_dash` / `combo_parry`, tier 1, cost 0) is picked through
   `SkillUp(id, true)`; until then `Player.GiveCombo` does nothing.
+
+## Skill aim follows the mouse after the emulated input ends (2026-10-18)
+- `gl input` sets `GameInput.AimDir` only while held. A skill with `update-aim 0 N` keeps
+  re-reading the aim until N ms; released earlier, the aim falls back to the real mouse
+  cursor, and the round flies there. The firearms aimed shot (castpoint 420) missed every
+  target with a 60-300 ms press and hit three brutes in a line with a 500 ms hold
+  (plan-t14 20261018-114725). Verified.
+- One `gl` command per ~0.3 s: three spawns plus a shot gave the brutes time to walk in and
+  steer around each other; `gl multi` puts them in one frame. Verified.
+- `cht_plr_hidden` only hides the player unit; enemies still aggro. Goblin totems took no
+  projectile hits. Verified (plan-t14 runs 111904, 113007).
+- Player mana costs: `Player.UsePoints` takes flat cost x `GetModifiers().SkillCostMul` off a
+  float mana; `CurrentMana()` truncates, so integer read-backs alternate 1/0 for a 1-mana
+  shot under regen. The probe now reports `manaExact` and `manaCostMul`. Verified.
