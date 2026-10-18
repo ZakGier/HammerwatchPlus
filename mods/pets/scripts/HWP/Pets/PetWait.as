@@ -63,6 +63,26 @@ namespace HWP
 			return false;
 		}
 
+		// Back to following after a wait or a hover: straight to the owner. The parking spot is
+		// the owner's last puzzle-free position, often a corner of their path against a wall,
+		// where a walking pet's own pathfind can fail; an Idle pet then never moves (Idle has
+		// no straight-line fallback and picks a new idle target on every failed search) until
+		// the owner is past the 350 px leash (20261018-144852: still 200 px off 9 s after the
+		// owner left). MovingToPlayer walks straight while no path is in and, if the search
+		// fails, puts the pet by the owner, as the base does past the leash.
+		void Rejoin(MiniPet@ pet, vec2 ownerPos)
+		{
+			pet.ClearTarget();
+			pet.m_targetingDelay = 0;
+			if (pet.IsHusk())
+				return;
+			pet.SetTarget(ownerPos, PetState::MovingToPlayer);
+			pet.m_targetingDelay = 1500;
+			auto walking = cast<MiniPetWalking>(pet);
+			if (walking !is null)
+				walking.m_pathTimeout = 1500;
+		}
+
 		class Watcher
 		{
 			int m_timer;
@@ -101,17 +121,13 @@ namespace HWP
 						if (m_waiting)
 						{
 							m_waiting = false;
-							pet.ClearTarget();
-							pet.m_targetingDelay = 0;
+							Rejoin(pet, ownerPos);
 						}
 					}
 				}
 
 				if (m_wasHold && !m_hold)
-				{
-					pet.ClearTarget();
-					pet.m_targetingDelay = 0;
-				}
+					Rejoin(pet, ownerPos);
 				else if (m_hold && !m_wasHold)
 					pet.ClearTarget();
 				m_wasHold = m_hold;

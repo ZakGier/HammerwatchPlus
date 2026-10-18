@@ -952,10 +952,14 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   `EnemyPlacement.PlaceGroup`; the port now spawns `int(2*PI*Radius/40*0.5)` ice trolls
   plus one shaman per group at weight 0.8 (measured: 19 trolls, 4 shamans on floor 1,
   plan-runs-d 20261018-141935). HoH1's NG+ tier swaps are not ported.
-- **Content as shipped, not port bugs:** the Warden's bomb fan sits in `%if !NORMAL` and
-  warden.unit defines NORMAL; the Vampire Lord's Bat Spray has `BATCHARGES 0` in
-  vampire.unit (HoH1's too; only vampire_encounter.unit has a charge). Neither fires at
-  any NG.
+- **The Warden's bomb fan and the Vampire Lord's Bat Spray are NG+ attacks.** The base
+  units leave them out (warden.unit defines NORMAL and the fan is `%if !NORMAL`;
+  vampire.unit has `BATCHARGES 0`), and HoH1 swaps each boss for a tier copy by NG+ level
+  (`tweak/dungeons/unitmap_base.sval`: `_t2` at NG+1, `_t3` at 3, `_t4` at 5, `_t5` at 10;
+  warden_t2 sets `WHIRLBOMBS 4`, vampire_t2..t5 1/3/5/7 bat charges). The Golem and the
+  three Wraiths get the same swap. Our port does not read that map yet, so its bosses play
+  as NG+0 at every NG. (An earlier version of this note called the attacks off at any NG:
+  wrong, the tier files were missed.)
 - **The firearms decoy taunts through `AlertActors make-aggro`**: `SetTarget(decoy, -1,
   true)`, and aggro < 0 always replaces the target unless the enemy is mid-attack
   (`CompositeActorBehavior.SetTarget`). Measured: all three brutes targeted it and two
@@ -970,3 +974,31 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
     unit's conditionals destroy a spawned dyer.
   - The Three Councilors' scythe casts whenever the player is within 100 px and then
     stands still; a node-to-node test keeps the player away from it.
+
+## Pet follow, cat targets, Morale foes (2026-10-18)
+
+- **Vanilla walking pets idle inside `range-idle` (100 px) and only chase past the
+  `leash-range` (350 px).** An Idle pet whose pathfind fails picks a new idle target and
+  never falls back to a straight walk (only `MovingToPlayer` does, and a failed search in
+  that state puts the pet on the owner). PetWait parks the pet on the owner's last
+  puzzle-free spot, often a corner of their path against a wall, where the pet's own
+  search can fail: after the wait it stood 200 px off for 9 s (plan-pets-b
+  20261018-144852). `PetWait::Rejoin` now sends it off in `MovingToPlayer` when a wait or
+  a candle hover ends. Verified over 8 later pets-b runs.
+- **The Gold Collector cat took the nearest pickup even when unreachable** and stood still
+  on it, hiding every other pickup. Reproduced: gold dropped on a point with no route,
+  nearer than the wood, and the old code never fetched the wood (pets-c 154346, 154624).
+  A target it gets no closer to in 1.5 s is now skipped for 10 s (same decoy, 3/3 pass).
+- **The farming wild plots are actors on another team** (`HWPLocalNPC`, `targetable
+  false`). Morale counted any live other-team actor as combat, so a plot near the owner
+  kept it off (pets-b 155331; reproduced with a plot spawned 70 px off, 160733). Morale
+  and Stun now take only targetable, live, non-hazard actors within the radius
+  (`Pets::Foe`, the same filter as vanilla `RandomEnemyApplyEffects`).
+- **GameLab:** an object spawned on the player is gone at once (the smash pot landed on
+  the player when the pet stood 24 px to its left); `pathfind ... nodes 0` does not always
+  mean the cat cannot get there.
+- **GameLab, unexplained:** a `teleport` onto the onion field's left groove (x -374) is
+  followed by about 1.5 s of movement by (+52, -112) from every start point on it, with no
+  pilot intent running and nothing in our scripts moving the player. The farming bot now
+  tries the groove's plot units until a stand holds (plan-farming-a 163358, 163815,
+  164143). Not seen with a walking player; not explained.

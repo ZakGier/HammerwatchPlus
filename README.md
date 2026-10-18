@@ -74,7 +74,11 @@ mod loaded together; GUI textures must be power-of-two sized or the game won't b
 The in-game test plan's steps each have a `gamelab/scenarios/plan-*.json` scenario. As of
 2026-10-18, every solo step passes in GameLab except three that can't pass as the content
 stands (Weapon Swap's "only you can pick it up" needs a real lobby; the Warden's bombs and the
-Vampire Lord's bat arc are off in the HoH1 boss data). The co-op steps need two players.
+Vampire Lord's bat arc are HoH1 NG+ boss variants, which the port does not swap in yet). The co-op steps need two players:
+GameLab runs one game, and HoH2 only connects through Steam/GOG lobbies. Repeat runs of the
+pet scenarios found three more bugs, now fixed: a pet could stall after waiting by a
+puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wild plot
+nearby kept Morale off.
 
 ## Developing
 

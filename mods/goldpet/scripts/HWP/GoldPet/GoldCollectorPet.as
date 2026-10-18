@@ -25,6 +25,17 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 	bool m_seekingTarget;
 	UnitPtr m_currentTarget;
 
+	// Unreachable targets. The scan always takes the nearest valid pickup, so one the
+	// pathfinder cannot reach (behind a wall, in a closed secret) held the cat still beside
+	// its owner and hid every other pickup (plan-pets-c 20261018-152541: wood 100 px off,
+	// never fetched, at three spots). A target the cat gets no closer to in STUCK_MS is
+	// skipped for IGNORE_MS.
+	int m_stuckId;
+	float m_stuckBest;
+	int m_stuckMs;
+	array<int> m_ignoreIds;
+	array<uint> m_ignoreUntil;
+
 	// Pathfinding
 	PathFollower m_pathFollower;
 
@@ -189,7 +200,7 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 			if (!unit.IsValid())
 				continue;
 
-			if (!IsValidPickupTarget(unit))
+			if (!IsValidPickupTarget(unit) || IsIgnored(unit.GetId()))
 				continue;
 
 			float dSq = distsq(petPos, xy(unit.GetPosition()));
@@ -254,6 +265,46 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 		return false;
 	}
 
+	bool IsIgnored(int id)
+	{
+		uint now = g_scene.GetTime();
+		for (uint i = 0; i < m_ignoreIds.length();)
+		{
+			if (m_ignoreUntil[i] <= now)
+			{
+				m_ignoreIds.removeAt(i);
+				m_ignoreUntil.removeAt(i);
+				continue;
+			}
+			if (m_ignoreIds[i] == id)
+				return true;
+			i++;
+		}
+		return false;
+	}
+
+	// false = the current target was given up on (no progress in STUCK_MS)
+	bool CheckProgress(int dt, float distToTarget)
+	{
+		int id = m_currentTarget.GetId();
+		if (id != m_stuckId || distToTarget < m_stuckBest - 4.0f)
+		{
+			m_stuckId = id;
+			m_stuckBest = distToTarget;
+			m_stuckMs = 0;
+			return true;
+		}
+		m_stuckMs += dt;
+		if (m_stuckMs < HWP::GoldPet::STUCK_MS)
+			return true;
+		m_ignoreIds.insertLast(id);
+		m_ignoreUntil.insertLast(g_scene.GetTime() + HWP::GoldPet::IGNORE_MS);
+		m_stuckId = 0;
+		m_currentTarget = UnitPtr();
+		SetSeekingTarget(false);
+		return false;
+	}
+
 	// Enable/disable target seeking and toggle base movement accordingly
 	void SetSeekingTarget(bool seeking)
 	{
@@ -278,6 +329,12 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 			m_currentTarget = UnitPtr();
 			SetSeekingTarget(false);
 			m_scanTimer = 100; // Quick rescan after collection
+			return;
+		}
+
+		if (!CheckProgress(dt, sqrt(distToTargetSq)))
+		{
+			m_unit.GetPhysicsBody().SetLinearVelocity(vec2());
 			return;
 		}
 

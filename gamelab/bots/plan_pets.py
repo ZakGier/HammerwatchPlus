@@ -35,6 +35,9 @@ def dye_hex(h):
     return h
 PUZZLE_PFB = "prefabs/puzzles/puzzle_lights_out_small.pfb"
 PUZZLE_UNIT = "doodads/buttons/button_magic.unit"
+# "with the player": a following pet idles anywhere inside the base range-idle (100 px) and
+# only walks once past it (144852: 86.8 px off and idle for 11 s, by design)
+FOLLOW_PX = 110
 CAT = "hwp_gold_collector_pet"
 VENDOR = "hwp_pet_vendor"
 
@@ -131,6 +134,17 @@ class Checks(Base):
             pf = self.gl("pathfind", pl.get("x", 0) + dx, pl.get("y", 0) + dy)
             if pf.get("ok") and pf.get("nodes", 0) > 0 and pf.get("length", 1e9) <= dist * 1.25:
                 return dx, dy, a
+        return None
+
+    def unreachable(self, lo, hi):
+        """An offset lo-hi px off the player the pathfinder has no route to, or None."""
+        pl = self.player()
+        for dist in (lo, (lo + hi) // 2, hi):
+            for a in range(0, 360, 30):
+                dx, dy = round(dist * math.cos(math.radians(a))), round(dist * math.sin(math.radians(a)))
+                pf = self.gl("pathfind", pl.get("x", 0) + dx, pl.get("y", 0) + dy)
+                if pf.get("ok") and pf.get("nodes", 0) == 0:
+                    return dx, dy
         return None
 
     def gone(self, unit, filt, wait=8, r=1200):
@@ -391,8 +405,13 @@ class Checks(Base):
         time.sleep(0.5)
         pl = self.player()
         pet = self.pet() or pet
-        dx = round(pet.get("x", pl.get("x", 0)) - pl.get("x", 0)) + 24
-        dy = round(pet.get("y", pl.get("y", 0)) - pl.get("y", 0))
+        # 24 px past the pet, on its far side from the player: a pot dropped on the player is
+        # gone at once (145841, 150132: pet 24 / 17 px left of the player, +24 px in x put the
+        # pot on the player and it never showed in `breakables`)
+        ox, oy = pet.get("x", pl.get("x", 0)) - pl.get("x", 0), pet.get("y", pl.get("y", 0)) - pl.get("y", 0)
+        od = math.hypot(ox, oy)
+        ux, uy = (ox / od, oy / od) if od > 8 else (1.0, 0.0)
+        dx, dy = round(ox + ux * 24), round(oy + uy * 24)
         v = self.gl("spawn", "doodads/containers/vase_small.unit", dx, dy)
         vx, vy = v.get("x", 0), v.get("y", 0)
         to_pet = math.hypot(vx - pet.get("x", vx), vy - pet.get("y", vy))
@@ -507,10 +526,13 @@ class Checks(Base):
     def morale_on(self):
         """pets s5: Morale out of combat: the buff and its icon."""
         self.clear()
+        # a farming wild plot beside the player: an untargetable actor on another team, not a
+        # foe (155331: one 213 px off kept Morale off)
+        wp = self.gl("spawn", "doodads/hwp/wild/potato.unit", 70, 0)
         st = self.spend("morale", 5)
         time.sleep(3)
         on, icon, how = self.morale_state()
-        self.flag("morale_out_of_combat", on, f"{st}; actors within 350: {self.foes()}")
+        self.flag("morale_out_of_combat", on, f"{st}; wild plot spawned {wp.get('ok')}; actors within 350: {self.foes()}")
         self.flag("morale_icon_shown", on and icon, how)
 
     def morale_combat(self):
@@ -619,13 +641,22 @@ class Checks(Base):
             return
         sx, sy, dx, dy, d, where = sp
         self.notes.append(f"puzzle_spot: {where}, puzzle at +{dx},{dy} ({d} px)")
-        pl = self.player()
-        sx, sy = pl.get("x", sx), pl.get("y", sy)
-        # control: the same walk with no puzzle
+        # the walks run from the checked start itself, not from where the player stopped near
+        # it (151101: 4 px off the start, and the walk from there had no route)
+        self.p.path_to(sx, sy, tol=3, timeout=6)
+        # control: the same walk with no puzzle. The pet must have caught up first (143629:
+        # 321 px off after the walk, still trailing in from the skill sections); waited for
+        # here, not teleported to, so the player stays on the start.
+        end = time.time() + 12
+        c0 = self.pet()
+        while time.time() < end and not (c0 and c0["dist"] < FOLLOW_PX):
+            time.sleep(0.5)
+            c0 = self.pet()
         r = self.p.path_to(sx + dx, sy + dy, tol=8, timeout=10)
         time.sleep(2.5)
         c = self.pet()
-        self.flag("pet_follows_control", r.ok and bool(c) and c["dist"] < 90, f"walk {r.result}, pet {c.get('dist')} px")
+        self.flag("pet_follows_control", r.ok and bool(c) and c["dist"] < FOLLOW_PX,
+                  f"pet {c0.get('dist') if c0 else None} px off before, walk {r.result}, pet {c.get('dist')} px")
         self.p.path_to(sx, sy, tol=8, timeout=10)
         time.sleep(2.5)
         pf = self.gl("prefab", PUZZLE_PFB, dx, dy)
@@ -675,7 +706,9 @@ class Checks(Base):
             time.sleep(3.5)
             p3, pl3 = self.pet(), self.player()
         back = math.hypot(p3["x"] - p1["x"], p3["y"] - p1["y"]) if p1 and p3 else 0
-        self.flag("pet_follows_after_puzzle", out_ok and (not far or bool(r2 and r2.ok)) and bool(p3) and p3["dist"] < 50 and back > 60,
+        # the claim is the pet's: off its parking spot and with the player. A walk-on that
+        # stops short still counts (155331: stopped 17 px short, pet 4 px off the player)
+        self.flag("pet_follows_after_puzzle", out_ok and bool(p3) and p3["dist"] < FOLLOW_PX and back > 60,
                   f"out to ({sx}, {sy}): {how}; on to {far} {r2.result if r2 else '(no clear 150 px path: the walk-out measured)'}; "
                   f"player ({pl3.get('x')}, {pl3.get('y')}), pet ({p3.get('x')}, {p3.get('y')}) {p3.get('dist')} px off, "
                   f"{back:.0f} px from where it waited ({p1.get('x')}, {p1.get('y')})")
@@ -786,6 +819,13 @@ class Checks(Base):
         time.sleep(2)
         c = self.cat()
         self.flag("gp_cat_in_run", bool(c), str(c[:1]))
+        # a decoy first: gold the pathfinder cannot reach, nearer than the wood. The cat goes
+        # for the nearest pickup and once stood still on an unreachable one, never fetching
+        # the wood (152541); it now gives up on it after 1.5 s
+        decoy = self.unreachable(40, 85)
+        dg = self.gl("drop", "gold", 5, decoy[0], decoy[1]) if decoy else {}
+        if decoy:
+            time.sleep(0.5)
         bad, ok, note = set(), False, ""
         for _ in range(3):
             sp = self.spot(100, bad)  # inside the cat's 200 px seek radius wherever it stands
@@ -800,6 +840,9 @@ class Checks(Base):
             if ok:
                 break
             bad.add(sp[2])
+        if decoy:
+            left = not self.gone(dg.get("unit"), "materials/", 1)
+            note += f"; unreachable gold decoy at {decoy} {'still there' if left else 'fetched'}"
         self.flag("gp_tier2_picks_materials", ok, note)
         self.next_floor()
         time.sleep(3)

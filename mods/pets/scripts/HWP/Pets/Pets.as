@@ -589,6 +589,23 @@ namespace HWP
 			return p.findFirst("plants/vine") >= 0 || p.findFirst("/vine_") >= 0;
 		}
 
+		// A live enemy for Morale and Stun: not dead, not a hazard (Hazard Clearer's), and
+		// targetable, as vanilla's RandomEnemyApplyEffects filters. The farming wild plots are
+		// actors on another team with targetable false: one within Morale's radius kept the
+		// buff off all floor (plan-pets-b 20261018-155331) and Stun could pick it. The fetch
+		// can return actors past its radius, so the distance is checked here too.
+		CompositeActorBehavior@ Foe(UnitPtr u, vec2 from, float radius)
+		{
+			if (!u.IsValid() || u.IsDestroyed() || IsHazard(u))
+				return null;
+			auto a = cast<CompositeActorBehavior>(u.GetScriptBehavior());
+			if (a is null || a.IsDead() || !a.IsTargetable())
+				return null;
+			if (distsq(xy(u.GetPosition()), from) > radius * radius)
+				return null;
+			return a;
+		}
+
 		void RequestAct(int kind, array<uint>@ units)
 		{
 			if (units.length() == 0)
@@ -906,8 +923,8 @@ namespace HWP
 						auto units = g_scene.FetchActorsWithOtherTeam(owner.Team, ownerPos, def.radius);
 						for (uint i = 0; i < units.length(); i++)
 						{
-							auto a = cast<CompositeActorBehavior>(units[i].GetScriptBehavior());
-							if (a is null || a.IsDead() || IsHazard(units[i]))
+							auto a = Foe(units[i], ownerPos, float(def.radius));
+							if (a is null)
 								continue;
 							if (HasTag(a, "boss") || HasTag(a, "elite") || HasTag(a, "miniboss"))
 								continue;
@@ -940,8 +957,7 @@ namespace HWP
 						auto units = g_scene.FetchActorsWithOtherTeam(owner.Team, ownerPos, def.radius);
 						for (uint i = 0; i < units.length(); i++)
 						{
-							auto a = cast<CompositeActorBehavior>(units[i].GetScriptBehavior());
-							if (a !is null && !a.IsDead() && !IsHazard(units[i]))
+							if (Foe(units[i], ownerPos, float(def.radius)) !is null)
 								return false; // in combat
 						}
 						int r = def.Value(rank);

@@ -129,10 +129,24 @@ class Checks(Base):
         return False
 
     def on_groove(self, g):
-        """Stand on a groove (its middle plot unit): PlotIndexAt reads the player's position."""
-        u = g["units"][len(g["units"]) // 2]
-        self.stand(u["x"], u["y"] + 2)
-        return u
+        """Stand on a groove: PlotIndexAt reads the player's position. The middle plot unit
+        first, then the others out from it, until one holds (162804: on the onion field's
+        left groove the player drifted 130 px to about -320,885 within 1.5 s of every
+        teleport to its middle unit, and the cabbage went on the next groove)."""
+        us = g["units"]
+        mid = len(us) // 2
+        order = sorted(range(len(us)), key=lambda i: abs(i - mid))
+        for i in order:
+            u = us[i]
+            if self.stand(u["x"], u["y"] + 2, tries=2):
+                if i != mid:
+                    self.notes.append(f"groove x {g['fixed']:.0f}: stood on plot unit {i} ({u['x']:.0f}, {u['y']:.0f}), "
+                                      f"not the middle one")
+                return u
+            pl = self.gl("state").get("player") or {}
+            self.notes.append(f"groove x {g['fixed']:.0f}: no hold at ({u['x']:.0f}, {u['y'] + 2:.0f}), "
+                              f"player at ({pl.get('x', 0):.0f}, {pl.get('y', 0):.0f})")
+        return us[mid]
 
     @staticmethod
     def plot_order(gr):

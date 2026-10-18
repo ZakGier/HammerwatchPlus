@@ -7,6 +7,8 @@
 namespace HWP { namespace GoldPet
 {
 	const string PET_ID = "hwp_goldpet"; // progression key in the pets module
+	const int STUCK_MS = 1500;  // no closer to a pickup in this long: it is unreachable
+	const uint IGNORE_MS = 10000; // and skipped for this long
 
 	bool HasGoldPet(PlayerRecord@ rec)
 	{
