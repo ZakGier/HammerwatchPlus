@@ -10,12 +10,12 @@ namespace HWP
 		const int SCAN_MS = 1000;
 
 		array<UnitPtr> g_dyes;    // the dyes we marked
-		array<UnitPtr> g_markers; // their markers (same index)
+		HWP::Town::Units g_markers; // their markers (same index)
 
 		void Clear()
 		{
 			for (uint i = 0; i < g_markers.length(); i++)
-				if (HWP::Town::Ours(g_markers[i]))
+				if (g_markers.Live(i))
 					g_markers[i].Destroy();
 			g_dyes.removeRange(0, g_dyes.length());
 			g_markers.removeRange(0, g_markers.length());
@@ -43,7 +43,7 @@ namespace HWP
 			{
 				if (g_dyes[i].IsValid() && !g_dyes[i].IsHidden())
 					continue;
-				if (HWP::Town::Ours(g_markers[i]))
+				if (g_markers.Live(i))
 					g_markers[i].Destroy();
 				g_dyes.removeAt(i);
 				g_markers.removeAt(i);

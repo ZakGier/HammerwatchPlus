@@ -14,6 +14,7 @@ namespace Modules
 		dictionary m_syncChecks;     // peer -> polls spent waiting for the tier sync
 		dictionary m_waitLogged;     // peer -> "waiting for actor" already logged
 		bool m_vendorSpawned = false;
+		bool m_vendorMissing = false; // the vendor unit file is missing
 		UnitPtr m_vendor;            // a building upgrade rebuilds the town and takes it along
 		bool m_localTierSynced = false;
 		int m_checkDelay = 0;
@@ -43,7 +44,7 @@ namespace Modules
 
 			// the first check after a load spawns the vendor; later ones bring it
 			// back when a building upgrade (or building the lodge) rebuilt the town
-			if (Network::IsServer() && (!m_vendorSpawned || !HWP::Town::Is(m_vendor, HWP::GoldPet::VENDOR_UNIT)))
+			if (Network::IsServer() && !m_vendorMissing && (!m_vendorSpawned || !HWP::Town::Is(m_vendor, HWP::GoldPet::VENDOR_UNIT)))
 			{
 				m_vendorSpawned = true;
 				SpawnVendor();
@@ -147,6 +148,7 @@ namespace Modules
 			if (prod is null)
 			{
 				HWP::LogError("goldpet", "missing " + HWP::GoldPet::VENDOR_UNIT);
+				m_vendorMissing = true; // logged once, not every check
 				return;
 			}
 			m_vendor = prod.Produce(g_scene, spawnPos);

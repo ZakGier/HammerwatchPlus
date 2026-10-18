@@ -1531,7 +1531,10 @@ namespace Modules
 			// a building upgrade reloads the town without a new Start and takes the bowl
 			else if (m_bowlSpawned && HWP::Pets::g_enabled)
 			{
-				m_bowl.Set(HWP::Pets::g_bowlUnit);
+				// take the bowl's producer only when SpawnBowl made a new one: set every
+				// frame it would adopt whatever unit took a reused id, and Due never fires
+				if (m_bowl.m_unit != HWP::Pets::g_bowlUnit)
+					m_bowl.Set(HWP::Pets::g_bowlUnit);
 				if (m_bowl.Due(ms))
 					HWP::Pets::SpawnBowl(HWP::Pets::BowlPos());
 			}

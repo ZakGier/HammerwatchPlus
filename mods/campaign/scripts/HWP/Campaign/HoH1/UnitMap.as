@@ -57,6 +57,12 @@ namespace HWP
 			return g_unitMap;
 		}
 
+		// g_ngp is a float: rounded as the game rounds it (int(g_ngp + 0.5f) everywhere)
+		int NgLevel()
+		{
+			return int(g_ngp + 0.5f);
+		}
+
 		// the copy for this NG+ (the base below the first threshold, or if unmapped)
 		UnitProducer@ TierFor(UnitProducer@ prod)
 		{
@@ -64,7 +70,7 @@ namespace HWP
 				return null;
 			auto entries = UnitMap();
 			uint hash = prod.GetResourceHash();
-			int ngp = int(g_ngp);
+			int ngp = NgLevel();
 			for (uint i = 0; i < entries.length(); i++)
 			{
 				if (entries[i].m_hash != hash)
@@ -108,7 +114,7 @@ namespace HWP
 				}
 			}
 			if (swapped > 0)
-				HWP::Log("campaign", "NG+" + int(g_ngp) + ": " + swapped + " HoH1 spawn units swapped for their tier copies");
+				HWP::Log("campaign", "NG+" + NgLevel() + ": " + swapped + " HoH1 spawn units swapped for their tier copies");
 			return swapped;
 		}
 	}

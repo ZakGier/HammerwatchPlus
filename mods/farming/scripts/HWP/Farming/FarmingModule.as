@@ -368,10 +368,10 @@ namespace HWP
 				if (!LiveCrop(g_hiddenCrops[i]))
 					return true;
 			for (uint i = 0; i < g_plotUnits.length(); i++)
-				if (!HWP::Town::Ours(g_plotUnits[i]))
+				if (!g_plotUnits.Live(i))
 					return true;
 			for (uint i = 0; i < g_visual.length(); i++)
-				if (!HWP::Town::Ours(g_visual[i]))
+				if (!g_visual.Live(i))
 					return true;
 			if (g_wellUnit.IsValid() && !HWP::Town::Is(g_wellUnit, WELL_UNIT))
 				return true;
@@ -530,8 +530,8 @@ namespace HWP
 		int g_version = 0;        // bumps on every state change (windows refresh)
 		bool g_haveState = false; // clients: false until the first sync
 		bool g_visualsReady = false; // set by the module once the scene settled
-		array<UnitPtr> g_visual;
-		array<UnitPtr> g_plotUnits;
+		HWP::Town::Units g_visual;
+		HWP::Town::Units g_plotUnits;
 		UnitPtr g_wellUnit;
 
 		bool IsReady(int i)
@@ -798,7 +798,7 @@ namespace HWP
 		void ClearVisuals()
 		{
 			for (uint i = 0; i < g_visual.length(); i++)
-				if (HWP::Town::Ours(g_visual[i]))
+				if (g_visual.Live(i))
 					g_visual[i].Destroy();
 			g_visual.removeRange(0, g_visual.length());
 		}
@@ -1156,7 +1156,7 @@ namespace HWP
 		void ClearPlots()
 		{
 			for (uint i = 0; i < g_plotUnits.length(); i++)
-				if (HWP::Town::Ours(g_plotUnits[i]))
+				if (g_plotUnits.Live(i))
 					g_plotUnits[i].Destroy();
 			g_plotUnits.removeRange(0, g_plotUnits.length());
 		}

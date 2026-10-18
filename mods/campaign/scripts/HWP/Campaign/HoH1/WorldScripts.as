@@ -171,7 +171,8 @@ namespace WorldScript
 					shamanLeft = false;
 				}
 				vec2 pos = xy(Position) + randdir() * float(randi(Radius - 5));
-				SpawnUnitBaseImpl(prod, pos, "", 0, 0, UnitPtr(), 0, 1.0f, 0);
+				// EnemyList.GetUnit also ran its pick through UnitMap::Replace (NG+ copies)
+				SpawnUnitBaseImpl(HWP::HoH1::TierFor(prod), pos, "", 0, 0, UnitPtr(), 0, 1.0f, 0);
 			}
 			return null;
 		}

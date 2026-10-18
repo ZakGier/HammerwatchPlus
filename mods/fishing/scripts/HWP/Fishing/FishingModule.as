@@ -606,16 +606,23 @@ namespace HWP
 			if (rec is null || fish is null)
 				return;
 			auto item = MakeFishItem(fish, ilvl > 0 ? ilvl : CatchItemLevel(rec, fish));
-			if (item !is null)
-				HWP::Market::Remember(rec, item); // a ware (Sell takes it) while nobody works on it
+			// Remember: a ware (Sell takes it) while nobody works on it. Only a copy
+			// that exists: a signature for a fish that went nowhere would stay in the
+			// capped list and push out a real one
 			if (item is null)
 				HWP::Market::Add(rec, fish.id, 1);
 			else if (rec.equipInventory !is null && rec.equipInventory.CanAdd())
+			{
+				HWP::Market::Remember(rec, item);
 				rec.equipInventory.Add(item);
+			}
 			else
 			{
 				if (rec.actor !is null)
+				{
+					HWP::Market::Remember(rec, item); // still a ware once picked up
 					Item::DropItem(item, rec.actor.m_unit.GetPosition(), 1, true, rec); // yours alone to pick up
+				}
 				HWP::Commands::Reply(Resources::GetString(".hwp.fishing.bag_full", { { "fish", fish.Name() } }));
 			}
 			if (!announce)
@@ -767,8 +774,8 @@ namespace HWP
 
 		// ---- spawning ---------------------------------------------------------------
 
-		array<UnitPtr> g_local;  // this machine's coast spots, pirate and wreck
-		array<UnitPtr> g_traps;  // this machine's own traps (index = trap)
+		HWP::Town::Units g_local;  // this machine's coast spots, pirate and wreck
+		HWP::Town::Units g_traps;  // this machine's own traps (index = trap)
 		bool g_trapsDirty = false; // respawn the trap units next frame (a trap may be mid-interact now)
 		vec3 g_piratePos;
 		UnitPtr g_pirate;
@@ -789,7 +796,7 @@ namespace HWP
 		void ClearLocal()
 		{
 			for (uint i = 0; i < g_local.length(); i++)
-				if (HWP::Town::Ours(g_local[i]))
+				if (g_local.Live(i))
 					g_local[i].Destroy();
 			g_local.removeRange(0, g_local.length());
 		}
@@ -887,7 +894,7 @@ namespace HWP
 		void ClearTraps()
 		{
 			for (uint i = 0; i < g_traps.length(); i++)
-				if (HWP::Town::Ours(g_traps[i]))
+				if (g_traps.Live(i))
 					g_traps[i].Destroy();
 			g_traps.removeRange(0, g_traps.length());
 		}

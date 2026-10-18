@@ -47,9 +47,10 @@ namespace HWP
 			{
 				int was = g_scancode[k];
 				g_scancode[k] = HWP::Settings::GetInt(SettingName(k), DEFAULTS[k]);
-				// a new key that is held right now (just pressed to bind it) must not cast
+				// a new key that is held right now (just pressed to bind it) must not
+				// cast, and one that is not must not give a Released: start from its state
 				if (g_scancode[k] != was)
-					g_down[k] = true;
+					g_down[k] = HWP::Options::KeyDown(g_scancode[k]);
 			}
 			g_version++;
 		}

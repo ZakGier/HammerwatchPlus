@@ -1030,3 +1030,84 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   pilot intent running and nothing in our scripts moving the player. The farming bot now
   tries the groove's plot units until a stand holds (plan-farming-a 163358, 163815,
   164143). Not seen with a walking player; not explained.
+
+## Review fixes after the NG+ port (2026-10-18)
+
+A /code-review xhigh on the work since 28b14c8 gave 15 findings, all fixed:
+
+- **A reloaded town reuses unit ids, so a list of town units can point at another
+  unit.** `HWP::Town::Units` keeps each unit's producer from when it was added, and
+  `Live(i)` checks that the unit still has it. It replaces bare `Ours()` checks in the
+  map markers, farming's plot visuals and fishing's traps. `Kept.Due` and `Placeable`
+  accept a unit with no producer (a prefab child holding the id) without a null deref.
+- **The pet bowl's `Kept` was `Set` every frame,** so it took on whatever unit held the
+  id and `Due` never fired. It is now set only when `SpawnBowl` makes a new unit.
+- **`Kept.Set` of an invalid unit** (the unit file is missing) now marks it failed. `Due`
+  stays quiet until `Reset`, so the board isn't respawned and logged every 500 ms. The
+  pet vendor has the same flag.
+- **NG+ tiers:** `SpawnEnemyGroup` (the troll groups) now goes through
+  `HoH1::TierFor` like the other spawners. NG+ is rounded with `int(g_ngp + 0.5f)`, as the
+  game rounds it.
+- **`Spawner::IsSpawnable` rejected `hoh1/actors/...`,** so strongboxes and abyss
+  cracks on HoH1 floors found no pack members. The `hoh1/` prefix is now stripped before
+  the checks.
+- **Gold Collector cat:** moving more than 4 px also counts as progress. A path around
+  a wall leads away from the target for a while, and the old check (distance only)
+  skipped targets the cat was reaching.
+- **Wave statue spot:** the clear-spot check ignores actors, pets and pickups. They move
+  around, so each machine could pick a different spot.
+- **`Market::Migrate`** marks worn items dirty and calls `SyncEquipment` when it rolls
+  their modifiers. Fishing remembers a fish's signature only when the fish goes into the
+  bag or is dropped for you.
+- **Extra skill keys:** rebinding sets the key's held state from the keyboard, so there
+  is no phantom Released.
+- **GameLab:** `Emit` reads a too-long reply's id up to its closing quote, since an id
+  may hold a comma. The `cursor` verb's local is renamed off `set`. `docs/generated/verbs.md` is regenerated.
+
+## Firearms clip and guns (2026-10-18)
+
+Built the firearms clip, the reload rework, the rifle rework and the pistols
+(`mods/firearms/README.md`, design in `docs/design/firearms.md`). Facts found on the way:
+
+- **An item's `ModifyStack` never applies; a buff's does.** `PlayerRecord.RefreshModifiers`
+  runs `modList.ModifyStacks(player)` (PlayerRecord.as:1886) after buffs, stacks and skills
+  are in the list but before the equipment loop. A gun therefore grants a marker buff
+  (`Modifiers::Buff`, freq 250) that carries the `add-max`. Verified: the rifle clip reads
+  30/30 and the pistols 12, 24 dual (GameLab `plan-firearms-guns`, 20261018-181338).
+- **`ActorBuffStacked` keeps the def it was built with** (ActorBuff.as:466). The modified
+  def must exist before the first stack is made. The Reload skill carries a
+  `ModifyStack add-max 0 0` for that.
+- **Lose-effects at 0 stacks run at intensity 0, and `AddStacks.Apply` returns false at
+  intensity ≤ 0** (AddStacks.as:59). Before the fix, an empty clip never started its reload.
+  An effect-list dict `<vec2 name="intensity-set">1 1</vec2>` placed first fixes it
+  (verified, `plan-t14`).
+- **`conditionals` is an OR of groups; the tokens of one `conditional` array are ANDed**
+  (Conditional.as:770-795, `CheckConditionals` returns true on the first passing group).
+  A two-group "has marker" + "clip ge 1" gate fired whatever the marker said: 4 rounds a
+  cycle instead of 2. Flattened into one array, it measures 2.
+- **Dash restarts a stack timer.** A `TriggerEffect` with `trigger: dash` on the
+  Reloading buff adds a stack at max. With `add-reset` that restarts the 1.6 s timer.
+  Measured: refill 1.75 s without a dodge, 2.92 s with a dodge 0.9 s in (`plan-t14`).
+- **`dbg_cht_ignore_equipment_requirements` doesn't survive a level load.** The cvar
+  still reads 1, but the script global it sets (`g_dbg_ignore_equipment_requirements`,
+  EquippedItems.as:1) is back to false, so `equip` refused a shield. Set it after the level
+  loads, 0 then 1 so the callback runs (verified: set at scenario start, it refused;
+  set this way on the floor, it took).
+- **`equip <id> 1` gave GenerateItem null for `offhand_lantern_01`.** Pass the quality
+  by name (`common`), as the other checks do.
+- **GameLab latency:** one `gl` call takes about 0.3 s. Clip checks hold the trigger
+  briefly and poll; one-frame checks use `gl multi`.
+- **Flaky checks, not regressions:** one t14 read of a no-dodge reload took 3.61 s
+  (beside 1.75 s), so the check now compares medians of 3 trials. `plan-firearms-a/b`
+  failed once on the decoy pull, the jetpack landing (22 px off, beside a wall) and one
+  missed frag damage text. They had failed the same way before this work (13:09, 13:11,
+  13:48 runs) and passed on rerun (20261018-182344, -182615).
+- **Assumed, not measured:** the shot spread (only rounds were counted), how often the
+  "cant" voice plays when holding fire on an empty clip, and how the clip's HUD icon looks.
+- Verified in GameLab after the fixes (20261018): mod-all 175043, mod-core 175056,
+  mod-wavemode 175108, mod-goldpet 175121, mod-fishing 175133, plan-pets-a 175146,
+  plan-pets-c 175727, plan-farming-a 175932, plan-farming-b 180259, plan-fishing-a 180605,
+  plan-fishing-d 180735, plan-runs-ng 183037, plan-runs-d 183341, plan-pets-b 183535,
+  plan-runs-b 183829. Two first tries failed on bot geometry, not on the fixes, and passed
+  on retry: in pets-b 175413 the pet followed (2.5 px off) but no clear 150 px walk was
+  found; in runs-b 183228 every spike hit the player or timed out before a wall.

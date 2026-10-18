@@ -113,6 +113,42 @@ namespace HWP
 			return u.GetUnitProducer() is Resources::GetUnitProducer(unitPath);
 		}
 
+		// A module's list of the units it spawned, each kept with the unit file it
+		// came from. A reloaded town reuses unit ids, so a stored UnitPtr can come
+		// back valid on another module's unit, or on another of this list's kinds
+		// (Ours only checks for "/hwp"): Live(i) is true only for the unit added.
+		class Units
+		{
+			array<UnitPtr> m_units;
+			array<UnitProducer@> m_prods;
+
+			uint length() const { return m_units.length(); }
+			UnitPtr opIndex(uint i) const { return m_units[i]; }
+
+			void insertLast(UnitPtr u)
+			{
+				m_units.insertLast(u);
+				m_prods.insertLast(u.IsValid() ? u.GetUnitProducer() : null);
+			}
+
+			void removeAt(uint i)
+			{
+				m_units.removeAt(i);
+				m_prods.removeAt(i);
+			}
+
+			void removeRange(uint start, uint count)
+			{
+				m_units.removeRange(start, count);
+				m_prods.removeRange(start, count);
+			}
+
+			bool Live(uint i)
+			{
+				return m_prods[i] !is null && Ours(m_units[i]) && m_units[i].GetUnitProducer() is m_prods[i];
+			}
+		}
+
 		// A unit a module spawns once per town load at a fixed spot (the gambler,
 		// the notice board). A building upgrade reloads the town level without a
 		// new Start and destroys it; Due() says, at most once a second while in
@@ -125,20 +161,22 @@ namespace HWP
 			UnitProducer@ m_prod;
 			int m_ms = 0;
 			bool m_hostOnly;
+			bool m_failed;    // the spawn made nothing (a missing unit file): not retried until Reset
 
 			Kept(bool hostOnly = true) { m_hostOnly = hostOnly; }
 
-			void Reset() { m_unit = UnitPtr(); @m_prod = null; m_ms = 0; }
+			void Reset() { m_unit = UnitPtr(); @m_prod = null; m_ms = 0; m_failed = false; }
 
 			void Set(UnitPtr unit)
 			{
 				m_unit = unit;
 				@m_prod = unit.IsValid() ? unit.GetUnitProducer() : null;
+				m_failed = !unit.IsValid();
 			}
 
 			bool Due(int ms)
 			{
-				if (!g_inTown || (m_hostOnly && !Network::IsServer()))
+				if (m_failed || !g_inTown || (m_hostOnly && !Network::IsServer()))
 					return false;
 				m_ms += ms;
 				if (m_ms < WATCH_MS)
@@ -146,11 +184,13 @@ namespace HWP
 				m_ms = 0;
 				if (!m_unit.IsValid() || m_unit.IsDestroyed())
 					return true;
-				if (m_prod !is null && m_unit.GetUnitProducer() !is m_prod)
+				auto now = m_unit.GetUnitProducer();
+				if (m_prod !is null && now !is m_prod)
 				{
+					// a unit made without a producer (a prefab child) can hold the id too
 					HWP::Log("core", "kept unit id " + m_unit.GetId() + " now holds "
-						+ m_unit.GetUnitProducer().GetResourceName() + ": spawning "
-						+ m_prod.GetResourceName() + " again");
+						+ (now is null ? "a unit with no unit file" : now.GetResourceName())
+						+ ": spawning " + m_prod.GetResourceName() + " again");
 					return true;
 				}
 				return false;
@@ -202,7 +242,8 @@ namespace HWP
 
 			void Spawn(vec3 pos)
 			{
-				if (Ours(m_unit))
+				// Is, not Ours: after a town reload the old id may be another module's unit
+				if (Is(m_unit, m_unitPath))
 					m_unit.Destroy();
 				auto prod = Resources::GetUnitProducer(m_unitPath);
 				if (prod is null)
@@ -258,8 +299,7 @@ namespace HWP
 				m_watchMs = 0;
 				if (!enabled || !g_inTown || m_failed)
 					return;
-				bool gone = Network::IsServer() && (!m_unit.IsValid() || m_unit.IsDestroyed()
-					|| m_unit.GetUnitProducer().GetResourceName() != m_unitPath); // a reused unit id
+				bool gone = Network::IsServer() && !Is(m_unit, m_unitPath); // gone, or a reused unit id
 				if (gone || (m_stale !is null && m_stale()))
 				{
 					HWP::Log(m_tag, "the town was rebuilt, placing " + m_unitPath + " again");

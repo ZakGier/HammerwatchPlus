@@ -35,6 +35,21 @@ namespace HWP
 		// press of use there could open the fishing window instead.
 		const array<vec2> BESIDE_PYRE = { vec2(-112, 0), vec2(-112, 72), vec2(112, 72), vec2(-112, -72) };
 
+		// Only what stands there for good: players, NPCs and pets walk about,
+		// and a pickup lies where it dropped, so counting those would put the
+		// statue in a different spot on each machine
+		bool Blocked(vec2 p)
+		{
+			auto res = g_scene.QueryRect(p, 24, 24, ~0, RaycastType::Any);
+			for (uint i = 0; i < res.length(); i++)
+			{
+				auto beh = res[i].GetScriptBehavior();
+				if (cast<Actor>(beh) is null && cast<MiniPet>(beh) is null && cast<Pickup>(beh) is null)
+					return true;
+			}
+			return false;
+		}
+
 		bool LocateStatue(vec3 &out pos)
 		{
 			vec2 slot;
@@ -43,7 +58,7 @@ namespace HWP
 			for (uint i = 0; i < BESIDE_PYRE.length(); i++)
 			{
 				vec2 p = slot + BESIDE_PYRE[i];
-				if (g_scene.QueryRect(p, 24, 24, ~0, RaycastType::Any).length() == 0)
+				if (!Blocked(p))
 				{
 					pos = xyz(p);
 					return true;

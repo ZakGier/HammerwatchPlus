@@ -29,7 +29,7 @@ in a lobby should run the same version of the same modules.
 | `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
 | `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class: mana is ammo, reload, grenades; Sniper / Demolitions / Assault doctrines. A doctrine has up to five actives: reload, frag and the doctrine's first skill sit on the game's three skill buttons, the 4th and 5th on core's extra keys (default 4 and 5). |
+| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (12 each, 24 dual). Sniper / Demolitions / Assault doctrines for now; the 4-doctrine redesign is in `docs/design/firearms.md`. A doctrine has up to five actives: reload, frag and the doctrine's first skill sit on the game's three skill buttons, the 4th and 5th on core's extra keys (default 4 and 5). |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
@@ -81,6 +81,11 @@ GameLab runs one game, and HoH2 only connects through Steam/GOG lobbies. Repeat 
 pet scenarios found three more bugs, now fixed: a pet could stall after waiting by a
 puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wild plot
 nearby kept Morale off.
+The Firearms Specialist's clip, reload and guns pass `plan-t14` and `plan-firearms-guns`
+(magazines 30/12/24, rounds per click for each loadout, dodge-interrupted reload). A later code review fixed 15 smaller issues: town units tracked after a
+town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
+walking around a wall, and the wave statue's spot differing between machines
+(`docs/RE_NOTES.md`).
 
 ## Developing
 

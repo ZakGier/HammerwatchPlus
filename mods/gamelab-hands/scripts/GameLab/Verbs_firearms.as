@@ -17,8 +17,8 @@ namespace GameLab
 			return;
 		}
 		vec3 ppos = plr.m_unit.GetPosition();
-		bool set = args.length() >= 2;
-		if (set)
+		bool doSet = args.length() >= 2;
+		if (doSet)
 		{
 			vec2 screen = ToScreenspace(ppos + vec3(parseFloat(args[0]), parseFloat(args[1]), 0));
 			for (uint i = 0; i < g_inputs.length(); i++)
@@ -35,7 +35,7 @@ namespace GameLab
 		}
 		vec2 mouse = gi.MousePos;
 		vec3 w = ToWorldspace(mouse);
-		Emit(Reply(id, true).Bool("set", set).Num("px", ppos.x).Num("py", ppos.y)
+		Emit(Reply(id, true).Bool("set", doSet).Num("px", ppos.x).Num("py", ppos.y)
 			.Num("sx", mouse.x).Num("sy", mouse.y).Num("x", w.x).Num("y", w.y)
 			.Num("dx", w.x - ppos.x).Num("dy", w.y - ppos.y)
 			.Bool("gamepad", gi.UsingGamepad).Int("inputs", g_inputs.length()));

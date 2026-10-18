@@ -32,6 +32,7 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 	// skipped for IGNORE_MS.
 	int m_stuckId;
 	float m_stuckBest;
+	vec2 m_stuckPos;
 	int m_stuckMs;
 	array<int> m_ignoreIds;
 	array<uint> m_ignoreUntil;
@@ -283,14 +284,18 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 		return false;
 	}
 
-	// false = the current target was given up on (no progress in STUCK_MS)
+	// false = the current target was given up on (no progress in STUCK_MS).
+	// Progress is getting closer or moving at all: a path around a wall leads
+	// away from the target for a while, and only a pet that stands still is stuck
 	bool CheckProgress(int dt, float distToTarget)
 	{
 		int id = m_currentTarget.GetId();
-		if (id != m_stuckId || distToTarget < m_stuckBest - 4.0f)
+		vec2 pos = xy(m_unit.GetPosition());
+		if (id != m_stuckId || distToTarget < m_stuckBest - 4.0f || distsq(pos, m_stuckPos) > 16.0f)
 		{
+			m_stuckBest = id != m_stuckId ? distToTarget : min(distToTarget, m_stuckBest);
 			m_stuckId = id;
-			m_stuckBest = distToTarget;
+			m_stuckPos = pos;
 			m_stuckMs = 0;
 			return true;
 		}

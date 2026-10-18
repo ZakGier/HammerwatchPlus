@@ -87,11 +87,14 @@ namespace GameLab
 		if (line.length() > EMIT_MAX)
 		{
 			string id = "";
-			if (line.findFirst("{\"id\":") == 0)
+			// the id is a JSON string: up to its closing quote (it may hold a comma)
+			if (line.findFirst("{\"id\":\"") == 0)
 			{
-				int end = line.findFirst(",");
-				if (end > 6)
-					id = line.substr(6, end - 6);
+				uint end = 7;
+				while (end < line.length() && line[end] != 34)
+					end += line[end] == 92 ? 2 : 1;
+				if (end < line.length())
+					id = line.substr(6, end - 5);
 			}
 			line = "{\"id\":" + (id == "" ? "\"\"" : id) + ",\"ok\":false,\"error\":\"reply of " + line.length()
 				+ " chars is over the " + EMIT_MAX + "-char print limit\"}";

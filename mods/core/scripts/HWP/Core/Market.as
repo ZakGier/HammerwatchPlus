@@ -213,6 +213,10 @@ namespace HWP
 			int worn = MigrateItems(rec, rec.equipped.m_items);
 			if (worn > 0)
 			{
+				// the HUD's equipment widget redraws, and the others get the rolled
+				// modifiers (SyncEquipment only sends for the local record)
+				rec.equipped.m_isDirty = true;
+				rec.equipped.SyncEquipment();
 				rec.RefreshStats();
 				auto plr = cast<PlayerBase>(rec.actor);
 				if (plr !is null)
