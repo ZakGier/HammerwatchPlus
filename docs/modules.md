@@ -108,7 +108,7 @@ in a 2-player lobby for anything networked.
 | `groupcombo` | party-wide combo bonus + unity invulnerability | `tweak/hwp/buffs_groupcombo.sval` |
 | `weaponswap` | second weapon set on a hotkey (rebind in the player menu's Plus tab) | `hwp swap`, `hwp swapkey` |
 | `stash` | Sort button on the town stash (class > slot > weapon family > ilvl) | overrides `gui/player_stash/player_stash.gui`; widget producer `hwp-stash-sort` |
-| `keys` | every chest locked (key per tier), ace chests, key drops, exit guard key shop, legendaries | class swap `Chest` -> `HWPChest`; `tweak/hwp/legendaries.sval`; `hwp keys` |
+| `keys` | every chest locked (key per tier), ace chests, key drops, exit guard General Merchant (keys, bag slots, Trinkets tab: 6 trinkets packed for the next run), legendaries | class swap `Chest` -> `HWPChest`; `tweak/hwp/legendaries.sval`; `hwp keys` |
 | `firearms` | Firearms Specialist class (3 subclasses, rifles) | pure data via `PlayerClass`/`ItemSkillDef`/`BaseItem` loaders; `hwp firearms` |
 | `fishing` | town fishing minigame, in-run fishing holes | `tweak/hwp/loot_fishing.sval`; wares via core `HWP::Market`; `hwp fishing` |
 | `farming` | plots on the town's onion / wheat field grooves, watering can + farm well (watered = 2x growth), farmer shop (can, upgrades, seeds), seeds back on harvest, Holy Herb strains + next-run buffs | host-owned state in the TownRecord, `farm.sync`; overrides `npc_misc_farmer_man.unit`; `tweak/hwp/buffs_herbs.sval`; `hwp farm`, `hwp smoke` |

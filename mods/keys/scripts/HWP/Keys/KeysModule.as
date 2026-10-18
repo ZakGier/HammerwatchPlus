@@ -565,6 +565,7 @@ namespace Modules
 			HWP::Keys::g_dropPeer.removeRange(0, HWP::Keys::g_dropPeer.length());
 			HWP::Keys::g_dropTime.removeRange(0, HWP::Keys::g_dropTime.length());
 			HWP::Keys::SelfCheck();
+			HWP::Keys::TrinketsLevelStart();
 		}
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override

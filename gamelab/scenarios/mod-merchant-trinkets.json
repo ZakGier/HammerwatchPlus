@@ -1,0 +1,257 @@
+{
+ "name": "mod-merchant-trinkets",
+ "about": "mods/keys General Merchant Trinkets tab: the exit guard's shop (spawned beside the player: the fixture town has no north exit yet) shows Keys (4 keys + bag slot) and Trinkets (6) tabs; two bought trinkets are packed (not in the town bag) and handed over when the next run's first level starts; after the run (cht_finish_level) the stock rerolls to 6. Then no script errors in our files.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "keys"
+ ],
+ "timeout": 240,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "gl",
+   "verb": "material",
+   "args": [
+    "gold",
+    "50000"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_guard_exit.unit",
+    "30",
+    "0"
+   ],
+   "name": "exit guard spawned (the fixture town has no north exit yet)"
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_guard_exit"
+   ],
+   "expect": {
+    "window": "HWPMerchantWindow"
+   },
+   "name": "the exit guard opens the General Merchant"
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "expect": {
+    "count": 5,
+    "items.0.id": "bronze",
+    "items.4.id": "hwp_bag_slot"
+   },
+   "name": "Keys tab: 4 keys + bag slot"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-tab-trinkets"
+   ],
+   "expect": {
+    "widget": "MenuTabWidget"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "expect": {
+    "count": 6
+   },
+   "name": "Trinkets tab: 6 trinkets"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:keys\\] trinket stock rolled: \\S+ \\S+ \\S+ \\S+ \\S+ \\S+",
+   "timeout": 5
+  },
+  {
+   "do": "shot",
+   "name": "trinkets-tab"
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "args": [
+    "buy",
+    "0"
+   ],
+   "expect": {
+    "changed": true,
+    "count": 5
+   },
+   "name": "bought a common trinket"
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "args": [
+    "buy",
+    "3"
+   ],
+   "expect": {
+    "changed": true,
+    "count": 4
+   },
+   "name": "bought a rare trinket"
+  },
+  {
+   "do": "log_has",
+   "pattern": "packed trinket \\S+ for \\d+ gold",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "trinkets",
+   "expect": {
+    "count": 0
+   },
+   "name": "nothing in the run bag in town"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-tab-keys"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "expect": {
+    "count": 5
+   },
+   "name": "back on the Keys tab"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "story_intro_find_npcs",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 120
+  },
+  {
+   "do": "log_has",
+   "pattern": "handed over 2 packed trinket\\(s\\)",
+   "timeout": 20
+  },
+  {
+   "do": "gl",
+   "verb": "trinkets",
+   "expect": {
+    "count": 2
+   },
+   "name": "both packed trinkets in the run bag"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 120
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "back-in-town"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town",
+    "window": "MissionEndMenu"
+   },
+   "name": "back in town after the run"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "trinkets",
+   "expect": {
+    "count": 0
+   },
+   "name": "run trinkets gone after the run"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_guard_exit.unit",
+    "30",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_guard_exit"
+   ],
+   "expect": {
+    "window": "HWPMerchantWindow"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-tab-trinkets"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "expect": {
+    "count": 6
+   },
+   "name": "a full stock again after the run"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:keys\\] trinket stock rolled \\(after a run\\): \\S+ \\S+ \\S+ \\S+ \\S+ \\S+",
+   "timeout": 5
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

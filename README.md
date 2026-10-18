@@ -27,7 +27,7 @@ in a lobby should run the same version of the same modules.
 | `groupcombo` | Party-wide combo bonus that scales with how many players are in combo; brief invulnerability when everyone is. |
 | `weaponswap` | A second weapon set on a hotkey (default X). |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
-| `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's key shop, ace chests, seven red legendaries. |
+| `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
 | `firearms` | The Firearms Specialist class: mana is ammo, reload, grenades; Sniper / Demolitions / Assault doctrines. |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |

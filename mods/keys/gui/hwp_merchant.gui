@@ -1,0 +1,56 @@
+%include "gui/main_menu/options_base.inc"
+
+<!-- The General Merchant (GeneralMerchant.as): gui/shops/default.gui with a
+     Keys / Trinkets tab row under the header; the list is 22 px shorter. -->
+<gui>
+	<sprites>
+		%block OptionsSprites
+		%include "gui/scalablebutton_sprites.inc"
+		%include "gui/panel_decoration.inc"
+
+		<sprite name="icon-frame" texture="gui/gui.png"><frame>76 210 28 28</frame></sprite>
+		<sprite name="tab-checked" texture="gui/gui.png"><frame>0 424 11 6</frame></sprite>
+	</sprites>
+
+	<doc>
+		<group>
+			<group width="261" height="305" anchor="0.5 0.5" >
+				<panel id="content" width="261" height="305" anchor="0.5 0.5" style="standard" >
+					<panel anchor="0.5 0" width="261" height="35" offset="0 0" style="character_pick_top">
+						<text id="title" anchor="0.5 0.5" offset="0 2" text="N/A" font="header" />
+					</panel>
+
+					<scalebutton id="close" func="close" only-mouse="true" spriteset="cross" width="11" offset="-2 2" anchor="1 0" />
+
+					<menutabgroup id="hwp-merchant-tabs" width="221" height="21" anchor="0.5 0" offset="0 37" flow="hbox" padding="0 0" checked-sprite="tab-checked" dynamic-size="false" >
+						<menutab id="hwp-tab-keys" text=".hwp.keys.merchant.tab.keys" value="keys" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="hwp-tab keys" />
+						<menutab id="hwp-tab-trinkets" text=".hwp.keys.merchant.tab.trinkets" value="trinkets" padding="12 3" color="#a6a6a6" colorselected="#ffffff" colorhover="#ffffff" font="sub-header" func="hwp-tab trinkets" />
+					</menutabgroup>
+
+					<rect anchor="1 0" width="15" height="212" offset="-10 64" spriteset="gui/sprite_rect.sval:square-roundedleft" />
+
+					<rect anchor="0 0" width="228" height="212" offset="9 64" spriteset="gui/sprite_rect.sval:square-roundedtopleft" >
+						<text id="empty" anchor="0.5 0.5" offset="0 0" text="" align="center" width="200" font="gui/fonts/hw8.fnt" />
+						<scrollbar id="list" spriteset="angular-scrollbar" width="220" height="206" anchor="0 0.5" offset="4 0" bar-offset="6 0" escape-up="false" escape-down="false" flow="vbox" >
+						</scrollbar>
+					</rect>
+
+					<rect anchor="0.5 1" width="242" height="19" offset="0 -10" spriteset="gui/sprite_rect.sval:rounded-squaretopleft" >
+						<text id="currency" anchor="0 0.5" offset="4 1" text="N/A" font="gui/fonts/hw8.fnt" />
+						<text id="extra-info" anchor="1 0.5" offset="-4 1" text="" font="gui/fonts/hw8.fnt" />
+					</rect>
+				</panel>
+
+				<tooltip-anchor tooltip-anchor="1 0" offset="-2 0" />
+			</group>
+
+			<entry-default id="template" visible="false" func="buy" nav-pos="0 0" icon-frame="icon-frame" title="N/A" sub-title="N/A" width="222" height="53" offset="-1 0"
+				spriteset="gui/sprite_rect.sval:entry-shop-building"
+				spriteset-hover="gui/sprite_rect.sval:entry-shop-building-hover"
+				spriteset-trim="gui/sprite_rect.sval:entry-default-trim"
+				spriteset-empty-trim="gui/sprite_rect.sval:entry-default-empty-trim"
+				spriteset-mid="gui/sprite_rect.sval:entry-shop-building-mid"
+			/>
+		</group>
+	</doc>
+</gui>

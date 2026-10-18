@@ -45,5 +45,5 @@ if __name__ == "__main__":
         stale = not OUT.exists() or OUT.read_text(encoding="utf-8") != text
         print("docs/generated/verbs.md is stale" if stale else "docs/generated/verbs.md is current")
         sys.exit(1 if stale else 0)
-    OUT.write_text(text, encoding="utf-8")
+    OUT.write_text(text, encoding="utf-8", newline="\n")
     print(f"wrote {OUT.relative_to(REPO)}: {text.count(chr(10) + '| `')} verbs")

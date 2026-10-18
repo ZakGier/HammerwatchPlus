@@ -3,7 +3,12 @@
 	<string name="item.key.ace">Ace Key</string>
 
 	<!-- the exit guard's shop -->
-	<string name="hwp.keys.merchant.name">Keys &amp; Bag Slots</string>
+	<string name="hwp.keys.merchant.name">General Merchant</string>
+	<string name="hwp.keys.merchant.tab.keys">Keys &amp; Bags</string>
+	<string name="hwp.keys.merchant.tab.trinkets">Trinkets</string>
+	<string name="hwp.keys.merchant.packed">Packed: %num%</string>
+	<string name="hwp.keys.merchant.packed_one">%name% (packed for the next run)</string>
+	<string name="hwp.keys.merchant.sold_out">Sold out. New trinkets after your next run.</string>
 	<string name="hwp.keys.shop.bronze">Common &amp; uncommon loot</string>
 	<string name="hwp.keys.shop.silver">Uncommon &amp; rare loot</string>
 	<string name="hwp.keys.shop.gold">Rare &amp; epic loot</string>
