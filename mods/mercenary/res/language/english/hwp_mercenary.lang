@@ -1,0 +1,20 @@
+<lang name="English" official="false">
+	<string name="hwp.mercenary.rank.0">Private</string>
+	<string name="hwp.mercenary.rank.1">Corporal</string>
+	<string name="hwp.mercenary.rank.2">Sergeant</string>
+	<string name="hwp.mercenary.rank.3">Lieutenant</string>
+	<string name="hwp.mercenary.rank.4">Captain</string>
+	<string name="hwp.mercenary.rank.5">Major</string>
+	<string name="hwp.mercenary.rank.6">Colonel</string>
+	<string name="hwp.mercenary.rank.7">General</string>
+	<string name="hwp.mercenary.provider">Mercenary rank</string>
+	<string name="hwp.mercenary.rankup">Rank gained: %rank%! +%bonus%% gold and experience.</string>
+	<string name="hwp.mercenary.reminder">Mercenary %rank%: if you die, it's permanent.</string>
+	<string name="hwp.mercenary.fallen">%name%, %rank% (level %level% %class%), has fallen. Their mercenary days are over.</string>
+	<string name="hwp.mercenary.fallen_here">%name% has fallen and can't fight on as a mercenary once this run is over.</string>
+	<string name="hwp.mercenary.pick_another">%name% has fallen. Pick or create another hero.</string>
+	<string name="hwp.mercenary.locked">Reach level %level% with another %class% first to enlist one as a mercenary.</string>
+	<string name="hwp.mercenary.confirm">A mercenary starts at level %level%, earns prestige and ranks for more gold and experience, and its death is permanent. Type hwp merc enlist confirm to enlist.</string>
+	<string name="hwp.mercenary.enlisted">%name% enlists as a mercenary: level %level%, rank %rank% (+%bonus%% gold and experience). Death is permanent.</string>
+	<string name="hwp.mercenary.not_merc">%name% is not a mercenary. A fresh level-1 character can enlist (hwp merc enlist) once another character of its class has reached level %level%.</string>
+</lang>

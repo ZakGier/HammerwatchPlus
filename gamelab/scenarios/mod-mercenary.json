@@ -1,0 +1,256 @@
+{
+ "name": "mod-mercenary",
+ "about": "mods/mercenary: enlisting is locked without a level-20 hero of the class (forced with cheats), asks for confirmation, levels to 10; prestige ranks (49 Private, 50 Corporal); the mercenary data reaches the mission and the floor counts; the rank's bonus on the gold gain and experience multipliers (GetMaterialModifier, currStats.ExperienceMul); dying on the floor is a fall, announced; back in town the picker is forced open and the ledger lists the fallen. Then no script errors in our files. The cheat hit is sent six times: a single one left the paladin alive in 3 of 5 runs (block or dodge).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "mercenary"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town",
+    "player.level": 1
+   },
+   "name": "a fresh level-1 paladin in town"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc"
+  },
+  {
+   "do": "log_has",
+   "pattern": "GameLab is not a mercenary",
+   "timeout": 5
+  },
+  {
+   "do": "console",
+   "line": "hwp merc enlist"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Reach level 20 with another Paladin first",
+   "timeout": 5,
+   "name": "no level-20 paladin: enlisting is locked"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc enlist force"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Type hwp merc enlist confirm to enlist",
+   "timeout": 5,
+   "name": "asks for confirmation first"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc enlist force confirm"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:mercenary\\] GameLab enlisted at level 10",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "player.level": 10
+   },
+   "name": "enlisting levels the character to 10"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc prestige 49"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc"
+  },
+  {
+   "do": "log_has",
+   "pattern": "mercenary Private, 49 prestige, next Corporal at 50.*\\(now: gold gain x1\\.15, experience x1\\.15\\)",
+   "timeout": 5,
+   "name": "49 prestige is still Private"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc prestige 1"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Rank gained: Corporal! \\+30% gold and experience",
+   "timeout": 5,
+   "name": "50 prestige: Corporal"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "log_has",
+   "pattern": "Mercenary Corporal: if you die, it's permanent",
+   "timeout": 10,
+   "name": "the mercenary data came along to the mission"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc"
+  },
+  {
+   "do": "log_has",
+   "pattern": "mercenary Corporal, 51 prestige.*; 51 floor\\(s\\).*\\(now: gold gain x1\\.30, experience x1\\.30\\)",
+   "timeout": 5,
+   "name": "the first floor counted one prestige; Corporal's +30% is on the gold and experience multipliers pickups and kills use"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:mercenary\\] GameLab fell \\(",
+   "timeout": 10,
+   "name": "dying on a floor is a fall"
+  },
+  {
+   "do": "log_has",
+   "pattern": "GameLab, Corporal \\(level 10 Paladin\\), has fallen",
+   "timeout": 5,
+   "name": "the fall is announced"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "dead_state"
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "town_state"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:mercenary\\] fallen mercenary GameLab in town, opening the character picker",
+   "timeout": 10
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "window": "PickCharacterWindow"
+   },
+   "name": "a fallen mercenary cannot be played: the picker is up"
+  },
+  {
+   "do": "console",
+   "line": "hwp merc ledger"
+  },
+  {
+   "do": "log_has",
+   "pattern": "- GameLab, Corporal, level 10 Paladin, 51 prestige, fell in",
+   "timeout": 5,
+   "name": "the ledger of the fallen lists it"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

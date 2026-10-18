@@ -36,6 +36,7 @@ in a lobby should run the same version of the same modules.
 | `strongbox` | PoE-style strongboxes: open one, a biome-correct pack (elites possible) spawns, clear it for the box's loot. |
 | `abyss` | Abyss cracks: step close and waves crawl out, ending in an elite; clear them for a reward and the crack closes. |
 | `maps` | Three new layouts for the equipment map drops: Goblin Warrens, Sunken Dungeon, The High Court. |
+| `mercenary` | Heroes of Hammerwatch 1's mercenary mode: once a class has a level-20 hero, a fresh character of it can enlist, climb the ranks from Private to General for more gold and experience, and die for good. |
 | `summons` | Priest Crusaders (and optionally all summons) persist through the loading screen between floors. |
 | `campaign` | The Forsaken Tower: the HoH1 campaign (Mines to Battlements, 18 floors, 6 bosses) started from a portal in town. With HoH1 installed, a second version plays the real HoH1 boss rooms and Battlements (`tools/import_hoh1.py campaign`). |
 | `wavemode` | Wave Arena: a survival arena started from a statue in town; boss kills raise your arena rank. |

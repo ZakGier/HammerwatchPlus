@@ -1,0 +1,6 @@
+{
+  "id": "mercenary",
+  "requires": ["core"],
+  "overrides": [],
+  "exclude": []
+}

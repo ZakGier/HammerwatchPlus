@@ -1,0 +1,5 @@
+<dict>
+	<string name="name">HammerwatchPlus Mercenary Mode</string>
+	<string name="author">Ryan Bower</string>
+	<string name="description">Heroes of Hammerwatch 1's mercenary mode: once a class has a level 20 hero, a fresh character of that class can enlist as a mercenary. It starts at level 10 and climbs the ranks from Private to General for more gold and experience, but its death is permanent and it joins the town's ledger of the fallen. Part of HammerwatchPlus; requires HWP Core.</string>
+</dict>

@@ -16,7 +16,7 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `save` |  | save: the game's own SavePlayerAndTown (what the builder, the shops and leaving town call), so the next session loads this town instead of a null one |
 | `menu` | `[tab] [subtab\|-] [widget] [func...]` |  |
 | `xp` | `<amount>` | xp <amount>: PlayerRecord.GiveExperience (kills, mission rewards), gain modifiers skipped |
-| `material` | `<type> <n>` | material <gold/wood/stone/iron/crystals/dust/ore> <n>: PlayerRecord.GiveMaterial (pickups) |
+| `material` | `<type> <n>` | material <gold/wood/stone/iron/crystals/dust/ore> <n>: PlayerRecord.GiveMaterial with skipGainMod, like cht_give_material: the amount lands as given (a pickup applies the gain modifiers: GetMaterialModifier) |
 | `charflag` | `<name>` | charflag <name>: PlayerRecord.SetCharFlag (mission rewards set these) |
 | `assign` | `<str\|dex\|int\|foc\|vit> <n\|all>` | assign <str/dex/int/foc/vit> <n/all>: the attribute assigner's Buy("assign") (Town/AttributeAssignerShopContent.as:10-31), once per point, while points are placeable |
 | `upgrade` | `<shopId> <upgradeId> <step>` | upgrade <shopId> <upgradeId> <step>: what an upgrade shop's Buy("buy") does (Town/UpgradeShop.as:139-150: SetShopUpgradeLevel, RefreshModifiers) minus the cost; e.g. upgrade apothecary potion-charges 0 = the first potion charge |

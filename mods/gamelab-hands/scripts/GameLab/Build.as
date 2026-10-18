@@ -30,7 +30,7 @@ namespace GameLab
 		Emit(Reply(id, true).Int("returned", ret).Int("level", rec.level).Int("xp", rec.experience));
 	}
 
-	// material <gold|wood|stone|iron|crystals|dust|ore> <n>: PlayerRecord.GiveMaterial (pickups)
+	// material <gold|wood|stone|iron|crystals|dust|ore> <n>: PlayerRecord.GiveMaterial with skipGainMod, like cht_give_material: the amount lands as given (a pickup applies the gain modifiers: GetMaterialModifier)
 	void VerbMaterial(const string &in id, array<string>@ args)
 	{
 		auto rec = FixtureRecord(id);
