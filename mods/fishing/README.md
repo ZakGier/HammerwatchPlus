@@ -11,7 +11,10 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   your hook; the **Bait** button cycles the kinds you have), wait
   0.8-3 s for a bite, then press **Reel** (button, Enter or gamepad confirm)
   while the sweeping marker is inside the green zone. The zone shrinks and the
-  marker speeds up with the fish tier.
+  marker speeds up with the fish tier: 40 / 26 / 16 / 10 px of the 240 px
+  bar, 0.18 / 0.23 / 0.28 / 0.34 px per ms; the marker counts as soon as it
+  touches the zone. It is drawn every frame between game ticks at sub-pixel
+  positions, so it glides instead of stepping.
 - **Fish are swords.** The catch goes into your bag (or drops at your feet when
   the bag is full) as `hwp_fish_<id>` from `tweak/hwp/fishing_items.sval`: a
   main-hand weapon that swings like the longsword (`attack_swing_longsword`,
@@ -37,7 +40,9 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   Sturdy (400 g), Sea (1200 g), Captain's (3000 g). Each tier widens the catch
   zone by 20 %, slows the marker by 10 % and raises the odds of rare and epic
   fish. The rod shows in the character screen's gear grid (core
-  `hwp-gear-rod` slot) with its bonuses and your bait.
+  `hwp-gear-rod` slot) with its bonuses and your bait, in its tier's colour
+  (`gui/hwp/rods.png`: grey driftwood, brown sturdy, teal sea, gold and red
+  captain's).
 - **The pirate fisherman** (`doodads/hwp/pirate_fisher.unit`, interact class
   `HWPPirateShop`) sits on the half-buried boat next to the trading post's
   "Trade materials" NPC and talks like a pirate. He sells worms (5 for 50 g,

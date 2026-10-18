@@ -74,8 +74,9 @@ namespace HWP
 		const int STATE_WAIT = 1;
 		const int STATE_BITE = 2;
 		const int STATE_RESULT = 3;
-		const array<int> ZONE_WIDTH = { 64, 44, 28, 16 };          // per fish tier, px of a 240 px bar
-		const array<float> MARKER_SPEED = { 0.12f, 0.16f, 0.2f, 0.26f }; // px per ms
+		const array<int> ZONE_WIDTH = { 40, 26, 16, 10 };          // per fish tier, px of a 240 px bar
+		const array<float> MARKER_SPEED = { 0.18f, 0.23f, 0.28f, 0.34f }; // px per ms
+		const int MARKER_WIDTH = 3;             // px; any overlap with the zone is a catch
 		const array<int> FISH_ILVL = { 1, 5, 10, 15 }; // town catches (coast, traps) per tier
 		const array<int> STAR_TOKENS = { 1, 3, 5 };     // bet tokens per 1 / 2 / 3-star fish
 		const int TOWN_MAX_TIER = 2;                    // the town has 1-star fish only
@@ -1118,6 +1119,7 @@ class HWPFishingMenu : AWindowObject
 	TextWidget@ m_wares;
 	Widget@ m_zone;
 	Widget@ m_marker;
+	Widget@ m_barGroup;
 	ScalableSpriteButtonWidget@ m_castButton;
 	ScalableSpriteButtonWidget@ m_baitButton;
 	int m_baitUsed = 1; // the bait kind of the current coast cast
@@ -1143,6 +1145,7 @@ class HWPFishingMenu : AWindowObject
 		@m_wares = cast<TextWidget>(m_widget.GetWidgetById("wares"));
 		@m_zone = m_widget.GetWidgetById("zone");
 		@m_marker = m_widget.GetWidgetById("marker");
+		@m_barGroup = m_widget.GetWidgetById("bar-group");
 		@m_castButton = cast<ScalableSpriteButtonWidget>(m_widget.GetWidgetById("cast-btn"));
 		@m_baitButton = cast<ScalableSpriteButtonWidget>(m_widget.GetWidgetById("bait-btn"));
 		if (m_baitButton !is null && m_spot.m_inRun)
@@ -1222,8 +1225,10 @@ class HWPFishingMenu : AWindowObject
 			m_zone.m_width = m_zoneW;
 			Place(m_zone, float(m_zoneX));
 			m_zone.m_visible = true;
+			// the marker is drawn by Draw between game ticks (smooth); the widget
+			// stands in only if the bar group is missing
 			Place(m_marker, 0);
-			m_marker.m_visible = true;
+			m_marker.m_visible = m_barGroup is null;
 			m_status.SetText(Resources::GetString(".hwp.fishing.bite"));
 			m_castButton.SetText(Resources::GetString(".hwp.fishing.reel"));
 		}
@@ -1237,8 +1242,7 @@ class HWPFishingMenu : AWindowObject
 
 	void Reel()
 	{
-		float center = m_markerPos + 1.5f;
-		bool hit = center >= float(m_zoneX) && center <= float(m_zoneX + m_zoneW);
+		bool hit = m_markerPos + float(HWP::Fishing::MARKER_WIDTH) >= float(m_zoneX) && m_markerPos <= float(m_zoneX + m_zoneW);
 		m_marker.m_visible = false;
 		m_zone.m_visible = false;
 		if (!hit)
@@ -1268,6 +1272,27 @@ class HWPFishingMenu : AWindowObject
 	float MarkerSpeed()
 	{
 		return HWP::Fishing::MARKER_SPEED[m_tier - 1] * HWP::Fishing::SpeedScale(m_rod);
+	}
+
+	// where the marker is idt ms after the last update (it bounces off the ends)
+	float MarkerAt(int idt)
+	{
+		float maxX = float(HWP::Fishing::BAR_WIDTH - HWP::Fishing::MARKER_WIDTH);
+		float p = m_markerPos + MarkerSpeed() * float(idt) * float(m_markerDir);
+		if (p > maxX) p = 2.0f * maxX - p;
+		if (p < 0.0f) p = -p;
+		return clamp(p, 0.0f, maxX);
+	}
+
+	// the marker as a sub-pixel rect every frame: moving the widget only on game
+	// ticks, snapped to whole GUI pixels (4 screen px), made it stutter
+	void Draw(SpriteBatch& sb, int idt) override
+	{
+		AWindowObject::Draw(sb, idt);
+		if (m_state != HWP::Fishing::STATE_BITE || m_barGroup is null)
+			return;
+		vec2 o = m_barGroup.m_origin;
+		sb.FillRectangle(vec4(o.x + MarkerAt(idt), o.y, float(HWP::Fishing::MARKER_WIDTH), float(m_barGroup.m_height)), vec4(1, 1, 1, 1));
 	}
 
 	bool Update(int ms, GameInput& gameInput, MenuInput& menuInput) override
@@ -1301,18 +1326,21 @@ class HWPFishingMenu : AWindowObject
 		}
 		else if (m_state == HWP::Fishing::STATE_BITE)
 		{
+			float maxX = float(HWP::Fishing::BAR_WIDTH - HWP::Fishing::MARKER_WIDTH);
 			m_markerPos += MarkerSpeed() * float(ms) * float(m_markerDir);
-			if (m_markerPos >= float(HWP::Fishing::BAR_WIDTH - 3))
+			if (m_markerPos >= maxX)
 			{
-				m_markerPos = float(HWP::Fishing::BAR_WIDTH - 3);
+				m_markerPos = 2.0f * maxX - m_markerPos; // bounce, keeping the overshoot
 				m_markerDir = -1;
 			}
 			else if (m_markerPos <= 0)
 			{
-				m_markerPos = 0;
+				m_markerPos = -m_markerPos;
 				m_markerDir = 1;
 			}
-			Place(m_marker, float(int(m_markerPos)));
+			m_markerPos = clamp(m_markerPos, 0.0f, maxX);
+			if (m_marker.m_visible)
+				Place(m_marker, m_markerPos);
 			m_timer -= ms;
 			if (menuInput.Forward.Pressed)
 				Reel();
@@ -1545,7 +1573,9 @@ class HWPFishingRodSlot : HWP::Gear::Slot
 {
 	ScriptSprite@ Icon() override
 	{
-		return ScriptSprite(Resources::GetTexture2D("items/tradeware/base.png"), vec4(64, 0, 16, 16));
+		// gui/hwp/rods.png: the vanilla rod recoloured per tier (driftwood, sturdy, sea, captain's)
+		int tier = HWP::Fishing::ClampRod(HWP::Fishing::RodTier());
+		return ScriptSprite(Resources::GetTexture2D("gui/hwp/rods.png"), vec4((tier - 1) * 16, 0, 16, 16));
 	}
 
 	string Title() override

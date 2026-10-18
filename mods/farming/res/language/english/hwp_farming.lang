@@ -42,7 +42,7 @@
 	<string name="hwp.farming.can_upgraded">Upgraded to a %name%: %max% water, waters %area%.</string>
 	<string name="hwp.farming.seed_bought">Bought a %name% seed (%n%).</string>
 	<string name="hwp.farming.need_can">You need a watering can. The farmer sells one.</string>
-	<string name="hwp.farming.can_empty">Your watering can is empty. Refill it at the well.</string>
+	<string name="hwp.farming.can_empty">Watering can is empty</string>
 	<string name="hwp.farming.refilled">Watering can filled (%n%).</string>
 	<string name="hwp.farming.watered">Watered the %name% (%n%/%max% water left).</string>
 	<string name="hwp.farming.watered_rows">Watered %rows% rows (%n%/%max% water left).</string>

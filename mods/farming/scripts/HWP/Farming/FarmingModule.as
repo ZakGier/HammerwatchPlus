@@ -671,6 +671,19 @@ namespace HWP
 			return true;
 		}
 
+		// an error toast: the game's red "no charges" floating text over you
+		void Error(const string &in text)
+		{
+			g_lastMessage = text;
+			g_version++;
+			auto rec = GetLocalPlayerRecord();
+			if (rec is null || rec.actor is null)
+				return;
+			AddFloatingText(FloatingTextType::NoCharges, text, rec.actor.m_unit.GetPosition() + vec3(0, -24, 0));
+		}
+
+		bool CanEmpty() { return CanTier() > 0 && Water() <= 0; }
+
 		void Say(const string &in text)
 		{
 			g_lastMessage = text;
@@ -994,7 +1007,7 @@ namespace HWP
 			else if (CanTier() <= 0)
 				Say(Resources::GetString(".hwp.farming.need_can"));
 			else if (Water() <= 0)
-				Say(Resources::GetString(".hwp.farming.can_empty"));
+				Error(Resources::GetString(".hwp.farming.can_empty"));
 			else
 				return true;
 			return false;
@@ -1597,6 +1610,8 @@ class HWPFarmPlot : AShopContent
 			HWP::Farming::RequestHarvest(m_index);
 		else if (HWP::Farming::Waiting())
 			return;
+		else if (HWP::Farming::CanEmpty())
+			HWP::Farming::Error(Resources::GetString(".hwp.farming.can_empty")); // a toast, no window
 		else if (HWP::Farming::CanWater(m_index))
 			HWP::Farming::RequestWater(m_index);
 		else

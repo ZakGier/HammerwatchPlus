@@ -28,8 +28,9 @@ watered.
 - **Interact.** On a plot: empty -> pick one of your seeds; growing -> water
   it (one charge of your watering can, once per run; bigger cans pour on
   neighbouring rows too); ready -> harvest. A
-  growing plot that cannot be watered now (already watered, no can, empty
-  can) opens the plot window instead, with the reason, so herbs can be
+  growing plot with an empty can only shows a red "Watering can is empty"
+  toast (no window). One that cannot be watered for another reason (already
+  watered, no can) opens the plot window instead, with the reason, so herbs can be
   smoked when no plot is empty. In the soil-patch layout the plot unit you
   touch decides the plot, not the nearest patch centre.
 - **Farmer.** The vanilla farmer (`npc_misc_farmer_man.unit`, overridden;
