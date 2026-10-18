@@ -986,6 +986,10 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   (`CompositeActorBehavior.SetTarget`). Measured: all three brutes targeted it and two
   beat it to 19 % hp (plan-firearms-a 20261018-140742). A first failure was the test:
   brutes spawned behind a wall never saw anything.
+- **`deploy.py modded-prod` never rebuilds `dist/HammerwatchPlus-All.bin`** (it calls
+  build.py with `--no-all` and a module list). Copying the All bin after a deploy shipped
+  the 2026-10-18 02:20 build until 17:20 that day; run `tools/build.py` (no arguments, no
+  `--with-local`) first, then copy.
 - **GameLab gotchas:**
   - A `[GL]` line over 15000 chars is dropped (Json.as EMIT_MAX). `trail` now sends its
     report in parts ("part"/"parts") and keeps up to 128 units; the NG+1 Warden's bombs
