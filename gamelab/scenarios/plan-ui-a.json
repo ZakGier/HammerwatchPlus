@@ -1,0 +1,149 @@
+{
+ "name": "plan-ui-a",
+ "about": "Test plan, UI group through the plan_ui bot: bufftips s1-s4 (a shrine buff, a debuff, stacks and the Title Bonuses crown hovered with gl mouse pinning the game mode cursor; the tooltip measured in screenshots with bufftips.enabled off vs on; the character menu's Effects tab) and core s9 (dye map markers: shown, gone on pickup, mapicons.dyes 0/1).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "bufftips_timed"
+   },
+   "name": "shrine buff tooltip",
+   "expect": {
+    "LabTips_run": true,
+    "tips_hud": true,
+    "shrine_icon": true,
+    "cursor_pinned": true,
+    "tip_shown": true,
+    "tip_header_line": true,
+    "tip_name_desc": true,
+    "tip_counts_down": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "bufftips_debuff"
+   },
+   "name": "debuff and stacks tooltips",
+   "expect": {
+    "vanilla_debuff_in_bar": true,
+    "debuff_icon": true,
+    "debuff_tip_shown": true,
+    "debuff_name_red": true,
+    "stacks_count": true,
+    "stacks_tip_shown": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "bufftips_crown"
+   },
+   "name": "Title Bonuses tooltip",
+   "expect": {
+    "crown_icon": true,
+    "crown_lists_bonuses": true,
+    "crown_tip_shown": true,
+    "crown_no_countdown": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "bufftips_menu"
+   },
+   "name": "no tooltip over the menu, Effects tab",
+   "expect": {
+    "menu_no_tip": true,
+    "effects_title_bonuses": true,
+    "effects_morale": true,
+    "effects_class_buff": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "ui-after-menu"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "mapicons"
+   },
+   "name": "dye map markers",
+   "expect": {
+    "dye_marker_shown": true,
+    "dye_marker_gone_on_pickup": true,
+    "dye_markers_hidden_setting": true,
+    "dye_markers_back": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "mouse",
+   "args": [
+    "off"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp set bufftips.enabled true"
+  },
+  {
+   "do": "console",
+   "line": "hwp set mapicons.dyes 1"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

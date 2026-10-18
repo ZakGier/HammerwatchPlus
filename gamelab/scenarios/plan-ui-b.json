@@ -1,0 +1,102 @@
+{
+ "name": "plan-ui-b",
+ "about": "Test plan, UI group through the plan_ui bot: colors s1 (contrast preset: a ranger's shots and a guard sentry's bolts by gl tintwatch, trap beams and rays by gl shootproj), colors s5 (the Plus tab's Projectile colors row switches the preset, hwp colors agrees, new shots take it at once), deathrecap s2 (death in poison clouds and a fire trap reads Hazards).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "colors_tint"
+   },
+   "name": "projectile tints",
+   "expect": {
+    "LabTint_run": true,
+    "contrast_set": true,
+    "own_shots_bluish": true,
+    "enemy_shots_reddish": true,
+    "tint_logged": true,
+    "beams_tinted": true,
+    "rays_tinted": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "colors_option"
+   },
+   "name": "projectile colors option",
+   "expect": {
+    "option_row": true,
+    "option_switches": true,
+    "option_command_agrees": true,
+    "option_tints_now": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_ui",
+   "kwargs": {
+    "sections": "hazard_death"
+   },
+   "name": "death by hazards",
+   "expect": {
+    "hazard_death": true,
+    "recap_hazards": true,
+    "recap_cmd_hazards": true
+   }
+  },
+  {
+   "do": "console",
+   "line": "hwp colors off"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -1,0 +1,153 @@
+{
+ "name": "plan-gear-b",
+ "about": "Test plan through the plan_gear bot: droptrade s1 bag item hints Equip, Compare, Destroy, [Q] Drop; s2 Q and the Drop hint drop at your feet with no dialog, pick up works; s3 Destroy opens the vanilla confirm, equipped items can't be dropped; s4 hwp dropkey 10 G; chatlinks s1 holding the context key ~1 s on a bag item links it in its rarity colour. Shot drop-hints: hint bar on a bag item; shot chat-link: a chat line with the item name in its rarity colour.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "drop_char"
+   },
+   "name": "droptrade character",
+   "expect": {
+    "LabDrop_ready": true,
+    "drop_bag_item": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "drop_hints"
+   },
+   "name": "inventory item hints (droptrade s1)",
+   "expect": {
+    "s1_hover_item": true,
+    "s1_hints": true,
+    "s1_hints_clickable": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "drop-hints"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "drop_key"
+   },
+   "name": "Q drops at your feet, pick it up again (droptrade s2)",
+   "expect": {
+    "s2_q_drops": true,
+    "s2_no_dialog": true,
+    "s2_left_bag": true,
+    "s2_at_feet": true,
+    "s2_anyone": true,
+    "s2_pickup": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "drop_click"
+   },
+   "name": "clicking the Drop hint drops (droptrade s2)",
+   "expect": {
+    "s2_click_drop": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "drop_destroy"
+   },
+   "name": "Destroy confirms; equipped items can't be dropped (droptrade s3)",
+   "expect": {
+    "s3_destroy_confirm": true,
+    "s3_no_keeps": true,
+    "s3_equipped_no_drop_hint": true,
+    "s3_equipped_not_dropped": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "dropkey_g"
+   },
+   "name": "hwp dropkey 10 G (droptrade s4)",
+   "expect": {
+    "s4_hint_g": true,
+    "s4_q_ignored": true,
+    "s4_g_drops": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "chat_link"
+   },
+   "name": "hold the context key on an item links it (chatlinks s1)",
+   "expect": {
+    "link_event": true,
+    "link_rarity_colour": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "chat-link"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

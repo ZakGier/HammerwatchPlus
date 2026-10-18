@@ -1,0 +1,252 @@
+{
+ "name": "plan-newa-a",
+ "about": "Test plan through the plan_newa bot: search s1-s8, the Plus tab's search field (posted chars) filters the rows by title or value, case-blind, Backspace refilters, Esc clears, Enter keeps, a reopened menu is unfiltered; stash s1-s4, two tabs filled by gl stashput in a scrambled order, Sort orders only the tab on screen by class (main requirement), type (two-handed, main hand, off hand, armour; weapons by family), then item level, the grid follows, a second press keeps it, a reopened stash has it; stash s5, the sorted tabs survive a restart (save to load).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newa",
+   "kwargs": {
+    "sections": "settings_search"
+   },
+   "name": "settings search",
+   "expect": {
+    "search_tab_open": true,
+    "search_placeholder": true,
+    "search_typed": true,
+    "search_filters_title": true,
+    "search_placeholder_hidden": true,
+    "search_no_match": true,
+    "search_backspace_refilters": true,
+    "search_esc_clears": true,
+    "search_case_insensitive": true,
+    "search_row_works": true,
+    "search_matches_value": true,
+    "search_enter_keeps": true,
+    "search_reopen_reset": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newa",
+   "kwargs": {
+    "sections": "stash_sort"
+   },
+   "name": "stash sort",
+   "expect": {
+    "stash_filled": true,
+    "stash_display_plain": true,
+    "stash_open": true,
+    "stash_second_tab_shown": true,
+    "sort_second_tab_sorted": true,
+    "sort_first_tab_untouched": true,
+    "stash_first_tab_shown": true,
+    "sort_logged": true,
+    "sort_class_first": true,
+    "sort_type_second": true,
+    "sort_ilvl_third": true,
+    "sort_exact": true,
+    "sort_grid_follows": true,
+    "sort_idempotent": true,
+    "stash_reopened": true,
+    "sort_kept_reopen": true
+   }
+  },
+  {
+   "do": "console",
+   "line": "dbg_show_stash"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "stash-sorted"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "window": "PlayerStashWindow"
+   },
+   "name": "stash open for the shot"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "args": [
+    "0"
+   ],
+   "save_as": "stash0_before",
+   "expect": {
+    "items": [
+     "twohanded_maul_01@8",
+     "mainhand_longsword_01@8",
+     "mainhand_mace_01@14",
+     "mainhand_mace_01@4",
+     "offhand_shield_01@8",
+     "chest_str_t1a@8",
+     "feet_str_t1a@8",
+     "twohanded_shortbow_01@16",
+     "twohanded_shortbow_01@6",
+     "chest_dex_t1a@8",
+     "mainhand_wand_fire_01@8",
+     "head_int_t1a@8",
+     "mainhand_scepter_01@8",
+     "back_2a@8",
+     "back_2b@8"
+    ]
+   },
+   "name": "tab 1 sorted before the restart"
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "args": [
+    "1"
+   ],
+   "save_as": "stash1_before",
+   "expect": {
+    "items": [
+     "mainhand_mace_01@9",
+     "head_str_t1a@9",
+     "twohanded_shortbow_01@9",
+     "offhand_lantern_01@8"
+    ]
+   },
+   "name": "tab 2 sorted before the restart"
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "back in town after the restart"
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "args": [
+    "0"
+   ],
+   "save_as": "stash0_after",
+   "expect": {
+    "items": [
+     "twohanded_maul_01@8",
+     "mainhand_longsword_01@8",
+     "mainhand_mace_01@14",
+     "mainhand_mace_01@4",
+     "offhand_shield_01@8",
+     "chest_str_t1a@8",
+     "feet_str_t1a@8",
+     "twohanded_shortbow_01@16",
+     "twohanded_shortbow_01@6",
+     "chest_dex_t1a@8",
+     "mainhand_wand_fire_01@8",
+     "head_int_t1a@8",
+     "mainhand_scepter_01@8",
+     "back_2a@8",
+     "back_2b@8"
+    ]
+   },
+   "name": "stash s5: tab 1 still sorted after save and load"
+  },
+  {
+   "do": "gl",
+   "verb": "stash",
+   "args": [
+    "1"
+   ],
+   "save_as": "stash1_after",
+   "expect": {
+    "items": [
+     "mainhand_mace_01@9",
+     "head_str_t1a@9",
+     "twohanded_shortbow_01@9",
+     "offhand_lantern_01@8"
+    ]
+   },
+   "name": "stash s5: tab 2 still sorted after save and load"
+  },
+  {
+   "do": "log_clean"
+  }
+ ],
+ "boundaries": [
+  {
+   "name": "stash tab 1 order survives a restart",
+   "before": "stash0_before",
+   "after": "stash0_after",
+   "survives": [
+    "items",
+    "name"
+   ]
+  },
+  {
+   "name": "stash tab 2 order survives a restart",
+   "before": "stash1_before",
+   "after": "stash1_after",
+   "survives": [
+    "items",
+    "name"
+   ]
+  }
+ ]
+}

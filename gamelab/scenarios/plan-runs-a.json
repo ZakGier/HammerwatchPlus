@@ -1,0 +1,113 @@
+{
+ "name": "plan-runs-a",
+ "about": "Test plan, runs group, through the plan_runs bot: keys s3 (keys.lock_chance 1: every reward chest of a Bandit Keep floor has a padlock; no key, nothing; a key opens it, the padlock goes, the key count drops, loot spawns); architect s1 (the Architect loadout row opens the picker, two picks, the multiplier and cost as vanilla's CalcCost, the cost taken at run start); campaign s1 (the town portal with ui_minimap on: shot portal-minimap shows the portal's minimap pip).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "keys_padlock"
+   },
+   "name": "padlocked reward chests",
+   "expect": {
+    "pad_all_locked": true,
+    "pad_every_chest_padlock": true,
+    "pad_no_key_nothing": true,
+    "pad_key_opens": true,
+    "pad_padlock_vanishes": true,
+    "pad_key_spent": true,
+    "pad_loot_spawned": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "padlock-floor"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "architect_loadout"
+   },
+   "name": "architect loadout row",
+   "expect": {
+    "arch_building": true,
+    "arch_loadout_open": true,
+    "arch_row_clickable": true,
+    "arch_picks": true,
+    "arch_mul_vanilla": true,
+    "arch_cost_vanilla": true,
+    "arch_run_started": true,
+    "arch_gold_taken": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "portal_minimap"
+   },
+   "name": "portal minimap pip",
+   "expect": {
+    "pip_portal_in_town": true,
+    "pip_minimap_on": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "portal-minimap"
+  },
+  {
+   "do": "console",
+   "line": "ui_minimap 0"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

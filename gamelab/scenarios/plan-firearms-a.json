@@ -1,0 +1,101 @@
+{
+ "name": "plan-firearms-a",
+ "about": "firearms s3 and s4/s5 Sniper through the plan_firearms bot: the Frag Grenade lands where the cursor is (a dummy there hit, one beside it not) with damage numbers; at level 21 the Subclass Picker shows Sniper/Demolitions/Assault; each Sniper skill casts and costs its tooltip's mana; the Decoy pulls three brutes and is gone 8 s after the cast.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_frag"
+   },
+   "name": "frag grenade",
+   "expect": {
+    "frag_cursor_held": true,
+    "frag_thrown": true,
+    "frag_explodes": true,
+    "frag_lands_where_aimed": true,
+    "frag_damage_numbers": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_spec_pick"
+   },
+   "name": "spec pick",
+   "expect": {
+    "spec_pick_open": true,
+    "spec_pick_three": true,
+    "spec_pick_takes": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_sniper"
+   },
+   "name": "sniper skills and decoy",
+   "expect": {
+    "decoy_casts": true,
+    "decoy_cost": true,
+    "decoy_vanishes_8s": true,
+    "decoy_pulls": true,
+    "flashbang_casts": true,
+    "flashbang_cost": true,
+    "snipe_casts": true,
+    "snipe_cost": true,
+    "sniper_own_buttons": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

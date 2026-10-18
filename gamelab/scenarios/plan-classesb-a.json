@@ -1,0 +1,117 @@
+{
+ "name": "plan-classesb-a",
+ "about": "Test plan through the plan_classesb bot, classes.s5: at level 20 (hwp levelup 20) the Thief, Gladiator and Witch Hunter each show three specs at the Subclass Picker (class-curr stepped with OnFunc nextclass) and take all three ids; the self-buffs Slice and Dice (6 s), Cloak of Shadows (2.5 s), Shield Wall (5 s) and Immolation (8 s), cast with gl input, are on the player with a visible HUD icon for the listed time (buffs verb: ms left on the buff's own clock). *_own_button: no other learned active spell shares the skill's button (GetSkillInput puts the 3rd and later on Skill3).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesb",
+   "kwargs": {
+    "sections": "thief_specs"
+   },
+   "name": "thief specs and self-buffs",
+   "expect": {
+    "hoh1_classes_status": true,
+    "thief_char": true,
+    "thief_level20": true,
+    "thief_three_specs": true,
+    "thief_subclass_ids": true,
+    "slice_learned": true,
+    "cloak_learned": true,
+    "slice_cast": true,
+    "slice_icon": true,
+    "slice_duration": true,
+    "slice_own_button": true,
+    "cloak_cast": true,
+    "cloak_icon": true,
+    "cloak_duration": true,
+    "cloak_own_button": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesb",
+   "kwargs": {
+    "sections": "gladiator_specs"
+   },
+   "name": "gladiator specs and Shield Wall",
+   "expect": {
+    "gladiator_char": true,
+    "gladiator_level20": true,
+    "gladiator_three_specs": true,
+    "gladiator_subclass_ids": true,
+    "shield_wall_learned": true,
+    "shield_wall_cast": true,
+    "shield_wall_icon": true,
+    "shield_wall_duration": true,
+    "shield_wall_own_button": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesb",
+   "kwargs": {
+    "sections": "witchhunter_specs"
+   },
+   "name": "witch hunter specs and Immolation",
+   "expect": {
+    "witchhunter_char": true,
+    "witchhunter_level20": true,
+    "witchhunter_three_specs": true,
+    "witchhunter_subclass_ids": true,
+    "immolation_learned": true,
+    "immolation_cast": true,
+    "immolation_icon": true,
+    "immolation_duration": true,
+    "immolation_own_button": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

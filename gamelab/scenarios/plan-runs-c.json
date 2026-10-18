@@ -1,0 +1,102 @@
+{
+ "name": "plan-runs-c",
+ "about": "Test plan, runs group, through the plan_runs bot: hoh1floors s4 (Forsaken Tower floor 9, the three Councilors appear together, walk node to node, are untargetable while moving, and attack) and s5 (floor 12, the Watcher's wisps circle the eye at the player's distance, gl trail). God mode.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_setup"
+   },
+   "name": "boss test character",
+   "expect": {
+    "boss_char": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_councilors"
+   },
+   "name": "three councilors",
+   "expect": {
+    "council_floor": true,
+    "council_three": true,
+    "council_node_to_node": true,
+    "council_untargetable_moving": true,
+    "council_fight_together": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-councilors"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_watcher"
+   },
+   "name": "watcher wisps",
+   "expect": {
+    "watcher_floor": true,
+    "watcher_spawned": true,
+    "watcher_wisps_circle": true,
+    "watcher_wisps_at_player_distance": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-watcher"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -1,0 +1,111 @@
+{
+ "name": "plan-pets-b",
+ "about": "Test plan through the plan_pets bot, on a fresh LabPets with a Pet Shop pet at level 20 (hwp pet xp, pets.debug). pets s4: a pot beside the pet stays whole without Smash and breaks once a point is in. pets s5: Mend heals below 80 % hp and not above; Stun (rank 5) never stuns an elite bandit and stuns a goblin; Morale: the buff and its HUD icon out of combat, gone with an enemy within 350 px, back once it is dead. pets s2: the pet follows a walk, but with a vanilla puzzle (lights-out) at its end it waits outside without moving and follows again when the player comes out (querycmp in the note: what PetWait's QueryCircle sees of the puzzle buttons).",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "pets_setup,smash,mend,stun,puzzle_wait,morale_on"
+   },
+   "save_as": "skills",
+   "name": "pet skills and puzzle rooms",
+   "expect": {
+    "petshop_bought": true,
+    "pet_out": true,
+    "pets_ready": true,
+    "smash_control": true,
+    "smash_breaks_pots": true,
+    "mend_heals_below_80": true,
+    "mend_idle_above_80": true,
+    "stun_skips_elite": true,
+    "stun_hits_goblin": true,
+    "pet_follows_control": true,
+    "pet_waits_outside_puzzle": true,
+    "pet_follows_after_puzzle": true,
+    "morale_out_of_combat": true,
+    "morale_icon_shown": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "morale_icon_out_of_combat"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "morale_combat"
+   },
+   "save_as": "combat",
+   "name": "morale in combat",
+   "expect": {
+    "morale_gone_in_combat": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "morale_icon_in_combat"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "morale_after,to_town"
+   },
+   "save_as": "after",
+   "name": "morale after combat",
+   "expect": {
+    "morale_back_after_combat": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

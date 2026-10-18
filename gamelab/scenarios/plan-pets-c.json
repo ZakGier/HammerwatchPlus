@@ -1,0 +1,102 @@
+{
+ "name": "plan-pets-c",
+ "about": "Test plan through the plan_pets bot, on the fixture's GameLab character. goldpet s2: tier 2 is refused at Hunter Lodge tier 1 (\"Requires Hunter Lodge Tier 2\") and bought after the lodge goes up (gl buildup), tier 3 is refused at lodge tier 2 and ready at lodge tier 3; the tier 2 cat picks up wood in a run, and an XP scroll after the restart (the fixture readback wants level 1). goldpet s3: a missing cat (gl unitdestroy) makes the vendor show Summon, which brings it back; the cat is there after a floor change and after quitting and loading the character.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "gp_gates,gp_summon"
+   },
+   "save_as": "town",
+   "name": "gold pet tiers and summon",
+   "expect": {
+    "gp_tier1_bought": true,
+    "gp_tier2_needs_lodge2": true,
+    "gp_tier2_at_lodge2": true,
+    "gp_tier3_needs_lodge3": true,
+    "gp_tier3_ready_at_lodge3": true,
+    "gp_summon_shown": true,
+    "gp_summon_brings_back": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "gp_run"
+   },
+   "save_as": "run",
+   "name": "tier 2 cat in a run",
+   "expect": {
+    "gp_cat_in_run": true,
+    "gp_tier2_picks_materials": true,
+    "gp_back_after_floor": true
+   }
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "gp_reload"
+   },
+   "save_as": "reload",
+   "name": "cat after a restart",
+   "expect": {
+    "gp_back_after_reload": true,
+    "gp_tier2_picks_xp_scroll": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

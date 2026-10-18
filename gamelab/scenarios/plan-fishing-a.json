@@ -1,0 +1,127 @@
+{
+ "name": "plan-fishing-a",
+ "about": "Test plan through the plan_fishing bot, in town: fishing s5 (fish as bag items: stars, quality, town ilvl; wielded with the longsword swing; the equipped fish's tooltip), fishing s6 (an uncommon fish at the enchanter: Upgrade, Enchant, the worked fish no ware and kept by Sell; Enchant on fresh uncommon / rare fish), gambler s7 (the Sell caption, tokens for fish, gold for crops, the token line, a worked fish kept), fishing s13 (the rod slot and its tooltip; shot rod-slot: the character screen with the rod icon bottom left of the gear grid).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "fish_sword"
+   },
+   "name": "fish as a sword",
+   "expect": {
+    "fish_caught": true,
+    "fish_name_stars": true,
+    "fish_quality_by_stars": true,
+    "fish_town_ilvl": true,
+    "fish_mods_none": true,
+    "fish_wields": true,
+    "fish_longsword_attack": true,
+    "fish_tooltip_stars": true,
+    "fish_tooltip_ilvl": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "fish_enchant"
+   },
+   "name": "fish at the enchanter",
+   "expect": {
+    "enchanter_level": true,
+    "enchanter_open": true,
+    "fish_offers_both": true,
+    "fish_upgrade_works": true,
+    "fish_enchant_view": true,
+    "fish_enchant_works": true,
+    "worked_not_ware": true,
+    "worked_kept_on_sell": true,
+    "fresh_uncommon_enchant": true,
+    "fresh_rare_enchant": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "gambler_sell"
+   },
+   "name": "gambler sell",
+   "expect": {
+    "sell_caption": true,
+    "sell_message": true,
+    "sell_fish_tokens": true,
+    "sell_crops_gold": true,
+    "token_line_up": true,
+    "sell_keeps_worked": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "rod_slot"
+   },
+   "name": "rod slot",
+   "expect": {
+    "rod_slot_bottom_left": true,
+    "rod_tip_name": true,
+    "rod_tip_bait": true,
+    "rod_tip_upgraded": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "rod-slot"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -1,0 +1,102 @@
+{
+ "name": "plan-runs-b",
+ "about": "Test plan, runs group, through the plan_runs bot: hoh1floors s2 (Forsaken Tower floor 3, the Stone Guardian's ground spikes followed per frame by gl trail: they run in a line and stop at a wall, gl rayhit) and s3 (floor 6, the Warden's whirlwind and ballista shots; warden_bombs is reported, not expected: the bomb fan is NG only in warden.inc). God mode.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_setup"
+   },
+   "name": "boss test character",
+   "expect": {
+    "boss_char": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_golem"
+   },
+   "name": "stone guardian spikes",
+   "expect": {
+    "golem_floor": true,
+    "golem_spawned": true,
+    "golem_spikes_seen": true,
+    "golem_spikes_travel": true,
+    "golem_spikes_stop_at_wall": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-golem"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_runs",
+   "kwargs": {
+    "sections": "boss_warden"
+   },
+   "name": "warden whirlwind and shots",
+   "expect": {
+    "warden_floor": true,
+    "warden_spawned": true,
+    "warden_whirlwind": true,
+    "warden_shoots": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-warden"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

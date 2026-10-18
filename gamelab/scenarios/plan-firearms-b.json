@@ -1,0 +1,93 @@
+{
+ "name": "plan-firearms-b",
+ "about": "firearms s4/s5 Demolitions and Assault through the plan_firearms bot: each doctrine skill casts and costs its tooltip's mana; the Jetpack lands at the cursor and its landing burst hurts a dummy beside it.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_demo"
+   },
+   "name": "demolitions skills and jetpack",
+   "expect": {
+    "jetpack_casts": true,
+    "jetpack_lands_at_cursor": true,
+    "jetpack_fire_burst": true,
+    "jetpack_cost": true,
+    "rpg_casts": true,
+    "rpg_cost": true,
+    "tube_casts": true,
+    "tube_cost": true,
+    "demo_own_buttons": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "firearms-demo"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_assault"
+   },
+   "name": "assault skills",
+   "expect": {
+    "adrenaline_passive": true,
+    "stun_casts": true,
+    "stun_cost": true,
+    "burst_casts": true,
+    "burst_cost": true,
+    "assault_own_buttons": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

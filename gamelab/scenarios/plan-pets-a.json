@@ -1,0 +1,118 @@
+{
+ "name": "plan-pets-a",
+ "about": "Test plan through the plan_pets bot, on the fixture's own GameLab character (made before HWP was enabled: no hwp pet toggles in its record). pets s9: the tailor without a pet opens the vanilla dyer; with a pet out it asks Dye gear / Dye pet and gear is the vanilla dyer. pets s10: Dye pet lists the town's unlocked dyes (gray, lemon, midnight added by blueprint) in their colours, each pick pays its quality's price (100 / 250 / 500) and re-makes the pet; the dye stays on after a floor change and a restart; removing it is free and gives the plain pet back. pets s12: the legacy character's pet picks up gold, wood and a health pickup without the toggles being touched.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "legacy_record,dyer_nopet,petshop,dyer_choice,dye_pet"
+   },
+   "save_as": "town",
+   "name": "tailor and pet dyes",
+   "expect": {
+    "legacy_char": true,
+    "dyer_nopet_direct": true,
+    "petshop_bought": true,
+    "pet_out": true,
+    "dyer_choice_opens": true,
+    "dyer_gear_vanilla": true,
+    "dye_menu_open": true,
+    "dye_lists_unlocked": true,
+    "dye_in_colour": true,
+    "dye_price_paid": true,
+    "dye_only_unlocked": true,
+    "dye_pet_remade": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "dyed_pet_town"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "legacy_run,dye_floor,to_town"
+   },
+   "save_as": "run",
+   "name": "legacy pet pickups, dye on the next floor",
+   "expect": {
+    "legacy_pet_gold": true,
+    "legacy_pet_materials": true,
+    "legacy_pet_potion": true,
+    "legacy_toggles_untouched": true,
+    "dye_kept_floor": true
+   }
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_pets",
+   "kwargs": {
+    "sections": "dye_restart,dye_remove"
+   },
+   "save_as": "reload",
+   "name": "dye after a restart, then removed",
+   "expect": {
+    "dye_kept_restart": true,
+    "dye_remove_free": true,
+    "dye_removed_plain": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "undyed_pet_town"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

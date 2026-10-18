@@ -1,0 +1,89 @@
+{
+ "name": "plan-newb-a",
+ "about": "Test plan through the plan_newb bot: puzzles s4, a Constellation fabricated in town picks a pattern, a correct star counts down, a wrong one fails it and locks every star; puzzles s1-s3, on Bandit Keep floors room_chance 0 places no puzzle room and 100 places keep_puzzle, the Constellation is picked, walked to, solved with its pattern, and its RewardSpot drops an item.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "constellation_fail"
+   },
+   "name": "constellation wrong star",
+   "expect": {
+    "cf_pattern_picked": true,
+    "cf_correct_counts": true,
+    "cf_wrong_fails": true,
+    "cf_locked": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "constellation-failed"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "puzzle_rooms"
+   },
+   "name": "puzzle rooms on floors",
+   "expect": {
+    "pr_town_saved": true,
+    "pr_chance0_no_room": true,
+    "pr_room_placed": true,
+    "pr_constellation_picked": true,
+    "pr_walked_there": true,
+    "pr_solved": true,
+    "pr_reward": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

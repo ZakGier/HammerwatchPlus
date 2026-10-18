@@ -1,0 +1,119 @@
+{
+ "name": "plan-newb-c",
+ "about": "Test plan through the plan_newb bot: mercenary s1-s7, enlisting is locked without a level-20 Paladin and refused for a levelled hero; a fresh Paladin confirms and enlists at level 10 as Private (+15% experience); 50 prestige is Corporal (+30%); a floor reminds, counts a prestige and a gold pickup lands x1.30; the boss floor and its boss count once; a death is a fall, announced, the picker opens in town, the bonus is gone, no run starts and the ledger lists it. The enlist step must run before any mission in the process (g_diffLevel skews the experience baseline).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "merc_enlist,merc_bonus"
+   },
+   "name": "mercenary enlist and rank bonus",
+   "expect": {
+    "mc_not_merc": true,
+    "mc_locked": true,
+    "mc_levelled_refused": true,
+    "mc_veteran_unlocks": true,
+    "mc_enlisted_l10": true,
+    "mc_private": true,
+    "mc_private_xp": true,
+    "mc_corporal": true,
+    "mc_corporal_xp": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "merc_floor"
+   },
+   "name": "mercenary floor",
+   "expect": {
+    "mc_reminder": true,
+    "mc_floor_counted": true,
+    "mc_gold_pickup": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "merc_boss"
+   },
+   "name": "mercenary boss",
+   "expect": {
+    "mc_boss_floor": true,
+    "mc_boss_kill": true,
+    "mc_boss_once": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "merc_fall"
+   },
+   "name": "mercenary fall",
+   "expect": {
+    "mc_fell": true,
+    "mc_fall_announced": true,
+    "mc_picker_forced": true,
+    "mc_fallen_no_bonus": true,
+    "mc_no_run": true,
+    "mc_ledger": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "merc-fallen-picker"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

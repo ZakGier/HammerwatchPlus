@@ -1,0 +1,68 @@
+{
+ "name": "plan-fishing-c",
+ "about": "Test plan through the plan_fishing bot: fishing s11 (rod 4, 30 casts a floor at a debug hole: the rolled tiers, read from each bite's zone width, on Bandit Keep floor 0 (first half), floor 3 (second half) and floor 5 (boss)).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "run_stars"
+   },
+   "name": "run fish stars",
+   "expect": {
+    "stars_rod4": true,
+    "stars_first_half_1star": true,
+    "stars_later_2star": true,
+    "stars_boss_3star": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

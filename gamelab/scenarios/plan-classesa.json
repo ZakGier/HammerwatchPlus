@@ -1,0 +1,109 @@
+{
+ "name": "plan-classesa",
+ "about": "Test plan through the plan_classesa bot (mods/classes): classes.s2 Thief: knives fan out (gl track: 3 knives, 14 deg) and hit, Grappling Hook pulls the player, Smoke Bomb blinds (gl actorbuffs), the Sidestep tooltip shows the evade chance (gl skilltip); classes.s3 Gladiator: the trident thrusts (front brute hit, the one beside not), Net roots (immobilize, no movement), the Gladius flies back, a pit fighter arrives, follows and comes again ~20 s after it dies; classes.s4 Witch Hunter: the Pyre lives 8 s and burns the brute beside it, then stops, the hound arrives and follows, the Ward leaves vulnerability. Skills cast with gl castat (Skill.Activate), Bandit Keep floor 1, god mode.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesa",
+   "kwargs": {
+    "sections": "thief"
+   },
+   "name": "thief skills",
+   "expect": {
+    "hwp_thief_char": true,
+    "sidestep_tip_chance": true,
+    "sidestep_tip_levels": true,
+    "knives_fan": true,
+    "knives_hit": true,
+    "grapple_pulls": true,
+    "smoke_blinds": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesa",
+   "kwargs": {
+    "sections": "gladiator"
+   },
+   "name": "gladiator skills",
+   "expect": {
+    "hwp_gladiator_char": true,
+    "trident_equipped": true,
+    "trident_thrust_hits": true,
+    "trident_thrust_narrow": true,
+    "net_immobilize": true,
+    "net_roots": true,
+    "gladius_returns": true,
+    "pit_fighter_arrives": true,
+    "pit_fighter_follows": true,
+    "pit_fighter_20s": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_classesa",
+   "kwargs": {
+    "sections": "witchhunter"
+   },
+   "name": "witch hunter skills",
+   "expect": {
+    "hwp_witch_hunter_char": true,
+    "ward_vulnerable": true,
+    "pyre_spawned": true,
+    "pyre_8s": true,
+    "pyre_burns": true,
+    "pyre_burn_ends": true,
+    "hound_arrives": true,
+    "hound_follows": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

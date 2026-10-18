@@ -1,0 +1,75 @@
+{
+ "name": "plan-newb-b",
+ "about": "Test plan through the plan_newb bot: architect s6-s8, the Architect picker (Dark Citadel loadout) lists the seven HoH1 challenges; Far Sight + Glass Bones shows Mul 75% and 750 gold / 7 wood, and the start takes exactly that from the town; every challenge stacked brings Mul to 0% and no lower, unpicking one brings a multiplier back, and the free start takes and pays out nothing.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newb",
+   "kwargs": {
+    "sections": "architect_paid,architect_free"
+   },
+   "name": "architect challenge discounts",
+   "expect": {
+    "ar_town_saved": true,
+    "ar_picker_open": true,
+    "ar_challenges_listed": true,
+    "ar_glass_discount": true,
+    "ar_paid_exact": true,
+    "ar_picks_on_record": true,
+    "ar_stack_to_zero": true,
+    "ar_never_below_zero": true,
+    "ar_unpick_restores": true,
+    "ar_free_run": true,
+    "ar_free_picks_on_record": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

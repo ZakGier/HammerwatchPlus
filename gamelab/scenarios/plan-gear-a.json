@@ -1,0 +1,126 @@
+{
+ "name": "plan-gear-a",
+ "about": "Test plan through the plan_gear bot (character screen driven by the Verbs_gear hover/navbar verbs, keys posted): weaponswap s3 the alt main-hand slot's tooltip, hint and click swap; s5 a two-hander in the other set shows mirrored and dimmed in the alt off-hand slot, an item you can't wield stays stored with a message; s8 bag full, swap to an unwieldable set: the held item lands at your feet owned by you, the bag shows only owned slots. Shot alt-off-dimmed: the alt off-hand slot shows the bow greyed out.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "gear_char"
+   },
+   "name": "weaponswap character",
+   "expect": {
+    "LabGear_ready": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "alt_click"
+   },
+   "name": "alt main-hand slot: tooltip and click (weaponswap s3)",
+   "expect": {
+    "s3_sword_stored": true,
+    "s3_tooltip_item": true,
+    "s3_nav_swap": true,
+    "s3_click_swaps": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "alt_twohander"
+   },
+   "name": "two-hander shows dimmed in the alt off-hand slot (weaponswap s5)",
+   "expect": {
+    "s5_bow_stored": true,
+    "s5_off_shows_bow": true,
+    "s5_off_dimmed": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "alt-off-dimmed"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "alt_wield"
+   },
+   "name": "an item you can't wield stays stored, with a message (weaponswap s5)",
+   "expect": {
+    "s5_heavy_stored": true,
+    "s5_cannot_message": true,
+    "s5_stays_stored": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_gear",
+   "kwargs": {
+    "sections": "full_swap"
+   },
+   "name": "full bag, swap to an unwieldable set (weaponswap s8)",
+   "expect": {
+    "s8_setup": true,
+    "s8_cannot": true,
+    "s8_to_feet": true,
+    "s8_only_you": true,
+    "s8_hands_empty_alt_kept": true,
+    "s8_bag_capped": true,
+    "s8_slots_shown": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

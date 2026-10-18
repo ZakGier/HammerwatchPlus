@@ -1,0 +1,119 @@
+{
+ "name": "plan-farming-b",
+ "about": "Test plan through the plan_farming bot: farming s11 at farm.run_chance 100 a wild plot on the first floor beside a pot/crate/chest; harvesting gives the crop's yield, no window, then it is gone for the player; 60 debug wild cabbage picks: yield 2-4, seed back on about half (the farm: a quarter); every floor gets one, the boss floor none. Shot wild-plot-minimap: the player on the wild plot, its crop icon on the minimap.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_char"
+   },
+   "name": "wild plots character",
+   "expect": {
+    "LabForager_ready": true,
+    "wild_town_saved": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_floor"
+   },
+   "name": "s11 wild plot on floor 1",
+   "expect": {
+    "s11_wild_on_floor": true,
+    "s11_wild_beside_anchor": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "wild-plot-minimap"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_use"
+   },
+   "name": "s11 harvest a wild plot",
+   "expect": {
+    "s11_wild_yield": true,
+    "s11_wild_no_planting": true,
+    "s11_wild_vanishes": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_yield"
+   },
+   "name": "s11 wild yield and seed odds",
+   "expect": {
+    "s11_wild_yield_range": true,
+    "s11_wild_seeds_double": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_boss"
+   },
+   "name": "s11 every floor, never the boss floor",
+   "expect": {
+    "s11_wild_every_floor": true,
+    "s11_no_wild_boss": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

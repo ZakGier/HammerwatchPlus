@@ -1,0 +1,71 @@
+{
+ "name": "plan-fishing-d",
+ "about": "Test plan through the plan_fishing bot: fishing s9 (three traps, a Bandit Keep run at g_timescale 16 until 20+ game minutes, back in town: the rolls, at most 3 fish a trap, the full-trap units and their minimap icon, walking up to one puts its fish in the bag; the step's quick test `hwp fishing traps 60` if the run's rolls gave nothing).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "traps_run"
+   },
+   "name": "traps over a run",
+   "expect": {
+    "traps_owned": true,
+    "traps_run_counts": true,
+    "traps_resolved": true,
+    "traps_cap_3": true,
+    "traps_full_shown": true,
+    "traps_full_icon": true,
+    "trap_collected": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

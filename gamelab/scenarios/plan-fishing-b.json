@@ -1,0 +1,84 @@
+{
+ "name": "plan-fishing-b",
+ "about": "Test plan through the plan_fishing bot: fishing s5 (a wielded fish's swing takes a dummy's HP on Bandit Keep floor 0), fishing s10 (run_chance 100: the floor's fishing spot beside a well, no bait, three catches with loot and floor-level fish reeled through the window's own bar, the 4th cast refused).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "fish_hit"
+   },
+   "name": "fish swing hits",
+   "expect": {
+    "fish_hits": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "run_spot"
+   },
+   "name": "run fishing spot",
+   "expect": {
+    "run_spot_placed": true,
+    "run_spot_icon": true,
+    "run_spot_by_well": true,
+    "run_no_bait": true,
+    "run_casts_3": true,
+    "run_three_catches": true,
+    "run_loot": true,
+    "run_fish_ilvl": true,
+    "run_fourth_refused": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

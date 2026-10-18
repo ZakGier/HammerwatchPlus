@@ -354,6 +354,18 @@ namespace Modules
 			GameLab::RegisterVerb("kill", "<radius> <filter> [hp|me]", GameLab::Verb(GameLab::VerbKill));
 			GameLab::RegisterVerb("abort", "[failed]", GameLab::Verb(GameLab::VerbAbort));
 			GameLab::RegisterVerb("combo", "", GameLab::Verb(GameLab::VerbCombo));
+			// test-plan verbs, one file per plan group (Verbs_<group>.as)
+			GameLab::Register_classesa();
+			GameLab::Register_classesb();
+			GameLab::Register_farming();
+			GameLab::Register_firearms();
+			GameLab::Register_fishing();
+			GameLab::Register_gear();
+			GameLab::Register_newa();
+			GameLab::Register_newb();
+			GameLab::Register_pets();
+			GameLab::Register_runs();
+			GameLab::Register_ui();
 			GameLab::RegisterVerb("assign", "<str|dex|int|foc|vit> <n|all>", GameLab::Verb(GameLab::VerbAssign));
 			GameLab::RegisterVerb("upgrade", "<shopId> <upgradeId> <step>", GameLab::Verb(GameLab::VerbUpgrade));
 			GameLab::RegisterVerb("equip", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbEquip));

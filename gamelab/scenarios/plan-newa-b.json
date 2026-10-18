@@ -1,0 +1,200 @@
+{
+ "name": "plan-newa-b",
+ "about": "Test plan through the plan_newa bot: trinkets s1-s9, the General Merchant's Trinkets tab sells 6 trinkets (2 common, 2 uncommon, 2 rare, no repeats) at a run trinket shop's price (datatable price x 1.2, ShopLevel 1), the stock stays in town, a buy pays and packs, too little gold is refused, buying all says sold out, the 6 packed are handed over when a run starts, a fabricated shop room's trinket shop asks the same, and the stock rerolls after an abandoned and after a failed run; trinkets s10, the stock survives a restart.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 480,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_newa",
+   "kwargs": {
+    "sections": "merchant_trinkets"
+   },
+   "name": "merchant trinkets",
+   "expect": {
+    "tr_open": true,
+    "tr_six": true,
+    "tr_qualities": true,
+    "tr_no_repeats": true,
+    "tr_data_matches": true,
+    "tr_shop_price": true,
+    "tr_packed_zero": true,
+    "tr_stock_stays": true,
+    "tr_buy_paid": true,
+    "tr_buy_packed": true,
+    "tr_poor_refused": true,
+    "tr_buy_all_paid": true,
+    "tr_sold_out": true,
+    "tr_not_in_town_bag": true,
+    "tr_sold_out_stays": true,
+    "tr_run_started": true,
+    "tr_handed_over": true,
+    "tr_run_shop_same_price": true,
+    "tr_rerolled_after_aborted": true,
+    "tr_new_stock_after_aborted": true,
+    "tr_run_bag_emptied": true,
+    "tr_packed_cleared": true,
+    "tr_rerolled_after_failed": true,
+    "tr_new_stock_after_failed": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_guard_exit.unit",
+    "30",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_guard_exit"
+   ],
+   "expect": {
+    "window": "HWPMerchantWindow"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-tab-trinkets"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "save_as": "stock_before",
+   "expect": {
+    "count": 6
+   },
+   "name": "the stock before the restart"
+  },
+  {
+   "do": "shot",
+   "name": "trinkets-tab"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "back in town after the restart"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_guard_exit.unit",
+    "30",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_guard_exit"
+   ],
+   "expect": {
+    "window": "HWPMerchantWindow"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "hwp-tab-trinkets"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "save_as": "stock_after",
+   "expect": {
+    "count": 6
+   },
+   "name": "trinkets s10: 6 for sale after the restart"
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "trinket stock rolled",
+   "name": "trinkets s10: no new roll after a restart without a run"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "log_clean"
+  }
+ ],
+ "boundaries": [
+  {
+   "name": "the trinket stock survives a restart",
+   "before": "stock_before",
+   "after": "stock_after",
+   "survives": [
+    "items"
+   ]
+  }
+ ]
+}

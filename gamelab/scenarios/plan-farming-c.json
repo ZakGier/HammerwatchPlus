@@ -1,0 +1,77 @@
+{
+ "name": "plan-farming-c",
+ "about": "Test plan through the plan_farming bot: farming s11 at the default farm.run_chance 35, about a third of 15 Bandit Keep floors (3 runs, floors 1-5) get a wild plot.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_char"
+   },
+   "name": "wild plots character",
+   "expect": {
+    "LabForager_ready": true,
+    "wild_town_saved": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "wild_rate"
+   },
+   "name": "s11 a third of the floors",
+   "expect": {
+    "s11_wild_about_third": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}
