@@ -99,7 +99,9 @@ class Double(float):
     """An f64 SValue (SV_DOUBLE), kept apart from f32 for the same reason."""
 
 
-SV_COMPACT = {0x65: [], 0x66: {}, 0x67: False, 0x68: True, 0x69: 0.0, 0x6E: 0, 0x73: Long(0), 0x78: ""}  # 0x73 = i64 0
+# 0x67 is true and 0x68 false: PACKAGER's XML of the same prefabs says "t" where the
+# binary has 0x67 (every trigger area: active + sensor), "f" for 0x68.
+SV_COMPACT = {0x65: [], 0x66: {}, 0x67: True, 0x68: False, 0x69: 0.0, 0x6E: 0, 0x73: Long(0), 0x78: ""}  # 0x73 = i64 0
 # Short vectors: tag -> (dimension, floats stored, splat). Missing trailing
 # components are 0; a splat repeats the one stored float.
 SV_COMPACT_VEC = {
@@ -662,7 +664,7 @@ def xml_to_svalue(elem):
     if kind == "float":
         return float(text)
     if kind == "bool":
-        return text.lower() in ("1", "true", "yes")
+        return text.strip().lower() in ("1", "t", "true", "yes")  # PACKAGER writes t / f
     if kind == "bytes":
         return bytes.fromhex(text)
     if kind == "vec":

@@ -45,7 +45,7 @@ local HoH2 saves. A truncated buffer raises instead of decoding short.
 | `0x08` / `0x09` / `0x0a` | vec2 / vec3 / vec4 | 2 / 3 / 4 × f32 (vec4 = colors) |
 | `0x0b` / `0x10` | i64 / f64 | 8 bytes (saves only) |
 | `0x65` `0x66` | empty array / empty dict | – |
-| `0x67` `0x68` | false / true | – |
+| `0x67` `0x68` | true / false (PACKAGER XML: `t` / `f`) | – |
 | `0x69` | f32 0 | – |
 | `0x6e` | i32 0 | – |
 | `0x73` | i64 0 | – (saves; sits where other stat entries have `0x0b`) |
