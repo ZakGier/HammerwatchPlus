@@ -20,8 +20,19 @@ import time
 from gamelab.bots.plan_checks import Checks as Base
 
 # the three dyes the town is given (tweak/player_colors.sval): blueprint -> mid colour
-# (PetDye.Name writes the name in m_colors[1]) and the tailor's price for the quality
+# (PetDye.Name writes the name in m_colors[1], encoded back to the sval's sRGB hex) and
+# the tailor's price for the quality
 DYES = {"dye_gray": ("414b57", 100), "dye_lemon": ("b8a434", 250), "dye_midnight": ("222270", 500)}
+
+
+def dye_hex(h):
+    """The DYES mid colour a menu's colour code shows (within 3 a channel for rounding), else
+    the code as it is: a still-linear 0d1218 for 414b57 is a miss."""
+    rgb = [int(h[i:i + 2], 16) for i in (0, 2, 4)]
+    for want, _ in DYES.values():
+        if all(abs(c - int(want[i:i + 2], 16)) <= 3 for c, i in zip(rgb, (0, 2, 4))):
+            return want
+    return h
 PUZZLE_PFB = "prefabs/puzzles/puzzle_lights_out_small.pfb"
 PUZZLE_UNIT = "doodads/buttons/button_magic.unit"
 CAT = "hwp_gold_collector_pet"
@@ -166,12 +177,20 @@ class Checks(Base):
         ok = d.get("ok") and self.gone(d.get("unit"), "materials/", 8)
         w1 = (self.gl("inv").get("materials") or {}).get("wood", 0)
         self.flag("legacy_pet_materials", ok and w1 > w0, f"drop {d.get('name')}, wood {w0} -> {w1}")
+        # the floor's own heal pickups go first: the pet fetches the one nearest it, which was
+        # a floor apple, not ours. The player stands still, ours is past their reach.
+        cl = self.gl("unitdestroy", 1200, "pickups/health")
         self.set_hp(0.2)
         h0, mx = self.hp()
+        p0 = self.player()
         a = self.gl("spawn", "items/pickups/health_apple.unit", *self.drop_at)
         ok = a.get("ok") and self.gone(a.get("unit"), "health_apple", 8)
         h1, _ = self.hp()
-        self.flag("legacy_pet_potion", ok and h1 > h0, f"{a.get('name')} fetched {ok}, hp {h0} -> {h1} / {mx}")
+        p1 = self.player()
+        moved = math.hypot(p1.get("x", 0) - p0.get("x", 0), p1.get("y", 0) - p0.get("y", 0))
+        self.flag("legacy_pet_potion", ok and h1 > h0 and moved < 8,
+                  f"cleared {cl.get('count')} floor heal(s), {a.get('name')} at {self.drop_at} fetched {ok}, "
+                  f"player moved {moved:.0f}, hp {h0} -> {h1} / {mx}")
         self.set_hp(1.0)
         keys = self.hwp_keys()
         self.flag("legacy_toggles_untouched", "pets.options_set" not in (keys or []), f"hwp keys {keys}")
@@ -180,6 +199,11 @@ class Checks(Base):
     def tailor(self):
         """The tailor's building and NPC: the story flag its unit and building want, the building
         (gl build: the town builder's own AddBuilding), a refresh; spawned when still missing."""
+        # cht_set_flag needs e_cheats, and a restarted game has it off again (run
+        # 20261018-141404 pass 2: "can only be executed with e_cheats = 1"); without the flag
+        # npc_dyer's conditionals destroy the dyer (NPCBehavior CheckForExistance)
+        self.g.console("e_cheats 1")
+        time.sleep(0.2)
         self.g.console("cht_set_flag mission_story_unlocked_dyer 1 1")
         time.sleep(0.3)
         b = self.gl("build", "tailor")
@@ -233,9 +257,13 @@ class Checks(Base):
         return w, int(m[-1]) if m else -1, self.gl("presslist", "list").get("count", -1)
 
     def press_row(self, idx):
-        """One row of the dye list: (gold paid, message)."""
+        """One row of the dye list: (gold paid, message). The menu is opened again when it
+        closed under us (a console retype closes the open window)."""
         g0 = self.gold()
         r = self.gl("presslist", "list", idx)
+        if not r.get("ok") and "no open window" in str(r.get("error")):
+            self.dye_menu()
+            r = self.gl("presslist", "list", idx)
         time.sleep(0.7)
         return g0 - self.gold(), self.widget("message").get("text", "") if r.get("ok") else f"presslist: {r.get('error')}"
 
@@ -262,7 +290,7 @@ class Checks(Base):
         for k in range(on_page):
             paid, msg = self.press_row(head + k if k == 0 else head + 1 + k)
             hexes = re.findall(r"\\c([0-9a-fA-F]{6})", msg)
-            seen[hexes[-1].lower() if hexes else f"?{k}"] = (paid, msg)
+            seen[dye_hex(hexes[-1].lower()) if hexes else f"?{k}"] = (paid, msg)
         self.close_windows()
         time.sleep(1)
         pet1 = self.pet()
@@ -299,9 +327,11 @@ class Checks(Base):
         self.flag("dye_kept_restart", self.dyed(cur, unit), f"{cur!r} {unit}")
 
     def dye_remove(self):
-        """pets s10: "Remove the dye" is free and gives the plain pet back."""
+        """pets s10: "Remove the dye" is free and gives the plain pet back. After the restart
+        the tailor is set up again: npc_dyer only exists with the dyer's story flag
+        (npc_dyer.unit), so a bare spawned one is "no usable unit"."""
         self.hwp("set pets.debug true", 0.4)
-        self.npc("npc_dyer", "actors/npcs/town/npc_dyer.unit")
+        self.tailor()
         self.set_gold(5000)
         cur0, unit0 = self.petdye()
         w, n, rows = self.dye_menu()
@@ -334,23 +364,65 @@ class Checks(Base):
             out = self.hwp(f"pet skill {skill}", 0.4, until="level")
         return out.strip()[-120:]
 
+    def pet_beside(self, near=60, wait=8):
+        """The pet once it is within `near` px of the player: waited for, then the player is
+        teleported beside it and it is waited for again."""
+        for attempt in range(2):
+            end = time.time() + wait
+            pet = self.pet()
+            while time.time() < end and not (pet and pet["dist"] < near):
+                time.sleep(0.5)
+                pet = self.pet()
+            if (pet and pet["dist"] < near) or not pet or attempt:
+                return pet
+            self.gl("teleport", round(pet["x"]), round(pet["y"]))  # the pet stands on open ground
+            time.sleep(1.5)
+        return self.pet()
+
     def smash(self):
-        """pets s4: a pot beside the pet stays whole without Smash and breaks once a point is in."""
-        pl, pet = self.player(), self.pet()
+        """pets s4: a pot beside the pet stays whole without Smash and breaks once a point is in.
+        The pet must be beside the player first (142551: 198 px off at the floor start). Smash
+        breaks `value` breakables in its 110 px per tick, in the scene's order, not nearest
+        first: 143104 started in a store room (188 breakables in 400 px) and the pet broke a
+        barrel every 3 s ("smash rank 1: 1 target(s)") but not our pot. So the containers
+        round the player go first."""
+        pet = self.pet_beside()
+        cl = self.gl("unitdestroy", 250, "doodads/containers/")
+        time.sleep(0.5)
+        pl = self.player()
+        pet = self.pet() or pet
         dx = round(pet.get("x", pl.get("x", 0)) - pl.get("x", 0)) + 24
         dy = round(pet.get("y", pl.get("y", 0)) - pl.get("y", 0))
         v = self.gl("spawn", "doodads/containers/vase_small.unit", dx, dy)
+        vx, vy = v.get("x", 0), v.get("y", 0)
+        to_pet = math.hypot(vx - pet.get("x", vx), vy - pet.get("y", vy))
+
+        def around():
+            # breakables within Smash's reach of the pet's spot
+            bs = self.gl("breakables", 300).get("breakables") or []
+            return {b["unit"]: b["name"] for b in bs
+                    if math.hypot(b["x"] - pet.get("x", 0), b["y"] - pet.get("y", 0)) <= 120}
+        a0 = around()
         time.sleep(4)
-        ids = {b["unit"] for b in self.gl("breakables", 400).get("breakables") or []}
-        before = v.get("unit") in ids
+        a1 = around()
+        before = v.get("unit") in a1
+        lost_ctrl = sorted(set(a0) - set(a1))
+        mark = len(self.g.read_log())
         st = self.spend("smash", 1)
+        rank = (re.findall(r"Smash (\d)", st) or ["?"])[-1]
         broke = False
         end = time.time() + 12
         while time.time() < end and not broke:
             time.sleep(0.5)
-            broke = v.get("unit") not in {b["unit"] for b in self.gl("breakables", 400).get("breakables") or []}
-        self.flag("smash_control", v.get("ok") and before, f"pot {v.get('unit')} at {dx},{dy} whole after 4 s without Smash")
-        self.flag("smash_breaks_pots", before and broke, f"{st}; pet {pet.get('dist')} px from the player")
+            broke = v.get("unit") not in around()
+        fired = re.findall(r"smash rank \d+: (\d+) target", self.g.read_log()[mark:])
+        others = sorted(n for u, n in a1.items() if u != v.get("unit") and u not in around())
+        self.flag("smash_control", v.get("ok") and before and not lost_ctrl,
+                  f"cleared {cl.get('count')} container(s); pot {v.get('unit')} at ({vx}, {vy}), {to_pet:.0f} px from the pet, "
+                  f"whole after 4 s without Smash; {len(a1)} breakable(s) in reach, {len(lost_ctrl)} lost meanwhile")
+        self.flag("smash_breaks_pots", before and broke,
+                  f"Smash {rank}; pot {'broken' if broke else 'whole'} after {len(fired)} smash tick(s) {fired}; "
+                  f"also broke {others}; pet {pet.get('dist')} px from the player")
 
     def hp_jumps(self, secs):
         """Heals of >= 7 % max hp from one 0.25 s sample to the next (Mend heals 4-10 %;
@@ -472,19 +544,83 @@ class Checks(Base):
             time.sleep(0.4)
         return last, moved
 
+    def path_clear(self, x, y, fx, fy, most):
+        """A path from (fx, fy) to (x, y) of at most `most` px (gl pathfind from a given
+        point; nodes > 0: 0 is no path or a straight line)."""
+        pf = self.gl("pathfind", round(x), round(y), 12, -1, -1, round(fx), round(fy))
+        return bool(pf.get("ok")) and pf.get("nodes", 0) > 0 and pf.get("length", 1e9) <= most
+
+    def walk_on(self, sx, sy, ux, uy, avoid=None):
+        """A point 150 px from (sx, sy) along (ux, uy), or turned up to 90 degrees, on a
+        near-straight path and 120 px or more from `avoid`, or None."""
+        for turn in (0, 45, -45, 90, -90):
+            c, s_ = math.cos(math.radians(turn)), math.sin(math.radians(turn))
+            tx, ty = sx + 150 * (ux * c - uy * s_), sy + 150 * (ux * s_ + uy * c)
+            if avoid and math.hypot(tx - avoid[0], ty - avoid[1]) < 120:
+                continue
+            if self.path_clear(tx, ty, sx, sy, 190):
+                return round(tx), round(ty)
+        return None
+
+    def puzzle_spot(self, budget=240):
+        """(sx, sy, dx, dy, d, note): a start and a puzzle offset d (160-260 px) on a
+        near-straight path, with room for the 150 px walk on beyond the start, away from the
+        puzzle. Searched from where the player stands, then from points 300-700 px off it the
+        pathfinder reaches (the floor generates differently each run: 141607 had no straight
+        220 px path from its start); the player walks (or is teleported) to the start. At
+        most `budget` pathfinds (about 0.3 s each)."""
+        pl = self.player()
+        ox, oy = pl.get("x", 0), pl.get("y", 0)
+
+        def origins():
+            yield ox, oy
+            for r in (300, 500, 700):
+                for a in range(0, 360, 45):
+                    x, y = round(ox + r * math.cos(math.radians(a))), round(oy + r * math.sin(math.radians(a)))
+                    pf = self.gl("pathfind", x, y)
+                    if pf.get("ok") and pf.get("nodes", 0) > 0:
+                        yield x, y
+
+        used, n = 0, 0
+        for sx, sy in origins():
+            n += 1
+            for d in (220, 190, 250, 170, 260, 160):
+                for a in (0, 180, 90, 270, 45, 135, 225, 315):
+                    if used >= budget:
+                        return None
+                    used += 1
+                    dx, dy = round(d * math.cos(math.radians(a))), round(d * math.sin(math.radians(a)))
+                    if not self.path_clear(sx + dx, sy + dy, sx, sy, d * 1.25):
+                        continue
+                    if self.walk_on(sx, sy, -dx / d, -dy / d) is None:
+                        continue
+                    note = f"start ({sx}, {sy}), origin {n}, {used} offset(s) tried"
+                    if (sx, sy) != (ox, oy):
+                        r = self.p.path_to(sx, sy, tol=8, timeout=20)
+                        if not r.ok:
+                            self.gl("teleport", sx, sy)
+                            note += ", teleported"
+                        else:
+                            note += ", walked"
+                        time.sleep(3)
+                    return sx, sy, dx, dy, d, note
+        return None
+
     def puzzle_wait(self):
         """pets s2: the pet follows a walk; with a puzzle (vanilla lights-out) at the end of
         the same walk it stays outside, still, while the player is in, and follows again when
         the player comes out. querycmp says what each scene query sees of the buttons (PetWait
         fetches with FetchAllUnits: the buttons have no collision, QueryCircle misses them)."""
         self.gl("cull")
-        pl = self.player()
-        sx, sy = pl.get("x", 0), pl.get("y", 0)
-        sp = self.spot(220)
+        sp = self.puzzle_spot()
         if sp is None:
-            self.flag("puzzle_spot", False, "no straight 220 px path from the floor start")
+            self.flag("puzzle_spot", False, "no start with a straight 160-260 px path and room to walk on, "
+                                            "from the floor start or 300-700 px round it")
             return
-        dx, dy, a = sp
+        sx, sy, dx, dy, d, where = sp
+        self.notes.append(f"puzzle_spot: {where}, puzzle at +{dx},{dy} ({d} px)")
+        pl = self.player()
+        sx, sy = pl.get("x", sx), pl.get("y", sy)
         # control: the same walk with no puzzle
         r = self.p.path_to(sx + dx, sy + dy, tol=8, timeout=10)
         time.sleep(2.5)
@@ -499,7 +635,7 @@ class Checks(Base):
         q = self.gl("querycmp", 140, PUZZLE_UNIT)
         p1, moved = self.pet_samples(2.0)
         # a step inside the room: the pet still does not move
-        px, py = -dy / 220 * 30, dx / 220 * 30
+        px, py = -dy / d * 30, dx / d * 30
         self.p.path_to(sx + dx + px, sy + dy + py, tol=6, timeout=6)
         time.sleep(1)
         p2, moved2 = self.pet_samples(1.6)
@@ -511,20 +647,66 @@ class Checks(Base):
                   f"prefab {pf.get('ok')} at {dx},{dy}; walk {r.result}; pet {p1.get('dist')} px off, moved {moved:.0f} / {moved2:.0f} px, "
                   f"{shift:.0f} px over the step; "
                   f"querycmp {json.dumps({k: q.get(k) for k in ('querySensors', 'querySolid', 'fetchAll', 'fetchType', 'levelType', 'levelNearest', 'queryPuzzle', 'queryUnits')})}")
+        # back out to the start: by path, else the walk-in in reverse in straight lines (the
+        # step back, then the near-straight line; 143104 had no route out of the room), else
+        # a teleport. Each still shows whether the pet closes in on the player.
         r = self.p.path_to(sx, sy, tol=8, timeout=12)
+        how = f"path {r.result}"
+        if not r.ok:
+            self.p.move(sx + dx, sy + dy, tol=8, timeout=6)
+            r = self.p.move(sx, sy, tol=8, timeout=10)
+            how += f", straight back {r.result}"
+        if not r.ok:
+            t = self.gl("teleport", sx, sy)
+            how += f", teleported {t.get('ok')}"
+            r = None
+        out_ok = r is None or r.ok
         time.sleep(3)
-        p3 = self.pet()
-        self.flag("pet_follows_after_puzzle", r.ok and bool(p3) and p3["dist"] < 90, f"walk out {r.result}, pet {p3.get('dist')} px")
+        # the pet parks by the start (run 20261018-140123: 15 px from it), so back at the start
+        # a waiting pet can already look close: it must be with the player AND well off where
+        # it waited. Where there is room, walk on 150 px away from the puzzle (or across) to a
+        # point clear of the parking spot and measure there; else the walk-out stands
+        # (142551: no walk-on target, the pet 83 px off its spot and 23 px from the player)
+        p3, pl3 = self.pet(), self.player()
+        r2 = None
+        far = self.walk_on(sx, sy, -dx / d, -dy / d, (p1["x"], p1["y"]) if p1 else None)
+        if far:
+            r2 = self.p.path_to(*far, tol=8, timeout=12)
+            time.sleep(3.5)
+            p3, pl3 = self.pet(), self.player()
+        back = math.hypot(p3["x"] - p1["x"], p3["y"] - p1["y"]) if p1 and p3 else 0
+        self.flag("pet_follows_after_puzzle", out_ok and (not far or bool(r2 and r2.ok)) and bool(p3) and p3["dist"] < 50 and back > 60,
+                  f"out to ({sx}, {sy}): {how}; on to {far} {r2.result if r2 else '(no clear 150 px path: the walk-out measured)'}; "
+                  f"player ({pl3.get('x')}, {pl3.get('y')}), pet ({p3.get('x')}, {p3.get('y')}) {p3.get('dist')} px off, "
+                  f"{back:.0f} px from where it waited ({p1.get('x')}, {p1.get('y')})")
+        # the Morale checks run on this floor next: take the puzzle away so a wait that never
+        # clears shows up here (pet_follows_after_puzzle), not as a missing buff
+        self.gl("unitdestroy", 500, "button_magic")
 
     # --- goldpet s2/s3
     def vendor(self):
-        self.close_windows()
+        """Open the pet vendor's menu; again when it is gone by the next command (a console
+        retype can close it: run 20261018-133330, c10 opened it, c11 saw no window)."""
         end = time.time() + 10
         while time.time() < end and not self.gl("near", 8000, VENDOR).get("units"):
             time.sleep(0.5)
-        self.gl("use", VENDOR)
-        time.sleep(0.6)
-        return self.window()
+        w = ""
+        for _ in range(3):
+            self.close_windows()
+            self.gl("use", VENDOR)
+            time.sleep(0.6)
+            w = self.window()
+            if w == "HWPPetVendorMenu":
+                break
+        return w
+
+    def vendor_press(self, wid):
+        """Press a vendor button with the menu open (reopened once when it closed under us)."""
+        r = self.gl("press", wid)
+        if not r.get("ok") and "no open window" in str(r.get("error")):
+            self.vendor()
+            r = self.gl("press", wid)
+        return r
 
     def lodge_up(self):
         r = self.gl("buildup", "hunters_cabin")
@@ -540,14 +722,14 @@ class Checks(Base):
         time.sleep(3)
         self.set_gold(10000)
         self.vendor()
-        self.gl("press", "buy-tier1")
+        self.vendor_press("buy-tier1")
         time.sleep(1.5)
         self.close_windows()
         self.flag("gp_tier1_bought", self.gold() == 0 and bool(self.cat()), f"build {b.get('ok')}, gold {self.gold()}, cat {self.cat()[:1]}")
         self.set_gold(60000)
         self.vendor()
         req = self.widget("tier2-req").get("text", "")
-        self.gl("press", "buy-tier2")
+        self.vendor_press("buy-tier2")
         time.sleep(1)
         g = self.gold()
         self.close_windows()
@@ -556,7 +738,7 @@ class Checks(Base):
         self.set_gold(60000)
         w = self.vendor()
         req = self.widget("tier2-req").get("text", "")
-        self.gl("press", "buy-tier2")
+        self.vendor_press("buy-tier2")
         time.sleep(1.5)
         g = self.gold()
         self.close_windows()
@@ -564,7 +746,7 @@ class Checks(Base):
         self.vendor()
         status = self.widget("tier-status").get("text", "")
         req3 = self.widget("tier3-req").get("text", "")
-        self.gl("press", "buy-tier3")
+        self.vendor_press("buy-tier3")
         time.sleep(1)
         g3 = self.gold()
         self.close_windows()
@@ -587,7 +769,7 @@ class Checks(Base):
         c1 = self.cat()
         self.vendor()
         sb = self.widget("summon-button")
-        self.gl("press", "summon-button")
+        self.vendor_press("summon-button")
         time.sleep(2)
         self.close_windows()
         time.sleep(1)

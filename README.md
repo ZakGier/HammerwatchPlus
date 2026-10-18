@@ -71,6 +71,11 @@ config or saves), and scores what happened. Use the `gamelab` skill to run it.
 Before merging to main, run `python -m gamelab run mod-all --mode lab` (every content
 mod loaded together; GUI textures must be power-of-two sized or the game won't boot).
 
+The in-game test plan's steps each have a `gamelab/scenarios/plan-*.json` scenario. As of
+2026-10-18, every solo step passes in GameLab except three that can't pass as the content
+stands (Weapon Swap's "only you can pick it up" needs a real lobby; the Warden's bombs and the
+Vampire Lord's bat arc are off in the HoH1 boss data). The co-op steps need two players.
+
 ## Developing
 
 Requirements:

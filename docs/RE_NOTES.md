@@ -935,3 +935,38 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   ones to `GlobalCache` `hwp_skillkeys_held` ("4,5") and core's poll ORs them in (no shared
   symbol, so hands still loads without core). `gl skills` / `gl skillbar` report the
   extra key once the helper is installed (`Reflect::GetTypeName` of `m_targetHelper`).
+
+## Test-plan rounds 2-6 (2026-10-18)
+
+- **`ParseColorRGBA` returns linear colour.** A dye's sval hex (sRGB) comes back
+  linearised, so writing `m_colors[i]` straight into a `\c` text code shows it darker
+  (Midnight 222270 showed as 040429). `PetDye.Hex2` encodes back to sRGB (measured: the
+  round trip gives the authored hex, plan-pets-a 20261018-141404).
+- **HoH1 level script rows are `[type, id, pos, Enabled, TriggerTimes, ExecuteOnStart, ...]`.**
+  Checked against vanilla HoH2 `boss_arista.lvl` (index 3 true on nearly every script,
+  index 5 only on PlayMusic). `hoh1_convert.py` used to clear index 3 on level exits,
+  which disabled both Battlements 1 exits and boss_archives exit 4949. The rule now
+  clears index 5 (no HoH1 exit sets it). Re-import the HoH1 levels to pick this up.
+- **HoH1 `SpawnEnemyGroup` is how the Battlements get their enemies** (53 points on floor
+  1, 60 on floor 2; the levels place none). HoH1 called the generator's
+  `EnemyPlacement.PlaceGroup`; the port now spawns `int(2*PI*Radius/40*0.5)` ice trolls
+  plus one shaman per group at weight 0.8 (measured: 19 trolls, 4 shamans on floor 1,
+  plan-runs-d 20261018-141935). HoH1's NG+ tier swaps are not ported.
+- **Content as shipped, not port bugs:** the Warden's bomb fan sits in `%if !NORMAL` and
+  warden.unit defines NORMAL; the Vampire Lord's Bat Spray has `BATCHARGES 0` in
+  vampire.unit (HoH1's too; only vampire_encounter.unit has a charge). Neither fires at
+  any NG.
+- **The firearms decoy taunts through `AlertActors make-aggro`**: `SetTarget(decoy, -1,
+  true)`, and aggro < 0 always replaces the target unless the enemy is mid-attack
+  (`CompositeActorBehavior.SetTarget`). Measured: all three brutes targeted it and two
+  beat it to 19 % hp (plan-firearms-a 20261018-140742). A first failure was the test:
+  brutes spawned behind a wall never saw anything.
+- **GameLab gotchas:**
+  - `e_cheats` is per process: after a scenario's `restart` step every `cht_*` command
+    is refused ("can only be executed with e_cheats = 1") until it is set again.
+  - When the console misses a line, the typed characters and Enter go to the game as
+    hotkeys and can close an open menu; bots that use a window reopen it and retry.
+  - `use npc_dyer` needs the town flag `mission_story_unlocked_dyer`; without it the
+    unit's conditionals destroy a spawned dyer.
+  - The Three Councilors' scythe casts whenever the player is within 100 px and then
+    stands still; a node-to-node test keeps the player away from it.
