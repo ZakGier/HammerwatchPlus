@@ -824,3 +824,15 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   in and 3 came out (plan-t12 095531). It now produces only what is missing per kind.
   Call Crusaders is a passive skill: below its cap it summons one about 1 s after a level
   loads (town too) and at once when its 15 s timer has already run out.
+- **Kills without a killer run no kill hooks.** `cht_killall` (and `hwp killall`) calls
+  `Kill(null, 0)`; only `Kill(player, ...)` reaches `OnDeath` -> `KilledActor` ->
+  `PlayerKilledActor`, so key drops, XP and kill stats need the player as the killer
+  (GameLab `kill <r> <filter> me`). Elites are their own units (`bandit_brute_elite.unit`
+  etc., tag `elite`), not a modifier on normal ones; a Bandit Keep floor 1 had none (probe-keys
+  102702). Boss floors spawn the boss from an encounter, so it isn't there on arrival.
+- **A `gl` line typed while the next level preloads can find the probe's verb registry
+  null** (Script exception at Probe.as `RunVerb`, probe-keys2 103121, during a Dark Citadel
+  load). ConsoleGl now catches it and fails the command so the caller polls again.
+- **Combo needs a combo skill.** `PlayerStats.ComboCountMax` is 0 until a combo skill
+  (`combo_kills` / `combo_dash` / `combo_parry`, tier 1, cost 0) is picked through
+  `SkillUp(id, true)`; until then `Player.GiveCombo` does nothing.

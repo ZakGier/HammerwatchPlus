@@ -91,9 +91,10 @@ namespace GameLab
 		Emit(Reply(id, true).Str("class", rec.playerClass.m_id));
 	}
 
-	// skill <skillId> [times]: PlayerRecord.SkillUp, what the skill tree's level-up calls
-	// (it checks max level and free points; `hwp skillpoints` gives points). The reply has
-	// the level GetSkillLevel reports after.
+	// skill <skillId> [times] [combo]: PlayerRecord.SkillUp, what the skill tree's level-up
+	// calls (it checks max level and free points; `hwp skillpoints` gives points). "combo"
+	// picks a combo skill (SkillUp(id, true), e.g. combo_kills). The reply has the level
+	// GetSkillLevel reports after.
 	void VerbSkill(const string &in id, array<string>@ args)
 	{
 		auto rec = FixtureRecord(id);
@@ -101,15 +102,18 @@ namespace GameLab
 			return;
 		if (args.length() < 1)
 		{
-			Fail(id, "usage: skill <skillId> [times]");
+			Fail(id, "usage: skill <skillId> [times] [combo]");
 			return;
 		}
 		int times = args.length() > 1 ? int(parseInt(args[1])) : 1;
+		bool combo = args.length() > 2 && args[2] == "combo";
 		int done = 0;
 		for (int i = 0; i < times; i++)
-			if (rec.SkillUp(args[0]))
+			if (rec.SkillUp(args[0], combo))
 				done++;
 		auto def = rec.playerClass.GetSkillDef(HashString(args[0]));
+		if (def is null)
+			@def = PlayerSkillDef::Get(args[0]);
 		if (def is null)
 		{
 			Fail(id, "no skill " + args[0] + " in " + rec.playerClass.m_id);
@@ -119,9 +123,11 @@ namespace GameLab
 	}
 
 	// kill <radius> <filter> [hp]: Actor.Kill(null, 0) on every live actor within radius whose
-	// .unit path or behavior type contains filter (as `near`), never the local player.
+	// .unit path or behavior type contains filter (as `near`), or with "tag:<tag>" that has
+	// the actor tag (tag:elite, tag:boss), never the local player.
 	// A real death: the unit's own death handling runs (summons leave the owner's list).
-	// With hp (0-1) the actors are set to that health fraction instead of killed.
+	// With hp (0-1) the actors are set to that health fraction instead of killed. With "me"
+	// the local player is the killer (kill hooks and drops run; friendly actors are skipped).
 	void VerbKill(const string &in id, array<string>@ args)
 	{
 		auto plr = GetLocalPlayer();
@@ -136,7 +142,11 @@ namespace GameLab
 			return;
 		}
 		int radius = int(parseInt(args[0]));
-		float hp = args.length() > 2 ? float(parseFloat(args[2])) : -1.0f;
+		// "me": the local player is the killer, so the kill hooks run (Kill -> OnDeath ->
+		// KilledActor -> PlayerKilledActor: CompositeActorBehavior.as:576-580, 870-871)
+		bool byMe = args.length() > 2 && args[2] == "me";
+		float hp = args.length() > 2 && !byMe ? float(parseFloat(args[2])) : -1.0f;
+		array<string> names;
 		vec2 center = xy(plr.m_unit.GetPosition());
 		auto units = g_scene.FetchAllUnits(~0, center, radius);
 		int n = 0;
@@ -149,10 +159,22 @@ namespace GameLab
 			auto actor = cast<Actor>(units[i].GetScriptBehavior());
 			if (actor is null || actor.IsDead())
 				continue;
-			if (units[i].GetDebugName().findFirst(args[1]) < 0 && Reflect::GetTypeName(actor).findFirst(args[1]) < 0)
+			if (args[1].findFirst("tag:") == 0)
+			{
+				// an actor tag (elite, boss, ...): the bitmask the game's own checks test
+				if ((actor.Tags & ApplyTag(0, g_actorTags.GetTag(args[1].substr(4)))) == 0)
+					continue;
+			}
+			else if (units[i].GetDebugName().findFirst(args[1]) < 0 && Reflect::GetTypeName(actor).findFirst(args[1]) < 0)
+				continue;
+			if (byMe && actor.Team == g_team_player)
 				continue;
 			if (hp < 0)
-				actor.Kill(null, 0);
+			{
+				actor.Kill(byMe ? cast<Actor>(plr) : null, 0);
+				if (names.length() < 40)
+					names.insertLast(units[i].GetDebugName());
+			}
 			else
 			{
 				// not a game code path: the health fraction is written directly (the HP a
@@ -164,7 +186,7 @@ namespace GameLab
 			}
 			n++;
 		}
-		Emit(Reply(id, n > 0).Int(hp < 0 ? "killed" : "hurt", n));
+		Emit(Reply(id, n > 0).Int(hp < 0 ? "killed" : "hurt", n).Raw("names", StrArray(names)));
 	}
 
 	// abort [failed]: leave the run the way the pause menu's abandon does: it sets GlobalCache
@@ -184,6 +206,20 @@ namespace GameLab
 		else
 			GlobalCache::Set("main_restart", "1");
 		Emit(Reply(id, true).Str("state", failed ? "failed" : "aborted"));
+	}
+
+	// combo: Player.GiveCombo, the game's own "enter combo now" (vanilla effects call it):
+	// combo count +1, PlayerSyncCombo to all, the Combo modifier triggers.
+	void VerbCombo(const string &in id, array<string>@ args)
+	{
+		auto plr = GetLocalPlayer();
+		if (plr is null)
+		{
+			Fail(id, "no spawned local player");
+			return;
+		}
+		plr.GiveCombo();
+		Emit(Reply(id, plr.m_comboActive).Bool("combo", plr.m_comboActive));
 	}
 
 	// equip <baseItemId> <qualityMask> [ilvl]: Equipment::Generator.GenerateItem (the

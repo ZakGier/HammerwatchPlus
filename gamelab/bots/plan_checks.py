@@ -1147,6 +1147,153 @@ class Checks:
         self.flag("dry_ready_after_two", ok and any(n.startswith("crops/") for n in dry2), f"{dry2}")
         self.flag("watered_ready_after_one", ok and any(n.startswith("crops/") for n in wet2) and pl3.count("ready") >= 2, f"{wet2} {pl3}")
 
+    def wave_rank(self):
+        m = re.findall(r"Wave Arena: [^,]*, rank (\d+)", self.hwp("wave", 0.5, until="Wave Arena:"))
+        return int(m[-1]) if m else -1
+
+    def wave_timeout(self):
+        """wavemode s4: the arena clock (10 min) runs out: everyone dies and the rank stays.
+        g_timescale 16 makes the clock's game ms pass 16x (about 38 s); god mode keeps the
+        enemies from killing the player first (the clock's Kill ignores it)."""
+        self.set_gold(60000)
+        self.hwp("wave rank 2", 0.5)
+        r0 = self.wave_rank()
+        st = self.gl("near", 8000, "wave_statue").get("units") or []
+        if st:
+            self.gl("teleport", st[0]["x"], st[0]["y"] + 50)
+            time.sleep(1)
+        self.gl("use", "wave_statue")
+        time.sleep(0.8)
+        self.gl("shop", "buy", 0)
+        time.sleep(1.5)
+        self.gl("func", "play")
+        if not self.wait_phase("mission"):
+            self.flag("wave_started", False)
+            return
+        time.sleep(2)
+        self.hwp("god")
+        mark = len(self.g.read_log())
+        self.gl("timescale", 16)
+        t0 = time.time()
+        dead = False
+        while time.time() - t0 < 120:
+            pl = self.gl("state").get("player", {})
+            if pl.get("dead"):
+                dead = True
+                break
+            time.sleep(2)
+        took = round(time.time() - t0)
+        self.gl("timescale", 1)
+        log = self.g.read_log()[mark:]
+        time.sleep(1)
+        w = self.gl("state").get("window")
+        self.notes.append(f"dead after {took} s real at 16x (~{took * 16 // 60} game min), window {w}")
+        self.flag("clock_kills", dead and took * 16 >= 540, f"dead {dead} after {took} s")
+        self.flag("rank_up_absent", "Arena rank up" not in log)
+        if w == "DeadMenu" or dead:
+            self.g.key("enter")  # the death screen's accept: back to town (DeadMenu.as:65-90)
+        ok = self.wait_phase("town", 90)
+        time.sleep(2)
+        r1 = self.wave_rank()
+        self.flag("rank_unchanged", ok and r0 == 2 and r1 == r0, f"rank {r0} -> {r1}, town {ok}")
+
+    def solo_combo(self):
+        """groupcombo s1: solo, in combo: no group buff (it needs 2 players in combo)."""
+        if self.gl("state").get("phase") != "mission" and not self.start_floor(0):
+            self.flag("combo_mission", False)
+            return
+        sk = self.gl("skill", "combo_kills", 1, "combo")  # combo needs a combo skill picked
+        self.notes.append(f"combo skill {sk}")
+        mark = len(self.g.read_log())
+        c = self.gl("combo")
+        seen = []
+        combo_on = False
+        for _ in range(6):  # the module ticks every 500 ms; the group buff lasts 1.5 s
+            pl = self.gl("state").get("player", {})
+            combo_on = combo_on or pl.get("combo")
+            seen += pl.get("buffs") or []
+            self.gl("combo")  # a no-op while active; enters combo again if it lapsed
+            time.sleep(0.5)
+        log = self.g.read_log()[mark:]
+        st = " ".join(re.findall(r"Group combo: .*", self.hwp("groupcombo", 0.5, until="Group combo:")))
+        group = [b for b in set(seen) if "groupcombo" in b.lower()]
+        self.notes.append(f"combo verb {c}, buffs seen {sorted(set(seen))}, status {st.strip()[-120:]}")
+        self.flag("solo_in_combo", c.get("ok") and combo_on, f"{c}")
+        self.flag("solo_no_group_buff", combo_on and not group and "[HWP:groupcombo]" not in log and "1/1" in st,
+                  f"group buffs {group}, {st}")
+        self.gl("abort")  # back to town for the next section
+        self.wait_phase("town", 90)
+        time.sleep(2)
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.5)
+
+    def key_items(self):
+        us = self.gl("near", 4000, "items/hwp/keys/").get("units") or []
+        return [u["name"].split("/")[-1].replace(".unit", "") for u in us]
+
+    def keydrops(self):
+        """keys s5: elite kills drop keys (8/5/3 % bronze/silver/gold, times keys.drop_mult),
+        the first boss kill on a floor drops one key of the floor's tier (keys.boss_chance,
+        default 20 %, set to 1 here). Kills are credited to the player (gl kill ... me)."""
+        self.hwp("set keys.drop_mult 10", 0.4)  # elites: 0.16 x 10 >= 1, so every elite drops one
+        self.hwp("set keys.boss_chance 1", 0.4)
+        if self.gl("state").get("phase") != "mission" and not self.start_floor(0):
+            self.flag("keydrops_mission", False)
+            return
+        self.hwp("god")
+        self.gl("kill", 6000, "tag:enemy")  # clear the floor (no killer: no drops)
+        time.sleep(1)
+        # this floor's own enemies had no elites (probe-keys 102702): spawn the keep's elite units
+        for i, u in enumerate(("bandit_brute_elite", "bandit_hunter_elite", "bandit_mage_elite", "bandit_rogue_elite", "bandit_brute_elite")):
+            self.gl("spawn", f"actors/humans/bandits/{u}.unit", 60 + 30 * i, 40)
+        time.sleep(1)
+        mark = len(self.g.read_log())
+        e = self.gl("kill", 600, "tag:elite", "me")
+        time.sleep(2.5)
+        drops = re.findall(r"\[HWP:keys\] dropped an? (\w+) key", self.g.read_log()[mark:])
+        self.notes.append(f"elites killed {e.get('killed')} {[n.split('/')[-1] for n in e.get('names', [])]}, dropped {drops}")
+        self.flag("elite_keys", e.get("killed", 0) >= 5 and len(drops) == e.get("killed", 0) and bool(self.key_items()),
+                  f"{e.get('killed')} elites, {len(drops)} keys dropped")
+        time.sleep(10)  # past the host's flood window (10 drops per 10 s)
+        # a boss-tagged kill: the bandit boss unit itself (its own floor only spawns it from an encounter)
+        self.gl("spawn", "actors/bosses/boss_bandit/boss_bandit.unit", 80, -60)
+        time.sleep(1.5)
+        mark = len(self.g.read_log())
+        bk = self.gl("kill", 600, "tag:boss", "me")
+        time.sleep(2.5)
+        drops = re.findall(r"\[HWP:keys\] dropped an? (\w+) key", self.g.read_log()[mark:])
+        self.notes.append(f"keep floor 1 boss kill {bk.get('killed')}: dropped {drops}")
+        self.flag("boss_key", bk.get("killed", 0) == 1 and drops == ["silver"], f"{drops} (diff-level 10: silver)")
+        # from the mission's second-to-last boss on, the boss key is ace: the Dark Citadel's
+        # courts_boss (Bone Serpent, floor 18 with the campaign's Battlements added after it)
+        self.to_town()
+        r = self.gl("mission", "dark_citadel", 18)
+        ok = bool(r.get("ok")) and self.wait_phase("mission")
+        time.sleep(4)
+        self.hwp("god")
+        self.gl("spawn", "actors/bosses/boss_bandit/boss_bandit.unit", 80, -60)
+        time.sleep(1.5)
+        mark = len(self.g.read_log())
+        ak = self.gl("kill", 800, "tag:boss", "me")
+        time.sleep(2.5)
+        drops = re.findall(r"\[HWP:keys\] dropped an? (\w+) key", self.g.read_log()[mark:])
+        self.notes.append(f"{r.get('level')} boss kills {ak.get('killed')} {[n.split('/')[-1] for n in ak.get('names', [])]}: dropped {drops}")
+        self.flag("late_boss_ace", ok and ak.get("killed", 0) >= 1 and drops[:1] == ["ace"], f"{drops}")
+        self.to_town()
+
+    def to_town(self):
+        """Abandon the run (the pause menu's way) and close the mission end menu."""
+        if self.gl("state").get("phase") == "town":
+            return True
+        self.gl("abort")
+        ok = self.wait_phase("town", 90)
+        time.sleep(2)
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.5)
+        return ok
+
 def run(p, sections="gambler,sell,merchant,traps,full_bag", **_):
     c = Checks(p)
     for s in sections.split(","):

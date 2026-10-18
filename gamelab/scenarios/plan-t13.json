@@ -1,0 +1,96 @@
+{
+ "name": "plan-t13",
+ "about": "Test plan through the plan_checks bot: wavemode s4, the Wave Arena's clock runs out (g_timescale 16, god mode): the player dies and the arena rank stays; groupcombo s1: solo in combo (gl combo = Player.GiveCombo) gives no group buff; keys s5: elite and boss kills credited to the player drop keys.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "solo_combo"
+   },
+   "name": "solo combo",
+   "expect": {
+    "solo_in_combo": true,
+    "solo_no_group_buff": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "keydrops"
+   },
+   "name": "key drops",
+   "expect": {
+    "elite_keys": true,
+    "boss_key": true,
+    "late_boss_ace": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "boss-key"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "wave_timeout"
+   },
+   "name": "arena clock runs out",
+   "expect": {
+    "clock_kills": true,
+    "rank_up_absent": true,
+    "rank_unchanged": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

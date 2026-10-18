@@ -77,7 +77,14 @@ namespace GameLab
 		string verb = args[1];
 		args.removeRange(0, 2);
 		g_commands++;
-		RunVerb(id, verb, args);
+		// a command typed while the next level preloads can reach a script module whose verb
+		// registry isn't there yet (null access on g_verbs, probe-keys2 20261018-103121): the
+		// command fails and the caller polls again
+		try {
+			RunVerb(id, verb, args);
+		} catch {
+			Fail(id, "probe not ready (level loading), try again");
+		}
 	}
 
 	// multi <verb> [args] + <verb> [args] + ...: run each sub-command in this frame, the k-th
@@ -193,11 +200,21 @@ namespace GameLab
 		{
 			vec3 pos = plr.m_unit.GetPosition();
 			p.Num("x", pos.x).Num("y", pos.y);
+			p.Bool("combo", plr.m_comboActive);
+			// active buffs by their name key (ActorBuffDef.m_name, e.g. ".hwp.groupcombo...")
+			array<string> buffs;
+			for (uint i = 0; i < plr.m_buffs.m_buffs.length(); i++)
+			{
+				auto b = plr.m_buffs.m_buffs[i];
+				if (b !is null && b.m_def !is null)
+					buffs.insertLast(b.m_def.m_name);
+			}
+			p.Raw("buffs", StrArray(buffs));
 		}
 		return p.Close();
 	}
 
-	// state: phase, level, NG+, open window and the local player (class, level, hp, position); fixtures read back through it.
+	// state: phase, level, NG+, open window and the local player (class, level, hp, position, combo, buffs); fixtures read back through it.
 	void VerbState(const string &in id, array<string>@ args)
 	{
 		auto j = Reply(id, true);

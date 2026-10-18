@@ -247,6 +247,10 @@ hash; the first run after a change does two extra boots.
   with `hwp skillpoints`) build a spec; `kill <r> <filter> [hp]` kills actors (or sets their
   health fraction); `abort [failed]` leaves a run the pause menu's way (Aborted) or the death
   screen's (Failed). `near` entries of actors carry `hp` (fraction) and `dead`.
+  `kill` takes `tag:<tag>` as the filter (tag:elite, tag:boss, tag:enemy) and `me` as the third
+  argument to credit the local player (kill hooks and drops run; vanilla `cht_killall` / `hwp
+  killall` kill with no killer, so no drops). `combo` is Player.GiveCombo (needs a combo skill:
+  `skill combo_kills 1 combo`); `state.player` has `combo` and `buffs` (name keys).
   A reply over 15,000 chars comes back as an error (a longer log line looked fatal).
 - Read the game's own data:
   - `inspect player|town <dotted.path>`: the save record.
