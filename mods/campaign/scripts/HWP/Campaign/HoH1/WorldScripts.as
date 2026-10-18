@@ -138,9 +138,11 @@ namespace WorldScript
 		void ClientExecute(SValue@ val) { ServerExecute(); }
 	}
 
-	// HoH1 placed a random enemy group from the act's enemy table; HoH2 levels
-	// place their enemies from prefabs, so the converted levels keep the
-	// placed ones and these points stay empty
+	// HoH1 placed a random group from the level's enemy table here (the
+	// dungeon generator's EnemyPlacement.PlaceGroup). Only the battlements use
+	// these points, and their table is one entry (GenerateDungeon.as): ice
+	// trolls at half density, plus one shaman per group at 0.8 weight. The
+	// trolls have no elite, miniboss or spawner units, so nothing else applies.
 	[WorldScript color="#bf0000" icon="system/icons.png;32;192;32;32"]
 	class SpawnEnemyGroup
 	{
@@ -149,7 +151,30 @@ namespace WorldScript
 		[Editable default=28]
 		int Radius;
 
-		SValue@ ServerExecute() { return null; }
+		SValue@ ServerExecute()
+		{
+			auto troll = Resources::GetUnitProducer("hoh1/actors/ice_troll_melee.unit");
+			auto shaman = Resources::GetUnitProducer("hoh1/actors/ice_troll_shaman.unit");
+			if (troll is null)
+				return null;
+
+			int num = int(PI * 2 * Radius / 40 * 0.5f);
+			bool shamanLeft = shaman !is null;
+			for (int i = 0; i < num; i++)
+			{
+				// EnemyList.GetUnit: the unique is drawn with weight 0.8
+				// against the single normal unit, then removed
+				UnitProducer@ prod = troll;
+				if (shamanLeft && randf() * 1.8f >= 1.0f)
+				{
+					@prod = shaman;
+					shamanLeft = false;
+				}
+				vec2 pos = xy(Position) + randdir() * float(randi(Radius - 5));
+				SpawnUnitBaseImpl(prod, pos, "", 0, 0, UnitPtr(), 0, 1.0f, 0);
+			}
+			return null;
+		}
 	}
 
 	[WorldScript color="176 196 222" icon="system/icons.png;96;96;32;32"]

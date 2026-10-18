@@ -230,12 +230,13 @@ class Rewriter:
         out = [self.svalue(x, owner) for x in v]
         # level script rows: [type, id, pos, ...]; map the WorldScript class too
         if out and isinstance(out[0], str) and len(out) >= 6 and isinstance(out[1], int):
-            # rows are [type, id, pos, ExecuteOnStart, TriggerTimes, Enabled, ...]. HoH1
-            # flags some level exits to run on start (its engine never did; HoH2 does
-            # and the floor would end as it begins), so exits only run when triggered
-            if out[0] in NEVER_ON_START and out[3] is True:
+            # rows are [type, id, pos, Enabled, TriggerTimes, ExecuteOnStart, ...]; a
+            # level exit that ran on start would end the floor as it begins, so exits
+            # only run when triggered (their Enabled flag stays as HoH1 set it: the
+            # battlements' use triggers reach an exit that is enabled from the start)
+            if out[0] in NEVER_ON_START and out[5] is True:
                 self.bump("no-start:" + out[0])
-                out[3] = False
+                out[5] = False
             if out[0] in self.class_map:
                 self.bump("worldscript:" + out[0])
                 out[0] = self.class_map[out[0]]
