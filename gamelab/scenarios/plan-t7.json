@@ -317,6 +317,30 @@
   },
   {
    "do": "console",
+   "line": "hwp farm use 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm grow"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm use 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
    "line": "hwp farm grow"
   },
   {
@@ -385,6 +409,18 @@
   },
   {
    "do": "gl",
+   "verb": "teleport",
+   "args": [
+    "900",
+    "-100"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
    "verb": "near",
    "args": [
     "6000",
@@ -398,7 +434,7 @@
    "args": [
     "{$statue.units.0.unit}"
    ],
-   "timeout": 60
+   "timeout": 30
   },
   {
    "do": "sleep",
@@ -435,14 +471,16 @@
    "timeout": 10
   },
   {
-   "do": "pilot",
-   "call": "path_to",
+   "do": "gl",
+   "verb": "teleport",
    "args": [
     "{$portal.match.x}",
-    "{$portal.match.y}",
-    "30"
-   ],
-   "timeout": 60
+    "-210"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
   },
   {
    "do": "pilot",
@@ -520,9 +558,31 @@
   },
   {
    "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "items/chests/chest_bronze_trinket.unit",
+    "90",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "items/chests/chest_bronze_trinket.unit",
+    "90",
+    "70"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
    "verb": "near",
    "args": [
-    "4000",
+    "300",
     "chests/chest_"
    ],
    "save_as": "chest"
@@ -540,8 +600,47 @@
    "seconds": 1.5
   },
   {
+   "do": "log_has",
+   "pattern": "unlocked a \\w+ chest",
+   "timeout": 5,
+   "name": "chest unlocks with the bought key"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$chest.units.1.unit}"
+   ],
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
    "do": "shot",
    "name": "chest-locked"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "300",
+    "chest_bronze_trinket"
+   ],
+   "expect": {
+    "units.0.dist": {
+     "between": [
+      0,
+      60
+     ]
+    }
+   },
+   "name": "keyless chest stays shut (player beside it)"
   },
   {
    "do": "console",
@@ -563,7 +662,7 @@
    "do": "pilot",
    "call": "use",
    "args": [
-    "{$chest.units.0.unit}"
+    "{$chest.units.1.unit}"
    ],
    "timeout": 30
   },
@@ -573,9 +672,9 @@
   },
   {
    "do": "log_has",
-   "pattern": "unlocked a \\w+ chest",
+   "pattern": "unlocked a \\w+ chest[\\s\\S]*unlocked a \\w+ chest",
    "timeout": 5,
-   "name": "chest unlocks with a key"
+   "name": "chest unlocks once a key is given"
   },
   {
    "do": "console",
@@ -595,11 +694,59 @@
   },
   {
    "do": "console",
-   "line": "e_cheats 1"
+   "line": "hwp god"
   },
   {
    "do": "console",
-   "line": "cht_finish_level"
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "key",
+   "key": "enter"
   },
   {
    "do": "wait_phase",
@@ -609,6 +756,14 @@
   {
    "do": "sleep",
    "seconds": 3
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
   },
   {
    "do": "gl",
@@ -640,7 +795,11 @@
    "args": [
     "player",
     "equipped"
-   ]
+   ],
+   "expect": {
+    "value.0.0": 1
+   },
+   "name": "hwp_thief starts with a weapon"
   },
   {
    "do": "shot",
@@ -672,7 +831,11 @@
    "args": [
     "player",
     "equipped"
-   ]
+   ],
+   "expect": {
+    "value.0.0": 1
+   },
+   "name": "hwp_gladiator starts with a weapon"
   },
   {
    "do": "shot",
@@ -704,7 +867,11 @@
    "args": [
     "player",
     "equipped"
-   ]
+   ],
+   "expect": {
+    "value.0.0": 1
+   },
+   "name": "hwp_witch_hunter starts with a weapon"
   },
   {
    "do": "shot",
@@ -736,7 +903,11 @@
    "args": [
     "player",
     "equipped"
-   ]
+   ],
+   "expect": {
+    "value.0.0": 1
+   },
+   "name": "hwp_firearms starts with a weapon"
   },
   {
    "do": "shot",

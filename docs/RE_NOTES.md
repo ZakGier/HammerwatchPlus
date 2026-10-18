@@ -700,3 +700,29 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   passes the goal the boss spawns and no more events fire, so jumping the bar straight to
   full skips all of them. `hwp wave goal 21` then one kill fired "Spawning Event 1" in
   plan-t6b run 052403.
+- **Start gear goes through the normal equip checks.** `PlayerRecord` (~line 452) gives each
+  `starting-equipment` id a Common roll at level 1 and calls `EquippedItems.Equip`, which
+  starts with `MayEquip`: a stat requirement the fresh character can't meet makes it return
+  null, and the item is simply lost (not put in the inventory). The Witch Hunter (5 STR) listed
+  the vanilla `twohanded_crossbow_01` (ilvl 10, `req-str 10 25`) and started unarmed. Verified
+  by decoding `gl inspect player equipped` in plan-t7 run 061824 (slot 0 null). It now starts
+  with `hwp_crossbow_01` (ilvl 1, `req-dex 8 18`, DEX-scaled), and plan-t7 asserts slot 0 for
+  all four HWP classes (run 062639: daggers, trident, crossbow, rifle).
+- **Herbs need two watered runs.** A plot gets +2 growth per run when watered, +1 when not
+  (`CountRun`); food crops are ripe at 2, herbs at 4. plan-t7 waters and grows twice before the
+  Lucky Leaf harvest.
+- **The Pilot's `use` reach.** A solid target (a chest) can't be walked onto, so walking to
+  within a few px of its centre never ends. `use` now stops once the target is the player's
+  top usable (`GetTopUsable().GetUseUnit()`), and the stuck check treats an approaching `use`
+  as moving. A path from inside an obstacle's footprint (where an opened chest stood) comes
+  back empty; `Repath` then retries from eight points 24 px out. Verified in plan-t7 run
+  061824 (two chests opened in a row).
+- **The Pilot finds no route from the town arrival point (1984,598) into town.** Both
+  `Pathfind` and the partial `NavRoute` end in the forest. Town scenarios teleport near the
+  target first. Not traced further.
+- **GameLab `near <r> <filter>` doesn't apply the radius when a filter is given**; results are
+  still sorted by distance. A "nothing within r" check uses `units.0.dist` with
+  `{"between": [lo, hi]}` instead.
+- **The dark column over a window in the lower-left is the in-game chat history panel**
+  (x 19-250, y 136-360 at 640x360). It shows while recent chat lines are up (any `[HWP]`
+  message) and fades with them. It isn't part of the HWP window under it (probe 063142).

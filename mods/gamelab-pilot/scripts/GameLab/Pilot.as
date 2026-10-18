@@ -47,7 +47,7 @@ namespace GameLab
 		int sincePulse = 100000;
 		int sincePath = 100000;
 		int sinceDash = 100000;
-		bool approaching = false;      // attack/kite: closing in on the target this frame
+		bool approaching = false;      // attack/kite/use: closing in on the target this frame
 		vec2 lastPos;                  // FollowPath: last frame's position (the slide test)
 		bool escaped = false;
 		bool partial = false;          // exit: the path ends at the reached point nearest the exit
@@ -228,10 +228,34 @@ namespace GameLab
 		Emit(j);
 	}
 
-	// a fresh engine path from the player to the intent's goal; false = no route
+	// a fresh engine path from the player to the intent's goal; false = no route. When one
+	// Pathfind call answers empty: a target that is solid (a chest, a statue) gets a path to a
+	// point around it (RouteNear); then NavRoute, partial, because a long route can answer
+	// empty although the floor is one region (see Exit routing below). Town arrival (1984,598)
+	// to the chapel courtyard answered empty in plan-t7 20261018-054309.
 	bool Repath(PilotIntent@ it, vec2 from)
 	{
 		@it.path = g_scene.Pathfind(from, it.goal, PATH_DIAMETER);
+		it.wp = 0;
+		if (it.path !is null && it.path.length() > 0)
+			return true;
+		vec2 goal = it.goal;
+		if (it.target.IsValid() && RouteNear(it, from, goal))
+			return true;
+		// a start in an obstacle's footprint (where a chest just opened, plan-t7 20261018-061257)
+		// answers empty for every goal: route from a step out instead
+		for (int k = 0; k < 8; k++)
+		{
+			float a = k * 3.14159265f / 4;
+			vec2 step = from + vec2(cos(a), sin(a)) * 24;
+			if (TryPath(it, step, goal) || (it.target.IsValid() && RouteNear(it, step, goal)))
+			{
+				it.goal = goal;
+				return true;
+			}
+		}
+		@it.path = NavRoute(from, goal, true);
+		it.goal = goal;
 		it.wp = 0;
 		return it.path !is null && it.path.length() > 0;
 	}
@@ -824,7 +848,8 @@ namespace GameLab
 		if (it.stuckMs >= 1000)
 		{
 			bool fighting = it.kind == "attack" || it.kind == "kite";
-			bool moving = it.kind == "path_to" || it.kind == "exit" || it.kind == "move" || (fighting && it.approaching);
+			bool moving = it.kind == "path_to" || it.kind == "exit" || it.kind == "move" || (fighting && it.approaching)
+				|| (it.kind == "use" && it.approaching);
 			if (moving && dist(pos, it.stuckFrom) < 3.0f && dist(pos, it.goal) > it.tol)
 			{
 				it.repaths++;
@@ -1023,7 +1048,13 @@ namespace GameLab
 		}
 		else if (it.kind == "use")
 		{
-			if (it.target.IsValid() && !it.target.IsDestroyed() && dist(pos, xy(it.target.GetPosition())) > it.tol)
+			// a solid target (a chest) stops the player short of tol from its centre: it is
+			// in reach once it is the player's top usable
+			auto reach = plr.GetTopUsable();
+			bool inReach = reach !is null && it.target.IsValid() && reach.GetUseUnit() == it.target;
+			it.approaching = it.target.IsValid() && !it.target.IsDestroyed() && !inReach
+				&& dist(pos, xy(it.target.GetPosition())) > it.tol;
+			if (it.approaching)
 			{
 				if (FollowPath(it, pos, move))
 					move = vec2();

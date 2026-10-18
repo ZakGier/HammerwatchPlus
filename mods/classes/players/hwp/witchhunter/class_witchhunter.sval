@@ -48,7 +48,7 @@
 	<array name="starting-equipment">
 		<string>chest_dex_t1a</string>
 		<string>feet_dex_t1a</string>
-		<string>twohanded_crossbow_01</string>
+		<string>hwp_crossbow_01</string>
 	</array>
 %endblock
 

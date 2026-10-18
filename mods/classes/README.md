@@ -44,7 +44,9 @@ pool.
   physical damage).
 
 ## Witch Hunter (`hwp_witch_hunter`, ranger panel, starts with a crossbow)
-100 hp, 60 mana, 3 armor, 10 fire res.
+100 hp, 60 mana, 3 armor, 10 fire res. The start crossbow is `hwp_crossbow_01`
+(`tweak/hwp/equipment_classes.sval`): ilvl 1 with a DEX requirement, since the vanilla
+`twohanded_crossbow_01` needs 10 STR and was refused at character creation.
 - Base: **Searing Torch** (hit trigger fire damage), **Pyre** (spawns
   `players/hwp/witchhunter/units/pyre.unit`: a stationary player-team
   unit on the decoy template that explodes fire around it every second
