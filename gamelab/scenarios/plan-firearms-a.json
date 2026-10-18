@@ -87,6 +87,7 @@
     "decoy_casts": true,
     "decoy_cost": true,
     "decoy_vanishes_8s": true,
+    "decoy_taunts": true,
     "decoy_pulls": true,
     "flashbang_casts": true,
     "flashbang_cost": true,

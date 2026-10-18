@@ -114,10 +114,58 @@ namespace GameLab
 			.Raw("skills", RawArray(items)));
 	}
 
+	const uint TARGETS_CAP = 24;
+
+	// targets [radius] [filter]: who each CompositeActorBehavior within radius (default 400) of the
+	// player is after: its m_target (unit, name; 0 / "" for none) and m_targetAggro, the value a
+	// new SetTarget must reach to take over (CompositeActorBehavior.SetTarget; a taunt's aggro -1
+	// always does). Filter as near (behaviour or .unit path). Read-only, capped at TARGETS_CAP.
+	void VerbTargets(const string &in id, array<string>@ args)
+	{
+		auto plr = GetLocalPlayer();
+		if (plr is null)
+		{
+			Fail(id, "no spawned local player");
+			return;
+		}
+		int radius = args.length() > 0 ? int(parseInt(args[0])) : 400;
+		string filter = args.length() > 1 ? args[1] : "";
+		vec2 center = xy(plr.m_unit.GetPosition());
+		auto units = g_scene.FetchAllUnits(~0, center, radius);
+		array<string> items;
+		for (uint i = 0; i < units.length() && items.length() < TARGETS_CAP; i++)
+		{
+			UnitPtr u = units[i];
+			if (!u.IsValid() || u.IsDestroyed())
+				continue;
+			auto a = cast<CompositeActorBehavior>(u.GetScriptBehavior());
+			if (a is null || a.IsDead())
+				continue;
+			vec3 pos = u.GetPosition();
+			if (dist(center, xy(pos)) > radius)
+				continue;
+			if (filter != "" && Reflect::GetTypeName(a).findFirst(filter) < 0 && u.GetDebugName().findFirst(filter) < 0)
+				continue;
+			int tid = 0;
+			string tname = "";
+			if (a.m_target !is null && a.m_target.m_unit.IsValid())
+			{
+				tid = a.m_target.m_unit.GetId();
+				tname = a.m_target.m_unit.GetDebugName();
+			}
+			Json e;
+			e.Int("unit", u.GetId()).Str("name", u.GetDebugName()).Num("x", pos.x).Num("y", pos.y)
+				.Int("target", tid).Str("targetName", tname).Num("aggro", a.m_targetAggro);
+			items.insertLast(e.Close());
+		}
+		Emit(Reply(id, true).Int("count", items.length()).Raw("units", RawArray(items)));
+	}
+
 	void Register_firearms()
 	{
 		RegisterVerb("cursor", "[dx dy]", Verb(VerbCursor));
 		RegisterVerb("floats", "", Verb(VerbFloats));
 		RegisterVerb("skillbar", "", Verb(VerbSkillbar));
+		RegisterVerb("targets", "[radius] [filter]", Verb(VerbTargets));
 	}
 }

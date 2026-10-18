@@ -322,6 +322,27 @@ class Checks(Base):
                   f"active spells {act}; presses (skill, button, cast, others cooled) {tried}")
 
     # --- direction skills: a dummy in the line of fire
+    def brute_spot(self, plr, decoy):
+        """Where to drop the decoy test's brutes (absolute): 70 from where the player will stand,
+        nearer the player than the decoy by 30+, within 240 of the decoy (taunt radius 280), and
+        in clear line (gl rayhit: no wall, no hard tile) of both, so the brutes see the player
+        (aggro-range 160, must-see-target) and a pull is them leaving it. None if none is."""
+        for ang in range(0, 360, 45):
+            u = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
+            c = (plr[0] + u[0] * 70, plr[1] + u[1] * 70)
+            dd, dp = math.hypot(c[0] - decoy[0], c[1] - decoy[1]), 70
+            if dd > 240 or dd < dp + 30:
+                continue
+            ok = True
+            for end in (plr, decoy):
+                r = self.gl("rayhit", round(c[0], 1), round(c[1], 1), round(end[0], 1), round(end[1], 1))
+                if not r.get("ok") or r.get("wall") or r.get("tile"):
+                    ok = False
+                    break
+            if ok:
+                return c
+        return None
+
     def clear_dir(self, pref, dist):
         """A direction from where the player stands now with a clear shot dist (+16) out (gl
         rayhit: no wall, no hard tile), pref first. Run 20261018-130918: snipe fired along the
@@ -490,14 +511,17 @@ class Checks(Base):
                 time.sleep(0.15 if now > 6500 else 0.8)
             self.flag("decoy_vanishes_8s", last is not None and gone is not None and last >= 7200 and gone <= 9500,
                       f"seen until {last} ms after the press (hp {hp_last}), gone at {gone} (castpoint 200 + ttl 8000)")
-            # cast 2 (s5 pull). Run 20261018-130918: the walk off the decoy hit walls, took four
-            # 1.2 s tries (8 s) and the decoy's ttl ran out before the brutes came. So the walk is
-            # found first, during the cooldown: a direction the player really covers >= 110 px
-            # in 1.2 s (p0 -> p1). From p1 the decoy is cast along it, the player walks straight
-            # back (-v, just walked: clear) to p0, and three brutes come in beside the player,
-            # not the decoy: a pull is them leaving the player for it.
+            # cast 2 (s5 pull). Run 20261018-130918: the walk off the decoy hit walls and the
+            # decoy's ttl ran out first, so the walk is found during the cooldown: a direction
+            # the player really covers >= 110 px in 1.2 s (a -> p1); the decoy is cast at p1
+            # and the player walks straight back. Run 20261018-134847: the brutes, spawned 70
+            # beside the player, never moved in 4 s, not even to the player 76 px off (brute
+            # aggro-range 160, must-see-target): a wall stood between. So their spot is picked
+            # beforehand too: in clear line (gl rayhit) of both the player's end point and the
+            # decoy, nearer the player, inside the 280 taunt. `gl targets` then reads who each
+            # brute is after (the taunt: AlertActors -> SetTarget(decoy, -1)).
             p0 = self.pos()
-            v, moved = None, 0.0
+            v, moved, a, b = None, 0.0, p0, p0
             for u in sorted(dirs, key=lambda q: q[0] * d[0] + q[1] * d[1]):
                 a = self.pos()
                 self.gl("input", 1200, u[0], u[1])
@@ -507,39 +531,55 @@ class Checks(Base):
                 if moved >= 110:
                     v = u
                     break
-            while self.entry(self.bar(), "hwp_fs_decoy").get("cd", 0) > 0 and time.time() < end + 25:
+            spot = self.brute_spot(a, (b[0] + v[0] * 24, b[1] + v[1] * 24)) if v else None
+            while self.entry(self.bar(), "hwp_fs_decoy").get("cd", 0) > 0 and time.time() < end + 30:
                 time.sleep(0.4)
             if v is None:
                 self.flag("decoy_pulls", False, f"no direction from {[round(x) for x in p0]} walked >= 110 px in 1.2 s (last {round(moved)})")
             else:
-                c2 = self.gl("clock").get("sceneMs", 0)
+                c2 = time.time()  # wall clock: no extra round trips inside the decoy's 8 s
                 self.gl("input", hold("sniper_decoy.sval"), 0, 0, v[0], v[1], "skill3")
                 time.sleep(0.5)
                 dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
                 if not dec:
                     self.flag("decoy_pulls", False, "no decoy on the second cast")
                 else:
-                    dx0, dy0 = dec[0]["x"], dec[0]["y"]
+                    did, dx0, dy0 = dec[0]["unit"], dec[0]["x"], dec[0]["y"]
                     self.gl("input", 1200, -v[0], -v[1])
                     time.sleep(1.4)
                     px, py = self.pos()
-                    side = (-v[1], v[0])
-                    spawns = []  # one gl multi: the three land in the same frame, 70 beside the player
-                    for k in (-25, 0, 25):
-                        spawns += ["+", "spawn", BRUTE, round(side[0] * 70 + v[0] * k, 1), round(side[1] * 70 + v[1] * k, 1)]
+                    if spot is None:  # nothing clear found: 70 beside the player, as before
+                        side = (-v[1], v[0])
+                        spot = (px + side[0] * 70, py + side[1] * 70)
+                        self.notes.append("decoy pull: no brute spot in clear line of both, used 70 beside the player")
+                    perp = unit(-(spot[1] - py), spot[0] - px)
+                    spawns = []  # one gl multi: the three land in the same frame
+                    for k in (-14, 0, 14):
+                        spawns += ["+", "spawn", BRUTE, round(spot[0] - px + perp[0] * k, 1), round(spot[1] - py + perp[1] * k, 1)]
                     self.gl("multi", *spawns[1:])
-                    t_spawn = self.gl("clock").get("sceneMs", 0) - c2
-                    time.sleep(3.2)
+                    t_spawn = round((time.time() - c2) * 1000)
+                    start = {u["unit"]: (u["x"], u["y"]) for u in self.gl("near", 600, "bandit_brute").get("units") or []}
+                    on_decoy, dec_target = {}, set()
+                    stop = time.time() + 3.0
+                    while time.time() < stop:
+                        for t in self.gl("targets", 600, "bandit_brute").get("units") or []:
+                            if t.get("target") == did:
+                                on_decoy[t["unit"]] = on_decoy.get(t["unit"], 0) + 1
+                        for t in self.gl("targets", 600, "decoy").get("units") or []:
+                            dec_target.add(t.get("targetName", "").rsplit("/", 1)[-1])
                     px, py = self.pos()
-                    t_check = self.gl("clock").get("sceneMs", 0) - c2
+                    t_check = round((time.time() - c2) * 1000)
                     br = [u for u in self.gl("near", 600, "bandit_brute").get("units") or [] if not u.get("dead")]
                     dd = [round(math.hypot(u["x"] - dx0, u["y"] - dy0)) for u in br]
                     dp = [round(math.hypot(u["x"] - px, u["y"] - py)) for u in br]
+                    d0 = [round(math.hypot(start[u["unit"]][0] - dx0, start[u["unit"]][1] - dy0)) for u in br if u["unit"] in start]
                     dhp = [u.get("hp") for u in self.gl("near", 600, DECOY).get("units") or []]
                     away = round(math.hypot(px - dx0, py - dy0))
-                    self.flag("decoy_pulls", len(br) >= 2 and all(a < b for a, b in zip(dd, dp)) and max(dd) <= 60 and away >= 80,
-                              f"walk {v} covered {round(moved)}; player {away} from the decoy; brutes spawned 70 beside "
-                              f"the player at {t_spawn} ms after the cast, at {t_check} ms: to decoy {dd}, to player {dp}, "
+                    self.flag("decoy_taunts", len(on_decoy) >= 2,
+                              f"brutes seen targeting the decoy (polls each) {on_decoy}; the decoy's own target {sorted(dec_target)}")
+                    self.flag("decoy_pulls", len(br) >= 2 and sum(1 for x, y in zip(dd, dp) if x < y) >= 2 and away >= 80,
+                              f"player {away} from the decoy; brutes at the spot {[round(c) for c in spot]} at {t_spawn} ms "
+                              f"after the cast ({d0} from the decoy), at {t_check} ms: to decoy {dd}, to player {dp}, "
                               f"decoy hp {dhp} (gone = they killed it or its ttl ran out)")
                     self.gl("kill", 600, "bandit_brute")
         # flashbang: TargetAOE, no damage: its cooldown is the cast
