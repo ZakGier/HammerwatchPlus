@@ -1,0 +1,83 @@
+{
+ "name": "plan-t10",
+ "about": "Test plan through the plan_checks bot: the Gold Collector vendor in a newly built Hunter's Lodge (too little gold refused, tier 1 for 10,000, tier 2 gated on the Lodge), the cat picking up gold in a run and following to the next floor.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "goldpet"
+   },
+   "save_as": "town",
+   "name": "gold pet vendor",
+   "expect": {
+    "vendor_spawned": true,
+    "goldpet_poor_refused": true,
+    "goldpet_bought": true,
+    "goldpet_tier2_gated": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "goldpet_run"
+   },
+   "save_as": "run",
+   "name": "gold pet in a run",
+   "expect": {
+    "goldpet_in_run": true,
+    "goldpet_picks_gold": true,
+    "goldpet_after_floor_change": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

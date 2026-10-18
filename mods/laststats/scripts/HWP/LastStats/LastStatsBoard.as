@@ -153,7 +153,10 @@ class HWPLastStatsMenu : AWindowObject
 	void OnFunc(Widget@ sender, const string &in name) override
 	{
 		if (name == "close")
+		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
+		}
 		else if (name == "prev")
 		{
 			m_index--;

@@ -1,4 +1,5 @@
 <!-- Town portal to the Forsaken Tower. Interact = the vanilla mission board content
+     (HWPCampaignShopContent, scripts/HWP/Campaign/PortalShop.as)
      limited to the hwp_campaign set, so the host picks the mission and the usual
      loadout menu opens. Visual: the map device portal effect. -->
 <unit slot="doodad">
@@ -17,7 +18,7 @@
 		<vec3 name="dialog-offset">0 -20 0</vec3>
 		<array name="tags"></array>
 		<dict name="interact">
-			<string name="class">MissionShopContent</string>
+			<string name="class">HWPCampaignShopContent</string>
 			<int name="num">2</int>
 			<bool name="test">false</bool>
 			<string name="mission-set">hwp_campaign</string>

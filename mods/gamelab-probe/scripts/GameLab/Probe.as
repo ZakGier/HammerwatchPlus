@@ -197,13 +197,14 @@ namespace GameLab
 		return p.Close();
 	}
 
-	// state: phase, level, open window and the local player (class, level, hp, position); fixtures read back through it.
+	// state: phase, level, NG+, open window and the local player (class, level, hp, position); fixtures read back through it.
 	void VerbState(const string &in id, array<string>@ args)
 	{
 		auto j = Reply(id, true);
 		j.Str("phase", Phase());
 		j.Str("level", GetCurrentLevelFilename());
 		j.Bool("inTown", g_inTown);
+		j.Num("ngp", g_ngp + 0.0f); // the NG+ enemies scale by (CompositeActorBehavior)
 		j.Str("window", TopWindow());
 		j.Raw("player", PlayerJson());
 		Emit(j);

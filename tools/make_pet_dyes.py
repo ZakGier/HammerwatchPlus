@@ -348,6 +348,11 @@ def problems() -> list[str]:
     except (OSError, ValueError):
         return [f"no {STAMP.name}"]
     out = []
+    # a pet on the vanilla class ignores the toggles, Fetch, skills and puzzle rooms
+    vanilla = sorted(p.name for p in (PETS_DIR / "players/pets/hwp").glob("*.unit")
+                     if re.search(r'<behavior class="MiniPet(Walking|Flying)"', p.read_text(encoding="utf-8", errors="replace")))
+    if vanilla:
+        out.append(f"{len(vanilla)} HoH1 pet units on the vanilla class (first: {', '.join(vanilla[:2])})")
     if st.get("script_sha256") != sha(Path(__file__)):
         out.append("make_pet_dyes.py changed since they were made")
     if sorted(st.get("pets", [])) != sorted(outs):

@@ -7,7 +7,8 @@ every Heroes of Hammerwatch 1 pet skin in the HoH2 Pet Shop. Replaces the old
 - **Pet classes.** `module.json` `class_swaps` puts `HWPMiniPetWalking` and
   `HWPMiniPetFlying` (`scripts/HWP/Pets/PetClasses.as`) into copies of the
   vanilla pet units (`tools/class_units.py`; the engine ignores info.xml
-  classmaps), and `tools/make_pet_dyes.py` into the HoH1 pet units, so
+  classmaps), and `tools/import_hoh1.py pets` (and again `tools/make_pet_dyes.py`,
+  whose `--verify` flags a HoH1 unit left on a vanilla class) into the HoH1 pet units, so
   every vanilla and imported pet gets the wait watcher, the owner's pickup
   toggles, the Fetch passives, the skill runner and XP per pickup. Pets are not
   netsynced: like vanilla, only the owner's copy picks up or acts.

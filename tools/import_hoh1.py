@@ -69,6 +69,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import class_units  # noqa: E402
 import hoh1_convert as hoh1c  # noqa: E402
 import hwr_archive as hwr  # noqa: E402
 import gamepaths as paths  # noqa: E402
@@ -218,8 +219,18 @@ def candle_body(unit_text: str) -> str:
                   lambda l: '<light pos="%s %d">' % (l.group(1), int(l.group(2)) - FLAME_LIFT), unit_text)
 
 
+def pet_class_swaps() -> dict:
+    """the pets module's class_swaps (MiniPetWalking -> HWPMiniPetWalking, ...): an
+    imported unit names our classes from the start, so a re-import can't leave the
+    pets on the vanilla ones (no toggles, Fetch, skills or puzzle-room waiting)
+    until tools/make_pet_dyes.py runs again"""
+    cfg = json.loads((PETS_MODULE / "module.json").read_text(encoding="utf-8"))
+    return cfg.get("class_swaps") or {}
+
+
 def import_pets(archive: hwr.Archive, force: bool) -> None:
     pets = parse_pets_sval(archive.read_file("tweak/pets.sval").decode("utf-8", "replace"))
+    swaps = pet_class_swaps()
     written: list[str] = []
     defs: list[str] = []
     textures: set[str] = set()
@@ -235,7 +246,7 @@ def import_pets(archive: hwr.Archive, force: bool) -> None:
             if entry is None:
                 print(f"  ! {skin['unit']} missing in the HoH1 archive, skipped")
                 continue
-            unit_text = rewrite_unit(entry.data().decode("utf-8", "replace"), textures)
+            unit_text = class_units.swap(rewrite_unit(entry.data().decode("utf-8", "replace"), textures), swaps)
             write(PETS_MODULE / "players/pets/hwp" / (skin["base"] + ".unit"), unit_text, force, written)
             cost = int(base_cost * (LEGACY_MARKUP if skin["legacy"] else 1.0))
             defs.append(pet_def(skin["base"], cost, CATEGORY.get(pet["id"], "Animals"),
@@ -244,7 +255,7 @@ def import_pets(archive: hwr.Archive, force: bool) -> None:
     # the living flame has no shop entry in HoH1 (it was a special unlock)
     flame = archive.find("players/pets/living_flame.unit")
     if flame is not None:
-        unit_text = candle_body(rewrite_unit(flame.data().decode("utf-8", "replace"), textures))
+        unit_text = class_units.swap(candle_body(rewrite_unit(flame.data().decode("utf-8", "replace"), textures)), swaps)
         write(PETS_MODULE / "players/pets/hwp/living_flame.unit", unit_text, force, written)
         defs.append(pet_def("living_flame", 7500, "Magical", "gui/pet_icons.png", "104 0 9 21"))
 

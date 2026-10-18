@@ -104,6 +104,7 @@ namespace HWP { namespace GoldPet
 	// Vendor purchases and summons go through here from any peer: the host runs
 	// the (re)spawn itself, a client sends "goldpet.spawn" and the host does it.
 	const string SPAWN_REQUEST = "goldpet.spawn";
+	const string VENDOR_UNIT = "actors/npcs/town/hwp_pet_vendor.unit";
 
 	void RequestSpawn(PlayerRecord@ player, int tier)
 	{
@@ -446,6 +447,7 @@ class HWPPetVendorMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}
@@ -455,6 +457,7 @@ class HWPPetVendorMenu : AWindowObject
 			if (m_shop.BuyTier1())
 			{
 				UpdateUI();
+				m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 				m_manager.CloseWindow(this);
 			}
 			return;
@@ -465,6 +468,7 @@ class HWPPetVendorMenu : AWindowObject
 			if (m_shop.BuyTier2())
 			{
 				UpdateUI();
+				m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 				m_manager.CloseWindow(this);
 			}
 			return;
@@ -475,6 +479,7 @@ class HWPPetVendorMenu : AWindowObject
 			if (m_shop.BuyTier3())
 			{
 				UpdateUI();
+				m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 				m_manager.CloseWindow(this);
 			}
 			return;
@@ -485,6 +490,7 @@ class HWPPetVendorMenu : AWindowObject
 			if (m_shop.SummonPet())
 			{
 				UpdateUI();
+				m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 				m_manager.CloseWindow(this);
 			}
 			return;

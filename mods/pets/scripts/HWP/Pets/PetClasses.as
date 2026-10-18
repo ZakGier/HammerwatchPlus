@@ -51,6 +51,8 @@ class HWPMiniPetWalking : MiniPetWalking
 	{
 		auto kind = IsPickupOkay(pickup);
 		bool ok = MiniPet::PickUp(pickup, pos, normal);
+		if (HWP::Pets::g_debug)
+			print("[HWP:pets] pickup " + pickup.GetDebugName() + " kind " + int(kind) + " options " + int(m_options) + " ok " + ok);
 		if (ok && !IsHusk())
 			HWP::Pets::OnPetPickup(m_owner.m_record, m_petId, kind, m_skills.m_family);
 		return ok;
@@ -102,6 +104,8 @@ class HWPMiniPetFlying : MiniPetFlying
 	{
 		auto kind = IsPickupOkay(pickup);
 		bool ok = MiniPet::PickUp(pickup, pos, normal);
+		if (HWP::Pets::g_debug)
+			print("[HWP:pets] pickup " + pickup.GetDebugName() + " kind " + int(kind) + " options " + int(m_options) + " ok " + ok);
 		if (ok && !IsHusk())
 			HWP::Pets::OnPetPickup(m_owner.m_record, m_petId, kind, m_skills.m_family);
 		return ok;

@@ -545,6 +545,8 @@ class HWPGamblerMenu : AWindowObject
 			{
 				bool isSelected = (i == m_gambler.m_selectedBet);
 				m_betButtons[i].SetChecked(isSelected);
+				// a bet the player can't cover is greyed out (SelectBet refuses it too)
+				m_betButtons[i].m_enabled = m_gambler.CanAffordBet(i) || isSelected;
 			}
 		}
 
@@ -592,6 +594,7 @@ class HWPGamblerMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}
@@ -644,6 +647,11 @@ class HWPGamblerMenu : AWindowObject
 				if (m_gambler.PlayGame())
 				{
 					StartCardAnimation();
+				}
+				else
+				{
+					m_notice = Resources::GetString(".hwp.gambler.bet_poor");
+					UpdateUI();
 				}
 			}
 			else if (m_gambler.m_gameState == 2)

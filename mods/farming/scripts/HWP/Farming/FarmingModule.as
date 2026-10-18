@@ -372,7 +372,7 @@ namespace HWP
 			for (uint i = 0; i < g_visual.length(); i++)
 				if (!HWP::Town::Ours(g_visual[i]))
 					return true;
-			if (g_wellUnit.IsValid() && !HWP::Town::Ours(g_wellUnit))
+			if (g_wellUnit.IsValid() && !HWP::Town::Is(g_wellUnit, WELL_UNIT))
 				return true;
 			if (!HWP::Settings::GetBool("farm.fields", true))
 				return false;
@@ -730,6 +730,8 @@ namespace HWP
 		{
 			g_lastMessage = text;
 			g_version++;
+			if (g_debug)
+				HWP::Log("farming", "error: " + text);
 			auto rec = GetLocalPlayerRecord();
 			if (rec is null || rec.actor is null)
 				return;
@@ -743,6 +745,8 @@ namespace HWP
 			g_lastMessage = text;
 			Float(text);
 			g_version++;
+			if (g_debug) // floating text can't be read back; the log can (GameLab)
+				HWP::Log("farming", "say: " + text);
 		}
 
 		bool Pay(int price)
@@ -1168,7 +1172,7 @@ namespace HWP
 
 		void SpawnWell()
 		{
-			if (HWP::Town::Ours(g_wellUnit))
+			if (HWP::Town::Is(g_wellUnit, WELL_UNIT))
 				g_wellUnit.Destroy();
 			g_wellUnit = UnitPtr();
 			auto prod = Resources::GetUnitProducer(WELL_UNIT);
@@ -1205,7 +1209,7 @@ namespace HWP
 			ClearVisuals(); // the survivors of a partial rebuild go too
 			DetectFields();
 			SpawnPlots();
-			if (!HWP::Town::Ours(g_wellUnit))
+			if (!HWP::Town::Is(g_wellUnit, WELL_UNIT))
 				SpawnWell();
 			RefreshVisuals();
 		}
@@ -1830,7 +1834,7 @@ class HWPFarmMenu : AWindowObject
 	void AddRow(const string &in text, const string &in action)
 	{
 		auto row = m_rowTemplate.Clone();
-		row.SetID("");
+		row.SetID("row-" + m_rows.length()); // pressable by id (GameLab press)
 		row.m_visible = true;
 		auto btn = cast<ScalableSpriteButtonWidget>(row);
 		if (btn !is null)
@@ -1951,6 +1955,7 @@ class HWPFarmMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}
@@ -1968,7 +1973,10 @@ class HWPFarmMenu : AWindowObject
 			else if (action.findFirst("plant:") == 0)
 			{
 				if (HWP::Farming::RequestPlant(m_index, HWP::Farming::GetSeed(action.substr(6))))
+				{
+					m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 					m_manager.CloseWindow(this);
+				}
 			}
 			else if (action.findFirst("smoke:") == 0)
 				HWP::Farming::Smoke(action.substr(6));

@@ -5,6 +5,7 @@
 	<string name="hwp.gambler.lose">The house wins this time...</string>
 	<string name="hwp.gambler.tie">A tie! Your gold is safe.</string>
 	<string name="hwp.gambler.bet_prompt">Place your bet and draw!</string>
+	<string name="hwp.gambler.bet_poor">\cff0000Not enough gold\d to cover that bet - pick a smaller one.</string>
 	<string name="hwp.gambler.drawing_cards">Drawing cards...</string>
 	<string name="hwp.gambler.drawing">Drawing...</string>
 	<string name="hwp.gambler.flip">Flip Cards!</string>

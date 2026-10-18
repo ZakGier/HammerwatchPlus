@@ -2,7 +2,8 @@
 
 A gambler NPC in the tavern. Talk to him to play higher-or-lower: pick a bet
 (100 to 1M gold), flip; a higher card than the dealer wins the bet, lower loses
-it, a tie returns it.
+it, a tie returns it. Bets you can't cover are greyed out, and a flip you can no
+longer afford (after a loss) is refused with "Not enough gold" on the result line.
 
 - Spawned by `HWPGamblerModule` at the tavern's table once the tavern is built
   (server only; the unit is netsynced and replicated to clients).

@@ -43,7 +43,7 @@ namespace Modules
 
 			// the first check after a load spawns the vendor; later ones bring it
 			// back when a building upgrade (or building the lodge) rebuilt the town
-			if (Network::IsServer() && (!m_vendorSpawned || !HWP::Town::Ours(m_vendor)))
+			if (Network::IsServer() && (!m_vendorSpawned || !HWP::Town::Is(m_vendor, HWP::GoldPet::VENDOR_UNIT)))
 			{
 				m_vendorSpawned = true;
 				SpawnVendor();
@@ -143,10 +143,10 @@ namespace Modules
 
 			// Hunter's Lodge at (1056, 768); vendor offset (-20, -40), next to the hunter NPC
 			vec3 spawnPos = vec3(1036.0f, 728.0f, 0.0f);
-			auto prod = Resources::GetUnitProducer("actors/npcs/town/hwp_pet_vendor.unit");
+			auto prod = Resources::GetUnitProducer(HWP::GoldPet::VENDOR_UNIT);
 			if (prod is null)
 			{
-				HWP::LogError("goldpet", "missing actors/npcs/town/hwp_pet_vendor.unit");
+				HWP::LogError("goldpet", "missing " + HWP::GoldPet::VENDOR_UNIT);
 				return;
 			}
 			m_vendor = prod.Produce(g_scene, spawnPos);

@@ -5,7 +5,9 @@ commands and the game's own windows (gl use / press / shop), never real input.
 
 Sections: gambler (reroll gold/tokens/refusals), sell (wares at the Gambler), merchant
 (bag slot), traps (pirate fish traps), full_bag (a catch with a full bag), mission (start
-Bandit Keep), floor_chests (the floor's own locked chests), chests (silver key loot, ace chest legendary and epic), swap (weapon sets
+Bandit Keep), bets (affordable bets, flips, reshuffle), farm (can, seed, plant, water, well),
+petshop / petbowl / petgold (HoH1 pets, XP and feeding, the Gold toggle in a run),
+goldpet / goldpet_run (the Gold Collector vendor and the cat in a run), floor_chests (the floor's own locked chests), chests (silver key loot, ace chest legendary and epic), swap (weapon sets
 with the X key), swap_sets (the other set's slots and HUD tip, a bow, R as the key, swapdrop)."""
 import json
 import re
@@ -347,7 +349,8 @@ class Checks:
             log = self.g.read_log()[mark:]
             still = [u for u in self.gl("near", 5000, "items/chests/chest_").get("units", []) if u["unit"] == c["unit"]]
             self.flag("floor_no_key_nothing", "unlocked a" not in log and bool(still), f"{r.result}: {r.reason}")
-            around = len(self.gl("near", 80).get("units") or [])  # standing at the chest now
+            # standing at the chest now; items/ only: an unfiltered near hits its 64-unit cap
+            around = len(self.gl("near", 80, "items/").get("units") or [])
         else:
             self.notes.append(f"floor_no_key_nothing: already had {have} {key} key(s)")
         give = self.hwp(f"keygive {key} 1", 0.3, until="key(s)")
@@ -356,10 +359,18 @@ class Checks:
         self.notes.append("floor keys: " + " ".join(re.findall(r"Keys: [^\n]*", self.hwp("keys", 0.3, until="Keys:")))[-200:])
         self.notes.append("floor usables: " + json.dumps(self.gl("usables"))[:600])
         mark = len(self.g.read_log())
-        r = self.p.use(c["unit"], timeout=40)
+        # a teleport spot can sit in a wall's corner the walk can't leave: try the
+        # chest's other sides when the Pilot reports stuck
+        for dx, dy in [(0, 0), (0, -24), (24, 0), (-24, 0), (0, 40)]:
+            if (dx, dy) != (0, 0):
+                self.gl("teleport", c["x"] + dx, c["y"] + dy)
+                time.sleep(0.5)
+            r = self.p.use(c["unit"], timeout=40)
+            if "stuck" not in (r.reason or ""):
+                break
         time.sleep(2.5)
         log = self.g.read_log()[mark:]
-        after = len(self.gl("near", 80).get("units") or [])
+        after = len(self.gl("near", 80, "items/").get("units") or [])
         self.flag("floor_key_opens", f"unlocked a {key} chest" in log, f"{c['name']}: {r.result}: {r.reason}")
         self.flag("floor_loot_spawned", around is not None and after > around, f"units within 80: {around} -> {after}")
 
@@ -499,6 +510,447 @@ class Checks:
         self.flag("s6_swapdrop", "moved to your inventory" in drop and bool(bag0 and bag1) and int(bag1[-1]) > int(bag0[-1]),
                   f"bag {bag0[-1:]} -> {bag1[-1:]}, {st3}")
         self.flag("s6_alt_slots_empty", slots3["hwp-alt-main"] == "" and slots3["hwp-alt-off"] == "", json.dumps(slots3))
+
+
+    # --- plan-t9: bets, the farm, pets, the gold pet
+    def set_gold(self, n):
+        self.gl("material", "gold", n - self.gold())
+        time.sleep(0.3)
+
+    def bets(self):
+        """gambler s1/s2: only affordable bets select (the rest greyed), flips pay what the
+        result line says, Reshuffle clears the table; a flip over your gold is refused."""
+        self.set_gold(5000)
+        u = self.gl("use", "hwp_gambler")
+        time.sleep(0.5)
+        self.flag("bets_open", u.get("ok"), str(u.get("window")))
+        en = [self.widget(f"bet-btn-{i}").get("enabled") for i in range(5)]
+        self.flag("bets_affordable_enabled", en == [True, True, False, False, False], f"5000 gold: {en}")
+        s0 = self.widget("selected-bet").get("text", "")
+        self.gl("press", "bet-btn-3")
+        time.sleep(0.3)
+        s1 = self.widget("selected-bet").get("text", "")
+        self.gl("press", "bet-btn-1")
+        time.sleep(0.3)
+        s2 = self.widget("selected-bet").get("text", "")
+        self.flag("bets_unaffordable_not_selected", s1 == s0, f"{s0!r} -> {s1!r}")
+        self.flag("bets_affordable_selected", s2.startswith("1K") or "1,000" in s2, s2)
+        flips, good, drew, reset = [], True, True, True
+        for _ in range(4):
+            g0 = self.gold()
+            # the press and a widget dump in one frame: the cards are out, face down, before
+            # the 0.4 s flight ends (a dump of its own comes too late to see it)
+            rs = self.g.gl_multi([["press", "play-btn"], ["widgets", 8]])
+            nodes = [n for r in rs[1].get("roots", []) for n in r.get("nodes", [])]
+            card = next((n.get("visible") for n in nodes if n.get("id") == "player-card-sprite"), None)
+            mid = "Drawing" if card else ""
+            end = time.time() + 6
+            txt = mid
+            while time.time() < end:
+                time.sleep(0.3)
+                txt = self.widget("result-text").get("text", "")
+                if "Gold" in txt or "tie" in txt.lower():
+                    break
+            d = self.gold() - g0
+            m = re.search(r"([+-])(\d[\d,]*) Gold", txt)
+            want = 0 if not m else int(m.group(2).replace(",", "")) * (1 if m.group(1) == "+" else -1)
+            if not m and "tie" not in txt.lower():
+                good = False
+            good = good and d == want
+            drew = drew and "Drawing" in mid and card is True
+            shown = self.widget("player-card-sprite").get("visible")
+            self.gl("press", "play-btn")  # Reshuffle
+            time.sleep(0.4)
+            after = self.widget("result-text").get("text", "")
+            hidden = self.widget("player-card-sprite").get("visible")
+            reset = reset and "Place your bet" in after and hidden is False and shown is True
+            flips.append(f"{mid[:14]!r}->{txt.strip()[-24:]!r} d{d}")
+        self.flag("bets_flip_animates", drew, "; ".join(flips))
+        self.flag("bets_gold_matches_result", good, "; ".join(flips))
+        self.flag("bets_reshuffle_resets", reset)
+        # the selected 1K bet with only 500 gold: still lit (selected), the flip is refused
+        self.set_gold(1500)
+        self.gl("press", "bet-btn-1")
+        time.sleep(0.2)
+        self.set_gold(500)
+        g0 = self.gold()
+        self.gl("press", "play-btn")
+        time.sleep(0.8)
+        msg = self.widget("result-text").get("text", "")
+        en = [self.widget(f"bet-btn-{i}").get("enabled") for i in range(5)]
+        self.flag("bets_poor_flip_refused", self.gold() == g0 and "Not enough gold" in msg, f"{msg!r}, buttons {en}")
+        self.g.key("escape")
+        time.sleep(0.4)
+
+    def npc(self, name, unit):
+        """The fixture's town is small (no farm fields, no pet shop house): when the NPC is
+        missing it is spawned beside the player, and its own shop window is used."""
+        if self.gl("near", 8000, name).get("units"):
+            return
+        self.gl("spawn", unit, 40, 0)
+        time.sleep(0.6)
+        self.notes.append(f"{name}: not in this town, spawned beside the player")
+
+    def farm_say(self, mark):
+        return re.findall(r"\[HWP:farming\] (?:say|error): (.*)", self.g.read_log()[mark:])
+
+    def farm(self):
+        """farming s2/s3/s5 in the fixture town's layout (no farm fields: soil patches by the
+        pet bowl). The can, a seed, planting, watering twice, the well."""
+        self.hwp("set farm.debug 1")
+        st = self.hwp("farm", 0.5, until="Farm:")
+        self.notes.append("farm status: " + " / ".join(re.findall(r"\[HWP\] (Farm: .*|.*Watering.*|No watering.*)", st))[:300])
+        self.set_gold(5000)
+        mark = len(self.g.read_log())
+        self.gl("use", "farm_well")
+        time.sleep(0.6)
+        said = self.farm_say(mark)
+        self.flag("well_no_can", any("need a watering can" in s for s in said), str(said))
+        self.npc("npc_misc_farmer_man", "actors/npcs/town/npc_misc_farmer_man.unit")
+        u = self.gl("use", "npc_misc_farmer_man")
+        time.sleep(0.5)
+        self.flag("farmer_open", u.get("ok"), str(u.get("window")))
+        st0 = self.widget("state").get("text", "")
+        g0 = self.gold()
+        mark = len(self.g.read_log())
+        self.gl("press", "row-0")
+        time.sleep(0.5)
+        g1 = self.gold()
+        st1 = self.widget("state").get("text", "")
+        self.gl("press", "row-1")  # the first seed: cabbage
+        time.sleep(0.5)
+        g2 = self.gold()
+        said = self.farm_say(mark)
+        self.g.key("escape")
+        time.sleep(0.4)
+        self.flag("can_bought", g0 - g1 == 200 and "4/4" in st1, f"{st0!r} -> {st1!r}, gold {g0} -> {g1}")
+        self.flag("seed_bought", g1 - g2 == 20 and any("Cabbage seed" in s for s in said), f"gold {g1} -> {g2}, {said}")
+        # plant on the first plot: stand on it, use it, pick the seed row
+        plots = self.gl("near", 4000, "farm_plot").get("units") or []
+        self.flag("plots_found", bool(plots), f"{len(plots)} plot units")
+        if not plots:
+            return
+        p0 = plots[0]
+        self.gl("teleport", p0["x"], p0["y"] + 4)
+        time.sleep(0.4)
+        v0 = re.findall(r"visuals (\d+)", self.hwp("farm units", 0.4, until="visuals"))
+        self.gl("use", "farm_plot")
+        time.sleep(0.5)
+        state = self.widget("state").get("text", "")
+        self.gl("press", "row-0")
+        time.sleep(0.8)
+        top = self.gl("state").get("window")
+        st = self.hwp("farm", 0.5, until="Farm:")
+        v1 = re.findall(r"visuals (\d+)", self.hwp("farm units", 0.4, until="visuals"))
+        planted = re.findall(r"Planted: (.*)", st)
+        self.flag("planted", bool(planted) and "Cabbage" in planted[-1] and "Empty soil" in state,
+                  f"window {state!r}, then {top}; planted {planted[-1:]}")
+        self.flag("sprouts_shown", bool(v0 and v1) and int(v1[-1]) > int(v0[-1]), f"visuals {v0[-1:]} -> {v1[-1:]}")
+        # water: the can goes 4 -> 3, wet soil appears; again: already watered (the window says why)
+        mark = len(self.g.read_log())
+        self.gl("use", "farm_plot")
+        time.sleep(0.8)
+        st = self.hwp("farm", 0.5, until="Farm:")
+        v2 = re.findall(r"visuals (\d+)", self.hwp("farm units", 0.4, until="visuals"))
+        said = self.farm_say(mark)
+        pl = re.findall(r"Planted: (.*)", st)
+        self.flag("watered", "3/4 water" in st and "watered" in (pl or [""])[-1], f"{said}; {pl[-1:]}")
+        self.flag("wet_soil_shown", bool(v1 and v2) and int(v2[-1]) > int(v1[-1]), f"visuals {v1[-1:]} -> {v2[-1:]}")
+        mark = len(self.g.read_log())
+        self.gl("use", "farm_plot")
+        time.sleep(0.8)
+        msg = self.widget("message").get("text", "")
+        said = self.farm_say(mark)
+        self.g.key("escape")
+        time.sleep(0.3)
+        self.flag("already_watered", "Already watered" in msg, f"{msg!r} {said}")
+        # the well fills the can back up; hwp farm well moves it here
+        mark = len(self.g.read_log())
+        self.gl("use", "farm_well")
+        time.sleep(0.6)
+        st = self.hwp("farm", 0.5, until="Farm:")
+        said = self.farm_say(mark)
+        self.flag("well_refills", "4/4 water" in st and any("filled" in s for s in said), str(said))
+        pl = self.gl("state").get("player", {})
+        self.gl("teleport", pl.get("x", 0) + 150, pl.get("y", 0))
+        time.sleep(0.3)
+        r = self.hwp("farm well", 0.6, until="well moved")
+        w = self.gl("near", 60, "farm_well").get("units") or []
+        self.flag("well_moved", "well moved" in r and bool(w), f"{re.findall(r'well moved[^|]*', r)[-1:]}, near {w[:1]}")
+        self.hwp("farm well reset", 0.4)
+
+    def petshop(self):
+        """pets s1: the Pet Shop lists the HoH1 pets with icons; buying one puts it out."""
+        self.set_gold(60000)
+        self.npc("npc_pets", "actors/npcs/town/npc_pets.unit")
+        u = self.gl("use", "npc_pets")
+        time.sleep(0.6)
+        shop = self.gl("shop")
+        items = shop.get("items") or []
+        hoh1 = ["imp", "scarab", "beetle", "ladybug", "raven", "magpie", "parrot", "toucan", "cat", "dog",
+                "collie", "corgi", "hound", "wyrm", "squire", "flame"]
+        hits = [i for i, it in enumerate(items) if any(w in it.get("title", "").lower() for w in hoh1)]
+        self.flag("petshop_open", u.get("ok") and bool(items), f"{u.get('window')}, {len(items)} entries")
+        self.flag("petshop_hoh1_listed", len(hits) >= 15 and all(items[i].get("icon") for i in hits),
+                  f"{len(hits)} HoH1-looking: " + ", ".join(items[i].get("title", "") for i in hits[:24]))
+        pick = next((i for i in hits if "imp" in items[i].get("title", "").lower()), hits[0] if hits else None)
+        if pick is None:
+            self.g.key("escape")
+            return
+        price = items[pick]["gold"]
+        g0 = self.gold()
+        self.gl("shop", "buy", pick)
+        time.sleep(1.5)
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.3)
+        g1 = self.gold()
+        st = self.hwp("pet", 0.5, until="level")
+        name = items[pick].get("title", "")
+        out = self.gl("near", 250, "pets/").get("units") or []
+        pet = [x for x in out if "pets/" in x.get("name", "")]
+        self.flag("petshop_bought", g0 - g1 == price and price > 0, f"{name}: {g0} -> {g1}, price {price}")
+        self.flag("pet_out", bool(pet) and name.split()[0].lower() in st.lower(), f"{pet[:1]}; {st.strip()[-160:]}")
+
+    def wares_count(self, ware):
+        m = re.findall(ware + r"\D{0,4}(\d+)|(\d+)x? " + ware, self.hwp("wares", 0.4, until="Bet tokens"))
+        return m[-1] if m else None
+
+    def petbowl(self):
+        """pets s3/s6: debug XP gives a level-up line and points at the bowl; feeding a
+        cabbage there uses it and adds XP."""
+        self.hwp("set pets.debug true")
+        r = self.hwp("pet xp 500", 0.8, until="reached level")
+        line = re.findall(r"\[HWP\] (.*reached level.*)", r)
+        self.flag("pet_levelup_line", bool(line), line[-1] if line else r.strip()[-160:])
+        # a cabbage: a wild plot's harvest
+        self.hwp("set farm.debug 1")
+        self.hwp("farm wild cabbage", 1.5)
+        self.gl("use", "wild/cabbage")
+        time.sleep(0.8)
+        n0 = self.wares_count("Cabbage")
+        u = self.gl("use", "pet_bowl")
+        time.sleep(0.6)
+        pts = self.widget("points").get("text", "")
+        xp0 = self.widget("xp").get("text", "")
+        self.flag("bowl_points", u.get("ok") and re.search(r"Skill points: [1-9]", pts) is not None,
+                  f"{u.get('window')}: {pts!r} {xp0!r}")
+        # rows: 7 skills, then the feed rows (the cabbage only), then the pickup toggles
+        self.gl("press", "row-7")
+        time.sleep(0.6)
+        xp1 = self.widget("xp").get("text", "")
+        msg = self.widget("message").get("text", "")
+        self.g.key("escape")
+        time.sleep(0.3)
+        n1 = self.wares_count("Cabbage")
+        a = re.findall(r"(\d+) / ", xp0)
+        b = re.findall(r"(\d+) / ", xp1)
+        self.flag("bowl_feed", bool(a and b) and int(b[0]) > int(a[0]) and n0 != n1,
+                  f"{xp0!r} -> {xp1!r}, {msg!r}, cabbages {n0} -> {n1}")
+
+    def gold_drop(self, dist=150, amount=25):
+        """A real drop (DropMaterial: an amount) `dist` px away, past the player's own reach
+        and inside a pet's pickup range (200-300 from the owner), on a spot the pathfinder
+        reaches (a drop behind a wall can't be fetched)."""
+        if not hasattr(self, "drop_at"):
+            self.drop_at = (dist, 0)
+            for a in [45, 135, 225, 315, 90, 270, 0, 180]:
+                if a in getattr(self, "bad_dirs", set()):
+                    continue
+                import math
+                dx, dy = round(dist * math.cos(math.radians(a))), round(dist * math.sin(math.radians(a)))
+                pl = self.gl("state").get("player", {})
+                pf = self.gl("pathfind", pl.get("x", 0) + dx, pl.get("y", 0) + dy)
+                # a near-straight path: a detour round a wall is past the pet's leash
+                if pf.get("ok") and pf.get("nodes", 0) > 0 and pf.get("length", 1e9) <= dist * 1.25:
+                    self.drop_at = (dx, dy)
+                    self.drop_dir = a
+                    break
+        r = self.gl("drop", "gold", amount, *self.drop_at)
+        time.sleep(0.3)
+        self.dropped = [u for u in getattr(self, "dropped", []) + [r.get("unit")] if u is not None]
+        return len(self.dropped)
+
+    def gold_left(self, wait=6):
+        """How many of our drops are still on the floor after up to `wait` s (the floor's
+        own gold doesn't count)."""
+        end = time.time() + wait
+        n = -1
+        while time.time() < end:
+            ids = {u["unit"] for u in self.gl("near", 1000, "materials/gold").get("units") or []}
+            self.dropped = [u for u in self.dropped if u in ids]
+            n = len(self.dropped)
+            if n == 0:
+                break
+            time.sleep(0.5)
+        return n
+
+    def petgold(self):
+        """pets s1/s7 in a run: the pet picks gold up; with Gold off it leaves it; on again it
+        picks it up."""
+        self.start_floor(0)
+        self.gl("cull")
+        time.sleep(1.5)
+        g0 = self.gold()
+        # a spot the pathfinder reaches can still sit past a ledge the pet won't cross:
+        # try the next direction when a drop isn't fetched
+        for _ in range(3):
+            n = self.gold_drop()
+            left = self.gold_left(8)
+            if left == 0 or not hasattr(self, "drop_dir"):
+                break
+            self.bad_dirs = getattr(self, "bad_dirs", set()) | {self.drop_dir}
+            del self.drop_at
+            self.dropped = []
+        g1 = self.gold()
+        pet = self.gl("near", 800, "pets/").get("units") or []
+        self.flag("pet_picks_gold", n > 0 and left == 0 and g1 > g0,
+                  f"{n} drop(s) at {self.drop_at} -> {left} left, gold {g0} -> {g1}, pet {pet[:1]}")
+        self.hwp("pet gold off", 0.5)
+        n = self.gold_drop()
+        trace = []
+        for _ in range(8):
+            ps = self.gl("near", 800, "pets/").get("units") or []
+            trace.append([(round(x["x"]), round(x["y"]), x["unit"]) for x in ps])
+            time.sleep(0.25)
+        left = self.gold_left(4)
+        g2 = self.gold()
+        self.flag("pet_gold_off_ignores", n > 0 and left > 0 and g2 == g1,
+                  f"{n} -> {left} left, gold {g1} -> {g2}; pets {trace}")
+        self.hwp("pet gold on", 0.5)
+        left = self.gold_left(8)
+        g3 = self.gold()
+        self.flag("pet_gold_on_picks", left == 0 and g3 > g2, f"{left} left, gold {g2} -> {g3}")
+        # it follows a walk (a teleport takes the pet along): 2 s of stick toward the
+        # reachable drop direction
+        import math
+        pl = self.gl("state").get("player", {})
+        x0, y0 = pl.get("x", 0), pl.get("y", 0)
+        dx, dy = self.drop_at
+        k = math.hypot(dx, dy) or 1
+        self.gl("input", 2500, round(dx / k, 3), round(dy / k, 3))
+        time.sleep(4)
+        pl = self.gl("state").get("player", {})
+        walked = math.hypot(pl.get("x", 0) - x0, pl.get("y", 0) - y0)
+        near = self.gl("near", 800, "pets/").get("units") or []
+        self.flag("pet_follows", walked > 60 and bool(near) and near[0]["dist"] < 90,
+                  f"walked {walked:.0f} px; pet {near[0]['dist'] if near else None} px from the player after")
+
+    def goldpet(self):
+        """goldpet s1 (town half): the vendor in the Hunter's Lodge sells tier 1 for 10,000;
+        tier 2 needs Lodge tier 2."""
+        b = self.gl("build", "hunters_cabin")
+        self.gl("townrefresh")
+        time.sleep(3)
+        v = self.gl("near", 8000, "hwp_pet_vendor").get("units") or []
+        self.flag("vendor_spawned", bool(v), f"build {b.get('ok')}, vendor {v[:1]}")
+        self.set_gold(9000)
+        self.gl("use", "hwp_pet_vendor")
+        time.sleep(0.5)
+        req = self.widget("tier1-req").get("text", "")
+        g0 = self.gold()
+        self.gl("press", "buy-tier1")
+        time.sleep(0.5)
+        self.flag("goldpet_poor_refused", self.gold() == g0 and req != "", f"{req!r}, gold {g0} -> {self.gold()}")
+        self.g.key("escape")
+        time.sleep(0.3)
+        self.set_gold(10000)
+        self.gl("use", "hwp_pet_vendor")
+        time.sleep(0.5)
+        btn = self.widget("buy-tier1")
+        self.gl("press", "buy-tier1")
+        time.sleep(1.5)
+        g1 = self.gold()
+        if self.gl("state").get("window"):
+            self.g.key("escape")
+            time.sleep(0.3)
+        cat = self.gl("near", 300, "hwp_gold_collector_pet").get("units") or []
+        self.flag("goldpet_bought", g1 == 0 and bool(cat), f"button {btn}, gold 10000 -> {g1}, cat {cat[:1]}")
+        self.set_gold(60000)
+        self.gl("use", "hwp_pet_vendor")
+        time.sleep(0.5)
+        t2 = self.widget("buy-tier2")
+        req2 = self.widget("tier2-req").get("text", "")
+        g2 = self.gold()
+        self.gl("press", "buy-tier2")
+        time.sleep(0.5)
+        self.flag("goldpet_tier2_gated", self.gold() == g2 and "odge" in req2,
+                  f"{req2!r}, button {t2}, gold {g2} -> {self.gold()}")
+        self.g.key("escape")
+        time.sleep(0.3)
+
+    def goldpet_run(self):
+        """goldpet s1 (run half) and s3 (back after a floor change)."""
+        self.start_floor(0)
+        self.gl("cull")
+        time.sleep(2)
+        cat = self.gl("near", 400, "hwp_gold_collector_pet").get("units") or []
+        g0 = self.gold()
+        n = self.gold_drop(130)
+        left = self.gold_left(8)
+        g1 = self.gold()
+        self.flag("goldpet_in_run", bool(cat), str(cat[:1]))
+        self.flag("goldpet_picks_gold", n > 0 and left == 0 and g1 > g0, f"{n} -> {left} left, gold {g0} -> {g1}")
+        self.start_floor(1)
+        time.sleep(2)
+        cat = self.gl("near", 400, "hwp_gold_collector_pet").get("units") or []
+        self.flag("goldpet_after_floor_change", bool(cat), str(cat[:1]))
+
+    def portal(self):
+        """campaign s1 / hoh1floors s1: the town portal (a minimap sprite in its unit) offers
+        The Forsaken Tower (18 floors) and the mission on the HoH1 floors once the story
+        intro is done; before that it says it's dormant (no script exception)."""
+        p = self.gl("near", 8000, "forsaken_portal").get("units") or []
+        self.flag("portal_in_town", bool(p), f"{p[:1]}")
+        if not p:
+            return
+        self.gl("teleport", p[0]["x"], p[0]["y"] + 50)
+        time.sleep(1)
+        mark = len(self.g.read_log())
+        u = self.gl("use", "forsaken_portal")
+        time.sleep(0.8)
+        log = self.g.read_log()[mark:]
+        st = self.gl("state")
+        self.flag("portal_locked_says_why", u.get("ok") and not st.get("window") and "no mission for this character" in log
+                  and "Script exception" not in log, f"use {u}, window {st.get('window')!r}")
+        self.g.console("cht_set_flag mission_story_intro_find_npcs 1 0")
+        time.sleep(0.5)
+        u = self.gl("use", "forsaken_portal")
+        time.sleep(0.8)
+        items = self.gl("shop").get("items") or []
+        titles = [(it.get("title", ""), it.get("sub", "")) for it in items]
+        self.flag("portal_offers_tower", u.get("ok") and any("forsaken tower" in t.lower() and "18" in sub for t, sub in titles),
+                  f"{u.get('window')}: {titles}")
+        self.flag("portal_offers_hoh1", len(items) >= 2, f"{len(items)} missions")
+        if u.get("window"):
+            self.g.key("escape")
+            time.sleep(0.5)
+
+    def waverank(self):
+        """wavemode s5: [hwp wave rank 5], then start at the statue: the arena is NG+5."""
+        self.set_gold(60000)
+        self.hwp("wave rank 5", 0.5)
+        st = self.gl("near", 8000, "wave_statue").get("units") or []
+        if st:
+            self.gl("teleport", st[0]["x"], st[0]["y"] + 50)
+            time.sleep(1)
+        u = self.gl("use", "wave_statue")
+        time.sleep(0.8)
+        items = self.gl("shop").get("items") or []
+        self.flag("statue_open", u.get("ok") and bool(items), f"{u.get('window')}: {[(i.get('title'), i.get('sub')) for i in items]}")
+        if not items:
+            return
+        self.gl("shop", "buy", 0)
+        time.sleep(1.5)
+        w = self.gl("state").get("window")
+        ngp_text = self.widget("ngp-text").get("text")
+        self.flag("statue_loadout", "Loadout" in (w or ""), f"window {w}, ngp-text {ngp_text!r}")
+        self.gl("func", "play")
+        ok = self.wait_phase("mission")
+        time.sleep(3)
+        stt = self.gl("state")
+        self.flag("wave_ngp5", ok and abs(stt.get("ngp", -1) - 5) < 0.01,
+                  f"phase {stt.get('phase')}, level {stt.get('level')}, ngp {stt.get('ngp')}")
 
 
 def run(p, sections="gambler,sell,merchant,traps,full_bag", **_):

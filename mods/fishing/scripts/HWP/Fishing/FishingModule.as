@@ -836,7 +836,7 @@ namespace HWP
 			if (g_watchTimer < WATCH_MS)
 				return;
 			g_watchTimer = 0;
-			if (HWP::Town::Ours(g_pirate) && TradingPostTier() == g_pirateTier)
+			if (HWP::Town::Is(g_pirate, PIRATE_UNIT) && TradingPostTier() == g_pirateTier)
 				return;
 			HWP::Log("fishing", "the town changed (trading post tier " + TradingPostTier() + "); placing the coast again");
 			SpawnCoast();
@@ -1397,6 +1397,7 @@ class HWPFishingMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}
@@ -1549,7 +1550,10 @@ class HWPPirateMenu : AWindowObject
 	void OnFunc(Widget@ sender, const string &in name) override
 	{
 		if (name == "close")
+		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
+		}
 		else if (name == "bait")
 			HWP::Fishing::BuyBait(1, HWP::Fishing::BAIT_PACK[0], HWP::Fishing::BAIT_PACK_PRICE[0]);
 		else if (name == "bait20")

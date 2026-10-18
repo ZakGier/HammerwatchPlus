@@ -1,0 +1,85 @@
+{
+ "name": "plan-t11",
+ "about": "Test plan through the plan_checks bot: the town portal (dormant without the story flag, then its missions (The Forsaken Tower, the HoH1 floors) with a shot of the minimap, and the Wave Arena started at the statue after [hwp wave rank 5] (the arena's NG+).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "portal"
+   },
+   "name": "town portal",
+   "expect": {
+    "portal_in_town": true,
+    "portal_locked_says_why": true,
+    "portal_offers_tower": true,
+    "portal_offers_hoh1": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "town-portal"
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "waverank"
+   },
+   "name": "wave rank 5",
+   "expect": {
+    "statue_open": true,
+    "statue_loadout": true,
+    "wave_ngp5": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

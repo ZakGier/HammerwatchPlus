@@ -109,6 +109,32 @@ namespace GameLab
 		}
 		Emit(Reply(id, true).Int("unit", u.GetId()).Str("name", u.GetDebugName()).Num("x", pos.x).Num("y", pos.y));
 	}
+
+	// drop <type> <amount> <dx> <dy>: a material pickup at the player + (dx, dy) through
+	// Material::DropMaterial, the call enemy loot and cht_spawn_gold use (Console/Cheats.as:906-911),
+	// so it carries an amount (a unit from spawn holds 0). No drop animation: it lands where asked.
+	void VerbDrop(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 4)
+		{
+			Fail(id, "usage: drop <gold|wood|stone|iron|crystals|dust|ore> <amount> <dx> <dy>");
+			return;
+		}
+		auto plr = GetLocalPlayer();
+		if (plr is null)
+		{
+			Fail(id, "no spawned local player");
+			return;
+		}
+		vec3 pos = plr.m_unit.GetPosition() + vec3(parseFloat(args[2]), parseFloat(args[3]), 0);
+		UnitPtr u = Material::DropMaterial(ParseMaterialType(args[0]), parseInt(args[1]), pos, true, false);
+		if (!u.IsValid())
+		{
+			Fail(id, "DropMaterial returned no unit (a client asks the host instead)");
+			return;
+		}
+		Emit(Reply(id, true).Int("unit", u.GetId()).Str("name", u.GetDebugName()).Int("amount", parseInt(args[1])).Num("x", pos.x).Num("y", pos.y));
+	}
 }
 
 namespace GameLab
@@ -328,7 +354,9 @@ namespace Modules
 			GameLab::RegisterVerb("equip", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbEquip));
 			GameLab::RegisterVerb("stashitem", "<baseItemId> <quality> [ilvl]", GameLab::Verb(GameLab::VerbStashItem));
 			GameLab::RegisterVerb("stash", "[tab]", GameLab::Verb(GameLab::VerbStash));
+			GameLab::RegisterVerb("drop", "<type> <amount> <dx> <dy>", GameLab::Verb(GameLab::VerbDrop));
 			GameLab::RegisterVerb("press", "<widgetId>", GameLab::Verb(GameLab::VerbPress));
+			GameLab::RegisterVerb("func", "<name...>", GameLab::Verb(GameLab::VerbFunc));
 			GameLab::RegisterVerb("use", "<filter>", GameLab::Verb(GameLab::VerbUse));
 			GameLab::RegisterVerb("shop", "[buy <index>]", GameLab::Verb(GameLab::VerbShop));
 			GameLab::RegisterVerb("trinkets", "", GameLab::Verb(GameLab::VerbTrinkets));

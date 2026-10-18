@@ -22,9 +22,12 @@ generated floors in the closest HoH2 theme plus a vanilla boss level.
   floors stay HoH2 themes: HoH1 builds those from 755 unit types HoH2 lacks
   (`tools/import_hoh1.py levels` reports them).
 - **Portal.** `doodads/hwp/forsaken_portal.unit` is an NPC doodad whose
-  interact is the vanilla `MissionShopContent` limited to set `hwp_campaign`
-  (`num` 2: both missions when the HoH1 one is imported), so the host picks the mission and the normal loadout menu
-  opens. Clients see the host's portal (netsynced doodad). The host spawns
+  interact is `HWPCampaignShopContent`, the vanilla `MissionShopContent` limited to set
+  `hwp_campaign` (`num` 2: both missions when the HoH1 one is imported), so the host picks
+  the mission and the normal loadout menu opens. The missions need the story intro flag
+  (`mission_story_intro_find_npcs`), like the vanilla mission boards; before that the portal
+  shows "The portal is dormant..." over the player instead of opening (vanilla would throw:
+  sorting an empty array is an "Index out of bounds" in this engine). Clients see the host's portal (netsynced doodad). The host spawns
   it (`HWP::Town::Placeable` in core) 0.6 s after the town loads, **in the
   chapel courtyard in place of its campfire** (the unbuilt Pyre). Every
   machine computes that spot from the town layout data the way

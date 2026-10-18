@@ -23,9 +23,11 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `equip` | `<baseItemId> <quality> [ilvl]` | equip <baseItemId> <qualityMask> [ilvl]: Equipment::Generator.GenerateItem (the spawnequipment cheat's path, Console/Cheats.as), then equipped.Equip like a new character's starting gear (PlayerRecord.as:451-465). The quality is the generator's: its RollQuality tests `mask & Common != 0`, which binds as `mask & (Common != 0)`, so a mask without the Common bit rolls nothing and the base item's quality is used (EquipmentGenerator.as:15; measured fixture-ranger 20261017-151727: rare asked, 2 given). The reply carries the quality actually given. Equip refusing (MayEquip: level or attribute requirements) returns the item itself, and fails the verb. |
 | `stashitem` | `<baseItemId> <quality> [ilvl]` | stashitem <baseItemId> <quality> [ilvl]: Equipment::Generator into stash tab 0 |
 | `stash` | `[tab]` | stash [tab]: the tab's items in order, "<baseId>@<ilvl>" |
+| `drop` | `<type> <amount> <dx> <dy>` | drop <type> <amount> <dx> <dy>: a material pickup at the player + (dx, dy) through Material::DropMaterial, the call enemy loot and cht_spawn_gold use (Console/Cheats.as:906-911), so it carries an amount (a unit from spawn holds 0). No drop animation: it lands where asked. |
 | `press` | `<widgetId>` | press <widgetId>: click an interactable widget of the top window |
+| `func` | `<name...>` | func <name...>: the top window's own OnFunc(null, name), the handler its buttons and key bindings call (MissionLoadoutMenu.Play is OnFunc "play"), for a window whose button has no widget id to press |
 | `use` | `<filter>` | use <filter>: IUsable.Use of the nearest usable unit whose unit path or behaviour matches, from wherever the player stands |
-| `shop` | `[buy <index>]` | shop [buy <index>]: the open shop's entries (id, gold price, IsAvailable, subtitle); buy presses entry <index> the way a click does (ShopWindow.OnFunc "buy") |
+| `shop` | `[buy <index>]` | shop [buy <index>]: the open shop's entries (id, title, gold price, IsAvailable, icon, subtitle); buy presses entry <index> the way a click does (ShopWindow.OnFunc "buy") |
 | `trinkets` |  | trinkets: the local character's run trinkets, by id |
 | `prefab` | `<file> <dx> <dy>` | prefab <file> <dx> <dy>: Prefab.Fabricate at the player + (dx, dy) |
 | `ws` | `<type> [commentPrefix]` | ws <type> [commentPrefix]: every world script of that type whose comment starts with the prefix: comment, enabled, trigger times, position, value (Variables) |
@@ -60,7 +62,7 @@ Send one as `gl <id> <verb> args` (a `{"do": "gl", "verb": ...}` scenario step, 
 | `ping` |  | ping: liveness; the probe version, phase, boot count, level and commands served. |
 | `multi` | `<verb> [args] + <verb> [args] ...` | multi <verb> [args] + <verb> [args] + ...: run each sub-command in this frame, the k-th replying under id "<id>.<k>", then one reply under <id> with the count. One typed line instead of one per probe: a fixture readback is 16 probes (session.gl_multi). |
 | `help` |  | help: every registered verb and its argument signature. |
-| `state` |  | state: phase, level, open window and the local player (class, level, hp, position); fixtures read back through it. |
+| `state` |  | state: phase, level, NG+, open window and the local player (class, level, hp, position); fixtures read back through it. |
 | `mods` |  | which resource mods the running game sees and has enabled: the live half of the environment check (gamelab/env/environments.json "mods") |
 | `ui` |  | open windows, bottom to top, by script class |
 | `overlays` |  | overlays: everything drawn over the world at this moment, so a scenario can require the set to be empty or expected (repro playbook 1.3). Windows (bottom to top), the tutorial panel (Tutorials::TutorialModule.m_showing, drawn by HUDTutorials), live announce / loot-log entries (HUDAnnounce subclasses, style id + text) and the boss bar. HUD notifications are not listed: HoH2's AddNotification is a stub ("TODO: Add notifications", WorldScript/GUI/AddNotification.as). |

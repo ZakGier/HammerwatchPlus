@@ -777,3 +777,43 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - **open-chest and open-chest-minimized fail before and after this session's probe changes**
   (081200 with the old probe): the "f" key press doesn't open the spawned cache. Those are
   GameLab self-tests of real key input, not HWP features; not traced.
+- **`WindowManager.CloseWindow` doesn't set `m_closing`; `Back()` / Escape does.** An NPC
+  window (`AShopContent.IsDone()`) only counts as done once `m_window.m_closing` is set, and
+  vanilla `NPCSharedBehavior.Use` closes the open window instead of interacting while
+  `m_current` is set. So after an HWP window closed itself with `CloseWindow(this)`, the next
+  use of that NPC or object did nothing: planting at a farm plot then using it again to water
+  needed two uses (plan-t9, 2026-10-18 morning). Seven HWP windows close themselves (farm,
+  pet bowl, pet dye, fishing, pirate, pet vendor, last-stats board); each now sets
+  `m_closing = true` first. The watering check passes on the first use since.
+- **`Town::Ours` alone can be fooled by an id reused for another HWP unit.** After a town
+  rebuild, the gold pet vendor's old id came back as a different `/hwp` unit, so "still
+  ours" was true and the vendor wasn't spawned again (plan-t10, fixed). `HWP::Town::Is(u,
+  unitPath)` also compares the producer; the vendor, well, bowl and pirate checks use it.
+  mod-town-rebuild and plan-t10 pass with it (090120, 090404).
+- **Re-running `import_hoh1.py pets` put the HoH1 pets back on the vanilla classes.** The
+  importer wrote `MiniPetWalking`/`MiniPetFlying`, and only `make_pet_dyes.py` (run by
+  doctor) rewrote them to the HWP classes. After a re-import at 04:06 all 22 HoH1 pet units
+  were vanilla again: no pickup toggles (vanilla always passes 319), no Fetch, skills,
+  dyes or puzzle-room waiting. `gl near` showed `behavior: MiniPetWalking`, and the Elf
+  Imp fetched gold with Gold off (plan-t9 090855-091950). Earlier "off" passes were drops
+  the pet happened not to reach. The importer now applies the pets module's `class_swaps`
+  itself, and `make_pet_dyes.py --verify` (doctor) reports any HoH1 unit still on a
+  vanilla class. plan-t9 092312: `HWPMiniPetWalking`, Gold off leaves the drop, on fetches it.
+- **A gold drop the pathfinder reaches can still be one the pet won't fetch.** A drop at
+  (150, 0) from the Bandit Keep start stayed put while (±106, 106) and (0, 150) were
+  fetched. `plan_checks.gold_drop` now wants a near-straight path (length ≤ 1.25 × the
+  distance), tries the diagonals first, and moves to the next direction when a drop isn't
+  fetched within 8 s.
+- **`Material::DropMaterial(type, amount, pos, shared, dropAnim)`** gives a pickup that
+  carries its amount. `gl spawn items/materials/gold.unit` gives one worth 0 (its behaviour
+  is never `Initialize`d). GameLab's new `drop` verb uses DropMaterial with no drop animation.
+- **`array.sort(callback)` on an empty array throws "Index out of bounds"** (reported on
+  the sort line). `MissionShopContent.GetItems` sorts its missions, and
+  `MissionDef::FetchMissionsFromSet` returns none while the set's conditionals fail (the
+  campaign set needs `mission_story_intro_find_npcs`, unset on a fresh character), so using
+  the town portal threw before any window opened (plan-t11 094100). `HWPCampaignShopContent`
+  says the portal is dormant instead and sorts only lists longer than one. plan-t11 094708:
+  dormant first, then two missions after `cht_set_flag mission_story_intro_find_npcs 1 0`.
+- **Escape with no window open opens the pause menu**, and a paused game ignores the next
+  steps (the wave statue run sat in the pause menu after a failed portal use). Bots only
+  press Escape when `state.window` is set.

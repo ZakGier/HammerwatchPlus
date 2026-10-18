@@ -217,7 +217,10 @@ module timers stop until it closes.
 ## Fixtures (`gamelab/fixtures/`)
 
 - `town-paladin`: level 1, in town.
-- `town-tavern`: town-paladin plus a built tavern.
+- `town-tavern`: town-paladin plus a built tavern. The lab town is minimal: `farm_0`
+  with no fields (4 soil patches from -560,1040, the well at -648,980 beside the pet bowl
+  at -600,980), no farmer or Pet Shop NPC (a bot spawns them beside the player with
+  `spawn`), no Hunter's Lodge (`build hunters_cabin` + `townrefresh`).
 - `mission-ranger`: level 20 full build, for combat floors.
 
 Recipe keys: `slot` (0), `binary_edits.enable_mods`, `character`, `setup` (gl verbs),
@@ -227,14 +230,19 @@ hash; the first run after a change does two extra boots.
 
 ## gl verbs
 
-48 verbs across the three gamelab-* mods: `docs/generated/verbs.md`, or `gl help` at runtime.
+61 verbs across the three gamelab-* mods: `docs/generated/verbs.md`, or `gl help` at runtime.
 
 - Read: `state`, `scan`, `near`, `usables`, `ui`, `overlays`, `widgets`, `inv`,
   `buildings`, `cvars`, `mods`, `clock`, `terrain`, `pathfind`, `reachmap`.
   `widgets` gives `text` for TextWidgets, `enabled` for buttons and `item` for item slots,
   and the open tab of a tabbed window as its own root (`PlayerMenu:PlayerMenuCharacterTab`).
   A button's caption is a BitmapString it can't read, so check a window's result line
-  instead. `near <r>` only returns units within r. `shop` entries carry `available` and `sub`.
+  instead. `near <r> [filter]` only returns units within r and is capped: a big radius in a
+  run truncates (radius 600 saw 3406 units), so pass a path filter (`near 800 pets/`).
+  `shop` entries carry `id`, `title`, `gold`, `available`, `icon` and `sub` (texts cut at 60).
+  `press <id>` clicks a widget of the top window (real ClickDown/ClickUp), so give rows ids.
+  `func <name...>` runs the top window's `OnFunc` as a key-bound action would (the loadout's
+  Play is `func play`, bound to MenuAdditional). `state` carries `ngp` (`g_ngp`) too.
   A reply over 15,000 chars comes back as an error (a longer log line looked fatal).
 - Read the game's own data:
   - `inspect player|town <dotted.path>`: the save record.
@@ -242,12 +250,15 @@ hash; the first run after a change does two extra boots.
   - `members <Type>`: script reflection.
 - Act through the game's own code path: `mission`, `build`, `equip`, `xp`, `material`,
   `upgrade`, `assign`, `charflag`, `spawn`, `save`, `pick`, `char`, `input`.
+  `spawn` of a material unit gives an amount-0 pickup; `drop <type> <amount> <dx> <dy>`
+  makes a real one (Material::DropMaterial).
 - `multi a + b + c` runs many verbs in one frame.
 
 ## Measurement-only verbs
 
 `teleport`, `cull` and `timescale` measure engine facts. A scenario that uses them is
-not evidence of play. `timescale` speeds up timers but not per-frame movement.
+not evidence of play. `timescale` speeds up timers but not per-frame movement. A
+teleport takes the pet along, so check following with a walk (`input <ms> <x> <y>`).
 
 ## Pilot intents and bots
 

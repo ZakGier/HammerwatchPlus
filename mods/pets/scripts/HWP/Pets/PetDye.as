@@ -375,6 +375,7 @@ class HWPDyerChoice : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}
@@ -382,6 +383,7 @@ class HWPDyerChoice : AWindowObject
 			return;
 		// close this one first (it un-pauses), then open the next (it pauses)
 		auto manager = m_manager;
+		m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 		manager.CloseWindow(this);
 		AWindowObject@ next;
 		if (name == "gear")
@@ -489,6 +491,7 @@ class HWPPetDyeMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}

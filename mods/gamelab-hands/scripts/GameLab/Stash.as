@@ -92,4 +92,30 @@ namespace GameLab
 		iw.ClickUp(false, vec2());
 		Emit(Reply(id, true).Str("window", Reflect::GetTypeName(wnd)).Str("widget", Reflect::GetTypeName(iw)));
 	}
+
+	// func <name...>: the top window's own OnFunc(null, name), the handler its buttons and
+	// key bindings call (MissionLoadoutMenu.Play is OnFunc "play"), for a window whose
+	// button has no widget id to press
+	void VerbFunc(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: func <name...>");
+			return;
+		}
+		auto gm = cast<BaseGameMode>(g_gameMode);
+		AWindowObject@ wnd;
+		if (gm !is null && gm.m_windowManager !is null)
+			@wnd = gm.m_windowManager.GetCurrentWindow();
+		if (wnd is null)
+		{
+			Fail(id, "no open window");
+			return;
+		}
+		string name = args[0];
+		for (uint i = 1; i < args.length(); i++)
+			name += " " + args[i];
+		Emit(Reply(id, true).Str("window", Reflect::GetTypeName(wnd)).Str("func", name));
+		wnd.OnFunc(null, name);
+	}
 }

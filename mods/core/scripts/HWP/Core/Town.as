@@ -103,6 +103,16 @@ namespace HWP
 			return prod !is null && prod.GetResourceName().findFirst("/hwp") >= 0;
 		}
 
+		// Ours, and still the unit file it was spawned from: a kept pointer whose id the
+		// reloaded town gave to another of our units (a farm plot on the old pet vendor's
+		// id) is not this one any more. For single fixed units (vendor, well, bowl).
+		bool Is(UnitPtr u, const string &in unitPath)
+		{
+			if (!Ours(u))
+				return false;
+			return u.GetUnitProducer() is Resources::GetUnitProducer(unitPath);
+		}
+
 		// A unit a module spawns once per town load at a fixed spot (the gambler,
 		// the notice board). A building upgrade reloads the town level without a
 		// new Start and destroys it; Due() says, at most once a second while in

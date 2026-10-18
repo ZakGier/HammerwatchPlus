@@ -177,7 +177,7 @@ namespace HWP
 			{
 				if (g_enabled)
 					SpawnBowl(BowlPos());
-				else if (HWP::Town::Ours(g_bowlUnit))
+				else if (HWP::Town::Is(g_bowlUnit, BOWL_UNIT))
 				{
 					g_bowlUnit.Destroy();
 					g_bowlUnit = UnitPtr();
@@ -996,7 +996,7 @@ namespace HWP
 
 		void SpawnBowl(vec3 pos)
 		{
-			if (HWP::Town::Ours(g_bowlUnit))
+			if (HWP::Town::Is(g_bowlUnit, BOWL_UNIT))
 				g_bowlUnit.Destroy();
 			g_bowlUnit = UnitPtr();
 			auto prod = Resources::GetUnitProducer(BOWL_UNIT);
@@ -1302,7 +1302,7 @@ class HWPPetMenu : AWindowObject
 	void AddRow(const string &in text, const string &in action)
 	{
 		auto row = m_rowTemplate.Clone();
-		row.SetID("");
+		row.SetID("row-" + m_rows.length()); // pressable by id (GameLab press)
 		row.m_visible = true;
 		auto btn = cast<ScalableSpriteButtonWidget>(row);
 		if (btn !is null)
@@ -1413,6 +1413,7 @@ class HWPPetMenu : AWindowObject
 	{
 		if (name == "close")
 		{
+			m_closing = true; // the NPC's IsDone() reads it; CloseWindow doesn't set it
 			m_manager.CloseWindow(this);
 			return;
 		}

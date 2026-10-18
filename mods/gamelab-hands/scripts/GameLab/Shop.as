@@ -58,6 +58,13 @@ namespace GameLab
 		return shop;
 	}
 
+	const uint SHOP_TEXT = 60;
+
+	string Cut(const string &in text)
+	{
+		return text.length() <= SHOP_TEXT ? text : text.substr(0, SHOP_TEXT);
+	}
+
 	string ShopJson(ShopWindow@ shop)
 	{
 		array<string> items;
@@ -67,14 +74,15 @@ namespace GameLab
 			auto it = shop.m_shopItems[i];
 			auto cost = it.GetCost();
 			Json e;
-			e.Str("id", it.GetID()).Int("gold", cost is null ? 0 : cost.GetCost(MaterialType::Gold))
-				.Bool("available", it.IsAvailable(rec)).Str("sub", it.GetSubTitle());
+			// title and subtitle cut to SHOP_TEXT chars: a pet shop's 40 entries stay under the reply cap
+			e.Str("id", it.GetID()).Str("title", Cut(it.GetTitle())).Int("gold", cost is null ? 0 : cost.GetCost(MaterialType::Gold))
+				.Bool("available", it.IsAvailable(rec)).Bool("icon", it.GetIcon() !is null).Str("sub", Cut(it.GetSubTitle()));
 			items.insertLast(e.Close());
 		}
 		return RawArray(items);
 	}
 
-	// shop [buy <index>]: the open shop's entries (id, gold price, IsAvailable, subtitle); buy presses
+	// shop [buy <index>]: the open shop's entries (id, title, gold price, IsAvailable, icon, subtitle); buy presses
 	// entry <index> the way a click does (ShopWindow.OnFunc "buy")
 	void VerbShop(const string &in id, array<string>@ args)
 	{

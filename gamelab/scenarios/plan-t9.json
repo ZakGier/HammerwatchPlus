@@ -1,0 +1,118 @@
+{
+ "name": "plan-t9",
+ "about": "Test plan through the plan_checks bot: the Gambler's bets (affordable ones only, flips pay what the result line says, Reshuffle), the farm (can, seed, plant, water twice, the well), the Pet Shop's HoH1 pets, pet XP and feeding at the bowl, the pet's Gold toggle in a run.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "bets,farm"
+   },
+   "save_as": "town",
+   "name": "bets and farm",
+   "expect": {
+    "bets_open": true,
+    "bets_affordable_enabled": true,
+    "bets_unaffordable_not_selected": true,
+    "bets_affordable_selected": true,
+    "bets_flip_animates": true,
+    "bets_gold_matches_result": true,
+    "bets_reshuffle_resets": true,
+    "bets_poor_flip_refused": true,
+    "well_no_can": true,
+    "farmer_open": true,
+    "can_bought": true,
+    "seed_bought": true,
+    "plots_found": true,
+    "planted": true,
+    "sprouts_shown": true,
+    "watered": true,
+    "wet_soil_shown": true,
+    "already_watered": true,
+    "well_refills": true,
+    "well_moved": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "petshop,petbowl"
+   },
+   "save_as": "pets",
+   "name": "pet shop and bowl",
+   "expect": {
+    "petshop_open": true,
+    "petshop_hoh1_listed": true,
+    "petshop_bought": true,
+    "pet_out": true,
+    "pet_levelup_line": true,
+    "bowl_points": true,
+    "bowl_feed": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "petgold"
+   },
+   "save_as": "run",
+   "name": "pet gold in a run",
+   "expect": {
+    "pet_picks_gold": true,
+    "pet_gold_off_ignores": true,
+    "pet_gold_on_picks": true,
+    "pet_follows": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

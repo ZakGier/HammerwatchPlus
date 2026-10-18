@@ -3,6 +3,7 @@
 	<string name="mission.hwp_forsaken_tower.desc">Climb the tower of the first game: the Mines, the Prison, the Armory, the Archives, the Chambers and the Battlements. Eighteen floors, six bosses, no way back.</string>
 	<string name="hwp.campaign.portal">Forsaken Tower portal</string>
 	<string name="hwp.campaign.status">Forsaken Tower: %state%. Mission %found% (%floors% floors, diff %span%)%flag%. Portal at %x%,%y%.</string>
+	<string name="hwp.campaign.portal_locked">The portal is dormant. Finish the story intro to open the Forsaken Tower.</string>
 	<string name="hwp.campaign.locked">, locked until the story intro is done</string>
 	<string name="hwp.campaign.missing">Forsaken Tower: mission not registered - check the log.</string>
 	<string name="mission.hwp_forsaken_tower_hoh1.name">The Forsaken Tower (HoH1 levels)</string>
