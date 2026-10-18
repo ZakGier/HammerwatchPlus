@@ -4,9 +4,12 @@ Farm plots in town. Crops grow while you run the dungeon, twice as fast when
 watered.
 
 - **Plots are the field grooves.** In a town with the farm segment, the
-  vanilla onion and wheat crops are hidden and every groove they stood on
-  becomes a plot: 8 onion columns plus 9 wheat rows (17 plots; farm levels
-  with only the wheat field have 9). Every machine reads the grooves from the
+  vanilla onion, wheat, cabbage, potato (and carrot) crops are hidden and
+  every groove they stood on becomes an empty plot until someone plants it:
+  farm level 4 has 8 onion columns, 9 wheat rows, 8 cabbage and 8 potato
+  columns (33 plots; up to 48). Onions and wheat come first so plots saved
+  before the other fields keep their index. Only crops on a groove are hidden
+  (not the tavern's small patch). Every machine reads the grooves from the
   same town prefab (`DetectFields`: crop units grouped by column / row, in a
   fixed order) and spawns its own sensor units along them
   (`doodads/hwp/farm_groove_v/h.unit`, one per 48 px, netsync none). A
@@ -17,16 +20,37 @@ watered.
   `hwp farm fields` turns them back on.
 - **Apple tree.** The apple tree below the wheat field is moved just above
   the field's top fence (local `SetPosition` on every machine).
+- **Town rebuilds.** A building upgrade rebuilds the town: our plot, well and
+  visual units go and fresh vanilla crops appear. Once a second the module
+  checks for that (`FieldsStale`: a hidden crop, plot or visual unit gone, or
+  a different vanilla crop count) and lays everything out again
+  (`RebuildTown`), so the fields stay empty and the plots stay planted.
 - **Interact.** On a plot: empty -> pick one of your seeds; growing -> water
-  it (one charge of your watering can, once per run); ready -> harvest. A
+  it (one charge of your watering can, once per run; bigger cans pour on
+  neighbouring rows too); ready -> harvest. A
   growing plot that cannot be watered now (already watered, no can, empty
   can) opens the plot window instead, with the reason, so herbs can be
   smoked when no plot is empty. In the soil-patch layout the plot unit you
   touch decides the plot, not the nearest patch centre.
 - **Farmer.** The vanilla farmer (`npc_misc_farmer_man.unit`, overridden;
   `.orig` kept) stands between the two fields instead of walking through them
-  and runs a shop: the watering can (150 g, 4 water), upgrades to 6 / 9 / 12
-  water (400 / 1000 / 2500 g) and seeds (15-250 g each).
+  and runs a shop (rows are just the name and price). You start without a
+  can and buy them in order, each replacing the last and coming full:
+
+  | Can | Price | Water | Area (rows per pour) |
+  |---|---|---|---|
+  | Mahogany | 200 g | 4 | 1x1 (1) |
+  | Tin | 1,500 g | 6 | 2x2 (2) |
+  | Iron | 5,000 g | 8 | 3x3 (3) |
+  | Gold | 15,000 g | 10 | 4x4 (4) |
+  | Diamond | 50,000 g | 12 | 5x5 (5) |
+
+  A plot is a whole groove, so the area is in grooves: one pour waters the
+  target row and its nearest rows of the same field (`WaterArea`; the soil
+  patch layout: the nearest patches), for one charge. The host waters what
+  is planted, growing and still dry in that area, and refuses when nothing
+  is. Seeds cost 15-250 g each. The farmer has a sprout icon on the minimap
+  (`gui/hwp/map_farmer.png`).
 - **Well.** A well (`doodads/hwp/farm_well.unit`, vanilla well sprites) next
   to the pet feeding bowl (`pets.bowl_x - 48`, `pets.bowl_y`; `hwp farm well`
   moves it to you, saved as `farm.well_x/y`) refills the can.
@@ -52,8 +76,9 @@ watered.
   twice before the host answers. Can tier, water and seeds are per character
   (`farm.can`, `farm.water`, `farm.seed.<id>` in the player's HWP data).
 - **Gear grid.** The watering can shows in the character screen's 3x3 gear
-  grid (bottom right, core `hwp-gear-can` slot): dimmed without a can, the
-  tooltip shows its tier and water.
+  grid (bottom right, core `hwp-gear-can` slot) in its tier's colour
+  (`doodads/hwp/farm.png`): dimmed without a can; the tooltip shows its name,
+  water and area.
 - **Run counting.** A gameplay load outside town sets pending, the next town
   load counts the run. Saves from before watering ("at" = planted on run N)
   convert to growth on load.
@@ -80,15 +105,20 @@ watered.
 
 1. `dev_check`: `[HWP:farming] self-check done: 9 seeds, 4 herb buffs`, no
    script issues.
-2. Town: the onion and wheat crops are gone, the log says
-   `fields: 8 onion grooves, 9 wheat grooves` and `spawned N plot units`; the
+2. Town: the onion, wheat, cabbage and potato crops are gone, the log says
+   `fields: 8 onion grooves, 9 wheat grooves, 8 cabbage grooves, 8 potato
+   grooves` and `spawned N plot units`; the
    apple tree stands above the wheat field's top fence and nothing collides
    where it used to be.
-3. Farmer between the fields: buy a can (gold -150, "Watering can: 4/4") and
-   a cabbage seed. Interact on an onion groove -> the window lists the seed;
+3. Farmer between the fields (sprout icon on the minimap): the rows read
+   "Mahogany Watering Can (1x1) - 200 g" and "Cabbage - 20 g". Buy the can
+   ("Mahogany Watering Can: 4/4 water") and a cabbage seed. Interact on an onion groove -> the window lists the seed;
    plant it -> sprouts along the whole groove.
 4. Interact again -> watered (can 3/4, wet soil under the sprouts); again ->
-   "Already watered". `farm.debug 1`, `hwp farm grow` -> the crop is ready
+   "Already watered". With a tin can or better, plant two neighbouring rows
+   and water one: "Watered 2 rows", one charge. Upgrade any building: the
+   log says `the town was rebuilt`, the fields are still empty and the
+   plots keep their crops. `farm.debug 1`, `hwp farm grow` -> the crop is ready
    (2 growth); interact -> harvested 2-4 cabbages, sometimes +1/+2 seeds.
 5. Well near the pet bowl refills the can; without a can it says so.
    `hwp farm well` moves it.

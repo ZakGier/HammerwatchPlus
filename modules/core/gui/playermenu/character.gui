@@ -97,15 +97,16 @@
 						<!--</scrollbar>-->
 					</rect>
 
-					<!-- HammerwatchPlus core: 4 px taller at the top; the other weapon set sits between its caption
-					     (above) and the swap key (below), the model moved down under them -->
+					<!-- HammerwatchPlus core: 4 px taller at the top so the other weapon set lines up with the
+					     equipped weapons (the class bar leaves no room above); its caption and swap key
+					     sit under it and the model moved down under them -->
 					<rect anchor="0 0" width="53" height="80" offset="89 38" color="#362B1E" spriteset="gui/sprite_rect.sval:character-border-lines" >
 						<unit id="unit" width="80" height="91" anchor="0.5 0.5" offset="0 34" color="#7f007f7f" />
 						<!-- HammerwatchPlus: the other weapon set (weaponswap) -->
-						<hwp-gear-label id="hwp-alt-caption" anchor="0.5 0" offset="0 0" font="text" color="#a6a6a6" />
-						<hwp-gear-label id="hwp-alt-hint" anchor="0.5 0" offset="0 36" font="text" color="#a6a6a6" />
-						<hwp-gear-slot id="hwp-alt-main" nav-pos="3 0" offset="0 9" width="26" height="26" anchor="0 0" item-offset="1 1" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="equipped" item-active="false" />
-						<hwp-gear-slot id="hwp-alt-off" nav-pos="4 0" offset="27 9" width="26" height="26" anchor="0 0" item-offset="1 1" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="equipped" item-active="false" />
+						<hwp-gear-label id="hwp-alt-caption" anchor="0.5 0" offset="0 27" font="text" color="#a6a6a6" />
+						<hwp-gear-label id="hwp-alt-hint" anchor="0.5 0" offset="0 35" font="text" color="#a6a6a6" />
+						<hwp-gear-slot id="hwp-alt-main" nav-pos="3 0" offset="0 0" width="26" height="26" anchor="0 0" item-offset="1 1" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="equipped" item-active="false" />
+						<hwp-gear-slot id="hwp-alt-off" nav-pos="4 0" offset="27 0" width="26" height="26" anchor="0 0" item-offset="1 1" background-src="equipped-slot" hover-src="equipped-slot-hover" visible="true" type="equipped" item-active="false" />
 					</rect>
 
 

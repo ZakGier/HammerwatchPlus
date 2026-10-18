@@ -1,6 +1,8 @@
-// Farming. Plots are the grooves of the town's onion and wheat fields (the
-// vanilla crops there are hidden), or a row of soil patches from farm.x/y
-// when the town has no fields. Every machine spawns its own plot units
+// Farming. Plots are the grooves of the town's onion, wheat, cabbage, potato
+// and carrot fields (the vanilla crops there are hidden: plots start empty),
+// or a row of soil patches from farm.x/y when the town has no fields. A town
+// upgrade rebuilds the town (new crop units, our units gone): the module
+// watches for that and lays the fields out again. Every machine spawns its own plot units
 // (netsync none) and works out the grooves from the same town prefab; the
 // plot state (seed, growth, watered) lives in the host's own TownRecord (HWP
 // data bag, "farm.*") and is mirrored to everyone with `farm.sync`.
@@ -13,7 +15,9 @@
 // watered since the last run. A gameplay load that is not the town sets
 // "farm.pending", the next town load counts the run.
 // The farmer (vanilla npc_misc_farmer_man, overridden) sells the watering
-// can, its upgrades and seeds; the farm well refills the can. Can, water and
+// cans (mahogany, tin, iron, gold, diamond: each holds more water and pours
+// on more neighbouring rows of a field at once) and seeds; the farm well
+// refills the can. Can, water and
 // seeds are per character (HWP::SaveData::Local).
 // Herbs can be smoked (one "hwp_herb" mission buff, lasts the next run).
 // Runs: on a floor that is not a boss room, the host places one ripe wild
@@ -35,15 +39,18 @@ namespace HWP
 		const string CROP_UNIT_PREFIX = "doodads/hwp/crops/";
 		const string ONION_UNIT = "doodads/terrain/crop_onions.unit";
 		const string WHEAT_UNIT = "doodads/terrain/crop_wheat.unit";
+		const string CABBAGE_UNIT = "doodads/terrain/crop_cabbage.unit";
+		const string POTATO_UNIT = "doodads/terrain/crop_potatoes.unit";
+		const string CARROT_UNIT = "doodads/terrain/crop_carrots.unit";
 		const string APPLE_UNIT = "doodads/terrain/tree_oak_apple.unit";
 		const string PLANT = "farm.plant";     // client -> host: { plot, seed }
 		const string HARVEST = "farm.harvest"; // client -> host: { plot }
-		const string WATER = "farm.water";     // client -> host: { plot }
+		const string WATER = "farm.water";     // client -> host: { plot, rows }
 		const string PULL = "farm.pull";       // client -> host: send me the state
 		const string SYNC = "farm.sync";       // host -> all: { runs, plots: [ { seed, g, w } ] }
 		const string YIELD = "farm.yield";     // host -> peer: { seed, n, seeds }
 		const string PLANTED = "farm.planted"; // host -> peer: { seed, plot } use a seed now
-		const string WATERED = "farm.watered"; // host -> peer: { seed, plot } use a water charge now
+		const string WATERED = "farm.watered"; // host -> peer: { seed, plot, n } use a water charge now
 		const string REFUSED = "farm.refused"; // host -> peer: { why } the request failed
 		const string KEY_PLOTS = "farm.plots";
 		const string KEY_RUNS = "farm.runs";
@@ -52,12 +59,19 @@ namespace HWP
 		const string KEY_WATER = "farm.water"; // per character: water charges in the can
 		const string KEY_SEED = "farm.seed.";  // per character: seeds owned, + seed id
 		const string HERB_SLOT = "hwp_herb";   // SetMissionBuff slot id
-		const int MAX_PLOTS = 24;
+		const int MAX_PLOTS = 48;
 		const int SPACING = 40;
 		const float SEGMENT = 48.0f;           // length of one groove plot unit
 		const float GROOVE_REACH = 14.0f;      // how far from a groove still counts as on it
-		const array<int> CAN_SIZE = { 0, 4, 6, 9, 12 };
-		const array<int> CAN_PRICE = { 0, 150, 400, 1000, 2500 };
+		// watering cans by tier (0 = none): 1 mahogany, 2 tin, 3 iron, 4 gold,
+		// 5 diamond. CAN_ROWS: field rows (grooves) one pour waters, the target
+		// and its nearest neighbours in the same field (1x1, 2x2, ... 5x5)
+		const array<int> CAN_SIZE = { 0, 4, 6, 8, 10, 12 };
+		const array<int> CAN_PRICE = { 0, 200, 1500, 5000, 15000, 50000 };
+		const array<int> CAN_ROWS = { 0, 1, 2, 3, 4, 5 };
+		// the can icons in doodads/hwp/farm.png, by tier (0: the mahogany one, dimmed)
+		const array<vec4> CAN_ICON = { vec4(64, 16, 16, 16), vec4(64, 16, 16, 16), vec4(64, 0, 16, 16),
+			vec4(80, 16, 16, 16), vec4(96, 16, 16, 16), vec4(112, 16, 16, 16) };
 
 		class Seed
 		{
@@ -150,7 +164,8 @@ namespace HWP
 
 		class Groove
 		{
-			bool vertical;   // an onion column (true) or a wheat row
+			bool vertical;   // a column (onions, cabbage, potatoes, carrots) or a wheat row
+			int field;       // which crop field it belongs to (watering neighbours)
 			float fixed;     // its x (vertical) or y
 			float lo;        // extent along the groove
 			float hi;
@@ -170,12 +185,13 @@ namespace HWP
 		}
 		array<Groove@> g_grooves;
 		array<UnitPtr> g_hiddenCrops;
+		int g_cropTotal = 0; // vanilla crop units in the scene at the last DetectFields
 		bool g_treeMoved = false;
 
 		float Key(vec3 p, bool vertical) { return vertical ? p.x : p.y; }
 
 		// the crop units of one field -> one groove per column (vertical) or row
-		void AddGrooves(array<UnitPtr>@ units, bool vertical)
+		void AddGrooves(array<UnitPtr>@ units, bool vertical, int field)
 		{
 			array<vec3> pos;
 			for (uint i = 0; i < units.length(); i++)
@@ -211,6 +227,7 @@ namespace HWP
 				{
 					@g = Groove();
 					g.vertical = vertical;
+					g.field = field;
 					g.lo = 1e9f;
 					g.hi = -1e9f;
 					sum = 0;
@@ -251,12 +268,12 @@ namespace HWP
 		}
 
 		// the apple tree below the wheat field goes just above its top fence
-		void MoveAppleTree(uint firstRow)
+		void MoveAppleTree(uint firstRow, uint endRow)
 		{
 			if (g_treeMoved)
 				return;
 			float minX = 1e9f, maxX = -1e9f, minY = 1e9f, maxY = -1e9f;
-			for (uint i = firstRow; i < g_grooves.length(); i++)
+			for (uint i = firstRow; i < endRow; i++)
 			{
 				auto g = g_grooves[i];
 				if (g.lo < minX) minX = g.lo;
@@ -285,24 +302,113 @@ namespace HWP
 			if (!HWP::Settings::GetBool("farm.fields", true))
 				return;
 
-			auto onions = FetchUnits(ONION_UNIT);
-			auto wheat = FetchUnits(WHEAT_UNIT);
-			AddGrooves(onions, true);
-			uint firstRow = g_grooves.length();
-			AddGrooves(wheat, false);
+			// onions and wheat first: their plot indices predate the other fields
+			// (saved plots stay where they were)
+			array<array<UnitPtr>@> crops = { FetchUnits(ONION_UNIT), FetchUnits(WHEAT_UNIT),
+				FetchUnits(CABBAGE_UNIT), FetchUnits(POTATO_UNIT), FetchUnits(CARROT_UNIT) };
+			array<string> names = { "onion", "wheat", "cabbage", "potato", "carrot" };
+			array<uint> first;
+			g_cropTotal = 0;
+			for (uint f = 0; f < crops.length(); f++)
+			{
+				first.insertLast(g_grooves.length());
+				g_cropTotal += crops[f].length();
+				AddGrooves(crops[f], f != 1, int(f));
+			}
+			first.insertLast(g_grooves.length());
 			if (g_grooves.length() > uint(MAX_PLOTS))
 				g_grooves.removeRange(MAX_PLOTS, g_grooves.length() - MAX_PLOTS);
 			if (g_grooves.length() == 0)
 				return;
 
-			for (uint i = 0; i < onions.length(); i++)
-				g_hiddenCrops.insertLast(onions[i]);
-			for (uint i = 0; i < wheat.length(); i++)
-				g_hiddenCrops.insertLast(wheat[i]);
+			// hide the crops on the grooves (not stray ones, like the tavern's patch)
+			for (uint f = 0; f < crops.length(); f++)
+				for (uint i = 0; i < crops[f].length(); i++)
+				{
+					vec3 p = crops[f][i].GetPosition();
+					for (uint k = 0; k < g_grooves.length(); k++)
+						if (g_grooves[k].field == int(f) && g_grooves[k].Dist(p) < 8.0f)
+						{
+							g_hiddenCrops.insertLast(crops[f][i]);
+							break;
+						}
+				}
 			SetCropsHidden(true);
-			if (g_grooves.length() > firstRow)
-				MoveAppleTree(firstRow);
-			HWP::Log("farming", "fields: " + firstRow + " onion grooves, " + (g_grooves.length() - firstRow) + " wheat grooves");
+			if (first[2] > first[1])
+				MoveAppleTree(first[1], first[2]);
+			string text = "";
+			for (uint f = 0; f < names.length(); f++)
+				if (first[f + 1] > first[f])
+					text += (text.isEmpty() ? "" : ", ") + (first[f + 1] - first[f]) + " " + names[f] + " grooves";
+			HWP::Log("farming", "fields: " + text + " (" + g_hiddenCrops.length() + " crops hidden)");
+		}
+
+		// a town rebuild (building upgrade) destroys our units and the hidden
+		// crops and places fresh vanilla crops: true when that happened
+		bool FieldsStale()
+		{
+			for (uint i = 0; i < g_hiddenCrops.length(); i++)
+				if (!g_hiddenCrops[i].IsValid() || g_hiddenCrops[i].IsDestroyed())
+					return true;
+			for (uint i = 0; i < g_plotUnits.length(); i++)
+				if (!g_plotUnits[i].IsValid() || g_plotUnits[i].IsDestroyed())
+					return true;
+			for (uint i = 0; i < g_visual.length(); i++)
+				if (!g_visual[i].IsValid() || g_visual[i].IsDestroyed())
+					return true;
+			if (g_wellUnit.IsValid() && g_wellUnit.IsDestroyed())
+				return true;
+			if (!HWP::Settings::GetBool("farm.fields", true))
+				return false;
+			int total = 0;
+			total += FetchUnits(ONION_UNIT).length();
+			total += FetchUnits(WHEAT_UNIT).length();
+			total += FetchUnits(CABBAGE_UNIT).length();
+			total += FetchUnits(POTATO_UNIT).length();
+			total += FetchUnits(CARROT_UNIT).length();
+			return total != g_cropTotal;
+		}
+
+		// the plots a pour on `plot` waters: it and its nearest rows in the same
+		// field (the patch row: its nearest patches), `rows` in all
+		array<int> WaterArea(int plot, int rows)
+		{
+			array<int> area;
+			array<float> dists;
+			int n = PlotCount();
+			for (int i = 0; i < n; i++)
+			{
+				float d;
+				if (UseFields())
+				{
+					if (g_grooves[i].field != g_grooves[plot].field || g_grooves[i].vertical != g_grooves[plot].vertical)
+						continue;
+					d = abs(g_grooves[i].fixed - g_grooves[plot].fixed);
+				}
+				else
+					d = float(abs(i - plot));
+				// insertion by distance (ties: lower index first)
+				uint j = area.length();
+				area.insertLast(i);
+				dists.insertLast(d);
+				while (j > 0 && dists[j - 1] > d)
+				{
+					area[j] = area[j - 1];
+					dists[j] = dists[j - 1];
+					j--;
+				}
+				area[j] = i;
+				dists[j] = d;
+			}
+			if (area.length() > uint(rows))
+				area.removeRange(rows, area.length() - rows);
+			return area;
+		}
+
+		// planted, still growing and not watered since the last run
+		bool Waterable(int i)
+		{
+			return i >= 0 && i < MAX_PLOTS && !g_plotSeed[i].isEmpty() && !IsReady(i) && !g_plotWet[i];
 		}
 
 		bool UseFields() { return g_grooves.length() > 0; }
@@ -507,6 +613,9 @@ namespace HWP
 			return t;
 		}
 		int CanSize() { return CAN_SIZE[CanTier()]; }
+		int CanRows() { return CAN_ROWS[CanTier()]; }
+		string CanName(int tier) { return Resources::GetString(".hwp.farming.can_name." + tier); }
+		string CanArea(int tier) { return CAN_ROWS[tier] + "x" + CAN_ROWS[tier]; }
 		int Water() { return HWP::SaveData::Local().GetInt(KEY_WATER, 0); }
 		void SetWater(int n) { HWP::SaveData::Local().SetInt(KEY_WATER, n); HWP::Gear::Changed(); }
 		int SeedCount(const string &in id) { return HWP::SaveData::Local().GetInt(KEY_SEED + id, 0); }
@@ -520,7 +629,7 @@ namespace HWP
 		{
 			if (CanTier() <= 0)
 				return Resources::GetString(".hwp.farming.can_none");
-			return Resources::GetString(".hwp.farming.can", { { "n", Water() }, { "max", CanSize() } });
+			return Resources::GetString(".hwp.farming.can", { { "name", CanName(CanTier()) }, { "n", Water() }, { "max", CanSize() } });
 		}
 
 		string SeedsText()
@@ -587,7 +696,8 @@ namespace HWP
 				return;
 			HWP::SaveData::Local().SetInt(KEY_CAN, next);
 			SetWater(CAN_SIZE[next]);
-			Say(Resources::GetString(next == 1 ? ".hwp.farming.can_bought" : ".hwp.farming.can_upgraded", { { "max", CAN_SIZE[next] } }));
+			Say(Resources::GetString(next == 1 ? ".hwp.farming.can_bought" : ".hwp.farming.can_upgraded", {
+				{ "name", CanName(next) }, { "max", CAN_SIZE[next] }, { "area", CanArea(next) } }));
 		}
 
 		void BuySeed(Seed@ seed)
@@ -709,19 +819,41 @@ namespace HWP
 			if (!Network::IsServer() || !g_inTown)
 				return;
 			int plot = HWP::SV::Int(data, "plot", -1);
-			if (plot < 0 || plot >= PlotCount() || g_plotSeed[plot].isEmpty() || IsReady(plot))
+			int rows = clamp(HWP::SV::Int(data, "rows", 1), 1, CAN_ROWS[CAN_ROWS.length() - 1]);
+			if (plot < 0 || plot >= PlotCount())
 			{
 				Refuse(peer, "not_growing");
 				return;
 			}
-			if (g_plotWet[plot])
+			auto area = WaterArea(plot, rows);
+			int n = 0;
+			bool growing = false;
+			string seed = "";
+			for (uint i = 0; i < area.length(); i++)
 			{
-				Refuse(peer, "already_watered");
+				int k = area[i];
+				if (!g_plotSeed[k].isEmpty() && !IsReady(k))
+					growing = true;
+				if (!Waterable(k))
+					continue;
+				g_plotWet[k] = true;
+				if (seed.isEmpty() || k == plot)
+					seed = g_plotSeed[k];
+				n++;
+			}
+			if (n == 0)
+			{
+				Refuse(peer, growing ? "already_watered" : "not_growing");
 				return;
 			}
-			g_plotWet[plot] = true;
-			HWP::Log("farming", "peer " + peer + " watered plot " + plot);
-			Answer(peer, WATERED, g_plotSeed[plot], plot);
+			HWP::Log("farming", "peer " + peer + " watered " + n + " plot(s) around plot " + plot + " (" + rows + " rows)");
+			SValueBuilder b;
+			b.PushDictionary();
+			b.PushString("seed", seed);
+			b.PushInteger("plot", plot);
+			b.PushInteger("n", n);
+			b.PopDictionary();
+			HWP::Net::Send(peer, WATERED, b.Build());
 			Changed();
 		}
 
@@ -791,9 +923,13 @@ namespace HWP
 		{
 			g_waitMs = 0;
 			auto seed = GetSeed(HWP::SV::Str(data, "seed"));
+			int rows = HWP::SV::Int(data, "n", 1);
 			int left = Water() - 1;
 			SetWater(left < 0 ? 0 : left);
-			Say(Resources::GetString(".hwp.farming.watered", { { "name", seed is null ? "" : seed.Name() }, { "n", Water() }, { "max", CanSize() } }));
+			if (rows > 1)
+				Say(Resources::GetString(".hwp.farming.watered_rows", { { "rows", rows }, { "n", Water() }, { "max", CanSize() } }));
+			else
+				Say(Resources::GetString(".hwp.farming.watered", { { "name", seed is null ? "" : seed.Name() }, { "n", Water() }, { "max", CanSize() } }));
 		}
 
 		void OnRefused(SValue@ data)
@@ -808,13 +944,15 @@ namespace HWP
 
 		// ---- actions (any machine) ----------------------------------------------
 
-		void RequestPlot(const string &in name, int plot, const string &in seed = "")
+		void RequestPlot(const string &in name, int plot, const string &in seed = "", int rows = 0)
 		{
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushInteger("plot", plot);
 			if (!seed.isEmpty())
 				b.PushString("seed", seed);
+			if (rows > 0)
+				b.PushInteger("rows", rows);
 			b.PopDictionary();
 			HWP::Net::Request(name, b.Build());
 		}
@@ -843,7 +981,15 @@ namespace HWP
 		// false (and says why) when the plot cannot be watered now
 		bool CanWater(int plot)
 		{
-			if (g_plotWet[plot])
+			bool any = false;
+			if (plot >= 0 && plot < PlotCount())
+			{
+				auto area = WaterArea(plot, CanTier() <= 0 ? 1 : CanRows());
+				for (uint i = 0; i < area.length(); i++)
+					if (Waterable(area[i]))
+						any = true;
+			}
+			if (!any)
 				Say(Resources::GetString(".hwp.farming.refused.already_watered"));
 			else if (CanTier() <= 0)
 				Say(Resources::GetString(".hwp.farming.need_can"));
@@ -859,7 +1005,7 @@ namespace HWP
 			if (Waiting() || !CanWater(plot))
 				return;
 			g_waitMs = WAIT_MS;
-			RequestPlot(WATER, plot); // the water is used in OnWatered
+			RequestPlot(WATER, plot, "", CanRows()); // the water is used in OnWatered
 		}
 
 		string ActiveHerbName(PlayerRecord@ rec)
@@ -976,6 +1122,19 @@ namespace HWP
 				RefreshVisuals();
 			else
 				HWP::Net::Request(PULL); // the sync refreshes the visuals
+		}
+
+		// after a town rebuild (FieldsStale): the same layout from the new units
+		void RebuildTown()
+		{
+			HWP::Log("farming", "the town was rebuilt: laying the fields out again");
+			g_treeMoved = false;
+			g_visual.removeRange(0, g_visual.length());
+			DetectFields();
+			SpawnPlots();
+			if (!g_wellUnit.IsValid() || g_wellUnit.IsDestroyed())
+				SpawnWell();
+			RefreshVisuals();
 		}
 
 		// the host's mission state as the level loads (module constructor):
@@ -1367,7 +1526,7 @@ class HWPFarmCanSlot : HWP::Gear::Slot
 {
 	ScriptSprite@ Icon() override
 	{
-		return ScriptSprite(Resources::GetTexture2D("doodads/hwp/farm.png"), vec4(64, 0, 16, 16));
+		return ScriptSprite(Resources::GetTexture2D("doodads/hwp/farm.png"), HWP::Farming::CAN_ICON[HWP::Farming::CanTier()]);
 	}
 
 	bool Dim() override { return HWP::Farming::CanTier() <= 0; }
@@ -1377,14 +1536,16 @@ class HWPFarmCanSlot : HWP::Gear::Slot
 		int tier = HWP::Farming::CanTier();
 		if (tier <= 0)
 			return Resources::GetString(".hwp.farming.slot_title");
-		return Resources::GetString(".hwp.farming.slot_title_tier", { { "tier", tier } });
+		return HWP::Farming::CanName(tier);
 	}
 
 	string Text() override
 	{
 		if (HWP::Farming::CanTier() <= 0)
 			return Resources::GetString(".hwp.farming.slot_none");
-		return Resources::GetString(".hwp.farming.slot_text", { { "n", HWP::Farming::Water() }, { "max", HWP::Farming::CanSize() } });
+		int tier = HWP::Farming::CanTier();
+		return Resources::GetString(".hwp.farming.slot_text", { { "n", HWP::Farming::Water() }, { "max", HWP::Farming::CanSize() },
+			{ "area", HWP::Farming::CanArea(tier) } });
 	}
 }
 
@@ -1603,16 +1764,14 @@ class HWPFarmMenu : AWindowObject
 		if (tier + 1 < int(HWP::Farming::CAN_SIZE.length()))
 		{
 			int next = tier + 1;
-			AddRow(Resources::GetString(next == 1 ? ".hwp.farming.buy_can" : ".hwp.farming.upgrade_can", {
-				{ "max", HWP::Farming::CAN_SIZE[next] }, { "price", HWP::Farming::CAN_PRICE[next] } }), "can");
+			AddRow(Resources::GetString(".hwp.farming.buy_can", { { "name", HWP::Farming::CanName(next) },
+				{ "area", HWP::Farming::CanArea(next) }, { "price", formatThousands(HWP::Farming::CAN_PRICE[next]) } }), "can");
 		}
 		AddHeader(Resources::GetString(".hwp.farming.seed_header"));
 		for (uint i = 0; i < HWP::Farming::g_seeds.length(); i++)
 		{
 			auto s = HWP::Farming::g_seeds[i];
-			AddRow(Resources::GetString(".hwp.farming.buy_seed", {
-				{ "name", s.Name() }, { "price", s.price }, { "runs", s.Runs(false) }, { "wet", s.Runs(true) },
-				{ "n", HWP::Farming::SeedCount(s.id) } }), "buy:" + s.id);
+			AddRow(Resources::GetString(".hwp.farming.buy_seed", { { "name", s.Name() }, { "price", s.price } }), "buy:" + s.id);
 		}
 		m_active.SetText(Resources::GetString(".hwp.farming.gold", { { "n", rec is null ? 0 : rec.GetMaterial(MaterialType::Gold) } }));
 		m_wares.SetText(HWP::Farming::SeedsText());
@@ -1742,6 +1901,7 @@ namespace Modules
 	{
 		bool m_spawnDone = true;
 		int m_delay = 0;
+		int m_watchMs = 0;
 
 		HWPFarmingModule()
 		{
@@ -1783,7 +1943,18 @@ namespace Modules
 			if (HWP::Farming::g_waitMs > 0)
 				HWP::Farming::g_waitMs -= ms;
 			if (m_spawnDone)
+			{
+				// a building upgrade rebuilds the town: fields, plots and well again
+				if (!g_inTown || !HWP::Farming::g_enabled || !HWP::Farming::g_visualsReady)
+					return;
+				m_watchMs += ms;
+				if (m_watchMs < 1000)
+					return;
+				m_watchMs = 0;
+				if (HWP::Farming::FieldsStale())
+					HWP::Farming::RebuildTown();
 				return;
+			}
 			m_delay += ms;
 			if (m_delay < 700)
 				return;

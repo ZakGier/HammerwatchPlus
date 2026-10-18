@@ -2,7 +2,12 @@
 
 %// HammerwatchPlus Farming: the farmer stands between the onion and the wheat
 %// field (PassiveMovement; vanilla walks him through the fields) and runs the
-%// farm shop (HWPFarmerShop: watering can, can upgrades, seeds).
+%// farm shop (HWPFarmerShop: watering cans and seeds).
+%// a shop icon on the minimap like the other merchants (gui/hwp/map_farmer.png)
+%defblock MinimapIcon
+	<minimap_sprite origin="7 7" layer="10" texture="gui/hwp/map_farmer.png" frame="0 0 14 14" />
+%endblock
+
 %defblock Movement
 	<string name="class">PassiveMovement</string>
 	<string name="anim-idle">idle 8</string>

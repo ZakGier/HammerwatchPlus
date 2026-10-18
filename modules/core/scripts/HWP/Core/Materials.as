@@ -111,7 +111,9 @@ class HWPMaterialWidget : AInteractableWidget
 			gm.m_windowManager.CloseTooltip();
 			return;
 		}
-		gm.m_windowManager.SetTooltip(CreateTooltip(Resources::GetSValue("gui/variable/itemtooltip_common.sval"), m_material.Title(), m_material.Text()), true);
+		// at the mouse, not the window's tooltip anchor (none here: top-center)
+		vec2 mouse = gm.GetMousePos() / gm.m_wndScale;
+		gm.m_windowManager.SetTooltip(CreateTooltip(Resources::GetSValue("gui/variable/itemtooltip_common.sval"), m_material.Title(), m_material.Text()), mouse + vec2(10, 10), true);
 	}
 
 	void Hover() override
