@@ -11,7 +11,12 @@
 		<group>
 			<group anchor="1 0.5" width="251" height="292" offset="0 17" >
 				<text text=".hwp.options.title" anchor="0.5 0" offset="0 4" font="title" color="#ffffff" />
-				<group id="rows" width="231" height="200" offset="10 22" flow="vbox" spacing="2" >
+				<!-- Search: rows whose title (or value) holds the text stay; filtered as you type (func-edit) -->
+				<rect width="231" height="18" offset="10 22" spriteset="gui/sprite_rect.sval:rounded" >
+					<text id="search-hint" text=".hwp.options.search" anchor="0 0.5" offset="5 0" font="text" color="#808080" />
+					<textinput id="search" textlimit="32" offset="5 6" width="221" height="18" font="gui/fonts/hw8.fnt" check-reserved-characters="true" func-edit="hwp-search" func="hwp-search" func-cancel="hwp-search-clear" />
+				</rect>
+				<group id="rows" width="231" height="200" offset="10 44" flow="vbox" spacing="2" >
 					<!-- Projectile colours (colors) -->
 					<group id="hwp-opt-colors" width="231" height="24" >
 						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />

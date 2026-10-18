@@ -207,6 +207,12 @@ class Game:
         winproc.key(self.window(), winproc.VK[name], hold)
         self.note("key", key=name, hold=hold)
 
+    def type_text(self, s: str, gap: float = 0.03) -> None:
+        """Posted WM_CHARs, as typing produces (the console's path): text for a focused
+        textinput. A gap of a frame per char lets the game read each."""
+        winproc.text(self.window(), s, gap)
+        self.note("type", text=s)
+
     # console() pauses, seconds: after opening the console, typing gap per char, before Enter,
     # after Enter, after closing; and key hold. The old fixed values (0.15/0.004/0.05/0.1/0.1,
     # hold 0.05 + 0.03 after each key) cost ~0.83 s per gl command; console-bench measures

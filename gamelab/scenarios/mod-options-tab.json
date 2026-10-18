@@ -1,6 +1,6 @@
 {
  "name": "mod-options-tab",
- "about": "The player menu's Plus tab (core HWPOptionsTab, gui/hwp/options.gui): the hook adds it to the open PlayerMenu, the colors row cycles presets on click, and the weaponswap row rebinds the swap key to the next key pressed (posted R). The swap key does nothing while the Plus tab is up, and Esc during a capture closes only the capture window (the menu stays, the key is kept).",
+ "about": "The player menu's Plus tab (core HWPOptionsTab, gui/hwp/options.gui): the hook adds it to the open PlayerMenu, the colors row cycles presets on click, and the weaponswap row rebinds the swap key to the next key pressed (posted R). The swap key does nothing while the Plus tab is up, and Esc during a capture closes only the capture window (the menu stays, the key is kept). The search field filters rows as you type (posted chars) and Esc clears it without closing the menu.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -229,6 +229,208 @@
    "pattern": "\\[HWP:weaponswap\\] set \\d in hand",
    "timeout": 5,
    "name": "control: with the menu closed the new key swaps"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "search",
+    "!click"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "press the search field"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "type",
+   "text": "swap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "search"
+   ],
+   "name": "the field holds what was typed",
+   "expect": {
+    "input": "swap"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-colors"
+   ],
+   "name": "search 'swap' hides the colors row",
+   "expect": {
+    "shown": false,
+    "tab": "HWPOptionsTab"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "name": "search 'swap' keeps the swap key row",
+   "expect": {
+    "shown": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "search"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "search",
+    "!click"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "press the search field again (a no-op while it still has the keyboard)"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "key",
+   "key": "escape",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-colors"
+   ],
+   "name": "Esc in the search clears it: rows back, menu still open",
+   "expect": {
+    "shown": true,
+    "tab": "HWPOptionsTab"
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "search",
+    "!click"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "press the search field again (a no-op while it still has the keyboard)"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "type",
+   "text": "qxz",
+   "gap": 0.12
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hint"
+   ],
+   "name": "no match: the hint says so",
+   "expect": {
+    "texts": "No settings match \"qxz\"."
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "hwp-opt-swapkey"
+   ],
+   "name": "no match: rows hidden",
+   "expect": {
+    "shown": false
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "hwp_options",
+    "-",
+    "search",
+    "!click"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "press the search field again (a no-op while it still has the keyboard)"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "key",
+   "key": "escape",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
   },
   {
    "do": "console",

@@ -504,6 +504,9 @@ class Run:
             time.sleep(s["seconds"])
         elif kind == "key":
             game.key(s["key"], s.get("hold", 0.05))
+        elif kind == "type":
+            # text into whatever has the keyboard (a textinput pressed with menu "!click")
+            game.type_text(s["text"], s.get("gap", 0.03))
         elif kind == "console":
             # a raw console line, as a human would type it in watch mode (cvars, the engine's
             # own debug draws); the effect is asserted by later steps, never assumed

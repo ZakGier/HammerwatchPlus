@@ -194,8 +194,26 @@ namespace GameLab
 	// material-inventory; "-" for none). Replies with the open tab's class. [widget]: a
 	// widget id in that tab: scrolls its scrollbar to the end, replies shown (it and every
 	// parent visible), its size, its "count" text (the core hwp-material cells) and every
-	// text under it in "texts" (joined with " | "). [func...]: first the open tab's
-	// OnFunc(<func>) as if a button with that func was clicked (e.g. "hwp-opt colors").
+	// text under it in "texts" (joined with " | "); a textinput adds "input" and "typing". [func...]: first the open tab's
+	// OnFunc(<func>) as if a button with that func was clicked (e.g. "hwp-opt colors");
+	// "!click" instead presses [widget] itself the way the window does on use
+	// (AInteractableWidget.ClickDown: a textinput starts taking typed text), 250 ms
+	// later: this command arrives through the console, whose closing would end the
+	// text input a click started while it was open.
+	AInteractableWidget@ g_pendingClick;
+	int g_pendingClickMs = 0;
+
+	void UpdatePendingClick(int ms)
+	{
+		if (g_pendingClick is null)
+			return;
+		g_pendingClickMs -= ms;
+		if (g_pendingClickMs > 0)
+			return;
+		g_pendingClick.ClickDown(false, vec2());
+		@g_pendingClick = null;
+	}
+
 	void VerbMenu(const string &in id, array<string>@ args)
 	{
 		auto gm = cast<HWR2GameMode>(g_gameMode);
@@ -224,7 +242,18 @@ namespace GameLab
 		MenuTab@ tab = tabs.m_tabs[tabs.m_currentIndex];
 		if (args.length() > 1 && args[1] != "-")
 			tab.OnFunc(null, "set-tab " + args[1]);
-		if (args.length() > 3)
+		if (args.length() > 3 && args[3] == "!click")
+		{
+			auto iw = cast<AInteractableWidget>(tab.m_widget.GetWidgetById(args[2]));
+			if (iw is null)
+			{
+				Fail(id, "no interactable widget '" + args[2] + "' to click");
+				return;
+			}
+			@g_pendingClick = iw;
+			g_pendingClickMs = 250;
+		}
+		else if (args.length() > 3)
 		{
 			string func = args[3];
 			for (uint i = 4; i < args.length(); i++)
@@ -255,6 +284,9 @@ namespace GameLab
 			CollectTexts(w, texts);
 			r.Str("widget", args[2]).Bool("shown", shown).Int("w", w.m_width).Int("h", w.m_height)
 				.Str("count", count !is null ? count.m_str : "").Str("texts", join(texts, " | "));
+			auto ti = cast<TextInputWidget>(w);
+			if (ti !is null)
+				r.Str("input", ti.m_text.plain()).Bool("typing", ti.m_typing);
 		}
 		Emit(r);
 	}
@@ -304,6 +336,7 @@ namespace Modules
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
 		{
 			GameLab::SeeInput(gameInput);
+			GameLab::UpdatePendingClick(ms);
 			if (!paused)
 				GameLab::ApplyHeld(ms, gameInput);
 		}

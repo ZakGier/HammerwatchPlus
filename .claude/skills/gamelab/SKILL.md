@@ -203,6 +203,7 @@ Cite a result as `<scenario> <YYYYmmdd-HHMMSS>`.
 | `same_process` | `mark` / `since` | assert no restart in between |
 | `sval` | `file`, `dest` | export a datatable as the game parsed it |
 | `key`, `console`, `sleep`, `minimize` | | posted key, raw console line, wait, minimize |
+| `type` | `text`, `gap` | posted WM_CHARs into whatever has the keyboard (a textinput pressed with `gl menu <tab> - <widget> !click`). Each `gl` command opens the console, whose key char (`) reaches a focused field unless the field forbids it; identical consecutive chars arrive once ("qqq" -> "q") |
 
 ## Fixtures (`gamelab/fixtures/`)
 

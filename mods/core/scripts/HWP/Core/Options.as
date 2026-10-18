@@ -204,12 +204,24 @@ class HWPOptionsTab : MenuTab
 {
 	array<Widget@> m_rows;
 	TextWidget@ m_hint;
+	TextInputWidget@ m_search;
+	TextWidget@ m_searchHint;
+	string m_query;            // the search text, lower case
+	bool m_relist;             // rows changed while typing: rebuild the navigation list after
 	string m_capture;          // id of the KeyOption waiting for a key (HWPKeyCaptureWindow), or ""
 
 	HWPOptionsTab(GUIBuilder@ b, uint id)
 	{
 		super(b, id, "gui/hwp/options.gui");
 		@m_hint = cast<TextWidget>(m_widget.GetWidgetById("hint"));
+		@m_search = cast<TextInputWidget>(m_widget.GetWidgetById("search"));
+		@m_searchHint = cast<TextWidget>(m_widget.GetWidgetById("search-hint"));
+		// the console key's char: it opens the console, it is never part of a search
+		if (m_search !is null)
+		{
+			m_search.m_forbiddenCharacters.insertLast("`");
+			m_search.m_forbiddenCharacters.insertLast("~");
+		}
 		auto list = m_widget.GetWidgetById("rows");
 		if (list !is null)
 		{
@@ -233,15 +245,40 @@ class HWPOptionsTab : MenuTab
 			t.SetText(text);
 	}
 
+	// a row matches when its title or value holds the search text
+	bool Matches(HWP::Options::Option@ opt)
+	{
+		if (m_query.isEmpty())
+			return true;
+		return opt.Title().toLower().findFirst(m_query) >= 0 || opt.Value().toLower().findFirst(m_query) >= 0;
+	}
+
+	void SetQuery(const string &in text)
+	{
+		string q = text.toLower();
+		// (trimmed: a trailing space should not hide everything)
+		while (q.length() > 0 && q.substr(q.length() - 1) == " ")
+			q = q.substr(0, q.length() - 1);
+		while (q.length() > 0 && q.substr(0, 1) == " ")
+			q = q.substr(1);
+		if (q == m_query)
+			return;
+		m_query = q;
+		Refresh();
+	}
+
 	void Refresh()
 	{
 		bool relist = false;
+		int shown = 0;
 		for (uint i = 0; i < m_rows.length(); i++)
 		{
 			auto row = m_rows[i];
 			string id = RowId(row);
 			auto opt = HWP::Options::Get(id);
-			bool show = opt !is null;
+			bool show = opt !is null && (id == m_capture || Matches(opt));
+			if (show)
+				shown++;
 			if (row.m_visible != show)
 			{
 				row.m_visible = show;
@@ -259,12 +296,27 @@ class HWPOptionsTab : MenuTab
 			auto opt = HWP::Options::Get(m_capture);
 			if (opt !is null)
 				hint = Resources::GetString(".hwp.options.capture", { { "what", opt.Title() } });
+			else if (shown == 0 && !m_query.isEmpty())
+				hint = Resources::GetString(".hwp.options.nomatch", { { "q", m_query } });
 			if (m_hint.m_str != hint)
 				m_hint.SetText(hint);
 		}
-		// hidden rows' buttons leave the keyboard/gamepad navigation
+		// hidden rows' buttons leave the keyboard/gamepad navigation; not while
+		// typing in the search (rebuilding the list takes the field's focus and
+		// ends the typing after the first letter that hides a row)
 		if (relist)
+			m_relist = true;
+		if (m_relist && (m_search is null || !m_search.m_typing))
+		{
+			m_relist = false;
 			RefreshInteractableWidgets(m_widget);
+		}
+		if (m_searchHint !is null)
+		{
+			bool empty = m_search is null || (m_search.m_text.length() == 0 && !m_search.m_typing);
+			if (m_searchHint.m_visible != empty)
+				m_searchHint.m_visible = empty;
+		}
 	}
 
 	void CaptureEnded()
@@ -289,6 +341,17 @@ class HWPOptionsTab : MenuTab
 
 	void OnFunc(Widget@ sender, const string &in name) override
 	{
+		if (name == "hwp-search" && m_search !is null)
+		{
+			SetQuery(m_search.m_text.plain());
+			return;
+		}
+		if (name == "hwp-search-clear" && m_search !is null)
+		{
+			m_search.SetText("");
+			SetQuery("");
+			return;
+		}
 		auto parse = name.split(" ");
 		if (parse.length() < 2 || parse[0] != "hwp-opt")
 			return;
