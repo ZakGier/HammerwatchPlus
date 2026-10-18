@@ -29,6 +29,24 @@
 						<scalebutton id="button" func="hwp-opt swapkey" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
 						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
 					</group>
+					<!-- Skill 4 key (core, SkillKeys.as) -->
+					<group id="hwp-opt-skill4" width="231" height="24" >
+						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />
+						<scalebutton id="button" func="hwp-opt skill4" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
+						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
+					</group>
+					<!-- Skill 5 key (core, SkillKeys.as) -->
+					<group id="hwp-opt-skill5" width="231" height="24" >
+						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />
+						<scalebutton id="button" func="hwp-opt skill5" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
+						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
+					</group>
+					<!-- Skill 6 key (core, SkillKeys.as) -->
+					<group id="hwp-opt-skill6" width="231" height="24" >
+						<text id="title" text="" anchor="0 0.5" offset="4 0" font="text" color="#ffffff" />
+						<scalebutton id="button" func="hwp-opt skill6" spriteset="scalebutton-regular" width="112" anchor="1 0.5" offset="-2 0" />
+						<group width="112" height="18" anchor="1 0.5" offset="-2 0" ><text id="value" text="" anchor="0.5 0.5" offset="0 0" font="text" color="#ffffff" /></group>
+					</group>
 				</group>
 				<text id="hint" text="" anchor="0.5 1" offset="0 -8" font="text" color="#a6a6a6" />
 			</group>

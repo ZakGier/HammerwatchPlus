@@ -11,6 +11,8 @@
 	<string name="hwp.farming.smoked">\cffd27fYou smoke a %name%. %desc%\d</string>
 	<string name="hwp.farming.active">Active herb: %name%</string>
 	<string name="hwp.farming.active_none">Active herb: none</string>
+	<string name="hwp.farming.loadout">Herb</string>
+	<string name="hwp.farming.loadout_herb">%name%: smoked in town, for this run</string>
 	<string name="hwp.farming.wares">Wares: %list%</string>
 	<string name="hwp.farming.wares_none">No crops or herbs in your bag.</string>
 	<string name="hwp.farming.no_gold">Not enough gold.</string>

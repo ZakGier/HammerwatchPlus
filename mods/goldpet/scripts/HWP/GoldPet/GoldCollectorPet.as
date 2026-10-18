@@ -73,6 +73,17 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 		}
 	}
 
+	// The owner's bought tier (char flags). The vendor spawn configures the tier, but
+	// the vanilla summon restore (Player.as: record.summons, on every level load and
+	// character load) produces the unit fresh, at the default tier 1, and never calls
+	// ConfigureForTier; on the host, a remote owner's flags also arrive a little later.
+	void SyncTier()
+	{
+		int tier = HWP::GoldPet::GetPlayerPetTier(m_ownerRecord);
+		if (tier > m_petTier)
+			ConfigureForTier(tier);
+	}
+
 	// Override to receive pathfinding callbacks for our custom PathFollower
 	void QueuedPathfind(array<vec2>@ path) override
 	{
@@ -118,6 +129,7 @@ class HWPGoldCollectorPet : PlayerOwnedActor
 		if (m_scanTimer <= 0)
 		{
 			m_scanTimer = m_scanInterval;
+			SyncTier();
 			ScanForPickups();
 		}
 

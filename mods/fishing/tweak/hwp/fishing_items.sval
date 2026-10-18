@@ -2,8 +2,9 @@
 %// HammerwatchPlus Fishing: every fish is a one-handed sword (it swings like a longsword
 %// and takes the same enchantments). They only come from fishing (the false conditional
 %// keeps them out of random drops and shops); the item level is set when caught (the floor's
-%// drop level, NG+ included). 1-star fish are common, 2-star uncommon, 3-star rare, and
-%// they sell for 1 / 3 / 5 bet tokens. Icons: items/hwp/fish.png (tools/make_fish_icons.py).
+%// drop level, NG+ included). 1-star fish are common, 2-star uncommon, 3-star rare (they
+%// get that quality's modifiers when caught, like dropped gear), and they sell for
+%// 1 / 3 / 5 bet tokens while nobody enchanted, upgraded or rerolled them. Icons: items/hwp/fish.png (tools/make_fish_icons.py).
 <array>
 	<dict>
 		<string name="id">hwp_fish_perch</string>

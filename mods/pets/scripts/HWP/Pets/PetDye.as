@@ -124,16 +124,21 @@ namespace HWP
 			for (uint i = 0; i < PlayerColors::Instances.length(); i++)
 				if (Usable(PlayerColors::Instances[i]))
 					list.insertLast(PlayerColors::Instances[i]);
-			list.sort(function(a, b)
+			// sort() throws on an empty array (vanilla guards every sort the same way):
+			// no blueprint dyes unlocked yet is the normal start of a town
+			if (list.length() > 1)
 			{
-				if (a.m_quality != b.m_quality)
-					return int(a.m_quality) < int(b.m_quality);
-				if (a.m_category != b.m_category)
-					return a.m_category < b.m_category;
-				if (a.m_sortOrder != b.m_sortOrder)
-					return a.m_sortOrder < b.m_sortOrder;
-				return a.m_id < b.m_id;
-			});
+				list.sort(function(a, b)
+				{
+					if (a.m_quality != b.m_quality)
+						return int(a.m_quality) < int(b.m_quality);
+					if (a.m_category != b.m_category)
+						return a.m_category < b.m_category;
+					if (a.m_sortOrder != b.m_sortOrder)
+						return a.m_sortOrder < b.m_sortOrder;
+					return a.m_id < b.m_id;
+				});
+			}
 			return list;
 		}
 

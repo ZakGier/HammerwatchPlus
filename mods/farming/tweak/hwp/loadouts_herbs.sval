@@ -1,0 +1,14 @@
+<!-- A segment of the mission loadout listing the Holy Herb smoked in town
+     (HWPHerbLoadout, FarmingModule.as); it shows only while one is active. -->
+<loader order="10">MissionLoadout::LoadMultiple</loader>
+<array>
+	<dict>
+		<string name="class">HWPHerbLoadout</string>
+		<string name="id">hwp_herb</string>
+		<string name="name">.hwp.farming.loadout</string>
+
+		<string name="gui">gui/hwp_herb_loadout.gui</string>
+		<int name="width">250</int>
+		<int name="height">26</int>
+	</dict>
+</array>

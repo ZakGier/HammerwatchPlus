@@ -93,7 +93,7 @@ in a 2-player lobby for anything networked.
 
 | id | Feature | Notes |
 |---|---|---|
-| `core` | shared library, the `hwp` console command (and `hwp` copies of the vanilla cheats), host-synced settings (`HWP::Settings::Sync(prefix)`), wares registry (`HWP::Market`, `hwp wares`, `hwp sell`), settings-backed town doodads (`HWP::Town::Placeable`), pack spawner (`HWP::Spawner`), level generation safety net (`HWPOutdoorGenerator`) | overrides `system/messages.net` and the five outdoor `tweak/missions/themes_*` files (one line each: `gen-class`) |
+| `core` | shared library, the `hwp` console command (and `hwp` copies of the vanilla cheats), host-synced settings (`HWP::Settings::Sync(prefix)`), wares registry (`HWP::Market`, `hwp wares`, `hwp sell`), settings-backed town doodads (`HWP::Town::Placeable`), pack spawner (`HWP::Spawner`), level generation safety net (`HWPOutdoorGenerator`), extra skill keys 4-6 for the 4th-6th active (`HWPSkillKeysHelper` swapped into `Player.m_targetHelper`, `HWPSkillKeysHUDPlayer` in the HUD, Plus-tab rows `skill4`-`skill6`, `hwp skillkeys`), Subclass Picker skill row by skill type (`HWP::SubclassPick`, the open vanilla window patched in place) | overrides `system/messages.net` and the five outdoor `tweak/missions/themes_*` files (one line each: `gen-class`) |
 | `gambler` | Higher/Lower card game NPC, wares buyer, gear reroll (2000 g x ilvl, `Equipment::Generator::ModifyItem`), bet tokens in the Supplies section | |
 | `droptrade` | drop equipment for friends (Drop hint/button + raw Q key next to vanilla Destroy) | overrides `GUI/PlayerMenu/Character.as`, `GUI/Widgets/EquipmentItemWidget.as` |
 | `goldpet` | gold-collecting cat pet + vendor | requires `pets` (XP + skills as the external pet `hwp_goldpet`) |

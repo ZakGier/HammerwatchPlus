@@ -7,9 +7,11 @@
 // The same parking serves the candle's Secret Sense: the pet sets m_hold and
 // m_holdPos (HWP::Pets::SkillRunner.UpdateSecrets) and the pet hovers there.
 //
-// Puzzle units are plain doodads without behaviours, so they are recognised by
-// producer path: doodads/buttons/* (magic / number / lever buttons) and anything
-// with "puzzle" in the path (prefabs/puzzles/*, puzzle_brazier, puzzle_chance).
+// Puzzle units are plain doodads without behaviours or collision, so they are
+// fetched by position (FetchAllUnits) and recognised by producer path:
+// doodads/buttons/* (magic / number / lever buttons, also in HWP's Constellation)
+// and anything with "puzzle" in the path (prefabs/puzzles/*, puzzle_brazier,
+// puzzle_chance, doodads/hwp/puzzle_constellation_dot).
 namespace HWP
 {
 	namespace PetWait
@@ -40,9 +42,11 @@ namespace HWP
 			return false;
 		}
 
+		// FetchAllUnits, not QueryCircle: the buttons have no collision shape, so QueryCircle
+		// (sensors or not) never returns them. A radius fetch every CHECK_MS per pet is cheap.
 		bool NearPuzzle(vec2 pos)
 		{
-			auto results = g_scene.QueryCircle(pos, g_radius, ~0, RaycastType::Any, true);
+			auto results = g_scene.FetchAllUnits(~0, pos, g_radius);
 			for (uint i = 0; i < results.length(); i++)
 			{
 				UnitPtr unit = results[i];

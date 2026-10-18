@@ -586,10 +586,14 @@ namespace HWP
 				HWP::LogError("fishing", "missing BaseItem " + fish.ItemId() + " (tweak/hwp/fishing_items.sval)");
 				return null;
 			}
-			// built directly: the generator would refuse the item's false conditional
+			// built like Generator.GenerateItem (which would refuse the item's false
+			// conditional): an uncommon or rare fish gets the modifiers that quality has,
+			// as the enchanter expects (its modifier slots); 1-star fish get none
 			Equipment::Item item;
 			item.quality = fish.Quality();
 			@item.baseItem = base;
+			Equipment::Generator gen;
+			gen.GenerateItemMods(item, ilvl);
 			item.Finalize(randf(), ilvl, 0, null, null);
 			return item;
 		}
@@ -602,6 +606,8 @@ namespace HWP
 			if (rec is null || fish is null)
 				return;
 			auto item = MakeFishItem(fish, ilvl > 0 ? ilvl : CatchItemLevel(rec, fish));
+			if (item !is null)
+				HWP::Market::Remember(rec, item); // a ware (Sell takes it) while nobody works on it
 			if (item is null)
 				HWP::Market::Add(rec, fish.id, 1);
 			else if (rec.equipInventory !is null && rec.equipInventory.CanAdd())
@@ -1631,6 +1637,7 @@ namespace Modules
 	{
 		bool m_spawnDone = true;
 		int m_delay = 0;
+		bool m_migrated = false;
 
 		HWPFishingModule()
 		{
@@ -1664,10 +1671,20 @@ namespace Modules
 			HWP::Fishing::g_pirateWanted = false;
 			m_spawnDone = false;
 			m_delay = 0;
+			m_migrated = false;
 		}
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
 		{
+			// fish from before their modifiers were rolled (2/3-star ones with none broke
+			// the enchanter): roll them once the character is in town
+			if (!m_migrated && g_inTown && GetLocalPlayerRecord() !is null)
+			{
+				m_migrated = true;
+				int n = HWP::Market::Migrate(GetLocalPlayerRecord());
+				if (n > 0)
+					HWP::Log("fishing", "rolled the modifiers of " + n + " fish caught without them (older save)");
+			}
 			if (!g_inTown && !paused && HWP::Fishing::g_enabled)
 				HWP::Fishing::TickRun(ms);
 			if (g_inTown && HWP::Fishing::g_trapsDirty && m_spawnDone)

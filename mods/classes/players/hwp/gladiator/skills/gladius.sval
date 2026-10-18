@@ -34,7 +34,7 @@
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">8</int>
 			<dict name="binds">
-				<int name="proj-ttl">600</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.2</float>
 				<int name="physical-dmg">0</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -45,6 +45,11 @@
 			</dict>
 		<dict name="actions">
 			<array name="cast">
+				<!-- the projectile's target is the thrower: the whirling axe's 1200-4500 ms
+				     SeekingAng flies it back (the vanilla whirling_axes cast does the same) -->
+				<dict>
+					<bool name="target-self">true</bool>
+				</dict>
 				<dict>
 					<string name="class">ShootProjectile</string>
 					<string name="projectile">players/warrior/projectiles/whirling_axe_right.unit</string>
@@ -67,7 +72,7 @@
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
 			<int name="mana-cost">8</int>
 			<dict name="binds">
-				<int name="proj-ttl">650</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.4</float>
 				<int name="physical-dmg">0</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -81,7 +86,7 @@
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
 			<int name="mana-cost">8</int>
 			<dict name="binds">
-				<int name="proj-ttl">700</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.6</float>
 				<int name="physical-dmg">0</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -95,7 +100,7 @@
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
 			<int name="mana-cost">8</int>
 			<dict name="binds">
-				<int name="proj-ttl">750</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.8</float>
 				<int name="physical-dmg">0</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -109,7 +114,7 @@
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
 			<int name="mana-cost">8</int>
 			<dict name="binds">
-				<int name="proj-ttl">800</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">2.0</float>
 				<int name="physical-dmg">0</int>
 				<float name="fire-dmg-mul">0.0</float>

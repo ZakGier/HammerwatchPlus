@@ -111,7 +111,9 @@ namespace HWP { namespace GoldPet
 		if (player is null || !player.local)
 			return;
 		SValueBuilder b;
+		b.PushDictionary(); // without it the root is the bare integer and "tier" reads back as 1
 		b.PushInteger("tier", tier);
+		b.PopDictionary();
 		HWP::Net::Request(SPAWN_REQUEST, b.Build());
 	}
 

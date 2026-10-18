@@ -59,6 +59,7 @@ namespace HWP
 		const string KEY_WATER = "farm.water"; // per character: water charges in the can
 		const string KEY_CAN_V = "farm.can_v"; // per character: CAN_* table version of KEY_CAN
 		const string KEY_SEED = "farm.seed.";  // per character: seeds owned, + seed id
+		const string KEY_HERB = "farm.herb";   // per character: the strain smoked in town, until its run is under way
 		const string HERB_SLOT = "hwp_herb";   // SetMissionBuff slot id
 		const int MAX_PLOTS = 48;
 		const int SPACING = 40;
@@ -1114,10 +1115,40 @@ namespace HWP
 			}
 			HWP::Market::Take(rec, herbId, 1);
 			rec.SetMissionBuff(HashString(HERB_SLOT), buff);
+			HWP::SaveData::Player(rec).SetString(KEY_HERB, herbId);
 			g_lastMessage = Resources::GetString(".hwp.farming.smoked", { { "name", buff.m_name }, { "desc", buff.m_description } });
 			HWP::Commands::Reply(g_lastMessage);
 			g_version++;
 			return true;
+		}
+
+		// The loadout menu empties the mission buffs as it opens (ResetForNewMission,
+		// GUI/MissionLoadoutMenu.as:207), and the herb smoked in town went with them:
+		// in town it is put back; once its run is under way the note goes, so the
+		// run end (MissionEndMenu's ResetForNewMission) ends it after one run
+		void KeepHerb()
+		{
+			auto rec = GetLocalPlayerRecord();
+			if (rec is null)
+				return;
+			auto bag = HWP::SaveData::Player(rec);
+			if (!bag.Has(KEY_HERB))
+				return;
+			if (!g_inTown)
+			{
+				bag.Remove(KEY_HERB);
+				return;
+			}
+			if (!ActiveHerbName(rec).isEmpty())
+				return;
+			auto buff = MissionBuff::Get(HashString("hwp_herb_" + bag.GetString(KEY_HERB)));
+			if (buff is null)
+			{
+				bag.Remove(KEY_HERB);
+				return;
+			}
+			rec.SetMissionBuff(HashString(HERB_SLOT), buff);
+			HWP::Log("farming", "the loadout cleared the mission buffs: " + buff.m_name + " put back");
 		}
 
 		// ---- spawning (local, every machine) + run counting (host) -------------
@@ -2031,6 +2062,7 @@ namespace Modules
 		{
 			if (HWP::Farming::g_waitMs > 0)
 				HWP::Farming::g_waitMs -= ms;
+			HWP::Farming::KeepHerb();
 			if (m_spawnDone)
 			{
 				// a building upgrade rebuilds the town: fields, plots and well again
@@ -2068,5 +2100,33 @@ namespace HWPFarming
 	{
 		if (record !is null && record.local && Network::IsServer())
 			HWP::Farming::g_endState = record.currMissionState;
+	}
+}
+
+// The mission loadout's herb line (tweak/hwp/loadouts_herbs.sval): the strain smoked
+// in town. The menu builds its segments before it empties the mission buffs
+// (ResetForNewMission, GUI/MissionLoadoutMenu.as:207; KeepHerb puts the herb back)
+class HWPHerbLoadout : MissionGUILoadout
+{
+	HWPHerbLoadout(SValue& params)
+	{
+		super(params);
+	}
+
+	bool BuildGUI(PlayerRecord@ plr, MissionLoadoutMenu@ menu, Widget@ segment, int yNavPos) override
+	{
+		string name = HWP::Farming::ActiveHerbName(plr);
+		if (name.isEmpty())
+			return false;
+		if (!MissionGUILoadout::BuildGUI(plr, menu, segment, yNavPos))
+			return false;
+
+		auto rect = segment.GetWidgetById("rect").Clone();
+		rect.m_visible = true;
+		auto text = cast<TextWidget>(rect.GetWidgetById("hwp-herb"));
+		if (text !is null)
+			text.SetText(Resources::GetString(".hwp.farming.loadout_herb", { { "name", name } }));
+		segment.GetWidgetById("container").AddChild(rect);
+		return true;
 	}
 }

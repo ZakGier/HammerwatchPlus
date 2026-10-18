@@ -1,0 +1,10 @@
+<gui>
+	<!-- the mission loadout's herb line (HWPHerbLoadout, tweak/hwp/loadouts_herbs.sval) -->
+	<doc>
+		<group>
+			<rect id="rect" visible="false" width="210" height="22" offset="-11 0" anchor="1 0.5" spriteset="gui/sprite_rect.sval:rounded">
+				<text id="hwp-herb" text="" color="#ffd27f" font="text" align="left" anchor="0 0.5" offset="6 1" width="198" />
+			</rect>
+		</group>
+	</doc>
+</gui>

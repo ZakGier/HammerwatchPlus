@@ -35,7 +35,7 @@
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">20</int>
 			<dict name="binds">
-				<int name="proj-ttl">450</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.0</float>
 				<int name="physical-dmg">20</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -47,6 +47,12 @@
 			</dict>
 		<dict name="actions">
 			<array name="cast">
+				<!-- the projectile's target is the caster: the whirling axe's 1200-4500 ms
+				     SeekingAng flies it back (as the Gladius and the vanilla whirling_axes cast);
+				     a ttl under 1200 ms ended it on the way out -->
+				<dict>
+					<bool name="target-self">true</bool>
+				</dict>
 				<dict>
 					<string name="class">ShootProjectileFan</string>
 					<string name="projectile">players/warrior/projectiles/whirling_axe_right.unit</string>
@@ -75,7 +81,7 @@
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
 			<int name="mana-cost">20</int>
 			<dict name="binds">
-				<int name="proj-ttl">500</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.2</float>
 				<int name="physical-dmg">28</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -90,7 +96,7 @@
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
 			<int name="mana-cost">20</int>
 			<dict name="binds">
-				<int name="proj-ttl">550</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.4</float>
 				<int name="physical-dmg">36</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -105,7 +111,7 @@
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
 			<int name="mana-cost">20</int>
 			<dict name="binds">
-				<int name="proj-ttl">600</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.6</float>
 				<int name="physical-dmg">45</int>
 				<float name="fire-dmg-mul">0.0</float>
@@ -120,7 +126,7 @@
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
 			<int name="mana-cost">20</int>
 			<dict name="binds">
-				<int name="proj-ttl">650</int>
+				<int name="proj-ttl">3600</int>
 				<float name="proj-hit-mul">1.8</float>
 				<int name="physical-dmg">55</int>
 				<float name="fire-dmg-mul">0.0</float>

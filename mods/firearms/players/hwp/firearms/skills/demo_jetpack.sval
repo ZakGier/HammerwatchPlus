@@ -43,9 +43,18 @@
 				<int name="jet-dmg">60</int>
 			</dict>
 		<array name="land-effects">
+			<!-- the landing has no target unit, so the damage goes through an Explode (as berserker_leap.sval) -->
 			<dict>
-				<string name="class">Damage</string>
-				<string name="fire-bind">jet-dmg</string>
+				<string name="class">Explode</string>
+				<int name="radius">40</int>
+				<int name="min-radius">8</int>
+				<float name="dist-scaling">1000</float>
+				<array name="effects">
+					<dict>
+						<string name="class">Damage</string>
+						<string name="fire-bind">jet-dmg</string>
+					</dict>
+				</array>
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>

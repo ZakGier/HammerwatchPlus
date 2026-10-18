@@ -21,13 +21,24 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   Perch 28-34 up to Abyssal Eel 50-60 physical), excluded from random loot.
   It carries the `mods_weapon_mainhand(_melee)` tags, so the enchanter can
   upgrade it (commons) and enchant it (uncommon and rare fish) like any
-  weapon. Its **item level** is set where it was caught: town fish are ilvl
-  1-6 by tier; a run catch uses the floor's drop level (`g_diffLevel`, which
-  includes NG+, +-1, capped at your drop level cap), like gear.
+  weapon. A 2-star (uncommon) fish is caught with one modifier and a 3-star
+  (rare) one with two, rolled like dropped gear of that quality and level
+  (`Equipment::Generator.GenerateItemMods`); the enchanter needs them (it reads
+  the quality's modifier slots and broke on a 2/3-star fish without any).
+  1-star fish have none. Its **item level** is set where it was caught: town
+  fish are ilvl 1 / 5 / 10 / 15 by tier (1-star fish 1-5); a run catch uses the
+  floor's drop level (`g_diffLevel`, which includes NG+, +-1, capped at your
+  drop level cap), like gear.
 - **Stars and bet tokens.** Fish are 1, 2 or 3 star (tiers 1-2, 3, 4) and sell
   for 1 / 3 / 5 **bet tokens** (`HWP::Market` token price; the pirate's Sell
-  button, `hwp fishing sell`, the Gambler's Sell button or `hwp sell`). The
-  Gambler rerolls gear for 1 token per 5 item levels. Town water only has
+  button, `hwp fishing sell`, the Gambler's Sell button or `hwp sell`). Only
+  unworked fish in the bag sell: each catch stores its signature (base id,
+  item level, quality, modifiers in order) in your HWP save data
+  (`market_sigs`, core `HWP::Market::Remember`); enchanting, upgrading or
+  rerolling a fish changes it, so it stays in the bag as gear. 1-star fish with
+  no modifiers always count. Older saves: 2/3-star fish caught without
+  modifiers get them rolled (and stay wares) the first time you are in town.
+  The Gambler rerolls gear for 1 token per 5 item levels. Town water only has
   1-star fish; star fish (2+) bite only in the second half of a run's floors,
   and boss rooms have only 3-star fish. The host announces each catch.
 - **Fish traps.** The pirate sells up to 3 (500 / 1000 / 2000 g). They sit in
@@ -87,9 +98,11 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
    (it moves), a hit puts the fish in your bag, a miss says "It got away"; each
    cast costs one bait. Full bag: the fish drops on the ground.
 5. Equip a fish: it swings like a sword; its tooltip shows the item level.
-   Take an uncommon fish to the enchanter: upgrade and enchant work. Sell fish
-   at the pirate, the Gambler and with `hwp sell`: they leave the bag and the
-   bet tokens rise by 1 / 3 / 5 per star.
+   Take an uncommon fish to the enchanter: upgrade and enchant work (Enchant
+   lists the modifiers your town has blueprints for), also on a fresh 2/3-star
+   fish. Sell fish at the pirate, the Gambler and with `hwp sell`: they leave
+   the bag and the bet tokens rise by 1 / 3 / 5 per star; an enchanted or
+   upgraded fish stays.
 6. Character screen: the rod slot (bottom left of the 3x3 gear grid) shows the
    rod's name, bonuses and bait in its tooltip.
 7. 2-player lobby: both see their own spots and pirate; a catch is announced

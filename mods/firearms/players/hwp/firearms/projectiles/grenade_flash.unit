@@ -2,7 +2,7 @@
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
 		<float name="speed">7</float>
-		<int name="ttl">650</int>
+		<int name="ttl">2000</int>
 		<int name="penetration">999</int>
 		<bool name="penetrate-all">true</bool>
 		<int name="bounces">0</int>
@@ -17,7 +17,8 @@
 			</dict>
 		</array>
 
-		<array name="miss-effects">
+		<!-- the arc (GroundBouncing, bounces 0) destroys the grenade where it lands: explode then, not at ttl -->
+		<array name="destroyed-effects">
 			<dict>
 				<string name="class">Explode</string>
 				<string name="radius-bind">area-radius</string>

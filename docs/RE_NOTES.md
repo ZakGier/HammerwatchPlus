@@ -850,3 +850,88 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
 - Player mana costs: `Player.UsePoints` takes flat cost x `GetModifiers().SkillCostMul` off a
   float mana; `CurrentMana()` truncates, so integer read-backs alternate 1/0 for a 1-mana
   shot under regen. The probe now reports `manaExact` and `manaCostMul`. Verified.
+
+## Enchanter assumes quality-matching mods (2026-10-18)
+- `Town/EquipmentEnchantShopContent.as`: the Enchant view (`EnchantEquipmentWindow.Refresh`)
+  shows `modifier-1` for quality >= Uncommon and `modifier-2` for Rare, and reads
+  `mods[GetCurrEncSlotIdx(shop, 0|1)]` for their text; the list entries and the `modify`
+  func index the same way. `GetCurrEncSlotIdx` looks for a Common-quality mod (slot 0) or a
+  Rare one / a second Common one (slot 1) and returns -1 when there is none, so an
+  uncommon or rare item without its modifiers throws "Index out of bounds" (inside a
+  `gl pressin` the probe reports `exception in verb 'pressin'` and the heartbeat's
+  exceptions count rises; no "Script exception" line). Vanilla items always have them:
+  `Generator.GenerateItemMods` gives `EquipmentModifiersPerQuality` (0 / 1 / 2 / 3 / 4)
+  mods, the first from the Common pool (no vanilla mod is Uncommon quality). Fishing built
+  fish items directly with none; fixed by rolling them at the catch. Verified for the
+  crash (plan-fishing-a 20261018-121447: fresh Salmon, heartbeat exceptions 0 -> 1); the
+  fix not yet run.
+- The Enchant list only shows modifiers whose blueprint the town owns
+  (`GetItems`: `m_blueprintHash != 0 && !HasBlueprint` skips it). Every mod in
+  `tweak/items/modifiers_equipment*.sval` has one (`blueprint` defaults true), so a
+  fresh town lists none for any item ("Num item mods: 8" printed, 0 shown). GameLab:
+  `cht_add_all_blueprints` (cheat). Verified (same run).
+- `Generator.ModifyItem` (the enchanter's Upgrade) calls `GenerateItemMods`, which keeps
+  `mods[n]` only when its quality is `IndexToQuality(n + 2)` (Uncommon for the first);
+  the first mod is always Common quality, so an upgrade rerolls every modifier.
+  From source; assumed.
+
+## Three skill buttons; extra skill keys (2026-10-18)
+- **The engine has only Skill1-3.** `GameInput` exposes `Skill1`, `Skill2`, `Skill3`
+  (`hwr2_api_strings.txt` has no `Skill4`; the editor stub `system/engine.as` lists one, but
+  it is stale). `PlayerTargetingHelper.GetSkillInput` (PlayerTargetingHelper.as:713-750)
+  counts the non-passive `Spell` skills from `m_skills[1]` and returns `Skill3` for the 3rd
+  and every later one, and `CheckUseSkill` (515) activates every skill whose button is
+  Pressed, so a 4th active fires together with the 3rd. Verified in game by the main
+  session (GameLab, firearms and classes plans, 2026-10-18). Vanilla keyboard defaults
+  (`res/controls_default.cfg`): Skill1 = 1, Q, mouse 4; Skill2 = 2, E, mouse 5; Skill3 = 3, V;
+  free digits 4-0. Gamepad: RB, LB, Y. `RadialMenuController` has a skill wheel
+  (`ExpandPlayerSkill` -> `TryUseSkill`), but `RadialMenu` only adds emotes and the ping, so
+  a gamepad has no way to a 4th active; the extra keys are keyboard only. From source.
+- **Fix (core `SkillKeys.as`):** `Player.m_targetHelper` is a public `PlayerTargetingHelper@`
+  and script methods are virtual, so core swaps the local player's helper for a subclass,
+  `HWPSkillKeysHelper`, from a module `UpdateFrame` (only when no targeting is open). Its
+  `GetSkillInput` override takes the vanilla answer and, for the 4th-6th active, rewrites
+  `Down` / `Pressed` / `Released` of that `ButtonState` copy from a raw-key poll
+  (`Platform::IsKeyDown`, scancodes from the Plus tab, default 4/5/6), sampled once per
+  player frame in an `Update` override. Every other path (targeting modes, input buffer,
+  `GetSkillCanceledInput`, quickcast) is vanilla and reads the new keys through the
+  override. Assumed until measured: a `ButtonState` local copy is writable
+  (gamelab-hands already writes `gi.Skill3.Down`, verified) and `Base::Method()` calls from an
+  override compile here as they do for HWP widgets.
+- **HUD:** `HUDPlayer` (player_info.gui) has backgrounds for 2-4 skills. Core replaces it in
+  `HUDConstructor` with `HWPSkillKeysHUDPlayer`, which widens the 4-skill group in place
+  (a `skill-mid` sprite and a `skill-slot` rect per extra skill, end cap moved 31 px) before
+  the vanilla `RefreshSkills`, then writes the key name into the extra skills' unused
+  `binding` text, moved above the slot. Assumed until a screenshot.
+- **Subclass picker** (`Town/SubclassPickShopContent.as:96-102`) shows `m_skillDefs[len-2]` as
+  the spec's active and `[len-1]` as its passive. Sniper (snipe, flashbang, decoy) and
+  Demolitions (tube, rpg, jetpack) have three actives, so the picker shows flashbang / rpg as
+  "active" and decoy / jetpack as "passive", and never snipe / tube. Display only; from source.
+  Fixed in core (`HWP/Core/SubclassPick.as`): no window hook exists (`OpenShopWindow` adds the
+  window straight to the `WindowManager`) and the shop content class is named in the vanilla
+  NPC unit, so the open vanilla window is patched in place. Module `UpdateFrame` runs after
+  `BaseGameMode.UpdateFrame`'s window-manager update, paused or not
+  (`AGameplayGameMode.as:319/333`), so the patch lands before that frame is drawn. The row
+  shows the spec's own defs (not in the parent class), actives then passives, each labelled
+  by type, spread over up to four slots (copies of
+  slot 0, ids `hwp-pick-name<i>` / `hwp-pick-skill<i>`, labels `hwp-pick-label<i>`). It
+  relays out when the shown class changes or when `SetCurrSubclass` rewrites slots 0/1 (on
+  a pick), seen as a skill id change. Vanilla specs (one active + one passive at the end)
+  look exactly as before. Gotcha: `Widget.CloneInto` value-copies the fields, so a cloned
+  `TextWidget` shares the original's `BitmapString`, and its `SetText` would `Cleanup()` the
+  original's text; the copy's `m_text` is nulled first (same for `SkillWidget.m_cost`).
+  Assumed until a run: the layout and the label spacing (105 px for three slots).
+- **A def's type does not say passive.** `PlayerSkillDef` turns an untyped def into `Spell`
+  (`PlayerClass.as:91-92`), so every class skill def, passives included, has `m_type` 4
+  (measured: `gl classskills hwp_priest_hoh1` gave Last Rites type 4, run
+  20261018-125750-plan-classesb-b). Passive is the skill's `GetTargetingMode()` ==
+  `TargetingMode::Passive` (the default of `Skill.as:83`, which `PassiveSkill` keeps), the
+  test `GetSkillInput` and `HUDPlayer` make: those skills get no button (`gl skills` button
+  ""). The picker row and `gl classskills` (`mode`, `passive`) classify by a temp skill
+  built as `MakeSkillTemp` builds one. The vanilla row's labels are static gui text
+  (Active under slot 0, Passive under slot 1); a first version of the fix set them from
+  `m_type` and so labelled every passive Active, the vanilla specs' included.
+- **GameLab:** `gl input` takes `hwp_skill4`..`hwp_skill6`; gamelab-hands writes the held
+  ones to `GlobalCache` `hwp_skillkeys_held` ("4,5") and core's poll ORs them in (no shared
+  symbol, so hands still loads without core). `gl skills` / `gl skillbar` report the
+  extra key once the helper is installed (`Reflect::GetTypeName` of `m_targetHelper`).

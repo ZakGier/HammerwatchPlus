@@ -2,7 +2,7 @@
 // tooltip with the effect's name, its description and, above it, the seconds
 // it has left, counting down. HUD components get no mouse input, so
 // HWPBuffTipsHUD hit-tests the cursor against the HUDBuffs icons itself every
-// frame and draws a vanilla ToolTip (CreateTooltip, header = time left) on top
+// frame and draws a vanilla ToolTip (CreateTitledTooltip, header = time left) on top
 // of the HUD. Buffs without a "hud" icon never reach the buff bar, so they
 // have no tooltip either; their text still shows in the character menu's
 // Effects tab. Setting: bufftips.enabled.
@@ -142,7 +142,9 @@ class HWPBuffTipsHUD : HUDComponent
 		ClearTip();
 		if (info.IsDebuff())
 			name = "\\cff6666" + name;
-		@m_tip = CreateTooltip(Resources::GetSValue("gui/variable/itemtooltip_common.sval"), name, desc, Item::Quality::None, header);
+		// the titled variant pads the title below the header line (CreateTooltip draws the
+		// header over the title), as vanilla does for its headed tooltips (BlueprintBank)
+		@m_tip = CreateTitledTooltip(Resources::GetSValue("gui/variable/itemtooltip_common.sval"), name, desc, null, null, Item::Quality::None, header);
 		@m_tipBuff = info;
 		m_tipSecs = secs;
 		m_tipCount = count;

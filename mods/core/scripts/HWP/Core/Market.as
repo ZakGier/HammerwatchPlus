@@ -1,8 +1,9 @@
 // Wares: countable goods (fish, crops, herbs) that live in the owner's own
 // PlayerRecord (HWP data bag "market.<id>") and sell for gold. A good can also
-// be an equipment item (fish are weak weapons): then every copy of that base
-// item in the inventory bag counts too (worn ones do not) and selling removes
-// them. A good with a token price (fish) sells for bet tokens instead of gold;
+// be an equipment item (fish are weak weapons): then every unworked copy of that
+// base item in the inventory bag counts too (worn ones do not) and selling removes
+// them. Unworked: as it was made (Remember stores its signature when it is caught),
+// or with no modifiers at all. A good with a token price (fish) sells for bet tokens instead of gold;
 // the Gambler takes tokens for gear rerolls. The Gambler has a Sell button;
 // `hwp wares` lists them and `hwp sell` sells them without him. Modules
 // register their goods from their module constructor.
@@ -12,6 +13,8 @@ namespace HWP
 	{
 		const string KEY_PREFIX = "market.";
 		const string KEY_TOKENS = "bet_tokens"; // per character: bet tokens
+		const string KEY_SIGS = "market_sigs";  // per character: item goods as they were made, ";"-separated
+		const uint MAX_SIGS = 256;              // the oldest go first (sold elsewhere, dropped, stashed)
 
 		class Good
 		{
@@ -95,25 +98,146 @@ namespace HWP
 			return true;
 		}
 
-		// the bag's copies of an item good
-		// A bag copy of a good's item counts as the ware only while nobody worked
-		// on it: an enchanted, rerolled or upgraded fish is gear and is never
-		// sold by Sell.
-		bool IsWare(Equipment::Item@ item, Good@ g)
+		// ---- item signatures ------------------------------------------------------
+
+		// An item good as it was made: base id, item level, quality and its modifiers in
+		// order. Enchanting, upgrading or rerolling changes it, so a worked copy no longer
+		// matches. A save keeps all of these (Equipment::LoadItem), so a reloaded or
+		// picked-up copy still matches.
+		string Signature(Equipment::Item@ item)
 		{
-			return item !is null && item.baseItem !is null && item.baseItem.m_id == g.itemId
-				&& item.mods.length() == 0 && item.upgradeLevel <= 0;
+			string s = item.baseItem.m_id + "/" + int(item.itemLevel) + "/" + int(item.quality) + "/";
+			for (uint i = 0; i < item.mods.length(); i++)
+				s += item.mods[i].m_idHash + (i + 1 < item.mods.length() ? "," : "");
+			return s;
 		}
 
+		array<string>@ Signatures(PlayerRecord@ rec)
+		{
+			string s = rec is null ? "" : HWP::SaveData::Player(rec).GetString(KEY_SIGS);
+			if (s.isEmpty())
+				return array<string>();
+			return s.split(";");
+		}
+
+		void SetSignatures(PlayerRecord@ rec, array<string>@ sigs)
+		{
+			auto bag = HWP::SaveData::Player(rec);
+			if (sigs.length() == 0)
+				bag.Remove(KEY_SIGS);
+			else
+				bag.SetString(KEY_SIGS, join(sigs, ";"));
+		}
+
+		// a new copy of an item good (a caught fish): it is a ware while it stays like this
+		void Remember(PlayerRecord@ rec, Equipment::Item@ item)
+		{
+			if (rec is null || item is null || item.baseItem is null)
+				return;
+			auto sigs = Signatures(rec);
+			sigs.insertLast(Signature(item));
+			while (sigs.length() > MAX_SIGS)
+				sigs.removeAt(0);
+			SetSignatures(rec, sigs);
+		}
+
+		// a copy left the bag as a ware (sold, fed): one matching signature goes
+		void Forget(PlayerRecord@ rec, Equipment::Item@ item)
+		{
+			if (rec is null || item is null || item.baseItem is null)
+				return;
+			auto sigs = Signatures(rec);
+			int i = sigs.find(Signature(item));
+			if (i < 0)
+				return;
+			sigs.removeAt(i);
+			SetSignatures(rec, sigs);
+		}
+
+		// A bag copy of a good's item counts as the ware only while nobody worked on it:
+		// an enchanted, rerolled or upgraded fish is gear and is never sold by Sell.
+		// Unworked: no upgrade level, and its signature is one Remember stored (each
+		// signature counts one copy; sigs is used up as copies match), or it has no
+		// modifiers at all (1-star fish, copies from before signatures).
+		bool IsWare(Equipment::Item@ item, Good@ g, array<string>@ sigs)
+		{
+			if (item is null || item.baseItem is null || item.baseItem.m_id != g.itemId || item.upgradeLevel > 0)
+				return false;
+			if (item.mods.length() == 0)
+				return true;
+			int i = sigs is null ? -1 : sigs.find(Signature(item));
+			if (i < 0)
+				return false;
+			sigs.removeAt(i);
+			return true;
+		}
+
+		// the bag's copies of an item good
 		array<Equipment::Equipment@>@ Items(PlayerRecord@ rec, Good@ g)
 		{
 			array<Equipment::Equipment@> found;
 			if (rec is null || g is null || g.itemId.isEmpty() || rec.equipInventory is null)
 				return found;
+			auto sigs = Signatures(rec);
 			for (uint i = 0; i < rec.equipInventory.m_items.length(); i++)
-				if (IsWare(cast<Equipment::Item>(rec.equipInventory.m_items[i]), g))
+				if (IsWare(cast<Equipment::Item>(rec.equipInventory.m_items[i]), g, sigs))
 					found.insertLast(rec.equipInventory.m_items[i]);
 			return found;
+		}
+
+		bool IsItemGood(const string &in itemId)
+		{
+			for (uint i = 0; i < g_goods.length(); i++)
+				if (!g_goods[i].itemId.isEmpty() && g_goods[i].itemId == itemId)
+					return true;
+			return false;
+		}
+
+		// Copies of item goods made before their modifiers were rolled (fish caught before
+		// signatures: uncommon and rare ones with none). The enchanter reads an uncommon
+		// item's common modifier and a rare one's second modifier, so these broke it
+		// (EquipmentEnchantShopContent.as GetCurrEncSlotIdx returns -1). Rolls them the
+		// way a dropped item of that quality and level gets them (Generator.GenerateItemMods)
+		// and keeps the unworked ones wares. Bag and worn items. Returns how many.
+		int Migrate(PlayerRecord@ rec)
+		{
+			if (rec is null)
+				return 0;
+			int n = 0;
+			if (rec.equipInventory !is null)
+			{
+				n = MigrateItems(rec, rec.equipInventory.m_items);
+				if (n > 0)
+					rec.equipInventory.m_isDirty = true;
+			}
+			int worn = MigrateItems(rec, rec.equipped.m_items);
+			if (worn > 0)
+			{
+				rec.RefreshStats();
+				auto plr = cast<PlayerBase>(rec.actor);
+				if (plr !is null)
+					plr.RefreshModifiers();
+			}
+			return n + worn;
+		}
+
+		int MigrateItems(PlayerRecord@ rec, array<Equipment::Equipment@>@ items)
+		{
+			int n = 0;
+			for (uint i = 0; i < items.length(); i++)
+			{
+				auto item = cast<Equipment::Item>(items[i]);
+				if (item is null || item.baseItem is null || item.mods.length() > 0
+					|| Equipment::EquipmentModifiersPerQuality(item.quality) <= 0 || !IsItemGood(item.baseItem.m_id))
+					continue;
+				Equipment::Generator gen;
+				gen.GenerateItemMods(item, item.GetItemLevel(true));
+				item.Finalize(item.intensity, int(item.itemLevel), int(item.upgradeLevel), item.colorA, item.colorB);
+				if (item.upgradeLevel <= 0)
+					Remember(rec, item);
+				n++;
+			}
+			return n;
 		}
 
 		// the bag-key count only (what Add/SetCount change)
@@ -168,7 +292,10 @@ namespace HWP
 				auto items = Items(rec, Get(id));
 				for (uint i = 0; i < items.length() && taken < n; i++)
 					if (rec.equipInventory.Remove(items[i]))
+					{
+						Forget(rec, cast<Equipment::Item>(items[i]));
 						taken++;
+					}
 			}
 			return taken;
 		}
@@ -222,8 +349,12 @@ namespace HWP
 				SetCount(rec, g.id, 0);
 				auto items = Items(rec, g);
 				for (uint j = 0; j < items.length(); j++)
+				{
 					if (!rec.equipInventory.Remove(items[j]))
 						c--; // not in the bag after all: not sold
+					else
+						Forget(rec, cast<Equipment::Item>(items[j]));
+				}
 				sale.count += c;
 				if (g.tokens > 0)
 					sale.tokens += c * g.tokens;

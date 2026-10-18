@@ -12,7 +12,7 @@ in a lobby should run the same version of the same modules.
 
 | Module | What it does |
 |---|---|
-| `core` | Shared library: settings, save-data extension, networking helper, pet pickup logic. Required by every other module. |
+| `core` | Shared library: settings, save-data extension, networking helper, pet pickup logic. Required by every other module. Also extra skill keys: a class with more than three active skills casts the 4th, 5th and 6th on their own keys (default 4, 5, 6; rebind in the Plus tab). The Subclass Picker lists a spec's own skills labelled Active / Passive by their real type. |
 | `gambler` | Higher/Lower card gambler NPC in the tavern. His Sell button buys crops and herbs for gold and fish for bet tokens; he rerolls equipped gear for 2000 gold x item level, or 1 bet token per 5 item levels. |
 | `droptrade` | Drop equipment on the ground for friends: a Drop button / Q key next to Destroy in the inventory. |
 | `goldpet` | Pet vendor in the Hunter's Lodge selling the Gold Collector cat, with two upgrades (materials and scrolls, then valuables). |
@@ -29,7 +29,7 @@ in a lobby should run the same version of the same modules.
 | `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
 | `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class: mana is ammo, reload, grenades; Sniper / Demolitions / Assault doctrines. |
+| `firearms` | The Firearms Specialist class: mana is ammo, reload, grenades; Sniper / Demolitions / Assault doctrines. A doctrine has up to five actives: reload, frag and the doctrine's first skill sit on the game's three skill buttons, the 4th and 5th on core's extra keys (default 4 and 5). |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
@@ -40,7 +40,7 @@ in a lobby should run the same version of the same modules.
 | `summons` | Priest Crusaders (and optionally all summons) persist through the loading screen between floors. |
 | `campaign` | The Forsaken Tower: the HoH1 campaign (Mines to Battlements, 18 floors, 6 bosses) started from a portal in town. With HoH1 installed, a second version plays the real HoH1 boss rooms and Battlements (`tools/import_hoh1.py campaign`). |
 | `wavemode` | Wave Arena: a survival arena started from a statue in town; boss kills raise your arena rank. |
-| `classes` | The HoH1 classes HoH2 lacks: Thief, Gladiator, Witch Hunter, three masteries each. Also HoH1-style masteries for the Priest (Smiter) and Paladin (Holy Storm). |
+| `classes` | The HoH1 classes HoH2 lacks: Thief, Gladiator, Witch Hunter, three masteries each. Also HoH1-style masteries for the Priest (Smiter) and Paladin (Holy Storm). The Thief's Slice and Dice / Cloak of Shadows and the Holy Storm Paladin's Zealous Charge are 4th actives, cast on core's Skill 4 key (default 4). |
 
 Each module's spec and test checklist is in `mods/<id>/README.md`.
 

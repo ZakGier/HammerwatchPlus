@@ -164,14 +164,17 @@ class SelectArchitectLoadout : MissionGUILoadout
 	}
 
 	// HWP: what the local player pays. Cost multiplier counts every pick no
-	// matter who pays, like vanilla; rounding is per item, shares round up.
+	// matter who pays, like vanilla; like vanilla it applies to the summed
+	// cost (own picks, and the split picks), so solo matches vanilla to the
+	// gold piece; shares round up.
 	ShopCost@ CalcMyCost()
 	{
 		float mul = HWP::Architect::CostMul(m_buffs); // HWP: challenges discount
 
 		uint8 me = uint8(m_player.peer);
 		int players = HWP::Architect::ActivePlayers();
-		auto cost = ShopCost();
+		auto own = ShopCost();
+		auto pooled = ShopCost();
 		for (uint i = 0; i < m_buffs.length(); i++)
 		{
 			auto missionBuff = MissionBuff::Get(m_buffs[i]);
@@ -184,12 +187,25 @@ class SelectArchitectLoadout : MissionGUILoadout
 
 			for (uint j = 0; j + 1 < missionBuff.m_cost.m_cost.length(); j += 2)
 			{
-				int amount = int(missionBuff.m_cost.m_cost[j + 1] * mul);
 				if (split)
-					amount = (amount + players - 1) / players;
-				if (amount > 0)
-					cost.AddCost(MaterialType(missionBuff.m_cost.m_cost[j]), amount);
+					pooled.AddCost(MaterialType(missionBuff.m_cost.m_cost[j]), missionBuff.m_cost.m_cost[j + 1]);
+				else
+					own.AddCost(MaterialType(missionBuff.m_cost.m_cost[j]), missionBuff.m_cost.m_cost[j + 1]);
 			}
+		}
+
+		auto cost = ShopCost();
+		for (uint j = 0; j + 1 < own.m_cost.length(); j += 2)
+		{
+			int amount = int(own.m_cost[j + 1] * mul);
+			if (amount > 0)
+				cost.AddCost(MaterialType(own.m_cost[j]), amount);
+		}
+		for (uint j = 0; j + 1 < pooled.m_cost.length(); j += 2)
+		{
+			int amount = (int(pooled.m_cost[j + 1] * mul) + players - 1) / players;
+			if (amount > 0)
+				cost.AddCost(MaterialType(pooled.m_cost[j]), amount);
 		}
 		return cost;
 	}
