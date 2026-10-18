@@ -145,6 +145,18 @@ namespace HWP
 			Reply("gave " + amount + " skill points (" + plr.GetFreeSkillPoints() + " free)");
 		}
 
+		void CmdTokens(array<string>@ args)
+		{
+			if (!On())
+				return;
+			auto plr = Me();
+			if (plr is null)
+				return;
+			int amount = IntArg(args, 0, 10);
+			HWP::Market::AddTokens(plr, amount);
+			Reply("gave " + amount + " bet tokens (" + HWP::Market::Tokens(plr) + ")");
+		}
+
 		void CmdEquip(array<string>@ args)
 		{
 			if (!On())
@@ -287,6 +299,7 @@ namespace HWP
 			HWP::Commands::Register("xp", "[amount]  (cheat) gain experience, default 100000", HWP::Commands::Handler(CmdXp));
 			HWP::Commands::Register("statpoints", "[n]  (cheat) gain attribute points to place, default 50", HWP::Commands::Handler(CmdStatPoints));
 			HWP::Commands::Register("skillpoints", "[n]  (cheat) gain skill points, default 20", HWP::Commands::Handler(CmdSkillPoints));
+			HWP::Commands::Register("tokens", "[n]  (cheat) gain bet tokens, default 10", HWP::Commands::Handler(CmdTokens));
 			HWP::Commands::Register("equip", "<id>  (cheat) drop that equipment", HWP::Commands::Handler(CmdEquip));
 			HWP::Commands::Register("spawnmaps", "[count] [level]  (cheat) drop map items", HWP::Commands::Handler(CmdMaps));
 			HWP::Commands::Register("finishlevel", " (cheat) loot the floor and go to the next", HWP::Commands::Handler(CmdFinishLevel));

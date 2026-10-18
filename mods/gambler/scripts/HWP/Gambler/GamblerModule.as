@@ -1,6 +1,31 @@
 // Spawns the gambler NPC inside the tavern once the tavern is built. The NPC is
 // placed by code instead of editing the tavern prefabs, so no base file is
 // overridden. Only the server produces the unit (it is netsynced).
+// bet tokens (HWP::Market, per character) in the materials tab's Supplies
+// section (core Materials.as); gui/hwp/token.png is a 13x13 chip
+class HWPTokenMaterial : HWP::Materials::Material
+{
+	ScriptSprite@ Icon() override
+	{
+		return ScriptSprite(Resources::GetTexture2D("gui/hwp/token.png"), vec4(0, 0, 13, 13));
+	}
+
+	int Count() override
+	{
+		return HWP::Market::Tokens(GetLocalPlayerRecord());
+	}
+
+	string Title() override
+	{
+		return Resources::GetString(".hwp.gambler.token_title");
+	}
+
+	string Text() override
+	{
+		return Resources::GetString(".hwp.gambler.token_text");
+	}
+}
+
 namespace Modules
 {
 	class HWPGamblerModule : Module, HWP::ModuleStart
@@ -11,6 +36,7 @@ namespace Modules
 		HWPGamblerModule()
 		{
 			super("hwp-gambler");
+			HWP::Materials::Register("hwp-mat-bet-tokens", HWPTokenMaterial());
 		}
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override

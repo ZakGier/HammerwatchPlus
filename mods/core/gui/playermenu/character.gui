@@ -356,7 +356,7 @@
 											<text text="0" id="material-town-ore-text" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 										</sprite>
 
-										<!-- HammerwatchPlus core: supplies kept per character (fishing bait, farm seeds). HWP::Materials providers
+										<!-- HammerwatchPlus core: supplies kept per character (bet tokens, fishing bait, farm seeds). HWP::Materials providers
 										     fill the hwp-material cells by id; a cell without one hides and the grid closes up, without any the
 										     section hides and the tab keeps its height. Cells stay visible here (see Materials.as) -->
 										<hwp-materials id="hwp-materials" offset="-6 80" width="217" height="39" >
@@ -365,6 +365,10 @@
 											</sprite>
 
 											<group id="cells" offset="0 13" width="217" height="26" flow="hboxwrapped" spacing="-1" spacing-line="1" >
+												<hwp-material id="hwp-mat-bet-tokens" src="material-background-small" width="29" height="26" only-mouse="true" >
+													<!-- Bet tokens (gambler; fish sell for them) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
 												<hwp-material id="hwp-mat-bait-worm" src="material-background-small" width="29" height="26" only-mouse="true" >
 													<!-- Worms (fishing) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />

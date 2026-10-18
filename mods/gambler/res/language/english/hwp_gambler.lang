@@ -41,4 +41,6 @@
 	<string name="hwp.gambler.slot_4">Feet</string>
 	<string name="hwp.gambler.slot_5">Hands</string>
 	<string name="hwp.gambler.slot_6">Back</string>
+	<string name="hwp.gambler.token_title">Bet Tokens</string>
+	<string name="hwp.gambler.token_text">Gamba tokens. Fish sell for them at the Gambler (Sell),\nand he takes them for gear rerolls: 1 token per 5 item levels.</string>
 </lang>

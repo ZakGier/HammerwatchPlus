@@ -14,7 +14,10 @@ it, a tie returns it.
 
 His **Sell** button buys your wares (`HWP::Market`): crops and herbs for gold,
 fish for bet tokens (1 / 3 / 5 per 1 / 2 / 3-star fish). The tokens line
-under the reroll row shows how many you have.
+under the reroll row shows how many you have, and so does a red chip cell
+(`gui/hwp/token.png`) first in the materials tab's Supplies section (core
+`HWP::Materials`, cell `hwp-mat-bet-tokens`, `HWPTokenMaterial`); it hides
+while you have none.
 
 ## Test checklist
 
@@ -24,6 +27,9 @@ under the reroll row shows how many you have.
    animates, gold changes match the result text, Reshuffle resets.
 3. Co-op (2 players): the client sees one gambler (no duplicate), can play, and
    only the client's gold changes.
+4. `python -m gamelab run mod-supplies-tokens --mode lab`: `hwp tokens 7`
+   (cheat), then the materials tab's Supplies section shows the chip with 7
+   (the `menu` verb scrolls it into view and reads the count).
 
 ## Gear reroll
 

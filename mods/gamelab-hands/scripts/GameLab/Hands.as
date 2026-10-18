@@ -161,6 +161,67 @@ namespace GameLab
 			.Int("variation", g_myTownRecord.GetVariationOnBuilding(def.m_idHash)));
 	}
 
+	// menu [tab] [subtab] [widget]: open the player menu the way its key does
+	// (HWR2GameMode::TogglePlayerMenu, when it is not open yet), then press the
+	// tab buttons: PlayerMenu::OnFunc("set-tab <tab>") and the open tab's own
+	// OnFunc("set-tab <subtab>") (the character tab's sub-tab checkboxes, e.g.
+	// material-inventory). Replies with the open tab's class. [widget]: a widget id in
+	// that tab: scrolls its scrollbar to the end, replies shown (it and every parent
+	// visible), its size and its "count" text (the core hwp-material cells).
+	void VerbMenu(const string &in id, array<string>@ args)
+	{
+		auto gm = cast<HWR2GameMode>(g_gameMode);
+		if (gm is null)
+		{
+			Fail(id, "not in a gameplay mode");
+			return;
+		}
+		PlayerMenu@ menu = null;
+		for (uint i = 0; i < gm.m_windowManager.m_objects.length() && menu is null; i++)
+			@menu = cast<PlayerMenu>(gm.m_windowManager.m_objects[i]);
+		if (menu is null)
+		{
+			gm.TogglePlayerMenu();
+			for (uint i = 0; i < gm.m_windowManager.m_objects.length() && menu is null; i++)
+				@menu = cast<PlayerMenu>(gm.m_windowManager.m_objects[i]);
+		}
+		if (menu is null)
+		{
+			Fail(id, "the player menu did not open (another window is up?)");
+			return;
+		}
+		if (args.length() > 0)
+			menu.OnFunc(null, "set-tab " + args[0]);
+		auto tabs = menu.m_tabSystem;
+		MenuTab@ tab = tabs.m_tabs[tabs.m_currentIndex];
+		if (args.length() > 1)
+			tab.OnFunc(null, "set-tab " + args[1]);
+		Json@ r = Reply(id, true).Str("tab", Reflect::GetTypeName(tab)).Int("index", tabs.m_currentIndex);
+		// [widget]: find it in the tab, scroll its scrollbar to the end (where our sections
+		// sit) and report whether it and every parent are visible, plus its "count" text
+		if (args.length() > 2)
+		{
+			Widget@ w = tab.m_widget.GetWidgetById(args[2]);
+			if (w is null)
+			{
+				Fail(id, "no widget '" + args[2] + "' in " + Reflect::GetTypeName(tab));
+				return;
+			}
+			bool shown = true;
+			for (Widget@ p = w; p !is null; @p = p.m_parent)
+			{
+				shown = shown && p.m_visible;
+				auto sb = cast<ScrollbarWidget>(p);
+				if (sb !is null)
+					sb.m_handleValue = 1.0f;
+			}
+			auto count = cast<TextWidget>(w.GetWidgetById("count"));
+			r.Str("widget", args[2]).Bool("shown", shown).Int("w", w.m_width).Int("h", w.m_height)
+				.Str("count", count !is null ? count.m_str : "");
+		}
+		Emit(r);
+	}
+
 	// save: the game's own SavePlayerAndTown (what the builder, the shops and leaving
 	// town call), so the next session loads this town instead of a null one
 	void VerbSave(const string &in id, array<string>@ args)
@@ -188,6 +249,7 @@ namespace Modules
 			GameLab::RegisterVerb("mission", "<missionId> [floorIndex]", GameLab::Verb(GameLab::VerbMission));
 			GameLab::RegisterVerb("build", "<buildingId>", GameLab::Verb(GameLab::VerbBuild));
 			GameLab::RegisterVerb("save", "", GameLab::Verb(GameLab::VerbSave));
+			GameLab::RegisterVerb("menu", "[tab] [subtab] [widget]", GameLab::Verb(GameLab::VerbMenu));
 			GameLab::RegisterVerb("xp", "<amount>", GameLab::Verb(GameLab::VerbXp));
 			GameLab::RegisterVerb("material", "<type> <n>", GameLab::Verb(GameLab::VerbMaterial));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));
