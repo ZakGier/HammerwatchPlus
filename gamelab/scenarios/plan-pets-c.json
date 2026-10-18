@@ -83,6 +83,10 @@
    "do": "restart"
   },
   {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
    "do": "bot",
    "bot": "plan_pets",
    "kwargs": {

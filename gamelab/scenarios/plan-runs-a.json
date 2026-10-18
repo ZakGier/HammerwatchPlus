@@ -1,6 +1,6 @@
 {
  "name": "plan-runs-a",
- "about": "Test plan, runs group, through the plan_runs bot: keys s3 (keys.lock_chance 1: every reward chest of a Bandit Keep floor has a padlock; no key, nothing; a key opens it, the padlock goes, the key count drops, loot spawns); architect s1 (the Architect loadout row opens the picker, two picks, the multiplier and cost as vanilla's CalcCost, the cost taken at run start); campaign s1 (the town portal with ui_minimap on: shot portal-minimap shows the portal's minimap pip).",
+ "about": "Test plan, runs group, through the plan_runs bot: keys s3 (keys.lock_chance 1: every reward chest of a Bandit Keep floor has a padlock; no key, nothing; a key opens it, the padlock goes, the key count drops, loot spawns); architect s1 (the Architect loadout row opens the picker, two picks, the multiplier and cost as vanilla's CalcCost, the cost taken at run start); campaign s1 (the town portal, used, opens the mission window offering The Forsaken Tower, 18 floors (shot portal-window), closed without starting; then with ui_minimap on, shot portal-minimap shows the portal's minimap pip).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -93,11 +93,13 @@
    "kwargs": {
     "sections": "portal_minimap"
    },
-   "name": "portal minimap pip",
+   "name": "portal mission window and minimap pip",
    "expect": {
     "pip_town": true,
     "pip_portal_in_town": true,
-    "pip_minimap_on": true
+    "pip_minimap_on": true,
+    "pip_portal_offers_tower": true,
+    "pip_portal_closed": true
    }
   },
   {

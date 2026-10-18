@@ -1,6 +1,7 @@
 """Test-plan checks for the runs group: locked reward chests with padlocks (keys s3), the
-Architect row of the run-start loadout (architect s1), the town portal's minimap pip
-(campaign s1) and the four HoH1 boss floors of The Forsaken Tower (hoh1floors s2-s5).
+Architect row of the run-start loadout (architect s1), the town portal's mission window and minimap pip
+(campaign s1), the five HoH1 boss floors of The Forsaken Tower (hoh1floors s2-s6) and the
+two Battlements floors up to Thundersnow (hoh1floors s7).
 
 The bosses are measured in-engine by `gl trail` (Verbs_runs.as): every frame it follows the
 boss's units and projectiles, so a ground spike that lives for two seconds is seen from its
@@ -9,7 +10,7 @@ first Shot raycast hit that is no damage taker, or tiles harder than destroy-at-
 `gl actors` what a boss is casting and whether it can be targeted.
 
 Sections: keys_padlock, architect_loadout, portal_minimap, boss_setup, boss_golem,
-boss_warden, boss_councilors, boss_watcher."""
+boss_warden, boss_councilors, boss_watcher, boss_vampire, battlements."""
 import json
 import math
 import re
@@ -20,10 +21,20 @@ from gamelab.bots.plan_checks import Checks as Base
 HOH1 = "hwp_forsaken_tower_hoh1"
 # 0-based floors of missions_hwp_forsaken_tower_hoh1.sval
 FLOOR_MINES_BOSS, FLOOR_PRISON_BOSS, FLOOR_ARMORY_BOSS, FLOOR_ARCHIVES_BOSS = 2, 5, 8, 11
+FLOOR_CHAMBERS_BOSS, FLOOR_BATTLEMENTS_1, FLOOR_BATTLEMENTS_2, FLOOR_DRAGON = 14, 15, 16, 17
+# boss_chambers.lvl: the BossLichNodes the vampire flies between, and its VampireCenterNode last
+VAMPIRE_NODES = [(-128, -64), (96, -64), (-16, -128), (-96, 80), (64, 80), (-16, -16)]
+# the exits' UseTrigger areas (Physics_Rectangle 48x16): battlements_1 'right' (area 8) and
+# 'left' (area 9), battlements_2 (area 17)
+BATTLEMENTS_EXITS = {"battlements_1": [(2928, -872), (656, -1288)], "battlements_2": [(1080, -1808)]}
 # boss_armory.lvl's BossLichNode positions (the wraiths walk node to node)
 LICH_NODES = [(0, -352), (128, 16), (-272, -112), (-96, -336), (224, -192), (-128, 16), (-160, -272),
               (272, 0), (160, -272), (0, 16), (-224, -192), (96, -336), (272, -112), (-272, 0)]
 WRAITHS = ("wraith_staff.unit", "wraith_scythe.unit", "wraith_mage.unit")
+# open floor inside the Armory's BossLichRoom (center (0,-144), 288x224; diagonal walls cut its
+# top corners, statues at (+-96,-96) and (0,-224)): from anywhere in the room one of these is
+# more than 100 px away
+COUNCIL_SPOTS = [(-120, -40), (120, -40), (-60, -190), (60, -190)]
 TIERS = {"bronze": 0, "silver": 1, "gold": 2, "platinum": 2}
 
 
@@ -37,6 +48,15 @@ def arch_mul(n_buffs, arch_lvl):
 
 def has_num(text, n):
     return re.search(r"(?<!\d)%d(?!\d)" % n, text or "") is not None
+
+
+def seg_dist(p, a, b):
+    """Distance from point p to the segment a-b."""
+    ax, ay = a
+    dx, dy = b[0] - ax, b[1] - ay
+    sq = dx * dx + dy * dy
+    t = 0 if sq == 0 else max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / sq))
+    return math.hypot(p[0] - ax - t * dx, p[1] - ay - t * dy)
 
 
 class Checks(Base):
@@ -293,8 +313,9 @@ class Checks(Base):
 
     # --- campaign s1
     def portal_minimap(self):
-        """campaign s1 (the minimap pip; the portal's text is section portal): the portal is in
-        town, the HUD minimap on (ui_minimap 1) and the player 70 px south of it, for the shot."""
+        """campaign s1: the portal is in town; used, it opens the mission window offering The
+        Forsaken Tower (18 floors), closed again without starting; then the HUD minimap on
+        (ui_minimap 1) and the player 70 px south of it, for the shot of its pip."""
         town = self.new_char("paladin", "LabPortal")
         self.flag("pip_town", town, "the new character is in town" if town else "the new character is not in town")
         if not town:
@@ -303,12 +324,41 @@ class Checks(Base):
         self.flag("pip_portal_in_town", bool(p), f"{p[:1]}")
         if not p:
             return
-        self.gl("teleport", p[0]["x"], p[0]["y"] + 70)
+        px, py = p[0]["x"], p[0]["y"]
+        # a fresh character hasn't done the story intro: the portal only says it's dormant
+        # (plan-t11 094708), so the intro flag first
+        self.g.console("cht_set_flag mission_story_intro_find_npcs 1 0")
+        self.gl("teleport", px, py + 50)
+        time.sleep(1)
+        u = self.gl("use", "forsaken_portal")
+        time.sleep(0.8)
+        w = self.window()
+        # the window's entries (EntryShopMission) draw their title and ": <subtitle>" as
+        # BitmapStrings, which the widgets dump can't read back: their text is the shop items'
+        # GetTitle/GetSubTitle (gl shop), and the dump shows one visible entry per item
+        items = self.gl("shop").get("items") or []
+        titles = [(it.get("title", ""), it.get("sub", "")) for it in items]
+        entries = [n for r in self.gl("widgets", 20).get("roots", []) for n in r.get("nodes", [])
+                   if n.get("type") == "EntryShopMission" and n.get("visible")]
+        listed = any(t.strip().lower() == "the forsaken tower" and has_num(sub, 18) for t, sub in titles)
+        if w:
+            self.g.shot("portal-window")
+        self.flag("pip_portal_offers_tower", u.get("ok") and "Mission" in w and listed and len(entries) >= len(items),
+                  f"use {u.get('ok')}, window {w!r}, items {titles}, {len(entries)} visible entries (shot portal-window)")
+        for _ in range(4):
+            if not self.window():
+                break
+            self.g.key("escape")
+            time.sleep(0.5)
+        st = self.gl("state")
+        self.flag("pip_portal_closed", not st.get("window") and st.get("phase") == "town",
+                  f"window {st.get('window')!r}, phase {st.get('phase')}")
+        self.gl("teleport", px, py + 70)
         time.sleep(1)
         self.g.console("ui_minimap 1")
         time.sleep(1)
         cv = self.gl("cvars", "ui_minimap").get("cvars", {})
-        self.flag("pip_minimap_on", bool(cv.get("ui_minimap")), f"{cv}; portal at {p[0]['x']},{p[0]['y']}")
+        self.flag("pip_minimap_on", bool(cv.get("ui_minimap")), f"{cv}; portal at {px},{py}")
 
     # --- hoh1floors s2-s5
     def boss_setup(self):
@@ -470,22 +520,48 @@ class Checks(Base):
         # The scythe's attack (max-range 100, melee 35, period 1500-2250, castpoint 2200) holds it
         # still for 2.2 s each time it is near the player: at the room's middle, which 53 of the
         # level's 82 node-to-node legs pass within 100 px, it barely got past one node in 20 s
-        # (plan-runs-c 124854). So 20 s at the middle (everyone attacks), then 20 s at
-        # (-120,-40), still in the room, near 29 legs, where the walks between nodes show.
-        for spot in ((0, -144), (-120, -40)):
-            def watch(until, spot=spot):
+        # (plan-runs-c 124854), and parked next to a fixed spot it cast 71 of 74 samples
+        # (142130). So 20 s at the middle (everyone attacks), then 25 s keeping the player more
+        # than 100 px from the scythe (a room spot away from it, moving on whenever it closes
+        # within 120), where the walks between nodes show.
+        moves = []
+        near_scythe = []
+
+        def pick(a):
+            sc = [(x["x"], x["y"]) for x in a if x["name"].endswith("wraith_scythe.unit")]
+            far = [p for p in COUNCIL_SPOTS if all(math.hypot(p[0] - q[0], p[1] - q[1]) >= 130 for q in sc)]
+            if far:
+                # of those, the one farthest from all three
+                return max(far, key=lambda p: min([math.hypot(p[0] - x["x"], p[1] - x["y"]) for x in a] or [0]))
+            return max(COUNCIL_SPOTS, key=lambda p: min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in sc))
+
+        def wraiths():
+            return [x for x in self.gl("actors", 900, "HoH1BossLich").get("actors") or []
+                    if x.get("name", "").split("/")[-1] in WRAITHS]
+
+        for phase, ms in (("middle", 20000), ("away", 25000)):
+            spot = [(0, -144) if phase == "middle" else pick(wraiths())]
+
+            def watch(until):
                 last = 0
                 while time.time() < until - 0.5:
-                    a = [x for x in self.gl("actors", 900, "HoH1BossLich").get("actors") or []
-                         if x.get("name", "").split("/")[-1] in WRAITHS]
+                    a = wraiths()
                     samples.append(a)
+                    if phase == "away":
+                        d = [math.hypot(x["x"] - spot[0][0], x["y"] - spot[0][1]) for x in a
+                             if x["name"].endswith("wraith_scythe.unit")]
+                        near_scythe.extend(int(v) for v in d)
+                        if d and min(d) < 120:
+                            spot[0] = pick(a)
+                            moves.append(spot[0])
+                            last = 0
                     # stand still; put back every 2 s in case something pushed the player
                     if time.time() - last >= 2:
-                        self.gl("teleport", *spot)
+                        self.gl("teleport", *spot[0])
                         last = time.time()
                     time.sleep(0.3)
 
-            ev = self.trail(20000, 900, "HoH1BossLich", 100, watch) or {}
+            ev = self.trail(ms, 900, "HoH1BossLich", 100, watch) or {}
             for u in ev.get("units") or []:
                 name = u.get("name", "").split("/")[-1]
                 if name not in WRAITHS:
@@ -502,7 +578,9 @@ class Checks(Base):
         moving = [a for s in samples for a in s if a.get("moving")]
         casters = {a["name"].split("/")[-1] for s in samples for a in s if a.get("casting")}
         self.flag("council_node_to_node", len(visits) == 3 and all(len(v) >= 2 for v in visits.values()),
-                  f"nodes passed within 16 px over 40 s: {visits} ({len(node_pos)} nodes); samples standing still: {still}")
+                  f"nodes passed within 16 px over 45 s: {visits} ({len(node_pos)} nodes); samples standing still: {still}; "
+                  f"player moved away from the scythe {len(moves)}x, scythe within 100 px in "
+                  f"{sum(1 for v in near_scythe if v < 100)}/{len(near_scythe)} 'away' samples")
         self.flag("council_untargetable_moving", bool(moving) and not any(a.get("targetable") for a in moving),
                   f"{len(moving)} moving samples, targetable while moving {sum(1 for a in moving if a.get('targetable'))}")
         self.flag("council_fight_together", alive3 > 0 and len(casters) >= 2,
@@ -577,6 +655,154 @@ class Checks(Base):
             if near and far and sum(far) / len(far) - sum(near) / len(near) > 30:
                 good += 1
         self.flag("watcher_wisps_at_player_distance", good > 0, f"{good}/{len(follow)} wisps farther out while the player is")
+
+    def boss_vampire(self):
+        """hoh1floors s6: the Vampire Lord flies node to node as a bat swarm (scene bat-N,
+        untargetable, a moving body) and stands in his own scenes between; roaming he flies
+        on without stopping and drops fire_area.unit every 50 ms along his path. The bat spray
+        (an arc of bat_projectile_spawn) is recorded only: vampire.unit sets its charges to
+        BATCHARGES 0 (as HoH1's own vampire.unit does), so the skill never starts; it would
+        also need NG+2 and the boss under 20% health."""
+        if not self.boss_floor(FLOOR_CHAMBERS_BOSS, "boss_chambers", "vampire"):
+            return
+        # Setup (100 ms after load) finds no vampire_cross flags and enables AreaTrigger
+        # 'ActivateBoss' on the circle (-16,-170) r64: the boss spawns at (-16,-168) 1 s later
+        self.gl("teleport", -16, -150)
+        v = self.wait_units(700, "bosses/vampire/vampire", names=("vampire.unit",), timeout=15)
+        self.flag("vampire_spawned", bool(v), f"{v[:1]}")
+        if not v:
+            return
+        # Roaming needs flag vampire_roaming, which the level sets when a feed (at the center
+        # node, every 5th hop) ends with the boss under half health (CheckFeed -> CheckActorHealth
+        # < 0.5 -> SetFlag 'vampire_roaming', FlagState Level). Health to 35% (a feed heals 5-10%)
+        # and the flag set now the same way, so the next node arrivals may start a roam (40%).
+        hurt = self.gl("kill", 900, "vampire/vampire.unit", 0.35)
+        self.g.console("cht_set_flag vampire_roaming 1 0")
+        spot = (-16, 112)  # south side of the hall, between the nodes (-96,80) and (64,80)
+        self.gl("teleport", *spot)
+        samples, fires, bats = [], {}, {}
+        swarm = [0]
+
+        def watch(until):
+            last = 0
+            while time.time() < until - 0.8:
+                r = self.g.gl_multi([["actors", 900, "HoH1BossVampire"], ["near", 900, "fire_area"],
+                                     ["near", 900, "bat_projectile_spawn"], ["near", 900, "summon_bat_swarm"]])
+                samples.extend(a for a in r[0].get("actors") or [] if a.get("name", "").endswith("/vampire.unit"))
+                for u in r[1].get("units") or []:
+                    fires.setdefault(u["unit"], (u["x"], u["y"]))
+                for u in r[2].get("units") or []:
+                    bats.setdefault(u["unit"], (u["x"], u["y"]))
+                swarm[0] += len(r[3].get("units") or [])
+                if time.time() - last >= 3:
+                    self.gl("teleport", *spot)
+                    last = time.time()
+                time.sleep(0.4)
+
+        ev = self.trail(48000, 900, "HoH1BossVampire", 240, watch) or {}
+        track = [(x, y) for u in ev.get("units") or [] if u.get("name", "").endswith("/vampire.unit")
+                 for x, y, _ in u.get("pts") or []]
+        nodes = self.gl("ws", "BossLichNode").get("scripts") or []
+        node_pos = [(n["x"], n["y"]) for n in nodes] + [VAMPIRE_NODES[-1]] if nodes else VAMPIRE_NODES
+        hit = sorted({i for x, y in track for i, (nx, ny) in enumerate(node_pos) if math.hypot(x - nx, y - ny) <= 16})
+        path = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(track, track[1:]))
+        self.flag("vampire_roams", len(hit) >= 3,
+                  f"hurt {hurt.get('hurt')}; nodes passed within 16 px over 48 s: {hit} of {len(node_pos)}, "
+                  f"{len(track)} track points, path {int(path)} px")
+        bat = [a for a in samples if a.get("scene", "").startswith("bat")]
+        stand = [a for a in samples if not a.get("moving")]
+        stand_scenes = sorted({a.get("scene", "").split("-")[0] for a in stand})
+        self.flag("vampire_transforms", bool(bat) and bool(stand)
+                  and all(a.get("moving") and not a.get("targetable") for a in bat)
+                  and not any(a.get("scene", "").startswith("bat") for a in stand),
+                  f"{len(samples)} samples: {len(bat)} as bats (moving {sum(1 for a in bat if a.get('moving'))}, "
+                  f"targetable {sum(1 for a in bat if a.get('targetable'))}), {len(stand)} standing in {stand_scenes}")
+        segs = list(zip(track, track[1:]))
+        on = [f for f in fires.values() if segs and min(seg_dist(f, a, b) for a, b in segs) <= 24]
+        xs, ys = [f[0] for f in fires.values()], [f[1] for f in fires.values()]
+        span = math.hypot(max(xs) - min(xs), max(ys) - min(ys)) if fires else 0
+        self.flag("vampire_fire_trail", len(fires) >= 10 and len(on) >= 0.8 * len(fires) and span >= 64,
+                  f"{len(fires)} fire areas, {len(on)} within 24 px of his path, spread {int(span)} px")
+        feeds = sum(1 for a in samples if a.get("scene") == "feeding")
+        self.flag("vampire_feeds", feeds > 0 or swarm[0] > 0,
+                  f"{feeds} samples feeding, summon_bat_swarm seen {swarm[0]} times")
+        note = f"{len(bats)} bat_projectile_spawn seen"
+        if len(bats) >= 3 and track:
+            vx, vy = track[-1]
+            ang = sorted(math.degrees(math.atan2(y - vy, x - vx)) for x, y in bats.values())
+            note += f", angles {[int(a) for a in ang]}"
+        self.flag("vampire_bats", bool(bats), note + " (charges BATCHARGES 0 in vampire.unit)")
+
+    def wait_level(self, part, timeout=90):
+        """Until the state's level path has part and the phase is mission (gl may not answer
+        while the level loads)."""
+        end = time.time() + timeout
+        while time.time() < end:
+            try:
+                st = self.gl("state")
+                if part in (st.get("level") or "") and st.get("phase") == "mission":
+                    return True
+            except Exception:
+                pass
+            time.sleep(0.5)
+        return False
+
+    def enemies(self, tag, want=None):
+        """The floor's live actors (gl actors lists 32 at most) by .unit file; with want, a
+        {tag}_{want} flag for whether that unit file is among them."""
+        a = [x for x in self.gl("actors", 8000).get("actors") or [] if not x.get("dead")]
+        kinds = {}
+        for x in a:
+            k = x.get("name", "").split("/")[-1]
+            kinds[k] = kinds.get(k, 0) + 1
+        self.flag(f"{tag}_enemies", len(a) >= 3, f"{len(a)} live actors: {kinds}")
+        if want:
+            self.flag(f"{tag}_{want}", kinds.get(want + ".unit", 0) > 0, f"{kinds.get(want + '.unit', 0)} {want}")
+
+    def take_exit(self, level, nxt, tag):
+        """Stand in the exit's UseTrigger area (its AllPlayersAreaTrigger enables the exit) and
+        press use; the next floor must load. hwp finishlevel only if no exit worked."""
+        for x, y in BATTLEMENTS_EXITS[level]:
+            # 4 px into the area's lower half: the exit_up doodad's collision ends at its top edge
+            self.gl("teleport", x, y + 4)
+            time.sleep(1.2)
+            self.gl("input", 300, 0, 0, 0, 0, "use")
+            if self.wait_level(nxt, 25):
+                self.flag(f"{tag}_exit", True, f"exit at {x},{y}")
+                return True
+        self.flag(f"{tag}_exit", False, f"no exit of {BATTLEMENTS_EXITS[level]} loaded {nxt}: hwp finishlevel")
+        self.next_floor()
+        return self.wait_level(nxt, 30)
+
+    def battlements(self):
+        """hoh1floors s7: Battlements 1 and 2 (hand-made HoH1 levels, not generated) load with
+        enemies and are left through their exits (stand on the exit, press use: battlements_1
+        -> battlements_2 -> boss_dragon); on top Thundersnow waits: dragon_intro.unit stands in
+        the level, and entering the circle (0,0) r120 ('EnableBoss') spawns dragon.unit."""
+        if not self.boss_floor(FLOOR_BATTLEMENTS_1, "battlements_1", "battlements1"):
+            return
+        # its enemies are the SpawnEnemyGroup points' ice troll groups (HoH1's EnemyPlacement)
+        self.enemies("battlements1", "ice_troll_melee")
+        if not self.take_exit("battlements_1", "battlements_2", "battlements1"):
+            self.flag("battlements2_floor", False, f"level {self.gl('state').get('level')}")
+            return
+        time.sleep(3)
+        self.god_on()
+        self.flag("battlements2_floor", True, self.gl("state").get("level", ""))
+        self.enemies("battlements2")
+        if not self.take_exit("battlements_2", "boss_dragon", "battlements2"):
+            self.flag("dragon_floor", False, f"level {self.gl('state').get('level')}")
+            return
+        time.sleep(3)
+        self.god_on()
+        st = self.gl("state")
+        self.flag("dragon_floor", True, f"level {st.get('level')}, floor {st.get('floor')}")
+        intro = self.gl("near", 1200, "dragon_intro").get("units") or []
+        self.gl("teleport", 0, 100)
+        d = self.wait_units(900, "bosses/dragon/dragon", names=("dragon.unit",), timeout=15)
+        self.flag("thundersnow_present", bool(intro) and bool(d), f"dragon_intro {intro[:1]}; dragon {d[:1]}")
+        self.gl("teleport", 0, 300)  # back from the boss for the shot
+        time.sleep(1.5)
 
 
 def run(p, sections="keys_padlock", **_):
