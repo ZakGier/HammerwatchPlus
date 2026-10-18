@@ -142,9 +142,13 @@ namespace HWP
 			return list;
 		}
 
+		// m_colors are linear (ParseColorRGBA decodes the sval's sRGB hex), so encode
+		// back to sRGB: the \c code then shows the dye's authored colour, not a darker one
 		string Hex2(float f)
 		{
-			int v = clamp(int(f * 255.0f + 0.5f), 0, 255);
+			float l = clamp(f, 0.0f, 1.0f);
+			float s = l <= 0.0031308f ? l * 12.92f : 1.055f * pow(l, 1.0f / 2.4f) - 0.055f;
+			int v = clamp(int(s * 255.0f + 0.5f), 0, 255);
 			string digits = "0123456789abcdef";
 			return digits.substr(v / 16, 1) + digits.substr(v % 16, 1);
 		}

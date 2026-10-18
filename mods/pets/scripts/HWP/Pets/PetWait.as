@@ -44,12 +44,19 @@ namespace HWP
 
 		// FetchAllUnits, not QueryCircle: the buttons have no collision shape, so QueryCircle
 		// (sensors or not) never returns them. A radius fetch every CHECK_MS per pet is cheap.
+		// The fetch is coarse (it returns units well past the radius), so the distance is
+		// checked here; without it the pet kept waiting 220 px from a puzzle, skills and all.
 		bool NearPuzzle(vec2 pos)
 		{
 			auto results = g_scene.FetchAllUnits(~0, pos, g_radius);
+			float maxSq = float(g_radius) * float(g_radius);
 			for (uint i = 0; i < results.length(); i++)
 			{
 				UnitPtr unit = results[i];
+				if (!unit.IsValid() || unit.IsDestroyed())
+					continue;
+				if (distsq(pos, xy(unit.GetPosition())) > maxSq)
+					continue;
 				if (IsPuzzleUnit(unit))
 					return true;
 			}
