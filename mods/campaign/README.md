@@ -8,7 +8,7 @@ generated floors in the closest HoH2 theme plus a vanilla boss level.
 | HoH1 act | HoH2 theme | Boss level |
 |---|---|---|
 | Mines | theme_cave_dark | boss_totem_cave |
-| Prison | theme_prison | boss_arista |
+| Prison | theme_dungeon (vanilla's unused theme_prison never generates) | boss_arista |
 | Armory | theme_barracks | boss_harbingers |
 | Archives | theme_crypt | boss_wraith |
 | Chambers | theme_courts | boss_bone_serpent |

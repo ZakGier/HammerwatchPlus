@@ -101,7 +101,11 @@
 
 		<dict>
 			<string name="id">prison_1</string>
-			<string name="mission-theme">theme_prison</string>
+			%// vanilla's theme_prison is unused (commented out in missions_story) and its
+			%// generator never finds a start/exit pair: dark citadel's cell blocks stand in
+			<string name="mission-theme">theme_dungeon</string>
+			<int name="width">2300</int>
+			<int name="height">1700</int>
 			<int name="diff-level">8</int>
 			<int name="diff-level-ngp">16</int>
 
@@ -133,7 +137,11 @@
 
 		<dict>
 			<string name="id">prison_2</string>
-			<string name="mission-theme">theme_prison</string>
+			%// vanilla's theme_prison is unused (commented out in missions_story) and its
+			%// generator never finds a start/exit pair: dark citadel's cell blocks stand in
+			<string name="mission-theme">theme_dungeon</string>
+			<int name="width">2600</int>
+			<int name="height">1700</int>
 			<int name="diff-level">9</int>
 			<int name="diff-level-ngp">17</int>
 

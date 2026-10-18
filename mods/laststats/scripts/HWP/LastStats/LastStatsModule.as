@@ -164,17 +164,18 @@ namespace HWP
 				float(HWP::Settings::GetInt("laststats.board_y", 110)), 0.0f);
 		}
 
-		void SpawnBoard()
+		UnitPtr SpawnBoard()
 		{
 			auto prod = Resources::GetUnitProducer(BOARD_UNIT);
 			if (prod is null)
 			{
 				HWP::LogError("laststats", "missing " + BOARD_UNIT);
-				return;
+				return UnitPtr();
 			}
 			auto pos = BoardPos();
-			prod.Produce(g_scene, pos);
+			UnitPtr u = prod.Produce(g_scene, pos);
 			HWP::Log("laststats", "spawned the notice board at " + pos.x + "," + pos.y);
+			return u;
 		}
 
 		void CmdLastStats(array<string>@ args)
@@ -200,6 +201,7 @@ namespace Modules
 		// board must spawn from the constructor's state (docs/RE_NOTES.md, mod lifecycle)
 		bool m_boardDone = false;
 		int m_boardDelay = 0;
+		HWP::Town::Kept m_board;
 
 		HWPLastStatsModule()
 		{
@@ -217,6 +219,7 @@ namespace Modules
 			TakeSnapshot();
 			m_boardDone = false;
 			m_boardDelay = 0;
+			m_board.Reset();
 			m_reportDelay = 2000; // (re)send whatever we have so late joiners get it too
 		}
 
@@ -267,9 +270,11 @@ namespace Modules
 				{
 					m_boardDone = true;
 					if (g_inTown && Network::IsServer())
-						HWP::LastStats::SpawnBoard();
+						m_board.m_unit = HWP::LastStats::SpawnBoard();
 				}
 			}
+			else if (m_board.Due(ms)) // a building upgrade reloaded the town
+				m_board.m_unit = HWP::LastStats::SpawnBoard();
 		}
 	}
 }

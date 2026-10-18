@@ -337,7 +337,7 @@ namespace Modules
 			GameLab::RegisterVerb("usews", "<comment> [ifType ifComment]", GameLab::Verb(GameLab::VerbUseWs));
 			GameLab::RegisterVerb("goto", "<type> <comment> [dx dy]", GameLab::Verb(GameLab::VerbGoto));
 			GameLab::RegisterVerb("timescale", "<x>", GameLab::Verb(GameLab::VerbTimescale));
-			GameLab::RegisterVerb("cull", "", GameLab::Verb(GameLab::VerbCull));
+			GameLab::RegisterVerb("cull", "[mine]", GameLab::Verb(GameLab::VerbCull));
 			GameLab::RegisterVerb("teleport", "<x> <y>", GameLab::Verb(GameLab::VerbTeleport));
 			GameLab::RegisterVerb("controller", "", GameLab::Verb(GameLab::VerbController));
 			GameLab::RegisterVerb("input", "<ms> <mx> <my> [aimX aimY] [button,button]", GameLab::Verb(GameLab::VerbInput));

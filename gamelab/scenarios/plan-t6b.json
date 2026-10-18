@@ -33,7 +33,7 @@
   "weapons",
   "weaponswap"
  ],
- "timeout": 500,
+ "timeout": 700,
  "steps": [
   {
    "do": "console",
@@ -109,26 +109,101 @@
    "name": "arena"
   },
   {
-   "do": "gl",
-   "verb": "near",
-   "args": [
-    "800"
-   ]
-  },
-  {
    "do": "sleep",
    "seconds": 10
   },
   {
+   "do": "shot",
+   "name": "arena-10s"
+  },
+  {
    "do": "gl",
-   "verb": "near",
+   "verb": "cull",
    "args": [
-    "800"
+    "mine"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp wave goal"
+  },
+  {
+   "do": "log_has",
+   "pattern": "survival bar filled",
+   "timeout": 5,
+   "name": "survival bar filled"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/undead/guard/guard_sentry.unit",
+    "60",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "cull",
+   "args": [
+    "mine"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "SurvivalMission Spawning Boss",
+   "timeout": 10,
+   "name": "champion spawns when the bar is full"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "shot",
+   "name": "arena-champion"
+  },
+  {
+   "do": "retry",
+   "times": 20,
+   "timeout": 1,
+   "until": "\\[HWP:wave\\] arena boss down",
+   "name": "arena champion killed",
+   "steps": [
+    {
+     "do": "gl",
+     "verb": "cull",
+     "args": [
+      "mine"
+     ]
+    },
+    {
+     "do": "sleep",
+     "seconds": 2
+    }
    ]
   },
   {
    "do": "shot",
-   "name": "arena-10s"
+   "name": "arena-boss-down"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Wave Arena: on, rank ([6-9]|\\d\\d)\\.",
+   "timeout": 5,
+   "name": "rank rose from 5"
   },
   {
    "do": "log_clean"

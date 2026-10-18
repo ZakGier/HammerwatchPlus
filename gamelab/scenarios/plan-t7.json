@@ -1,0 +1,754 @@
+{
+ "name": "plan-t7",
+ "about": "Test plan, use-driven (exploratory): General Merchant key buy, gambler flips, farming plot cycle, wave statue and campaign portal reached on foot, locked chests with and without a key, HWP class creation.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp material all 200000"
+  },
+  {
+   "do": "console",
+   "line": "hwp unlockflags"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_guard_exit.unit",
+    "30",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_guard_exit"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "merchant usable"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "save_as": "merch"
+  },
+  {
+   "do": "shot",
+   "name": "merchant"
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "gl",
+   "verb": "shop",
+   "args": [
+    "buy",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "bought a bronze key",
+   "timeout": 5,
+   "name": "bronze key bought"
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "gl",
+   "verb": "shop"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Keys: bronze 1,",
+   "timeout": 5,
+   "name": "bronze key counted"
+  },
+  {
+   "do": "shot",
+   "name": "key-counter"
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "hwp_gambler"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "gambler usable"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "bet-btn-0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "play-btn"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "shot",
+   "name": "gambler-flip"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "play-btn"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "gl",
+   "verb": "widgets",
+   "args": [
+    "8"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "gambler-flip2"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set farm.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm units"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm buy can"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp farm buy cabbage"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp farm buy lucky_leaf"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp farm"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm plant 1 cabbage"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "planted cabbage on plot",
+   "timeout": 5,
+   "name": "cabbage planted"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm use 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "watered \\d+ plot",
+   "timeout": 5,
+   "name": "plot watered"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm use 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm plant 2 lucky_leaf"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm grow"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm use 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "harvested \\d+x cabbage",
+   "timeout": 5,
+   "name": "cabbage harvested"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm use 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "harvested \\d+x lucky_leaf",
+   "timeout": 5,
+   "name": "lucky leaf harvested"
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp smoke lucky_leaf"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm refill"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "shot",
+   "name": "farm"
+  },
+  {
+   "do": "log_capture",
+   "pattern": "wave_statue\\.unit spawned at (?P<x>-?\\d+),(?P<y>-?\\d+)",
+   "save_as": "statue",
+   "timeout": 10
+  },
+  {
+   "do": "pilot",
+   "call": "path_to",
+   "args": [
+    "{$statue.match.x}",
+    "{$statue.match.y}",
+    "40"
+   ],
+   "timeout": 60
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [],
+   "timeout": 10
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "shot",
+   "name": "wave-statue"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_set_flag mission_story_intro_find_npcs 1 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign"
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Portal at (?P<x>-?\\d+),(?P<y>-?\\d+)",
+   "save_as": "portal",
+   "timeout": 10
+  },
+  {
+   "do": "pilot",
+   "call": "path_to",
+   "args": [
+    "{$portal.match.x}",
+    "{$portal.match.y}",
+    "30"
+   ],
+   "timeout": 60
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [],
+   "timeout": 10
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "shot",
+   "name": "portal"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.lock_chance 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "chests/chest_"
+   ],
+   "save_as": "chest"
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$chest.units.0.unit}"
+   ],
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "shot",
+   "name": "chest-locked"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive bronze 2"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive silver 2"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive gold 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$chest.units.0.unit}"
+   ],
+   "timeout": 30
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "log_has",
+   "pattern": "unlocked a \\w+ chest",
+   "timeout": 5,
+   "name": "chest unlocks with a key"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "shot",
+   "name": "chest-open"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "items/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "classes"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_thief",
+    "Lab0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "player.class": "hwp_thief"
+   },
+   "name": "hwp_thief created"
+  },
+  {
+   "do": "gl",
+   "verb": "inspect",
+   "args": [
+    "player",
+    "equipped"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "hwp_thief"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_gladiator",
+    "Lab1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "player.class": "hwp_gladiator"
+   },
+   "name": "hwp_gladiator created"
+  },
+  {
+   "do": "gl",
+   "verb": "inspect",
+   "args": [
+    "player",
+    "equipped"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "hwp_gladiator"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_witch_hunter",
+    "Lab2"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "player.class": "hwp_witch_hunter"
+   },
+   "name": "hwp_witch_hunter created"
+  },
+  {
+   "do": "gl",
+   "verb": "inspect",
+   "args": [
+    "player",
+    "equipped"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "hwp_witch_hunter"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Lab3"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "player.class": "hwp_firearms"
+   },
+   "name": "hwp_firearms created"
+  },
+  {
+   "do": "gl",
+   "verb": "inspect",
+   "args": [
+    "player",
+    "equipped"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "hwp_firearms"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

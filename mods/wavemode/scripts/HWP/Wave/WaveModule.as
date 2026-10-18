@@ -171,6 +171,25 @@ namespace HWP
 				g_statue.MoveHere();
 				return;
 			}
+			if (args.length() >= 1 && args[0] == "goal")
+			{
+				// cheats, host: fill the survival bar, so the next kill brings the
+				// champion (tests reach the boss without ~15,000 XP of kills)
+				if (!HWP::Cheats::On())
+					return;
+				auto gm = cast<AGameplayGameMode>(g_gameMode);
+				SurvivalMission@ sm = null;
+				for (uint i = 0; gm !is null && sm is null && i < gm.m_modules.length(); i++)
+					@sm = cast<SurvivalMission>(gm.m_modules[i]);
+				if (!Network::IsServer() || sm is null || sm.m_spawnedBoss)
+				{
+					HWP::Commands::Reply("hwp wave goal: host only, in the arena, before the champion");
+					return;
+				}
+				sm.m_experienceC = sm.GetXPGoal();
+				HWP::Log("wave", "survival bar filled (" + sm.m_experienceC + " xp); the next kill brings the champion");
+				return;
+			}
 			if (args.length() >= 1 && args[0] == "rank")
 			{
 				if (!Network::IsServer())
@@ -346,7 +365,7 @@ namespace Modules
 			HWP::Net::OnRequest(HWP::Wave::START, HWP::Net::RequestHandler(HWP::Wave::OnStartRequest));
 			HWP::Net::OnEvent(HWP::Wave::AWARDED, HWP::Net::EventHandler(HWP::Wave::OnAwarded));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Wave::OnSettingChanged));
-			HWP::Commands::Register("wave", " wave arena status; 'here' moves the statue, 'rank <n>' sets the rank (host)", HWP::Commands::Handler(HWP::Wave::CmdWave));
+			HWP::Commands::Register("wave", " wave arena status; 'here' moves the statue, 'rank <n>' sets the rank (host), 'goal' fills the arena's bar (cheats)", HWP::Commands::Handler(HWP::Wave::CmdWave));
 			HWP::CheckUnits("wavemode", { HWP::Wave::STATUE_UNIT, HWP::Wave::BOSS_UNIT });
 		}
 

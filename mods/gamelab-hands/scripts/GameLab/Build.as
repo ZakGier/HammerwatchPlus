@@ -227,9 +227,22 @@ namespace GameLab
 
 	// cull: the cht_kill_all cheat's body (Console/Cheats.as:970-980): Kill every targetable
 	// actor not on the player's team; `skipped` names (at most 16) the untargetable ones left.
-	// Measurement scenarios only, like teleport.
+	// "cull mine" names the local player as the killer (CompositeActorBehavior.Kill ->
+	// OnDeath -> Player.KilledActor), so XP and the PlayerKilledActor hook run as for a
+	// player's kill. Measurement scenarios only, like teleport.
 	void VerbCull(const string &in id, array<string>@ args)
 	{
+		Actor@ killer = null;
+		if (args.length() > 0 && args[0] == "mine")
+		{
+			auto plr = GetLocalPlayer();
+			if (plr is null)
+			{
+				Emit(Reply(id, false).Str("error", "no local player"));
+				return;
+			}
+			@killer = plr;
+		}
 		auto enemies = g_scene.FetchAllActorsWithOtherTeam(g_team_player);
 		int killed = 0;
 		array<string> skipped;
@@ -238,7 +251,7 @@ namespace GameLab
 			Actor@ a = cast<Actor>(enemies[i].GetScriptBehavior());
 			if (a !is null && a.IsTargetable())
 			{
-				a.Kill(null, 0);
+				a.Kill(killer, 0);
 				killed++;
 			}
 			else if (skipped.length() < 16)

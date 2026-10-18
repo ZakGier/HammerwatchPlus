@@ -75,6 +75,10 @@ every Heroes of Hammerwatch 1 pet skin in the HoH2 Pet Shop. Replaces the old
 - Settings: `pets.enabled`, `pets.debug` (`hwp pet xp <n>`), `pets.bowl_x/y`,
   `petwait.enabled`, `petwait.radius` (all host-synced).
 
+- The feeding bowl comes back after a building upgrade, which rebuilds the town
+  and destroys it (`HWP::Town::Kept`, on every machine since the bowl is local;
+  test: `mod-town-rebuild`).
+
 ## Test checklist
 
 1. `python -m gamelab run mod-pets --mode lab`: `self-check done: 7 skills, 5 foods`; after import

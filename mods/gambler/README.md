@@ -6,6 +6,9 @@ it, a tie returns it.
 
 - Spawned by `HWPGamblerModule` at the tavern's table once the tavern is built
   (server only; the unit is netsynced and replicated to clients).
+- The gambler comes back after a building upgrade, which rebuilds the town and
+  destroys him; the module notices within a second and spawns him again
+  (`HWP::Town::Kept`; test: `mod-town-rebuild`).
 - Game logic in `scripts/HWP/Gambler/GamblerShop.as` (`HWPGamblerShop` /
   `HWPGamblerMenu`), GUI `gui/hwp_gambler.gui`, card sprites under
   `gui/hwp_gambler/cards/` (53 generated 32x64 PNGs).

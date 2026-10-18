@@ -32,7 +32,9 @@ Path of Exile style strongboxes.
 2. Host a run, `hwp strongbox here`: an orange chest appears; use it: a pack
    spawns, the use icon turns into a cross, the chest opens when they are dead.
 3. Run a few levels with `strongbox.chance 100`: the log shows `placed a
-   strongbox at ...` each level, far from the party.
+   strongbox at ...` each level, far from the party. A strongbox and an abyss
+   crack placed on the same level stay at least 300 px apart (core `PickFarSpot`
+   claims each spot it hands out).
 4. Co-op: the client sees the box, can arm it, and gets the loot when cleared.
 
 Timeout: if the pack is still alive 3 minutes after arming (kited, stuck,

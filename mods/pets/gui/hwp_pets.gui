@@ -12,7 +12,7 @@
 				<panel anchor="0.5 0" width="320" height="22" offset="0 0" style="character_pick_top">
 					<text id="title" text=".hwp.pets.title" color="#ed9331" font="title" align="center" anchor="0.5 0.5" width="300" offset="0 1" />
 				</panel>
-				<button id="close-btn" nav-pos="4 0" spriteset="close-button" anchor="1 0" offset="-2 2" func="close" />
+				<spritebutton id="close-btn" nav-pos="4 0" spriteset="close" anchor="1 0" offset="-1 1" func="close" />
 
 				<text id="state" text="" color="#ffd27f" font="text" align="center" anchor="0.5 0" offset="0 30" width="320" />
 				<text id="xp" text="" color="#ffffff" font="text" align="center" anchor="0.5 0" offset="0 44" width="320" />

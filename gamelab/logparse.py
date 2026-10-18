@@ -13,7 +13,8 @@ import re
 
 SCRIPT_ISSUE = re.compile(r"\] (ERR|WARN|WRN|ERROR)\s+: (?P<file>[^ ]+) \(ln (?P<line>\d+), col (?P<col>\d+)\)")
 MOD_ADDED = re.compile(r"Adding (packed|unpacked) mod '([^']+)'")
-OURS = (r"scripts/HWP/", r"scripts/GameLab/", r"hwp_", r"\[HWP:", r"HammerwatchPlus")
+# "sval does not exist": a gui naming a sprite set nobody defines; vanilla never logs it
+OURS = (r"scripts/HWP/", r"scripts/GameLab/", r"hwp_", r"\[HWP:", r"HammerwatchPlus", r"sval does not exist")
 
 
 def script_issues(text: str) -> list[dict]:

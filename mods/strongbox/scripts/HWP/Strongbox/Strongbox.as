@@ -213,6 +213,7 @@ class HWPStrongbox : Chest
 		m_state = 2;
 		HWP::Strongbox::g_cleared++;
 		HWP::Strongbox::SendState(m_unit, 2);
+		HWP::Log("strongbox", "pack cleared; the box opens");
 		PlayerBase@ opener;
 		auto rec = GetPlayerRecordByPeer(m_openerPeer);
 		if (rec !is null && rec.actor !is null)

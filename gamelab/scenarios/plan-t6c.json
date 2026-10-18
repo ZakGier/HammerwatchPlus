@@ -1,6 +1,6 @@
 {
  "name": "plan-t6c",
- "about": "Test plan Forsaken Tower (exploratory): mines floor 1, finishlevel to floor 2, campaign status.",
+ "about": "Test plan Forsaken Tower (exploratory): mines floor 1, then finishlevel through all 18 floors.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -33,7 +33,7 @@
   "weapons",
   "weaponswap"
  ],
- "timeout": 500,
+ "timeout": 1800,
  "steps": [
   {
    "do": "console",
@@ -96,7 +96,8 @@
    "do": "gl",
    "verb": "near",
    "args": [
-    "1200"
+    "4000",
+    "actors/"
    ]
   },
   {
@@ -121,8 +122,41 @@
    "line": "show_chat"
   },
   {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor2"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
    "do": "console",
-   "line": "hwp campaign"
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
   },
   {
    "do": "sleep",
@@ -130,11 +164,570 @@
   },
   {
    "do": "shot",
-   "name": "mines2"
+   "name": "floor3"
   },
   {
    "do": "gl",
-   "verb": "state"
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor4"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor5"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor6"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor7"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor8"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor9"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor10"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor11"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor12"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor13"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor14"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor15"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor16"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor17"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "floor18"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "actors/"
+   ]
   },
   {
    "do": "log_clean"

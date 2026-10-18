@@ -32,6 +32,8 @@ namespace Modules
 	{
 		bool m_done = false;
 		int m_delay = 0;
+		HWP::Town::Kept m_kept;   // the gambler unit; a building upgrade destroys it
+		bool m_broken = false;    // the unit file is missing: don't retry every second
 
 		HWPGamblerModule()
 		{
@@ -41,8 +43,16 @@ namespace Modules
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
 		{
-			if (paused || m_done)
+			if (paused)
 				return;
+			// a building upgrade (or building the tavern) reloads the town without a new Start
+			if (m_done)
+			{
+				if (!m_broken && m_kept.Due(ms) && g_currTownRecord !is null
+					&& g_currTownRecord.GetVariationOnBuilding(HashString("tavern")) >= 0)
+					Spawn();
+				return;
+			}
 
 			// let the scene settle before producing units
 			m_delay += ms;
@@ -63,19 +73,26 @@ namespace Modules
 				HWP::Log("gambler", "no tavern built yet, no gambler");
 				return;
 			}
+			Spawn();
+		}
 
+		void Spawn()
+		{
 			// tavern segment at (-64, -176) in the town base level, NPC offset (-60, 70)
 			vec3 spawnPos = vec3(-124.0f, -106.0f, 0.0f);
 			auto prod = Resources::GetUnitProducer("actors/npcs/town/hwp_gambler.unit");
 			if (prod is null)
 			{
 				HWP::LogError("gambler", "missing actors/npcs/town/hwp_gambler.unit");
+				m_broken = true;
 				return;
 			}
 			UnitPtr npc = prod.Produce(g_scene, spawnPos);
+			m_kept.m_unit = npc;
 			if (!npc.IsValid())
 			{
 				HWP::LogError("gambler", "Produce returned no unit at (-124, -106)");
+				m_broken = true;
 				return;
 			}
 			HWP::Log("gambler", "spawned the gambler in the tavern (unit " + npc.GetId() + " at -124,-106)");
@@ -85,6 +102,7 @@ namespace Modules
 		{
 			m_done = false;
 			m_delay = 0;
+			m_kept.Reset();
 		}
 	}
 }

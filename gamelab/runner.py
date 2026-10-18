@@ -46,6 +46,23 @@ def dotted(obj, path: str):
     return obj
 
 
+SAVED_REF = re.compile(r"\{\$([\w.]+)\}")
+
+
+def subst(value, saved: dict):
+    """Replace each {$name.dotted.path} in a step argument with that saved reply's value
+    (e.g. a unit id from a "near" reply handed to "pilot use"); a missing one is an error."""
+    if not isinstance(value, str):
+        return value
+
+    def one(m):
+        got = dotted(saved, m.group(1))
+        if isinstance(got, KeyError):
+            raise GameError(f"no saved value {m.group(1)!r} for {value!r}")
+        return str(int(got)) if isinstance(got, float) and got.is_integer() else str(got)
+    return SAVED_REF.sub(one, value)
+
+
 def check(reply: dict, expect: dict) -> list[str]:
     """Mismatches between a [GL] reply and {dotted.path: value}. A value {"between": [lo, hi]}
     matches any number in that closed range (positions of units that move on their own)."""
@@ -299,7 +316,7 @@ class Run:
             self.assert_(s.get("name", f"loot fits {s['entry']}"), ok, f"gained {shown}; {why}")
             return game
         if kind == "gl":
-            reply = game.gl_cmd(s["verb"], *s.get("args", []), timeout=s.get("timeout", 15))
+            reply = game.gl_cmd(s["verb"], *[subst(a, saved) for a in s.get("args", [])], timeout=s.get("timeout", 15))
             if "save_as" in s:
                 saved[s["save_as"]] = reply
             if "expect" in s:
@@ -310,7 +327,7 @@ class Run:
             p = pilotlib.Pilot(game, self.results.name, explore=bool(self.scenario.get("explore")))
             fn = getattr(p, s["call"])
             kw = {k: s[k] for k in ("until", "timeout") if k in s}
-            r = fn(*s.get("args", []), **kw)
+            r = fn(*[subst(a, saved) for a in s.get("args", [])], **kw)
             got = r if isinstance(r, dict) else {"result": r.result, "reason": r.reason, "tick": r.tick,
                                                  "intent": r.intent, "event": r.event}
             if "save_as" in s:
@@ -469,6 +486,23 @@ class Run:
             while not (hit := rx.search(game.read_log())) and time.time() < end:
                 time.sleep(0.25)
             self.assert_(s.get("name", f"log has /{s['pattern']}/"), hit is not None, hit.group(0) if hit else "not found")
+        elif kind == "log_capture":
+            # the named groups of the last match of a regex in this pass's game log, saved as
+            # {"match": {group: number or text}} under save_as (e.g. a logged x,y for assert_dist)
+            rx = re.compile(s["pattern"])
+            end = time.time() + s.get("timeout", 30)
+            while not (hits := list(rx.finditer(game.read_log()))) and time.time() < end:
+                time.sleep(0.25)
+            if hits:
+                groups = {}
+                for k, v in hits[-1].groupdict().items():
+                    try:
+                        groups[k] = float(v)
+                    except (TypeError, ValueError):
+                        groups[k] = v
+                saved[s["save_as"]] = {"match": groups}
+            self.assert_(s.get("name", f"log captures /{s['pattern']}/"), bool(hits),
+                         hits[-1].group(0) if hits else "not found")
         elif kind == "retry":
             # level-dependent setups (what a generated floor places): run the inner steps
             # again until a regex shows up in log lines they added, up to `times` attempts.
@@ -528,7 +562,7 @@ class Run:
         elif kind == "console":
             # a raw console line, as a human would type it in watch mode (cvars, the engine's
             # own debug draws); the effect is asserted by later steps, never assumed
-            game.console(s["line"])
+            game.console(subst(s["line"], saved))
         else:
             raise GameError(f"unknown step {kind!r}")
         return game

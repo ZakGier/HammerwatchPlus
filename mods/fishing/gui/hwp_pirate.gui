@@ -11,7 +11,7 @@
 				<panel anchor="0.5 0" width="300" height="22" offset="0 0" style="character_pick_top">
 					<text id="title" text=".hwp.fishing.pirate.title" color="#ed9331" font="title" align="center" anchor="0.5 0.5" width="280" offset="0 1" />
 				</panel>
-				<button id="close-btn" nav-pos="4 0" spriteset="close-button" anchor="1 0" offset="-2 2" func="close" />
+				<spritebutton id="close-btn" nav-pos="4 0" spriteset="close" anchor="1 0" offset="-1 1" func="close" />
 
 				<text id="greeting" text="" color="#ffd27f" font="text" align="center" anchor="0.5 0" offset="0 30" width="296" />
 				<text id="status" text="" color="#ffffff" font="text" align="center" anchor="0.5 0" offset="0 66" width="296" />

@@ -87,6 +87,13 @@
    "verb": "ui"
   },
   {
+   "do": "gl",
+   "verb": "widgets",
+   "args": [
+    "8"
+   ]
+  },
+  {
    "do": "shot",
    "name": "gambler"
   },
@@ -163,12 +170,8 @@
    "line": "hwp fishing"
   },
   {
-   "do": "console",
-   "line": "hwp fishing buy trap"
-  },
-  {
-   "do": "sleep",
-   "seconds": 0.5
+   "do": "gl",
+   "verb": "inv"
   },
   {
    "do": "console",
@@ -179,12 +182,8 @@
    "seconds": 0.5
   },
   {
-   "do": "console",
-   "line": "hwp fishing buy trap"
-  },
-  {
-   "do": "sleep",
-   "seconds": 0.5
+   "do": "gl",
+   "verb": "inv"
   },
   {
    "do": "console",
@@ -193,6 +192,34 @@
   {
    "do": "sleep",
    "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
   },
   {
    "do": "console",
@@ -315,10 +342,35 @@
   },
   {
    "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/npcs/town/npc_misc_farmer_man.unit",
+    "30",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "farmer"
+   ]
+  },
+  {
+   "do": "gl",
    "verb": "use",
    "args": [
-    "npc_misc_farmer_man"
-   ]
+    "farmer_man"
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "farmer usable"
   },
   {
    "do": "sleep",
@@ -330,7 +382,8 @@
   },
   {
    "do": "gl",
-   "verb": "shop"
+   "verb": "shop",
+   "save_as": "farmshop"
   },
   {
    "do": "shot",
@@ -356,8 +409,14 @@
    "verb": "townrefresh"
   },
   {
+   "do": "log_has",
+   "pattern": "\\[HWP:goldpet\\] spawned the pet vendor",
+   "timeout": 6,
+   "name": "vendor appears after building the lodge"
+  },
+  {
    "do": "sleep",
-   "seconds": 6
+   "seconds": 2
   },
   {
    "do": "console",
@@ -392,7 +451,22 @@
   },
   {
    "do": "gl",
-   "verb": "shop"
+   "verb": "inv"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "buy-tier1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
   },
   {
    "do": "shot",
@@ -404,7 +478,19 @@
   },
   {
    "do": "sleep",
-   "seconds": 1
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "300",
+    "pet"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp pet"
   },
   {
    "do": "console",
@@ -483,8 +569,26 @@
    "verb": "near",
    "args": [
     "6000",
-    "portal"
+    "forsaken"
    ]
+  },
+  {
+   "do": "console",
+   "line": "cht_set_flag mission_story_intro_find_npcs 1 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign"
+  },
+  {
+   "do": "log_has",
+   "pattern": "diff 5-22\\)\\. Portal at",
+   "timeout": 5,
+   "name": "campaign unlocked by the story flag"
   },
   {
    "do": "console",

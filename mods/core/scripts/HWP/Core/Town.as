@@ -39,6 +39,32 @@ namespace HWP
 			return true;
 		}
 
+		// A unit a module spawns once per town load at a fixed spot (the gambler,
+		// the notice board). A building upgrade reloads the town level without a
+		// new Start and destroys it; Due() says, at most once a second while in
+		// town, that it is gone. hostOnly: only the host spawns it (netsynced).
+		class Kept
+		{
+			UnitPtr m_unit;
+			int m_ms = 0;
+			bool m_hostOnly;
+
+			Kept(bool hostOnly = true) { m_hostOnly = hostOnly; }
+
+			void Reset() { m_unit = UnitPtr(); m_ms = 0; }
+
+			bool Due(int ms)
+			{
+				if (!g_inTown || (m_hostOnly && !Network::IsServer()))
+					return false;
+				m_ms += ms;
+				if (m_ms < WATCH_MS)
+					return false;
+				m_ms = 0;
+				return !m_unit.IsValid() || m_unit.IsDestroyed();
+			}
+		}
+
 		class Placeable
 		{
 			string m_tag;      // log tag / module name

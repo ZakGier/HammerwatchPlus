@@ -14,6 +14,7 @@ namespace Modules
 		dictionary m_syncChecks;     // peer -> polls spent waiting for the tier sync
 		dictionary m_waitLogged;     // peer -> "waiting for actor" already logged
 		bool m_vendorSpawned = false;
+		UnitPtr m_vendor;            // a building upgrade rebuilds the town and takes it along
 		bool m_localTierSynced = false;
 		int m_checkDelay = 0;
 		int m_startupDelay = 0;
@@ -40,11 +41,12 @@ namespace Modules
 				return;
 			m_checkDelay = 0;
 
-			if (!m_vendorSpawned)
+			// the first check after a load spawns the vendor; later ones bring it
+			// back when a building upgrade (or building the lodge) rebuilt the town
+			if (Network::IsServer() && (!m_vendorSpawned || !m_vendor.IsValid() || m_vendor.IsDestroyed()))
 			{
 				m_vendorSpawned = true;
-				if (Network::IsServer())
-					SpawnVendor();
+				SpawnVendor();
 			}
 
 			if (!Network::IsServer() && !m_localTierSynced)
@@ -147,7 +149,7 @@ namespace Modules
 				HWP::LogError("goldpet", "missing actors/npcs/town/hwp_pet_vendor.unit");
 				return;
 			}
-			prod.Produce(g_scene, spawnPos);
+			m_vendor = prod.Produce(g_scene, spawnPos);
 			HWP::Log("goldpet", "spawned the pet vendor in the Hunter's Lodge");
 		}
 	}

@@ -192,8 +192,43 @@
    "seconds": 2
   },
   {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "key_silver"
+   ],
+   "save_as": "keynear",
+   "expect": {
+    "units.0.name": "items/hwp/keys/key_silver.unit"
+   },
+   "name": "dropped key on the ground"
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$keynear.units.0.unit}"
+   ],
+   "timeout": 15
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
    "do": "console",
    "line": "hwp keys"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Keys: bronze 0, silver 1, gold 2, ace 1",
+   "timeout": 5,
+   "name": "dropped silver key picked up"
   },
   {
    "do": "shot",
@@ -243,8 +278,14 @@
    "verb": "cull"
   },
   {
+   "do": "log_has",
+   "pattern": "\\[HWP:strongbox\\] pack cleared",
+   "timeout": 6,
+   "name": "strongbox opens after the pack"
+  },
+  {
    "do": "sleep",
-   "seconds": 4
+   "seconds": 3
   },
   {
    "do": "shot",
@@ -332,6 +373,12 @@
    "name": "wave 3"
   },
   {
+   "do": "log_has",
+   "pattern": "wave 3/3: \\d+ enemies \\(elite ",
+   "timeout": 3,
+   "name": "wave 3 has an elite"
+  },
+  {
    "do": "sleep",
    "seconds": 2
   },
@@ -344,8 +391,14 @@
    "verb": "cull"
   },
   {
+   "do": "log_has",
+   "pattern": "The abyss closes",
+   "timeout": 8,
+   "name": "abyss closes with loot"
+  },
+  {
    "do": "sleep",
-   "seconds": 4
+   "seconds": 3
   },
   {
    "do": "shot",
@@ -355,7 +408,8 @@
    "do": "gl",
    "verb": "near",
    "args": [
-    "150"
+    "150",
+    "items/"
    ]
   },
   {
@@ -422,6 +476,36 @@
   {
    "do": "shot",
    "name": "floor2"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:strongbox\\] placed a strongbox",
+   "timeout": 10,
+   "name": "floor 2 strongbox"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] placed a crack",
+   "timeout": 10,
+   "name": "floor 2 crack"
+  },
+  {
+   "do": "log_capture",
+   "pattern": "placed a strongbox at (?P<x>-?\\d+),(?P<y>-?\\d+)",
+   "save_as": "sb2"
+  },
+  {
+   "do": "log_capture",
+   "pattern": "placed a crack at (?P<x>-?\\d+),(?P<y>-?\\d+)",
+   "save_as": "cr2"
+  },
+  {
+   "do": "assert_dist",
+   "a": "sb2",
+   "b": "cr2",
+   "path": "match",
+   "min": 300,
+   "name": "strongbox and crack 300+ apart"
   },
   {
    "do": "console",
@@ -533,6 +617,21 @@
   {
    "do": "shot",
    "name": "town-mission-end"
+  },
+  {
+   "do": "gl",
+   "verb": "press",
+   "args": [
+    "stats"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "end-stats"
   },
   {
    "do": "key",

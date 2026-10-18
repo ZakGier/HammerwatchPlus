@@ -121,13 +121,32 @@ class HWPAbyssCrack
 		m_dir = randdir();
 	}
 
+	// Where wave n spawns: the crack spreads 70 px per wave along m_dir. A
+	// spread into or behind a wall left every pack spot blocked, so a blocked
+	// direction is re-rolled (and kept for later waves); after 8 tries the
+	// wave spawns at the crack itself.
+	vec3 SpreadSpot(vec3 pos, int n)
+	{
+		if (n <= 1)
+			return pos;
+		vec2 c = xy(pos);
+		for (int t = 0; t < 8; t++)
+		{
+			vec2 p = c + m_dir * float(70 * (n - 1));
+			if (!g_scene.RaycastQuick(c + m_dir * 20.0f, p, ~0, RaycastType::Any)
+				&& g_scene.QueryRect(p, 16, 16, ~0, RaycastType::Any).length() == 0)
+				return vec3(p.x, p.y, pos.z);
+			m_dir = randdir();
+		}
+		return pos;
+	}
+
 	void StartWave(int n)
 	{
 		m_wave = n;
 		vec3 pos = m_unit.GetPosition();
-		vec2 off = m_dir * float(70 * (n - 1));
-		vec3 at = pos + vec3(off.x, off.y, 0);
-		if (n > 1)
+		vec3 at = SpreadSpot(pos, n);
+		if (n > 1 && distsq(xy(at), xy(pos)) > 1.0f)
 		{
 			auto f = HWP::Abyss::Spawn(HWP::Abyss::FISSURE_UNIT, at);
 			if (f.IsValid())
@@ -141,6 +160,7 @@ class HWPAbyssCrack
 			Finish(false);
 			return;
 		}
+		string extraDesc;
 		if (n >= HWP::Abyss::g_waves)
 		{
 			auto elite = HWP::Spawner::EliteVariant(m_prods[randi(m_prods.length())]);
@@ -156,6 +176,8 @@ class HWPAbyssCrack
 			auto ids = HWP::Spawner::SpawnPack(extra, at, extraCount, 30.0f, true);
 			for (uint i = 0; i < ids.length(); i++)
 				m_pack.insertLast(ids[i]);
+			if (ids.length() > 0)
+				extraDesc = elite !is null ? " (elite " + elite.GetResourceName() + ")" : " (+" + ids.length() + ", no elite variant)";
 		}
 		m_state = 1;
 		m_elapsed = 0;
@@ -165,7 +187,7 @@ class HWPAbyssCrack
 		b.PushInteger("total", HWP::Abyss::g_waves);
 		b.PopDictionary();
 		HWP::Net::Broadcast(HWP::Abyss::WAVE, b.Build());
-		HWP::Log("abyss", "wave " + n + "/" + HWP::Abyss::g_waves + ": " + m_pack.length() + " enemies");
+		HWP::Log("abyss", "wave " + n + "/" + HWP::Abyss::g_waves + ": " + m_pack.length() + " enemies" + extraDesc);
 	}
 
 	void Finish(bool reward)

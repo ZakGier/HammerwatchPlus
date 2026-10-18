@@ -15,13 +15,18 @@ namespace HWP
 			@beh = cast<CompositeActorBehavior>(u.GetScriptBehavior());
 			if (beh is null || beh.IsDead())
 				return false;
+			// NPCs on another team (an HWPLocalNPC such as farming's wild plot) and
+			// untargetable actors are no pack members: nothing can kill them, so a
+			// strongbox or crack holding one never finished
+			if (!beh.IsTargetable() || cast<CompositeActorBehaviorNPC>(beh) !is null)
+				return false;
 			if ((beh.Tags & ApplyTag(0, g_actorTags.GetTag("boss"))) != 0)
 				return false;
 			auto prod = u.GetUnitProducer();
 			if (prod is null)
 				return false;
 			string p = prod.GetResourceName();
-			if (p.findFirst("/bosses/") >= 0 || p.findFirst("spawner") >= 0 || p.findFirst("nest") >= 0
+			if (p.findFirst("actors/") != 0 || p.findFirst("/bosses/") >= 0 || p.findFirst("spawner") >= 0 || p.findFirst("nest") >= 0
 				|| p.findFirst("blockade") >= 0 || p.findFirst("/plants/") >= 0 || p.findFirst("burrow") >= 0
 				|| p.findFirst("_elite") >= 0 || p.findFirst("ballista") >= 0 || p.findFirst("tower") >= 0)
 				return false;
@@ -155,12 +160,18 @@ namespace HWP
 		// object per level (strongbox, abyss): host only, not in town, after the
 		// level's enemies and the host's player exist. Tick returns true exactly
 		// once per level, when the module should roll its chance and place.
+		// Spots PickFarSpot handed out on this level, so a strongbox and a crack
+		// placed by chance don't land on top of each other.
+		array<vec3> g_claimed;
+		const float CLAIM_RADIUS = 300.0f;
+
 		class LevelPlacer
 		{
 			int m_delay = 0;
 			bool m_done = false;
 
-			void Reset() { m_delay = 0; m_done = false; }
+			// From each module's Start, which all run before any placer ticks.
+			void Reset() { m_delay = 0; m_done = false; g_claimed.removeRange(0, g_claimed.length()); }
 
 			bool Tick(int ms, bool paused, int delayMs, bool enabled)
 			{
@@ -219,8 +230,9 @@ namespace HWP
 			return best >= 1e12f ? -1.0f : sqrt(best);
 		}
 
-		// The position of a random live enemy at least minDist from every player:
-		// a spot that is reachable, in the level and not in the players' faces.
+		// The position of a random live enemy at least minDist from every player
+		// and CLAIM_RADIUS from any spot already picked on this level: a spot that
+		// is reachable, in the level and not in the players' faces.
 		bool PickFarSpot(float minDist, vec3 &out pos)
 		{
 			auto enemies = g_scene.FetchAllActorsWithOtherTeam(g_team_player);
@@ -237,6 +249,12 @@ namespace HWP
 				float d = DistToNearestPlayer(p);
 				if (d >= 0 && d < minDist)
 					continue;
+				bool taken = false;
+				for (uint c = 0; c < g_claimed.length() && !taken; c++)
+					taken = distsq(xy(p), xy(g_claimed[c])) < CLAIM_RADIUS * CLAIM_RADIUS;
+				if (taken)
+					continue;
+				g_claimed.insertLast(p);
 				pos = p;
 				return true;
 			}

@@ -634,3 +634,45 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   toggles the cvar with `SetVar("cht_god", on)` and reads it with `GetVarBool("cht_god")`.
   Verified: with the cvar set, HP stays full under damage. Assumed, not traced: what
   resets the script global (the cvar being re-applied on a level or script load).
+- **A building upgrade destroys every unit a mod spawned in town.** `TownRecord.Refresh`
+  (what runs when an upgrade's cutscene ends) does `QuickReloadLevel` and `SpawnTown` in
+  the same scene, with no new module `Start`. Verified with `gl townrefresh`
+  (mod-town-rebuild): before the fix, the gambler, the last-run board, the pet bowl and
+  the pet vendor were gone afterwards. Modules that spawn once per load now keep the
+  unit in `HWP::Town::Kept` and re-spawn it when it is invalid or destroyed (checked
+  every `WATCH_MS`, in town only, host-only unless told otherwise). Placeable, fishing
+  and farming already did this.
+- **The vanilla close button is `<spritebutton spriteset="close">`**, with the sprites
+  from `gui/closebutton_sprites.inc` (close, close-hover, close-down, close-disabled).
+  `spriteset="close-button"` does not exist: the button draws nothing and the log says
+  "Couldn't load SpriteRect, sval does not exist". Eight HWP windows had it. GameLab's
+  `log_clean` now fails on that line.
+- **`g_scene.FetchAllUnits` (GameLab `near`, `use`) misses units with no solid
+  collision**, such as the campaign portal and the abyss crack (sensor only). Assumed
+  from what `near` does and does not find, not traced in the engine. Scenarios find those
+  units by their logged position (`log_capture`) instead.
+- **The campaign needs the story flag `mission_story_intro_find_npcs`** (vanilla
+  `cht_set_flag mission_story_intro_find_npcs 1 1`); `hwp unlockflags` does not set it.
+- **Vanilla's `theme_prison` never generates.** Its only uses in `missions_story.sval`
+  are commented out, and a floor using it loops forever on "Couldn't find two
+  appropriate spots for prison_start, and prison_exit" (`DungeonGenerationCommands.as:146`),
+  hanging the game. Verified in plan-t6c (Forsaken Tower floor 4). The campaign's Prison
+  floors now use `theme_dungeon` with Dark Citadel's dungeon sizes.
+- **`cht_kill_all` (GameLab `cull`) kills with no killer**, so `PlayerKilledActor`
+  hooks, XP and kill stats do not run. `CompositeActorBehavior.Kill(killer, w)` calls
+  `OnDeath`, which calls `killer.KilledActor`, so `gl cull mine` (the local player as
+  killer) runs them. The survival arena's bar (`SurvivalMission.m_experienceC`) still
+  counts culled kills, through `OnEventActorDestroyed`.
+- **Escape with no window open opens the pause menu**, and a paused game does not run
+  module `UpdateFrame`. A scenario that pressed Escape after a failed `gl use` stalled
+  every timer behind it for 15 s.
+- **Strongbox packs and abyss waves could hold unkillable members.** Both copy their
+  enemy kinds from the live actors around them (`HWP::Spawner::SampleProducers`,
+  `FetchActorsWithOtherTeam`). Farming's wild plot is an `HWPLocalNPC`
+  (`CompositeActorBehaviorNPC`) on a non-player team, so it was sampled as a kind and
+  spawned as onion plots. Nothing kills those (cull skips untargetable actors, and so
+  does combat), so the strongbox never opened and the crack never reached wave 2.
+  Verified in plan-t4 run 050719: every cull skipped `doodads/hwp/wild/onion.unit`
+  copies around the box and the crack. This was also the "abyss wave stall" seen once
+  in run 043107. `IsSpawnable` now takes only targetable, non-NPC actors whose unit is
+  under `actors/`.

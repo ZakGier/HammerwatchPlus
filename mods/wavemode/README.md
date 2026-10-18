@@ -36,7 +36,9 @@ rank, and the rank is the arena's NG+ level next time.
   checks the mission before awarding.
 - Host spawns the statue (`HWP::Town::Placeable`) 0.6 s after the town loads at `wave.statue_x/y`
   (default -1500,250, right of the campaign portal); `hwp wave here`
-  moves it, `hwp wave rank <n>` sets the rank (host), `hwp wave` shows
+  moves it, `hwp wave rank <n>` sets the rank (host), `hwp wave goal`
+  (cheats, host, in the arena) fills the survival bar so the next kill brings
+  the champion, `hwp wave` shows
   the state. `wave.enabled` turns it off.
 - Known limits for the morning: the arena uses heaven enemies for the
   spawn events (they exist for everyone, the DLC only gates the missions);

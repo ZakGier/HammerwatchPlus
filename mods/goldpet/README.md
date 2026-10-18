@@ -20,6 +20,10 @@ A pet vendor in the Hunter's Lodge sells the Gold Collector cat and two upgrades
 Planned (Phase 6): the pickup logic moves into core and applies to every pet,
 the vendor sells the HoH1 pets, and pets gain levels and skills.
 
+The vendor appears as soon as the Hunter's Lodge is built and comes back after
+any building upgrade, which rebuilds the town and destroys it (the host checks
+every 0.5 s; test: `mod-town-rebuild`).
+
 ## Test checklist
 
 1. `python -m gamelab run mod-goldpet --mode lab`: no script errors; in town with a Hunter's Lodge:

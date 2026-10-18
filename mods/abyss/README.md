@@ -11,7 +11,9 @@ Path of Exile's Abyss, scaled down to a HoH2 level.
   live enemies within 1600 px and runs `abyss.waves` (3) waves of
   `abyss.wave_base` (3) + `abyss.wave_per_player` × players + wave index
   enemies. Each wave erupts 70 px further along a random line and leaves a
-  smaller fissure behind (`abyss_fissure.unit`). The last wave adds an
+  smaller fissure behind (`abyss_fissure.unit`). A line that runs into or behind
+  a wall is re-rolled (up to 8 times, then the wave erupts at the crack), so late
+  waves don't lose their members to blocked spots. The last wave adds an
   `_elite` variant (two extra normals when none exists). A wave ends when all
   its enemies are dead or after 2 minutes; 1.5 s pause between waves.
 - **Payout.** After the last wave the host spawns `hwp_abyss_reward`

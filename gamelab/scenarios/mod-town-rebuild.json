@@ -1,0 +1,183 @@
+{
+ "name": "mod-town-rebuild",
+ "about": "Units HWP spawns once per town load (the gambler, the laststats notice board, the pets feeding bowl, the goldpet vendor) come back after a building upgrade, which reloads the town level without a new Start (gl townrefresh = TownRecord.Refresh). Building the Hunter's Lodge mid-session brings the pet vendor. No duplicates after a second rebuild.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "gambler",
+  "laststats",
+  "pets",
+  "goldpet"
+ ],
+ "timeout": 180,
+ "steps": [
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:gambler\\] spawned the gambler",
+   "timeout": 20
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:pets\\] spawned the feeding bowl",
+   "timeout": 20
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_gambler"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "gambler after the load"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "laststats_board"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "notice board after the load"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "pet_bowl"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "feeding bowl after the load"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_pet_vendor"
+   ],
+   "expect": {
+    "count": 0
+   },
+   "name": "no pet vendor without a Hunter's Lodge"
+  },
+  {
+   "do": "gl",
+   "verb": "build",
+   "args": [
+    "hunters_cabin"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "townrefresh"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_gambler"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "gambler back after the rebuild"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "laststats_board"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "notice board back after the rebuild"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "pet_bowl"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "feeding bowl back after the rebuild"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_pet_vendor"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "pet vendor appears once the lodge is built"
+  },
+  {
+   "do": "gl",
+   "verb": "townrefresh"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_gambler"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "exactly one gambler after a second rebuild"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    6000,
+    "hwp_pet_vendor"
+   ],
+   "expect": {
+    "count": 1
+   },
+   "name": "exactly one pet vendor after a second rebuild"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

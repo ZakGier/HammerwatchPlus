@@ -1458,6 +1458,7 @@ namespace Modules
 	class HWPPetsModule : Module, HWP::ModuleStart
 	{
 		bool m_bowlSpawned = false;
+		HWP::Town::Kept m_bowl;      // watches the bowl, which every machine places itself
 		bool m_levelSent = false;
 		int m_delay = 0;
 
@@ -1487,6 +1488,8 @@ namespace Modules
 			HWP::PetDye::Start();
 			HWP::Pets::g_version++;
 			m_bowlSpawned = false;
+			m_bowl.m_hostOnly = false;
+			m_bowl.Reset();
 			m_levelSent = false;
 			m_delay = 0;
 			HWP::Pets::SelfCheck(true);
@@ -1506,6 +1509,13 @@ namespace Modules
 				m_bowlSpawned = true;
 				HWP::Pets::g_bowlReady = true;
 				if (HWP::Pets::g_enabled)
+					HWP::Pets::SpawnBowl(HWP::Pets::BowlPos());
+			}
+			// a building upgrade reloads the town without a new Start and takes the bowl
+			else if (m_bowlSpawned && HWP::Pets::g_enabled)
+			{
+				m_bowl.m_unit = HWP::Pets::g_bowlUnit;
+				if (m_bowl.Due(ms))
 					HWP::Pets::SpawnBowl(HWP::Pets::BowlPos());
 			}
 			if (!m_levelSent)

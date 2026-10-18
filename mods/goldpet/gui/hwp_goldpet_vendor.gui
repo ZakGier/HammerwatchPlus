@@ -14,7 +14,7 @@
 				</panel>
 
 				<!-- Close button -->
-				<button id="close-btn" nav-pos="4 0" spriteset="close-button" anchor="1 0" offset="-2 2" func="close" />
+				<spritebutton id="close-btn" nav-pos="4 0" spriteset="close" anchor="1 0" offset="-1 1" func="close" />
 
 				<!-- Gold display -->
 				<rect width="180" height="20" anchor="0.5 0" offset="0 28" spriteset="gui/sprite_rect.sval:rounded">

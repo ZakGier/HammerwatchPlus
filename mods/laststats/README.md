@@ -26,6 +26,10 @@ Not in the snapshot: per-skill damage lines (they need the player actor, which
 does not exist at Load time) and the death recap (the `deathrecap` module keeps
 its own).
 
+- The board comes back after a building upgrade, which rebuilds the town and
+  destroys it; the host notices within a second and spawns it again
+  (`HWP::Town::Kept`; test: `mod-town-rebuild`).
+
 ## Test checklist
 
 1. `python -m gamelab run mod-laststats --mode lab`: no script errors; `[HWP:laststats] spawned the notice board`

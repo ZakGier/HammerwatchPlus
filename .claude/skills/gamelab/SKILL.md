@@ -193,6 +193,7 @@ Cite a result as `<scenario> <YYYYmmdd-HHMMSS>`.
 | `shot` | `name` | a real frame at the profile resolution; an `end` shot is automatic |
 | `shot_changed` / `shot_diff` / `shot_tint` | `before`, `after`, ... | pixels must agree with what the probes say |
 | `log_has` / `log_lacks` | `pattern`, `timeout` | regex in this pass's game log |
+| `log_capture` | `pattern`, `save_as`, `timeout` | the named groups of the regex's last match, saved as `{match: {...}}` (numbers where they parse); `assert_dist` with `path: "match"` compares logged positions |
 | `log_clean` | | no script errors in our mods' files |
 | `overlays` | `allow` | nothing unexpected drawn over the world |
 | `assert_more` | `than`, `now`, `path` | the values under `path` grew |
@@ -205,6 +206,13 @@ Cite a result as `<scenario> <YYYYmmdd-HHMMSS>`.
 | `sval` | `file`, `dest` | export a datatable as the game parsed it |
 | `key`, `console`, `sleep`, `minimize` | | posted key, raw console line, wait, minimize |
 | `type` | `text`, `gap` | posted WM_CHARs into whatever has the keyboard (a textinput pressed with `gl menu <tab> - <widget> !click`). Each `gl` command opens the console, whose key char (`) reaches a focused field unless the field forbids it; identical consecutive chars arrive once ("qqq" -> "q") |
+
+`{$name.dotted.path}` inside a `gl` or `pilot` step's `args`, or a `console` line, is replaced by that saved
+value (a missing one fails the run). It hands a unit id from `near` to `pilot use`, or a logged position from
+`log_capture` to `pilot path_to`, so the player walks to it. `gl cull mine` credits the local player with the
+kills (XP, `PlayerKilledActor` hooks), which plain `cull` does not.
+Don't press Escape after a `gl use` that may have failed: with no window open it opens the pause menu, and
+module timers stop until it closes.
 
 ## Fixtures (`gamelab/fixtures/`)
 
