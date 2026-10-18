@@ -173,6 +173,14 @@ class HWPChest : Chest
 		if (m_tier > 0)
 			HWP::Keys::OnUnlocked(player, m_tier);
 
+		// Chest::Use spends the key with vanilla AddKeys, which corrupts the count:
+		// the count from before is put back minus one
+		int before = m_key.isEmpty() ? 0 : player.m_record.GetKeys(m_key);
 		Chest::Use(player);
+		if (!m_key.isEmpty() && player.m_record.local)
+		{
+			HWP::Keys::SetKeys(player.m_record, m_key, before - 1);
+			HWP::Keys::RefreshHUD();
+		}
 	}
 }

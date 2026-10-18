@@ -8,6 +8,8 @@ namespace Modules
 {
 	class HWPGoldPetModule : Module, HWP::ModuleStart
 	{
+		// dictionary.set keeps a temporary (a literal, an expression) by reference: store named values
+		bool YES = true;
 		dictionary m_petsSpawned;    // peer -> done
 		dictionary m_syncChecks;     // peer -> polls spent waiting for the tier sync
 		dictionary m_waitLogged;     // peer -> "waiting for actor" already logged
@@ -89,7 +91,7 @@ namespace Modules
 			{
 				if (!m_waitLogged.exists(key))
 				{
-					m_waitLogged.set(key, true);
+					m_waitLogged.set(key, YES);
 					HWP::Log("goldpet", "waiting for the actor of " + player.GetName() + " (peer " + player.peer + ")");
 				}
 				return;
@@ -108,11 +110,11 @@ namespace Modules
 					if (checks < 20)
 						return;
 				}
-				m_petsSpawned.set(key, true);
+				m_petsSpawned.set(key, YES);
 				return;
 			}
 
-			m_petsSpawned.set(key, true);
+			m_petsSpawned.set(key, YES);
 			if (HWP::GoldPet::IsPetAliveForPlayer(player))
 				return;
 			HWP::GoldPet::SpawnPetForPlayer(player, tier);

@@ -928,6 +928,35 @@ def import_classes(archive: hwr.Archive, force: bool) -> None:
 IMPORTERS = {"pets": import_pets, "levels": import_levels, "campaign": import_campaign,
              "classes": import_classes}
 
+# What each import made, to tell whether it ever ran, and the stamp naming the
+# converter version (hwr_archive.CONVERTER_VERSION) it ran with.
+IMPORT_OUTPUTS = {
+    "pets": PETS_MODULE / "tweak" / "hwp" / "pets_hoh1.sval",
+    "levels": paths.REPO / "hoh1_import" / "campaign" / "report.json",
+    "campaign": CAMPAIGN_OUT,
+    "classes": paths.MODULES / "classes" / "hoh1art",
+}
+STAMPS = paths.REPO / "hoh1_import" / "stamps"
+
+
+def stamp_version(what: str) -> int:
+    try:
+        return int(json.loads((STAMPS / f"{what}.json").read_text(encoding="utf-8"))["converter"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return 0
+
+
+def write_stamp(what: str) -> None:
+    STAMPS.mkdir(parents=True, exist_ok=True)
+    (STAMPS / f"{what}.json").write_text(json.dumps({"converter": hwr.CONVERTER_VERSION}) + "\n",
+                                         encoding="utf-8", newline="\n")
+
+
+def stale_imports() -> list[str]:
+    """Imports whose outputs exist but were made by another converter version (build.py warns)."""
+    return [w for w, out in IMPORT_OUTPUTS.items()
+            if out.exists() and stamp_version(w) != hwr.CONVERTER_VERSION]
+
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -946,7 +975,14 @@ def main(argv=None):
         sys.exit(f"{bin_path} not found")
     print("reading", bin_path)
     archive = hwr.Archive.read(bin_path)
-    IMPORTERS[args.what](archive, args.force)
+    force = args.force
+    made = stamp_version(args.what)
+    if not force and IMPORT_OUTPUTS[args.what].exists() and made != hwr.CONVERTER_VERSION:
+        print(f"the existing {args.what} output is from converter version {made or 'unknown'} "
+              f"(now {hwr.CONVERTER_VERSION}): regenerating it")
+        force = True
+    IMPORTERS[args.what](archive, force)
+    write_stamp(args.what)
 
 
 if __name__ == "__main__":

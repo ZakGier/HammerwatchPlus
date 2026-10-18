@@ -6,11 +6,13 @@
 // profitable.
 //
 // Most challenges are plain modifiers on the mission buff. The two that change
-// the level (Crowded Halls, Champions) are applied by ChallengeSetup, a
-// generation command the module ctor puts first in every dungeon generator:
-// MissionGameMode.Generate loads the run's architect picks (LoadFlags) before
-// it runs the generator, and the enemy placer it tunes is what both generation
-// and the start-of-level EnemyPlacement spawns read.
+// the level (Crowded Halls, Champions) are applied by ChallengeSetup, which the
+// module ctor wraps around the first unconditional generation command of every
+// dungeon generator: MissionGameMode.Generate loads the run's architect picks
+// (LoadFlags) before it runs the generator, and the enemy placer it tunes is
+// what both generation and the start-of-level EnemyPlacement spawns read.
+// Wrapping instead of inserting keeps the generator's randf() per command, and
+// so vanilla's levels for a seed, unchanged.
 namespace HWP
 {
 	namespace Architect
@@ -72,14 +74,17 @@ namespace HWP
 		class ChallengeSetup : DungeonGenerationCommands
 		{
 			ALevelGenerator@ m_gen;
+			DungeonGenerationCommands@ m_inner;   // the wrapped command, or null
 			vec2 m_density;
 			bool m_elites;
 			bool m_minibosses;
 
-			ChallengeSetup(ALevelGenerator@ gen)
+			ChallengeSetup(ALevelGenerator@ gen, DungeonGenerationCommands@ inner)
 			{
 				@m_gen = gen;
-				m_execChance = 1.0f;
+				@m_inner = inner;
+				m_execChance = inner is null ? 1.0f : inner.m_execChance;
+				@m_conditionals = inner is null ? null : inner.m_conditionals;
 				auto placer = gen.m_enemyPlacer;
 				m_density = placer.m_densityMul;
 				m_elites = placer.m_allowElites;
@@ -98,7 +103,7 @@ namespace HWP
 				placer.m_allowMinibosses = m_minibosses || champions;
 				if (crowded || champions)
 					HWP::Log("architect", "challenges on this floor:" + (crowded ? " crowded" : "") + (champions ? " champions" : ""));
-				return true;
+				return m_inner is null || m_inner.Execute(brush, pfbPlacer);
 			}
 		}
 
@@ -115,9 +120,24 @@ namespace HWP
 					auto gen = cast<DungeonGenerator>(mission.m_levels[j].m_generator);
 					if (gen is null || gen.m_enemyPlacer is null)
 						continue;
-					if (gen.m_genCommands.length() > 0 && cast<ChallengeSetup>(gen.m_genCommands[0]) !is null)
+					bool present = false;
+					int at = -1;
+					for (uint k = 0; k < gen.m_genCommands.length() && !present; k++)
+					{
+						auto cmd = gen.m_genCommands[k];
+						present = cast<ChallengeSetup>(cmd) !is null;
+						// (not a SpawnPrefabSet: the puzzles module looks for those by class)
+						if (at < 0 && cmd.m_execChance >= 1.0f && cast<SpawnPrefabSet>(cmd) is null
+							&& (cmd.m_conditionals is null || cmd.m_conditionals.isEmpty()))
+							at = int(k);
+					}
+					if (present)
 						continue;
-					gen.m_genCommands.insertAt(0, ChallengeSetup(gen));
+					// always runs: an unconditional command, or a new first one
+					if (at >= 0)
+						@gen.m_genCommands[at] = ChallengeSetup(gen, gen.m_genCommands[at]);
+					else
+						gen.m_genCommands.insertAt(0, ChallengeSetup(gen, null));
 					added++;
 				}
 			}

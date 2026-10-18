@@ -1,0 +1,155 @@
+{
+ "name": "probe-god",
+ "about": "Does hwp god keep the player alive among wolves, and what turns it off (settings write, swap key, abyss)?",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "60",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "-60",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 6
+  },
+  {
+   "do": "gl",
+   "verb": "state"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.debug 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "gl",
+   "verb": "state"
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey 21 R"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "gl",
+   "verb": "state"
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss here"
+  },
+  {
+   "do": "sleep",
+   "seconds": 6
+  },
+  {
+   "do": "gl",
+   "verb": "state"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "400"
+   ]
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

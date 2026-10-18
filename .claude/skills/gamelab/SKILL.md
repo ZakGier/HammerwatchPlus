@@ -201,6 +201,7 @@ Cite a result as `<scenario> <YYYYmmdd-HHMMSS>`.
 | `restart` | | quit (the game saves) and re-enter the fixture |
 | `write_mod_file` / `write_bot_file` | `mod`/`path`, `replace`, `with` | edit a file mid-run, restored at the end |
 | `same_process` | `mark` / `since` | assert no restart in between |
+| `retry` | `times`, `until`, `timeout`, `steps` | rerun `steps` until `until` (regex) shows in new log lines, up to `times`; fails after the last try. For a random level feature (a room that may not roll), not to hide a bug |
 | `sval` | `file`, `dest` | export a datatable as the game parsed it |
 | `key`, `console`, `sleep`, `minimize` | | posted key, raw console line, wait, minimize |
 | `type` | `text`, `gap` | posted WM_CHARs into whatever has the keyboard (a textinput pressed with `gl menu <tab> - <widget> !click`). Each `gl` command opens the console, whose key char (`) reaches a focused field unless the field forbids it; identical consecutive chars arrive once ("qqq" -> "q") |

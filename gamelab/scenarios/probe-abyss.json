@@ -1,0 +1,144 @@
+{
+ "name": "probe-abyss",
+ "about": "Why abyss wave units survive the cull: list the actors around the crack before and after.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_hunter.unit",
+    "200",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "200",
+    "40"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss here"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "400",
+    "actors/"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "400",
+    "actors/"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

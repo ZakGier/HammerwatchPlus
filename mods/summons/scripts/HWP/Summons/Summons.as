@@ -144,10 +144,12 @@ namespace HWP
 					spawned.get(prodName, already);
 				if (already == 0 && LiveCount(rec, prodName) > 0)
 				{
-					spawned.set(prodName, LiveCount(rec, prodName));
+					int live = LiveCount(rec, prodName); // dictionary.set keeps a temporary by reference
+					spawned.set(prodName, live);
 					continue;
 				}
-				spawned.set(prodName, already + 1);
+				int count = already + 1;
+				spawned.set(prodName, count);
 
 				vec2 p = pos + randdir() * (12.0f + randf() * 16.0f);
 				bool remote = (!Network::IsServer() && IsNetsyncedExistance(prod.GetNetSyncMode()));

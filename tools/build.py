@@ -213,6 +213,11 @@ def main(argv=None):
         import make_pet_dyes  # the two-section pet dye copies (gitignored, made from your installs)
         make_pet_dyes.main([])
 
+    import import_hoh1
+    for what in import_hoh1.stale_imports():
+        print(f"warning: the HoH1 {what} import predates converter version {hwr.CONVERTER_VERSION}; "
+              f"rerun tools/import_hoh1.py {what}")
+
     print("building:")
     all_entries: dict[str, hwr.Entry] = {}
     all_meta: dict = {}

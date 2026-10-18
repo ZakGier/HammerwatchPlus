@@ -1,0 +1,287 @@
+{
+ "name": "plan-t6a",
+ "about": "Test plan run tiers (exploratory): wild plots, run fishing spot, boss floor fishing bucket, gold pickup.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp set farm.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp set fishing.debug 1"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp farm wild carrot"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:farming\\] wild ",
+   "timeout": 8,
+   "name": "wild plot placed"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "wild-carrot"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "wild"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "wild"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_has",
+   "pattern": "harvested a wild",
+   "timeout": 8,
+   "name": "wild harvested"
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "wild"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "wild"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "console",
+   "line": "hwp farm wild lucky_leaf"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "wild"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing hole"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "fishing_hole"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "fishing_hole"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "shot",
+   "name": "hole-use"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp boss"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "3000",
+    "fishing"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "boss-floor"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

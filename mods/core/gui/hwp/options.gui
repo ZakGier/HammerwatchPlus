@@ -14,7 +14,7 @@
 				<!-- Search: rows whose title (or value) holds the text stay; filtered as you type (func-edit) -->
 				<rect width="231" height="18" offset="10 22" spriteset="gui/sprite_rect.sval:rounded" >
 					<text id="search-hint" text=".hwp.options.search" anchor="0 0.5" offset="5 0" font="text" color="#808080" />
-					<textinput id="search" textlimit="32" offset="5 6" width="221" height="18" font="gui/fonts/hw8.fnt" check-reserved-characters="true" func-edit="hwp-search" func="hwp-search" func-cancel="hwp-search-clear" />
+					<textinput id="search" textlimit="32" anchor="0 0.5" offset="5 0" textoffset="0 1" width="221" height="14" font="gui/fonts/hw8.fnt" check-reserved-characters="true" func-edit="hwp-search" func="hwp-search" func-cancel="hwp-search-clear" />
 				</rect>
 				<group id="rows" width="231" height="200" offset="10 44" flow="vbox" spacing="2" >
 					<!-- Projectile colours (colors) -->

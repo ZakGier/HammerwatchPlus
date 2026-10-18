@@ -17,8 +17,12 @@ slots, trinkets for the next run) and red legendaries.
   (`keys.legendary_chance`), either an epic equipment drop or one red
   legendary **per player in the lobby** (instanced through `Item::DropItem`;
   tables in `tweak/hwp/loot_chests_ace.sval`).
-- **Keys.** Vanilla `PlayerRecord.GetKeys/AddKeys` + the dormant `GiveKey`
-  effect; pickups `items/hwp/keys/key_<tier>.unit`. Drops roll on the killer's
+- **Keys.** Vanilla `PlayerRecord.GetKeys` and the player record's `keys`
+  dictionary, changed only through `HWP::Keys::AddKeys/SetKeys`. Vanilla `AddKeys`
+  stores a temporary in the dictionary, which the engine keeps by reference, so its
+  counts turn to garbage (docs/RE_NOTES.md). So the pickups
+  (`items/hwp/keys/key_<tier>.unit`) use `HWPGiveKey`, chests put the count back
+  after `Chest::Use` spends the key, and level start resets counts outside 0-999. Drops roll on the killer's
   machine (`PlayerKilledActor` is local-only) and the host spawns them
   (`keys.drop` request, flood-guarded at 10 per peer per 10 s). Normal enemies
   0.6/0.25/0.1 %, elites 8/5/3 % (bronze/silver/gold), times `keys.drop_mult`
@@ -41,12 +45,14 @@ slots, trinkets for the next run) and red legendaries.
   per purchase for the buyer's character, 1000 g rising to 20000 g, up to a
   full extra row (32 slots).
 - **Trinkets tab.** Six trinkets per character (2 common, 2 uncommon, 2 rare;
-  `Item::GetRandomTrinket`, no repeats) at a run trinket shop's price
+  `Item::GetRandomTrinket`, no repeats; the roll puts back the `m_seen` flags it
+  sets) at a run trinket shop's price
   (`GetPrice()` x 1.2, the ShopLevel 1 the dungeon shop rooms use: 240 /
   900 / 3600 g at base prices). A bought trinket is *packed*: the run's setup
   (`ResetForNewMission`) empties the trinket bag, so packed trinkets are
-  handed over (`GiveItem`, local like every vanilla trinket shop) when the
-  next run's first level starts. The stock rerolls after every run; the
+  handed over when the next run's first level starts: straight into the trinket
+  bag, locally like every vanilla trinket shop. They don't go through `GiveItem`,
+  which would count them in the trinket-found statistics. The stock rerolls after every run; the
   footer shows how many are packed. Stock and packed list are the buyer's own
   HWP save data (`keys.trinket_stock`, `keys.trinket_packed`,
   `keys.trinket_stale`).

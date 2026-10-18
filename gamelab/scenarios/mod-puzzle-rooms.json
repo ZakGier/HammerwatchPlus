@@ -75,20 +75,29 @@
    "name": "town saved with the settings (a fixture boot has no town save, so the mission would load none)"
   },
   {
-   "do": "gl",
-   "verb": "mission",
-   "args": [
-    "bandit_keep",
-    0
-   ],
-   "expect": {
-    "ok": true
-   }
-  },
-  {
-   "do": "wait_phase",
-   "phase": "mission",
-   "timeout": 150
+   "do": "retry",
+   "times": 5,
+   "timeout": 5,
+   "until": "\\[HWP:puzzles\\] constellation picked \\(\\d+ vanilla candidates\\)",
+   "name": "a keep floor whose puzzle room picks the Constellation (not every generated room offers it: 041244 got puzzle_room_w_16x18_a and no offer; assumed cause, memory_big already taken on the level)",
+   "steps": [
+    {
+     "do": "gl",
+     "verb": "mission",
+     "args": [
+      "bandit_keep",
+      0
+     ],
+     "expect": {
+      "ok": true
+     }
+    },
+    {
+     "do": "wait_phase",
+     "phase": "mission",
+     "timeout": 150
+    }
+   ]
   },
   {
    "do": "log_has",
@@ -98,11 +107,6 @@
   {
    "do": "log_has",
    "pattern": "SpawnPrefabSet: keep_puzzle",
-   "timeout": 5
-  },
-  {
-   "do": "log_has",
-   "pattern": "\\[HWP:puzzles\\] constellation picked \\(\\d+ vanilla candidates\\)",
    "timeout": 5
   },
   {

@@ -159,7 +159,7 @@ class HWPGeneralMerchant : AShopContent
 			return false;
 
 		keyItem.m_cost.Spend(m_player);
-		m_player.AddKeys(keyItem.m_key, 1);
+		HWP::Keys::AddKeys(m_player, keyItem.m_key, 1);
 		Stats::Add(HashString("key-bought-" + keyItem.m_key), 1, m_player);
 		LootLog::PresentPickup(m_player, Resources::GetString(".item.key." + keyItem.m_key), 1);
 		HWP::Keys::RefreshHUD();
@@ -241,6 +241,11 @@ namespace HWP
 		void RollTrinkets(PlayerRecord@ rec, bool afterRun)
 		{
 			auto bag = HWP::SaveData::Player(rec);
+			// GetRandomTrinket marks what it returns as seen, and the level's own
+			// rolls treat seen trinkets as duplicates: the roll leaves them as it found them
+			array<bool> seen;
+			for (uint i = 0; i < Item::Trinket::Instances.length(); i++)
+				seen.insertLast(Item::Trinket::Instances[i].m_seen);
 			array<string> ids;
 			for (uint i = 0; i < TRINKET_STOCK.length(); i++)
 			{
@@ -255,6 +260,8 @@ namespace HWP
 				if (t !is null && ids.find(t.m_id) < 0)
 					ids.insertLast(t.m_id);
 			}
+			for (uint i = 0; i < seen.length() && i < Item::Trinket::Instances.length(); i++)
+				Item::Trinket::Instances[i].m_seen = seen[i];
 			SetIdList(bag, KEY_TSTOCK, ids);
 			bag.SetBool(KEY_TSTALE, false);
 			HWP::Log("keys", "trinket stock rolled" + (afterRun ? " (after a run)" : "") + ": " + join(ids, " "));
@@ -301,9 +308,15 @@ namespace HWP
 				auto t = TrinketById(packed[i]);
 				if (t is null)
 					continue;
-				rec.GiveItem(t);
+				// not rec.GiveItem: that counts a bought trinket as found
+				// (trinket-found-* and collected-trinket-* stats)
+				t.m_seen = true;
+				rec.trinketInventory.Add(t);
+				LootLog::PresentTrinket(rec, t);
 				given++;
 			}
+			if (given > 0)
+				rec.RefreshModifiers();
 			HWP::Log("keys", "handed over " + given + " packed trinket(s): " + join(packed, " "));
 		}
 	}

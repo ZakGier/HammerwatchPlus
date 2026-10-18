@@ -287,8 +287,13 @@ namespace HWP
 		{
 			if (!On())
 				return;
-			CVars::ChtGodmode = !CVars::ChtGodmode;
-			Reply("god mode " + (CVars::ChtGodmode ? "on" : "off"));
+			// through the engine's cht_god cvar: setting CVars::ChtGodmode alone did not
+			// hold (probe-god 20261018-042855: damage still landed and the next toggle
+			// read it off again), the cvar's own value wins
+			bool on = !GetVarBool("cht_god");
+			SetVar("cht_god", on);
+			CVars::ChtGodmode = on;
+			Reply("god mode " + (on ? "on" : "off"));
 		}
 
 		void Register()

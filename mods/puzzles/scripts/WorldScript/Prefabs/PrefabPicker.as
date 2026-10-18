@@ -84,9 +84,10 @@ namespace WorldScript
 			}
 
 			// HWP: the constellation as one more candidate, after the vanilla ones
+			// (once per floor, like the flagged vanilla picks)
 			int hwpChance = 0;
 			Prefab@ hwpPrefab;
-			if (big)
+			if (big && !g_flags.IsSet(HWP::Puzzles::CONSTELLATION_FLAG))
 			{
 				hwpChance = max(0, HWP::Settings::GetInt("puzzles.constellation", 10));
 				if (hwpChance > 0)
@@ -99,9 +100,10 @@ namespace WorldScript
 				return null;
 
 			int n = randi(totChance + hwpChance);
-			if (n >= totChance)
+			if (hwpChance > 0 && n >= totChance)
 			{
 				HWP::Log("puzzles", "constellation picked (" + scripts.length() + " vanilla candidates)");
+				g_flags.Set(HWP::Puzzles::CONSTELLATION_FLAG, FlagState::Level);
 				hwpPrefab.Fabricate(g_scene, Position);
 				return null;
 			}

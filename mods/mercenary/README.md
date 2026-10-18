@@ -11,7 +11,9 @@ return for prestige ranks that pay more gold and experience.
   caps at 20, so that would skip all the levelling.
 - **Prestige** uses HoH1's formula (`PlayerRecord.GetPrestige`, hardcore build):
   - 1 per mission floor entered (once per floor; a resumed floor does not count again);
-  - 10 per boss floor cleared (one per floor; any party member's kill counts, through the host);
+  - 10 per boss floor cleared: a mission's `levels/boss_*` level, or a module with a boss
+    (the heaven trials). One per floor; any party member's kill counts, through the
+    host. Boss-tagged actors elsewhere, such as the keep's bandit boss encounter, don't count;
   - 75 × (new game+ earned as a mercenary)².
 - **Ranks** are HoH1's `tweak/titles/mercenary.sval`: Private 0, Corporal 50,
   Sergeant 200, Lieutenant 500, Captain 1000, Major 2500, Colonel 5000,
@@ -23,11 +25,15 @@ return for prestige ranks that pay more gold and experience.
     shows in the stat breakdowns as "Mercenary rank".
 - **Death.** A mercenary falls when it dies on a mission floor. With
   `mercenary.revivable` on (host setting, default off), it falls only when the run
-  fails, so a co-op revive saves it. Once fallen:
+  fails or is abandoned while it is down, so a co-op revive saves it. The run's end
+  state is read in the `PlayerRecordLoad` hook, because the town's `MissionEndMenu`
+  clears it before `Start`. Once fallen:
   - the fall is announced to the party;
   - the character goes into this town's ledger of the fallen (`hwp merc ledger`);
   - in town the character picker opens whenever no other menu is up, so it can
-    no longer be played. Its save is kept, and the picker can delete it.
+    no longer be played. Its save is kept, and the picker can delete it;
+  - its mission setup closes as it opens, so it cannot start a run;
+  - on a floor it stays dead: a party revive, or entering a floor alive, kills it again.
 - `hwp merc` shows the rank, prestige, next rank, floors, bosses and the gold and
   experience multipliers as the game currently computes them.
 - Cheats (`e_cheats 1`):
@@ -45,7 +51,8 @@ Not ported from HoH1:
 - **Legacy points on death.** HoH2 has none.
 
 A fallen mercenary that is in a mission when it falls (co-op, before the run
-ends) stays in that mission until the party leaves; the picker takes over in town.
+ends) stays in that mission, dead, until the party leaves; the picker takes over in
+town. Shops stay open to it, which is harmless: gold is the town's.
 Closing the game in the moment of death can dodge a fall: the game only saves at
 level changes.
 

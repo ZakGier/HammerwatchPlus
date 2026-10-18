@@ -34,9 +34,14 @@ Architect alterations for the whole party.
   | Slim Pickings | no_ore | wood/stone/iron/crystals/dust/ore x0.5 | 15% |
 
   Crowded Halls and Champions change the level. `ChallengeSetup` is a generation
-  command the module ctor puts first in every dungeon generator. It sets the
+  command the module ctor wraps around the first unconditional command of every
+  dungeon generator; it runs that command after its own work, and only generators
+  without one get it inserted first. The generator rolls `randf()` once per
+  command, so wrapping leaves vanilla's level for a seed unchanged. It sets the
   enemy placer from the generator's own values each time it runs, because Generate
-  retries from scratch. The others are modifiers on the mission buff; like every
+  retries from scratch. Bitter Draughts uses a trigger chance of 1000000:
+  `roll_chance` scales the chance down under negative luck, so 1 would sometimes
+  miss. The others are modifiers on the mission buff; like every
   architect pick, the host's apply to the whole party.
   The other HoH1 wishes (no shops, wells, secrets, elevators or loot drops; faster
   enemies; titles off; less luck) have no clean HoH2 hook and are left out.

@@ -6,7 +6,8 @@
 //
 // Drop rolls happen on the killer's machine (the PlayerKilledActor hook only
 // fires for the local Player) and the host spawns the pickup; keys themselves
-// are a vanilla PlayerRecord field (GetKeys/AddKeys) that the game saves.
+// are a vanilla PlayerRecord field (GetKeys, saved by the game), changed only
+// through HWP::Keys::AddKeys / SetKeys (vanilla AddKeys corrupts the count).
 // All keys.* settings are host-authoritative (HWP::Settings::Sync).
 namespace HWP
 {
@@ -29,6 +30,38 @@ namespace HWP
 		const array<Item::Quality> QUALITY = { Item::Quality::Common, Item::Quality::Uncommon, Item::Quality::Rare, Item::Quality::Legendary };
 
 		bool ValidTier(int tier) { return tier >= 1 && tier <= int(TIERS.length()); }
+
+		// Vanilla PlayerRecord.AddKeys does keys.set(key, currNum + num), and the
+		// engine's dictionary.set keeps a temporary by reference: the count reads
+		// back as garbage (plan-t4 20261018-035113: "+2 gold" read 322810098; a
+		// probe showed named locals survive, expressions do not). Every add and
+		// spend goes through here, which stores a named local.
+		void SetKeys(PlayerRecord@ rec, const string &in key, int count)
+		{
+			int stored = max(0, count);
+			rec.keys.set(key, stored);
+		}
+
+		void AddKeys(PlayerRecord@ rec, const string &in key, int num)
+		{
+			SetKeys(rec, key, rec.GetKeys(key) + num);
+		}
+
+		// a save written while vanilla AddKeys was in use can hold such garbage
+		void SanitizeKeys(PlayerRecord@ rec)
+		{
+			if (rec is null)
+				return;
+			for (uint t = 0; t < TIERS.length(); t++)
+			{
+				int n = rec.GetKeys(TIERS[t]);
+				if (n < 0 || n > 999)
+				{
+					SetKeys(rec, TIERS[t], 0);
+					HWP::Log("keys", "reset a corrupt " + TIERS[t] + " key count (" + n + ")");
+				}
+			}
+		}
 
 		int TierIndex(const string &in name)
 		{
@@ -460,7 +493,7 @@ namespace HWP
 				return;
 			}
 			int n = args.length() > 1 ? max(1, parseInt(args[1])) : 1;
-			rec.AddKeys(TIERS[tier - 1], n);
+			AddKeys(rec, TIERS[tier - 1], n);
 			RefreshHUD();
 			HWP::Commands::Reply("+" + n + " " + TIERS[tier - 1] + " key(s)");
 		}
@@ -558,6 +591,7 @@ namespace Modules
 		void Start(StartMode sMode)
 		{
 			HWP::Keys::RefreshSettings();
+			HWP::Keys::SanitizeKeys(GetLocalPlayerRecord());
 			HWP::Keys::g_bossKeyLevel = -1;
 			HWP::Keys::g_hostBossLevel = -1;
 			HWP::Keys::g_hostBossMask = 0;
@@ -599,7 +633,7 @@ class HWPImpKeyEffect : ImpEffect
 	{
 		int tier = HWP::Keys::FloorTier();
 		string key = HWP::Keys::TIERS[tier - 1];
-		plr.m_record.AddKeys(key, 1);
+		HWP::Keys::AddKeys(plr.m_record, key, 1);
 		string name = Resources::GetString(".item.key." + key);
 		LootLog::PresentPickup(plr.m_record, name, 1);
 		HWP::Keys::RefreshHUD();

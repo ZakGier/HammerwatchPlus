@@ -90,10 +90,10 @@ namespace HWP
 		// to save them to.
 		bool CanSave() { return g_myTownRecord !is null && cast<AGameplayGameMode>(g_gameMode) !is null; }
 
-		void SetBool(const string &in name, bool val) { Bag().SetBool(PREFIX + name, val); }
-		void SetInt(const string &in name, int val) { Bag().SetInt(PREFIX + name, val); }
-		void SetFloat(const string &in name, float val) { Bag().SetFloat(PREFIX + name, val); }
-		void SetString(const string &in name, const string &in val) { Bag().SetString(PREFIX + name, val); }
+		void SetBool(const string &in name, bool val) { HWP::SaveData::MyTownForWrite().SetBool(PREFIX + name, val); }
+		void SetInt(const string &in name, int val) { HWP::SaveData::MyTownForWrite().SetInt(PREFIX + name, val); }
+		void SetFloat(const string &in name, float val) { HWP::SaveData::MyTownForWrite().SetFloat(PREFIX + name, val); }
+		void SetString(const string &in name, const string &in val) { HWP::SaveData::MyTownForWrite().SetString(PREFIX + name, val); }
 		void Reset(const string &in name) { Bag().Remove(PREFIX + name); }
 
 		// ---- host <-> client ---------------------------------------------------

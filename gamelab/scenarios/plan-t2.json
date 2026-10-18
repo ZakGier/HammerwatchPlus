@@ -1,0 +1,418 @@
+{
+ "name": "plan-t2",
+ "about": "Test plan tiers 0-2: solo steps shown by commands, the log and shots (core, colors, chatlinks, droptrade, weaponswap, deathrecap).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "log_has",
+   "pattern": "You carry no wares",
+   "timeout": 8,
+   "name": "core.s10 wares"
+  },
+  {
+   "do": "console",
+   "line": "hwp colors contrast"
+  },
+  {
+   "do": "console",
+   "line": "hwp colors enemy 00ff00"
+  },
+  {
+   "do": "log_has",
+   "pattern": "preset contrast, enemy #00ff00",
+   "timeout": 8,
+   "name": "colors enemy set"
+  },
+  {
+   "do": "console",
+   "line": "hwp link"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp link off"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp link head"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Nothing equipped in that slot",
+   "timeout": 8,
+   "name": "chatlinks empty slot"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "links"
+  },
+  {
+   "do": "console",
+   "line": "hwp dropkey 10 G"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Inventory drop key: G",
+   "timeout": 8,
+   "name": "dropkey G"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp swap"
+  },
+  {
+   "do": "log_has",
+   "pattern": "set 2 in hand; other set Ball Mace / Wooden Shield",
+   "timeout": 8,
+   "name": "swap to empty set"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_hunter.unit",
+    "80",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_mage.unit",
+    "-80",
+    "30"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "40",
+    "40"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:deathrecap\\] GameLab died: ",
+   "timeout": 120,
+   "name": "killed by enemies"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "recap-enemies"
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "shot",
+   "name": "town-chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp recap"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Last death: ",
+   "timeout": 8,
+   "name": "recap in town"
+  },
+  {
+   "do": "console",
+   "line": "hwp set deathrecap.chat false"
+  },
+  {
+   "do": "log_has",
+   "pattern": "deathrecap.chat = false",
+   "timeout": 8,
+   "name": "chat off"
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Weapon set 2 in hand; other set: Ball Mace / Wooden Shield",
+   "timeout": 8,
+   "name": "swap set in town"
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp colors"
+  },
+  {
+   "do": "log_has",
+   "pattern": "preset contrast, enemy #00ff00",
+   "timeout": 8,
+   "name": "colors kept over restart"
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Weapon set 2 in hand; other set: Ball Mace / Wooden Shield",
+   "timeout": 8,
+   "name": "swap set kept over restart"
+  },
+  {
+   "do": "console",
+   "line": "hwp get deathrecap.chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/undead/guard/guard_sentry.unit",
+    "90",
+    "0"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:colors\\] tinted \\S+ enemy #00ff00",
+   "timeout": 25,
+   "name": "enemy shot tinted green"
+  },
+  {
+   "do": "shot",
+   "name": "green"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp colors off"
+  },
+  {
+   "do": "log_has",
+   "pattern": "preset default, enemy #ffffff",
+   "timeout": 8,
+   "name": "colors off"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "dead-chat-off-0"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "dead-chat-off-1"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "dead-chat-off-2"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "dead-chat-off-3"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:deathrecap\\] GameLab died: ",
+   "timeout": 10,
+   "name": "second death"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

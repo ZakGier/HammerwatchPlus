@@ -198,6 +198,17 @@ namespace HWP
 		// The local player's own town: the only TownRecord that is ever saved.
 		DataBag@ MyTown() { return Town(g_myTownRecord); }
 
+		// MyTown() for a write that has to survive: vanilla TownRecord.Save skips a
+		// town with no buildings, flags or materials (a new profile before its first
+		// gold), and the hwp bag with it. A town flag of our own makes it save.
+		DataBag@ MyTownForWrite()
+		{
+			uint flag = HashString("hwp_town_data");
+			if (g_myTownRecord !is null && !g_myTownRecord.HasTownFlag(flag))
+				g_myTownRecord.SetTownFlag(flag, true, false);
+			return MyTown();
+		}
+
 		DataBag@ Scratch()
 		{
 			if (g_scratch is null)

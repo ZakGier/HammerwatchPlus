@@ -469,6 +469,24 @@ class Run:
             while not (hit := rx.search(game.read_log())) and time.time() < end:
                 time.sleep(0.25)
             self.assert_(s.get("name", f"log has /{s['pattern']}/"), hit is not None, hit.group(0) if hit else "not found")
+        elif kind == "retry":
+            # level-dependent setups (what a generated floor places): run the inner steps
+            # again until a regex shows up in log lines they added, up to `times` attempts.
+            # Inner steps assert as usual; only a missing hit after the last attempt fails.
+            rx = re.compile(s["until"])
+            times = int(s.get("times", 3))
+            hit = None
+            for attempt in range(1, times + 1):
+                start = len(game.read_log())
+                for inner in s["steps"]:
+                    game = self.step(game, inner, saved)
+                end = time.time() + s.get("timeout", 10)
+                while not (hit := rx.search(game.read_log()[start:])) and time.time() < end:
+                    time.sleep(0.25)
+                if hit:
+                    break
+            self.assert_(s.get("name", f"retry until /{s['until']}/"), hit is not None,
+                         f"attempt {attempt}/{times}: " + (hit.group(0) if hit else "not found"))
         elif kind == "log_lacks":
             # a regex that must not appear in this pass's game log (checked when the step runs)
             hits = [m.group(0) for m in re.finditer(s["pattern"], game.read_log())]

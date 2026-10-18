@@ -1,0 +1,137 @@
+{
+ "name": "plan-t6b",
+ "about": "Test plan wave arena (exploratory): the statue, the arena floor with the survival bar, rank 5.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 500,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "statue"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp wave rank 5"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "hwp_wave_arena",
+    0
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "arena"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "800"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 10
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "800"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "arena-10s"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -591,7 +591,7 @@ namespace HWP
 		{
 			if (!Network::IsServer())
 				return;
-			auto bag = HWP::SaveData::MyTown();
+			auto bag = HWP::SaveData::MyTownForWrite();
 			bag.SetInt(KEY_RUNS, g_runs);
 			bag.Take(KEY_PLOTS, PackState());
 		}
@@ -1200,8 +1200,9 @@ namespace HWP
 			RefreshVisuals();
 		}
 
-		// the host's mission state as the level loads (module constructor):
-		// the town's MissionEndMenu clears it in PostStart, before Start runs
+		// the host's mission state as its character loads (PlayerRecordLoad): the
+		// town's MissionEndMenu clears it in PostStart, before Start runs, and the
+		// module constructor runs before the record is loaded
 		MissionManager::MissionState g_endState = MissionManager::MissionState::None;
 
 		void OnGameplayLoad()
@@ -1221,7 +1222,7 @@ namespace HWP
 				g_haveState = false;
 				return;
 			}
-			auto bag = HWP::SaveData::MyTown();
+			auto bag = HWP::SaveData::MyTownForWrite();
 			if (!g_inTown)
 			{
 				bag.SetBool(KEY_PENDING, true);
@@ -1978,9 +1979,7 @@ namespace Modules
 		HWPFarmingModule()
 		{
 			super("hwp-farming");
-			auto host = GetLocalPlayerRecord();
-			if (host !is null)
-				HWP::Farming::g_endState = host.currMissionState;
+			HWP::Farming::g_endState = MissionManager::MissionState::None; // PlayerRecordLoad sets it
 			HWP::Farming::DefineSeeds();
 			HWP::Gear::Register("hwp-gear-can", HWPFarmCanSlot());
 			for (uint i = 0; i < HWP::Farming::g_seeds.length(); i++)
@@ -2041,5 +2040,15 @@ namespace Modules
 			else
 				HWP::Farming::SetupRun();
 		}
+	}
+}
+
+namespace HWPFarming
+{
+	[Hook]
+	void PlayerRecordLoad(PlayerRecord@ record, SValue@ data)
+	{
+		if (record !is null && record.local && Network::IsServer())
+			HWP::Farming::g_endState = record.currMissionState;
 	}
 }

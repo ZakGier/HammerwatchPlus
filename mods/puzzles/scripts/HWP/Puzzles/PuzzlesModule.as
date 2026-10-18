@@ -4,11 +4,12 @@
 // <biome>_puzzle in tweak/missions/prefabs/<biome>_special.sval) but no theme
 // places them: temple and crypt have the SpawnPrefabSet commented out, cave_dark
 // and barracks ask for "<biome>_puzzles", a set no prefab is in, and the rest
-// never mention them. Each mission level's generator is built when the
-// missions load, before any module, so the module ctor (every level, ahead of
-// MissionGameMode.Generate) adds the command to every dungeon-style generator
-// whose theme has puzzle rooms: at most one, skipped on no_special floors like
-// the shrine and skill rooms, and placed just before those. Its chance is
+// never mention them. The mission defs, and with them each level's generator,
+// are rebuilt on every level load, before any module, so the module ctor
+// (every level, ahead of MissionGameMode.Generate) adds the command to every
+// dungeon-style generator whose theme has puzzle rooms: at most one, skipped on
+// no_special floors like the shrine and skill rooms, and placed after those so
+// a puzzle room never takes the space a mandatory room needs. Its chance is
 // puzzles.room_chance percent (default 33, the commented-out vanilla value),
 // rolled in Execute: the settings live in the town record, which Generate
 // loads after the module ctor has run.
@@ -20,10 +21,11 @@ namespace HWP
 	namespace Puzzles
 	{
 		const int ROOM_CHANCE = 33;   // percent, the vanilla temple/crypt value
+		const string CONSTELLATION_FLAG = "hwp_constellation_placed";
 
 		// themes (theme_<biome>, theme_generic_<biome>) with a <biome>_puzzle prefab set
 		const array<string> ROOM_BIOMES = {
-			"barracks", "cave_dark", "cave_light", "cave_light_inhabited", "cave_spider", "courts",
+			"barracks", "cave_dark", "cave_light", "cave_light_inhabited", "courts",
 			"crypt", "dark_halls", "dungeon", "keep", "prison", "temple"
 		};
 
@@ -85,8 +87,7 @@ namespace HWP
 			return s.length() >= suffix.length() && s.substr(s.length() - suffix.length()) == suffix;
 		}
 
-		// returns how many generators got the command (0 when an earlier level
-		// already added it: the generators outlive the level)
+		// returns how many generators got the command
 		int AddPuzzleRooms()
 		{
 			int added = 0;
@@ -110,8 +111,8 @@ namespace HWP
 							continue;
 						if (spawn.m_set == set)
 							present = true;
-						if (at < 0 && (EndsWith(spawn.m_set, "_shrine") || EndsWith(spawn.m_set, "_skill")))
-							at = k;
+						if (EndsWith(spawn.m_set, "_shrine") || EndsWith(spawn.m_set, "_skill"))
+							at = k + 1;
 					}
 					if (present)
 						continue;
@@ -119,7 +120,7 @@ namespace HWP
 					PuzzleRoomSpawn cmd;
 					array<SValue@> params = { RoomCommandData(set) };
 					cmd.LoadParams(params);
-					if (at < 0)
+					if (at < 0 || uint(at) >= gen.m_genCommands.length())
 						gen.m_genCommands.insertLast(cmd);
 					else
 						gen.m_genCommands.insertAt(at, cmd);

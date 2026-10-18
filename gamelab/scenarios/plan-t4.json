@@ -1,0 +1,595 @@
+{
+ "name": "plan-t4",
+ "about": "Test plan tier 3-4 solo steps: laststats, weaponswap keys, strongbox, abyss, keys (exploratory).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp laststats"
+  },
+  {
+   "do": "log_has",
+   "pattern": "No run recorded yet",
+   "timeout": 8,
+   "name": "laststats empty"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "3000",
+    "laststats_board"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "key",
+   "key": "x"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.2
+  },
+  {
+   "do": "key",
+   "key": "x"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.2
+  },
+  {
+   "do": "key",
+   "key": "x"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "key",
+   "key": "x"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey 21 R"
+  },
+  {
+   "do": "key",
+   "key": "x"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.2
+  },
+  {
+   "do": "key",
+   "key": "r"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.2
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey"
+  },
+  {
+   "do": "console",
+   "line": "hwp swapdrop"
+  },
+  {
+   "do": "console",
+   "line": "hwp swapkey"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive gold 2"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive ace"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "console",
+   "line": "hwp keydrop silver"
+  },
+  {
+   "do": "log_has",
+   "pattern": "dropped a silver key",
+   "timeout": 8,
+   "name": "keydrop"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "shot",
+   "name": "keys"
+  },
+  {
+   "do": "console",
+   "line": "hwp strongbox here"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:strongbox\\] placed a strongbox",
+   "timeout": 8,
+   "name": "strongbox placed"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "strongbox"
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "strongbox"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:strongbox\\] armed: ",
+   "timeout": 10,
+   "name": "strongbox armed"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "strongbox-armed"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "shot",
+   "name": "strongbox-open"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "150"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_hunter.unit",
+    "200",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "200",
+    "40"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss here"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] placed a crack",
+   "timeout": 8,
+   "name": "crack placed"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "crack"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 1/",
+   "timeout": 20,
+   "name": "wave 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 2/",
+   "timeout": 30,
+   "name": "wave 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 3/",
+   "timeout": 30,
+   "name": "wave 3"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "wave3"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "shot",
+   "name": "abyss-done"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "150"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp set strongbox.chance 100"
+  },
+  {
+   "do": "console",
+   "line": "hwp set abyss.chance 100"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.lock_chance 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.ace_chance 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "console",
+   "line": "hwp strongbox"
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "3000",
+    "Chest"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "floor2"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "cht_damage 999999"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp laststats"
+  },
+  {
+   "do": "log_has",
+   "pattern": "laststats\\] snapshot of GameLab",
+   "timeout": 8,
+   "name": "laststats snapshot"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "town-mission-end"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "laststats_board"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "board"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp laststats"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "laststats-restart"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

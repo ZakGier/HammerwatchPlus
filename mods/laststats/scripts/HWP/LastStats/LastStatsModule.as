@@ -82,6 +82,21 @@ namespace HWP
 			return b.Build();
 		}
 
+		// The run's snapshot, taken when the town loads the local character
+		// (PlayerRecordLoad) and kept until Start: the town's MissionEndMenu
+		// (PostStart) clears the run's state and stats before any HWP Start
+		// runs, and the module constructors run before the record is loaded.
+		SValue@ g_pending;
+
+		void OnRecordLoad(PlayerRecord@ rec)
+		{
+			if (rec is null || !rec.local || rec.statsRun is null || !IsFinishedState(rec.currMissionState))
+				return;
+			if (g_pending !is null)
+				g_pending.Delete();
+			@g_pending = Snapshot(rec);
+		}
+
 		SValue@ Mine()
 		{
 			return HWP::SaveData::Local().Get(KEY_MINE);
@@ -197,30 +212,38 @@ namespace Modules
 
 		void Start(StartMode sMode)
 		{
+			// the constructor runs before the town's player records are loaded, so
+			// the PlayerRecordLoad hook's snapshot is only waiting by now
+			TakeSnapshot();
 			m_boardDone = false;
 			m_boardDelay = 0;
 			m_reportDelay = 2000; // (re)send whatever we have so late joiners get it too
 		}
 
-		// Modules are rebuilt for every level inside the game mode's
-		// constructor, ahead of Start/PostStart. The player records outlive the
-		// level, and only the town after a run sees a finished mission state
-		// (the MissionEndMenu clears it), so this is the one point that still
-		// sees the run's stats.
+		// Stores the run's snapshot. The town's MissionEndMenu clears the finished
+		// mission state before Start, so the PlayerRecordLoad hook takes the
+		// snapshot (g_pending). The state check is the fallback for a record that
+		// is already loaded when the module is built.
 		void TakeSnapshot()
 		{
 			auto plr = GetLocalPlayerRecord();
 			if (plr is null || plr.statsRun is null)
 				return;
-			if (!HWP::LastStats::IsFinishedState(plr.currMissionState))
-				return;
+			SValue@ snap = HWP::LastStats::g_pending;
+			@HWP::LastStats::g_pending = null;
+			if (snap is null)
+			{
+				if (!HWP::LastStats::IsFinishedState(plr.currMissionState))
+					return;
+				@snap = HWP::LastStats::Snapshot(plr);
+			}
 
-			auto snap = HWP::LastStats::Snapshot(plr);
+			string desc = HWP::SV::Str(snap, "mission") + ": " + HWP::SV::Int(snap, "count")
+				+ " stats, " + HWP::LastStats::StateName(HWP::SV::Int(snap, "state"));
 			HWP::SaveData::Local().Set(HWP::LastStats::KEY_MINE, snap);
 			HWP::LastStats::Remember(snap);
 			snap.Delete(); // the bag and the party list keep copies
-			HWP::Log("laststats", "snapshot of " + plr.GetName() + ": " + HWP::SV::Int(snap, "count")
-				+ " stats, " + HWP::LastStats::StateName(int(plr.currMissionState)));
+			HWP::Log("laststats", "snapshot of " + plr.GetName() + ", " + desc);
 		}
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
@@ -248,5 +271,14 @@ namespace Modules
 				}
 			}
 		}
+	}
+}
+
+namespace HWPLastStats
+{
+	[Hook]
+	void PlayerRecordLoad(PlayerRecord@ record, SValue@ data)
+	{
+		HWP::LastStats::OnRecordLoad(record);
 	}
 }

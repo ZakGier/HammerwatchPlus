@@ -1,0 +1,540 @@
+{
+ "name": "plan-t5",
+ "about": "Test plan town tiers (exploratory): wares, gambler, fishing coast and pirate, traps, farming, goldpet vendor, pets, wave arena, campaign portal.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp material all 200000"
+  },
+  {
+   "do": "console",
+   "line": "hwp unlockflags"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "hwp_gambler"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "hwp_gambler"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "shot",
+   "name": "gambler"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "fishing_spot"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "pirate_fisher"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy bait"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy bait20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing"
+  },
+  {
+   "do": "gl",
+   "verb": "inv"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy rod"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing buy trap"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing traps"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set fishing.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing catch 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing catch 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing catch 3"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing sell"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing traps 60"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing traps"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "pirate_fisher"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "gl",
+   "verb": "shop"
+  },
+  {
+   "do": "shot",
+   "name": "pirate"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp farm"
+  },
+  {
+   "do": "console",
+   "line": "hwp set farm.debug 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "npc_misc_farmer_man"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "gl",
+   "verb": "shop"
+  },
+  {
+   "do": "shot",
+   "name": "farmer"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "build",
+   "args": [
+    "hunters_cabin"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "townrefresh"
+  },
+  {
+   "do": "sleep",
+   "seconds": 6
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "4000",
+    "hwp_pet_vendor"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "hwp_pet_vendor"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "gl",
+   "verb": "shop"
+  },
+  {
+   "do": "shot",
+   "name": "petvendor"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set pets.debug true"
+  },
+  {
+   "do": "console",
+   "line": "hwp pet"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp pet xp 500"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp pet gold off"
+  },
+  {
+   "do": "console",
+   "line": "hwp pet"
+  },
+  {
+   "do": "console",
+   "line": "hwp pet gold on"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "wave"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp wave rank 5"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "portal"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign here"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "restart"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp campaign"
+  },
+  {
+   "do": "console",
+   "line": "hwp fishing traps"
+  },
+  {
+   "do": "console",
+   "line": "hwp wares"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "after-restart"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

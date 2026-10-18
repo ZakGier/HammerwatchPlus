@@ -99,6 +99,12 @@ class Double(float):
     """An f64 SValue (SV_DOUBLE), kept apart from f32 for the same reason."""
 
 
+# Bump when a decode or encode change alters what tools/import_hoh1.py writes:
+# its outputs carry the version they were made with, and older ones are redone.
+#   1  first stamped converter
+#   2  compact 0x67 decodes as true and 0x68 as false (they were swapped)
+CONVERTER_VERSION = 2
+
 # 0x67 is true and 0x68 false: PACKAGER's XML of the same prefabs says "t" where the
 # binary has 0x67 (every trigger area: active + sensor), "f" for 0x68.
 SV_COMPACT = {0x65: [], 0x66: {}, 0x67: True, 0x68: False, 0x69: 0.0, 0x6E: 0, 0x73: Long(0), 0x78: ""}  # 0x73 = i64 0

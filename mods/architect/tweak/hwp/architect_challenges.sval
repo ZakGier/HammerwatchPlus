@@ -51,7 +51,9 @@
 				<string name="class">Modifiers::TriggerEffect</string>
 				<string name="trigger">potion</string>
 				<bool name="target-self">true</bool>
-				<float name="chance">1</float>
+				<!-- every potion: roll_chance scales the chance by 0.95^-luck when
+				     luck is negative, so 1 would miss; this holds to -269 luck -->
+				<float name="chance">1000000</float>
 				<int name="timeout">0</int>
 				<array name="effects">
 					<dict>

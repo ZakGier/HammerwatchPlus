@@ -567,3 +567,70 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   **Assumed, not tested:** the re-place after an upgrade (`WatchCoast`), since no fixture builds
   the trading post. `import_hoh1.py pets --force` produced the candle body
   (flame origin y +9, lights -9); mod-pets and mod-all PASS (230749, 230812).
+
+## 2026-10-18: test-plan pass findings
+
+- **A new profile's town is not saved, and HWP settings with it.** `TownRecord.Save`
+  returns false when the town has no buildings, no town flags and no materials
+  (`scripts/Town/TownRecord.as:333`), so `SavePlayerAndTown` writes no town and the
+  `TownRecordSave` hook never runs. Measured on `plan-t2` (20261018-033859): a preset set
+  in town was gone on the first floor, and `deathrecap.chat` was unset after a restart.
+  Core now writes settings through `HWP::SaveData::MyTownForWrite()`, which sets an
+  `hwp_town_data` town flag first (not net-synced; vanilla never reads it). After the fix
+  both survive (20261018-034519).
+- **Posted mouse messages do not reach the game.** A posted `WM_MOUSEMOVE` and click
+  left `GameInput` unchanged: aim, mouse position and the death recap's hover test all
+  stayed the same (probe 20261018-034929). The engine reads the cursor itself. Steps that
+  need a hover or a click therefore stay manual.
+- **`dictionary.set` keeps a temporary by reference.** Measured with a probe on
+  `plan-t4` (20261018-035113): `d.set(key, a + b)` or `d.set(key, true)` stores a value that
+  later reads as garbage (a key count of 322810098 after "+2 gold"), while
+  `int n = a + b; d.set(key, n);` stores 2 and survives function calls. Vanilla
+  `PlayerRecord.AddKeys` does `keys.set(key, currNum + num)`, so every vanilla key change
+  (`Chest::Use`, the `GiveKey` effect) corrupts the count. The keys module has its own
+  `HWP::Keys::AddKeys`/`SetKeys` with named locals, and resets corrupt counts at level
+  start. Summons and GoldPet were changed to the same pattern. Vanilla `Save`/`Load` use
+  named locals and are unaffected.
+- **A run's end state is gone by the time Start runs.** Back in town the order is:
+  - module constructors, before the character loads;
+  - `PlayerRecord.Load` sets `currMissionState` (~line 902) and `statsRun` (1288), then
+    calls `Hooks::Call("PlayerRecordLoad")` (1299);
+  - `TownGameMode.PostStart` builds `MissionEndMenu`, whose constructor sets
+    `currMissionState` to None and calls `ResetForNewMission`;
+  - `GameModeStart`, where HWP's `ModuleStart.Start` runs.
+
+  So only `PlayerRecordLoad` sees how the run ended. Before this was found, a failed run
+  gave no laststats snapshot, and farming logged "the run was not finished (state 0)".
+  laststats, farming and mercenary now read the state there. A revive from the death
+  menu ends the run with `AbortMission(Failed)`.
+- **SValue compact tags 0x67/0x68 are true/false** (fixed in faaddf2; they were swapped).
+  Converted HoH1 levels made before that fix had every boolean inverted.
+  `hwr_archive.CONVERTER_VERSION` (now 2) is stamped on each `import_hoh1.py` output
+  (`hoh1_import/stamps/`). An import over older output regenerates it, and `build.py`
+  warns about stale imports.
+- **The mission defs and their level generators are rebuilt on every level load**,
+  before any module constructor. A command added to `m_genCommands` in a ctor is
+  therefore gone on the next level and must be added again; it never piles up.
+  `DungeonGenerator` calls `randf()` once per command (against `m_execChance`), so
+  inserting a command shifts every later roll and changes the level vanilla makes for a
+  seed. The architect's `ChallengeSetup` wraps an unconditional command instead of
+  inserting one.
+- **`Item::GetRandomTrinket` sets `m_seen` on the trinket it returns**
+  (`scripts/Items/Trinkets.as:46`), and later rolls treat seen trinkets as duplicates.
+  Vanilla shops and the sarcophagus clear it again for picks nobody took. The General
+  Merchant's trinket stock roll saves every trinket's `m_seen` and restores it afterwards.
+  Assumed, not measured: whether `Trinket` instances reload per level, which would reset
+  it anyway.
+- **Escape on the character picker closes it.** `WindowManager.Back` closes the top
+  window when its `Back()` returns true, and `PickCharacterWindow.Back` always does (only
+  setting the in-game menu when no class is picked). A forced picker therefore has to be
+  reopened: mercenary reopens it after `PICKER_DELAY_MS` while a fallen mercenary is in
+  town.
+- **God mode lives in the `cht_god` cvar, not in `CVars::ChtGodmode`.** The vanilla
+  `cht_god` is registered with `AddVar("cht_god", false, SetGodmodeCVar, Cheat |
+  TriggerChanged)` (`scripts/Console/Cheats.as:22`), and `SetGodmodeCVar` copies it into
+  `CVars::ChtGodmode`, which `Player.as` reads. Setting only `CVars::ChtGodmode` did not
+  hold: in GameLab (probe-god) the player still took damage. HWP's `hwp god` therefore
+  toggles the cvar with `SetVar("cht_god", on)` and reads it with `GetVarBool("cht_god")`.
+  Verified: with the cvar set, HP stays full under damage. Assumed, not traced: what
+  resets the script global (the cvar being re-applied on a level or script load).

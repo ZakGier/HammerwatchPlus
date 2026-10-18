@@ -151,6 +151,23 @@ namespace HWP
 			AddPrestige(rec, "merc.floors", 1);
 		}
 
+		// a mission's boss level: a fixed levels/boss_*.lvl map, or a module with a
+		// boss (the heaven trials). Boss-tagged actors also show up elsewhere, such
+		// as the bandit boss encounter in the keep's special rooms.
+		bool IsBossFloor()
+		{
+			auto mm = MissionManager::g_module;
+			if (mm is null)
+				return false;
+			auto def = MissionDef::Get(mm.m_missionDefHash);
+			if (def is null || mm.m_missionLevelIndex < 0 || uint(mm.m_missionLevelIndex) >= def.m_levels.length())
+				return false;
+			auto level = def.m_levels[mm.m_missionLevelIndex];
+			if (level.m_level.findFirst("levels/boss_") == 0)
+				return true;
+			return level.m_moduleData !is null && level.m_moduleData.GetDictionaryEntry("boss") !is null;
+		}
+
 		bool HasTag(Actor@ actor, const string &in tag)
 		{
 			return (actor.Tags & ApplyTag(0, g_actorTags.GetTag(tag))) != 0;
@@ -160,7 +177,7 @@ namespace HWP
 		{
 			if (player is null || killed is null || player.m_record is null || !player.m_record.local)
 				return;
-			if (!InMission() || !HasTag(killed, "boss"))
+			if (!InMission() || !HasTag(killed, "boss") || !IsBossFloor())
 				return;
 			SValueBuilder b;
 			b.PushDictionary();
@@ -183,7 +200,7 @@ namespace HWP
 				return;
 			string key = HWP::SV::Str(data, "k", "");
 			auto bag = Bag(rec);
-			if (key == "" || key != FloorKey() || bag.GetString("merc.boss_key") == key)
+			if (key == "" || key != FloorKey() || bag.GetString("merc.boss_key") == key || !IsBossFloor())
 				return;
 			bag.SetString("merc.boss_key", key);
 			AddPrestige(rec, "merc.bosses", 1);
@@ -211,7 +228,7 @@ namespace HWP
 			string entry = bag.GetString("merc.ledger_pending");
 			if (entry == "")
 				return;
-			auto town = HWP::SaveData::MyTown();
+			auto town = HWP::SaveData::MyTownForWrite();
 			auto lines = town.GetString("merc.ledger").split("\n");
 			string ledger = entry;
 			for (uint i = 0; i < lines.length() && i + 1 < LEDGER_MAX; i++)
@@ -265,33 +282,66 @@ namespace HWP
 
 		bool Revivable() { return HWP::Settings::GetBool("mercenary.revivable", false); }
 
-		// a mission floor: a living mercenary that dies falls (unless revivable)
+		// a mission floor: a living mercenary that dies falls (unless revivable;
+		// then "merc.down" remembers it for a run that is abandoned while down)
 		void WatchDeath()
 		{
 			auto rec = GetLocalPlayerRecord();
-			if (!IsMerc(rec) || IsFallen(rec) || !InMission())
+			if (!IsMerc(rec) || !InMission())
 			{
 				g_wasDead = false;
 				return;
 			}
 			bool dead = rec.IsDead();
+			if (IsFallen(rec))
+			{
+				// a fallen mercenary cannot play on: one that is alive here
+				// (revived by the party, or brought into a mission) dies again
+				if (!dead && rec.actor !is null)
+				{
+					HWP::Log("mercenary", "fallen mercenary " + rec.name + " is alive on a floor, killing it");
+					rec.actor.Kill(null, 0);
+				}
+				g_wasDead = dead;
+				return;
+			}
+			if (dead != g_wasDead && Revivable())
+				Bag(rec).SetBool("merc.down", dead);
 			if (dead && !g_wasDead && !Revivable())
 				Fall(rec, FloorName(MissionManager::g_module.m_missionDefHash, int(MissionManager::g_module.m_missionLevelIndex)));
 			g_wasDead = dead;
 		}
 
+		// The run's end state as the town loads the character (PlayerRecordLoad):
+		// the town's MissionEndMenu clears it before Start runs.
+		MissionManager::MissionState g_loadState = MissionManager::MissionState::None;
+		string g_loadKey;
+
 		// back in town from a failed run (the revivable rule, or a fall the
-		// floor did not see)
+		// floor did not see), or with revivable on, from a run abandoned while down
 		void CheckFailedRun(PlayerRecord@ rec)
 		{
-			if (!IsMerc(rec) || IsFallen(rec) || rec.currMissionState != MissionManager::MissionState::Failed)
+			auto state = g_loadState;
+			g_loadState = MissionManager::MissionState::None;
+			if (!IsMerc(rec) || IsFallen(rec))
 				return;
-			string key = "" + rec.currMission + ":" + rec.currMissionRewardSeed;
 			auto bag = Bag(rec);
-			if (bag.GetString("merc.failed_key") == key)
+			bool down = bag.GetBool("merc.down");
+			bag.Remove("merc.down");
+			bool failed = state == MissionManager::MissionState::Failed
+				|| (state == MissionManager::MissionState::Aborted && Revivable() && down);
+			if (!failed || bag.GetString("merc.failed_key") == g_loadKey)
 				return;
-			bag.SetString("merc.failed_key", key);
-			Fall(rec, FloorName(rec.currMission, -1) + " (run failed)");
+			bag.SetString("merc.failed_key", g_loadKey);
+			Fall(rec, FloorName(rec.currMission, -1) + (state == MissionManager::MissionState::Failed ? " (run failed)" : " (run abandoned)"));
+		}
+
+		void OnRecordLoad(PlayerRecord@ rec)
+		{
+			if (rec is null || !rec.local)
+				return;
+			g_loadState = rec.currMissionState;
+			g_loadKey = "" + rec.currMission + ":" + rec.currMissionRewardSeed;
 		}
 
 		bool BlockingWindowOpen()
@@ -309,9 +359,32 @@ namespace HWP
 			return false;
 		}
 
+		// a fallen mercenary cannot start a run: its mission setup closes
+		bool CloseLoadout()
+		{
+			auto gm = cast<BaseGameMode>(g_gameMode);
+			if (gm is null || gm.m_windowManager is null)
+				return false;
+			auto windows = gm.m_windowManager.m_objects;
+			for (uint i = 0; i < windows.length(); i++)
+			{
+				auto loadout = cast<MissionLoadoutMenu>(windows[i]);
+				if (loadout is null)
+					continue;
+				gm.m_windowManager.CloseWindow(loadout);
+				return true;
+			}
+			return false;
+		}
+
 		// town: a fallen mercenary cannot be played, the picker comes back up
 		void EnforceFallen(int ms)
 		{
+			if (InTown() && IsFallen(GetLocalPlayerRecord()) && CloseLoadout())
+			{
+				HWP::Log("mercenary", "closed the mission setup of a fallen mercenary");
+				g_pickerMs = 0;
+			}
 			if (!InTown() || !IsFallen(GetLocalPlayerRecord()) || BlockingWindowOpen())
 			{
 				g_pickerMs = PICKER_DELAY_MS;
@@ -475,6 +548,12 @@ namespace HWPMercenary
 	void PlayerKilledActor(Player@ player, Actor@ killed, DamageInfo@ di)
 	{
 		HWP::Mercenary::OnKill(player, killed);
+	}
+
+	[Hook]
+	void PlayerRecordLoad(PlayerRecord@ record, SValue@ data)
+	{
+		HWP::Mercenary::OnRecordLoad(record);
 	}
 
 	// the rank bonus, on the local living mercenary (gold and experience are

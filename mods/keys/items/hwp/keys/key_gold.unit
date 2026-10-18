@@ -9,7 +9,7 @@
 		<bool name="secure">true</bool>
 		<array name="effects">
 			<dict>
-				<string name="class">GiveKey</string>
+				<string name="class">HWPGiveKey</string>
 				<string name="key">gold</string>
 				<int name="amount">1</int>
 			</dict>
