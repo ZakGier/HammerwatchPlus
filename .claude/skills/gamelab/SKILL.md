@@ -231,6 +231,8 @@ hash; the first run after a change does two extra boots.
 
 - Read: `state`, `scan`, `near`, `usables`, `ui`, `overlays`, `widgets`, `inv`,
   `buildings`, `cvars`, `mods`, `clock`, `terrain`, `pathfind`, `reachmap`.
+  `widgets` gives `text` for TextWidgets and `enabled` for buttons; a button's caption is
+  a BitmapString it can't read, so check a window's result line instead.
 - Read the game's own data:
   - `inspect player|town <dotted.path>`: the save record.
   - `sval <file>`: a datatable as parsed.

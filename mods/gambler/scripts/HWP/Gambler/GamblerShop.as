@@ -8,6 +8,7 @@ namespace HWP
 	{
 		const int REROLL_PER_LEVEL = 2000;  // gold per item level for a gear reroll
 		const int TOKEN_LEVELS = 5;         // or 1 bet token (HWP::Market) per 5 item levels
+		const int REROLL_TRIES = 8;         // rolls a reroll makes for a modifier set the item did not have
 	}
 }
 
@@ -265,6 +266,19 @@ class HWPGamblerShop : AShopContent
 	}
 
 	// tokens: pay in bet tokens instead of gold
+	// the item's modifiers as a sorted list of ids, for "did the reroll change anything"
+	string ModKey(Equipment::Item@ item)
+	{
+		array<uint> ids;
+		for (uint i = 0; i < item.mods.length(); i++)
+			ids.insertLast(item.mods[i].m_idHash);
+		ids.sortAsc();
+		string key;
+		for (uint i = 0; i < ids.length(); i++)
+			key += ids[i] + ",";
+		return key;
+	}
+
 	bool Reroll(bool tokens)
 	{
 		if (m_gameState == 1 || !CanReroll(tokens))
@@ -281,7 +295,15 @@ class HWPGamblerShop : AShopContent
 		Equipment::Generator gen;
 		gen.m_slots = Equipment::Slot::None;        // keep the base item
 		gen.m_qualities = Item::Quality::None;      // keep the quality
-		gen.ModifyItem(item, null, null, true);     // clear + regenerate the modifiers at the item's own ilvl; Finalize keeps ilvl/upgrades/colours
+		// a low item level has a small modifier pool, so a roll can come back the same as
+		// the item had (seen at ilvl 3); a paid reroll tries a few times for a new set
+		string before = ModKey(item);
+		for (int i = 0; i < HWP::Gambler::REROLL_TRIES; i++)
+		{
+			gen.ModifyItem(item, null, null, true); // clear + regenerate the modifiers at the item's own ilvl; Finalize keeps ilvl/upgrades/colours
+			if (ModKey(item) != before)
+				break;
+		}
 
 		m_player.equipped.RefreshPlayerModifiers();
 		m_player.equipped.m_isDirty = true;
@@ -304,6 +326,9 @@ class HWPGamblerMenu : AWindowObject
 	HWPGamblerShop@ m_gambler;
 	TextWidget@ m_goldText;
 	TextWidget@ m_resultText;
+	// what the last sell or reroll press said; UpdateUI shows it over the bet prompt or the
+	// last hand's result until the next hand or bet
+	string m_notice;
 	SpriteWidget@ m_playerCardSprite;
 	SpriteWidget@ m_dealerCardSprite;
 	SpriteWidget@ m_playerDeckSprite;
@@ -533,7 +558,7 @@ class HWPGamblerMenu : AWindowObject
 				m_dealerCardSprite.m_visible = false;
 
 			if (m_resultText !is null)
-				m_resultText.SetText(Resources::GetString(".hwp.gambler.bet_prompt"));
+				m_resultText.SetText(m_notice != "" ? m_notice : Resources::GetString(".hwp.gambler.bet_prompt"));
 
 			if (m_playButton !is null)
 				m_playButton.SetText(Resources::GetString(".hwp.gambler.flip"));
@@ -556,7 +581,7 @@ class HWPGamblerMenu : AWindowObject
 				m_dealerCardSprite.SetSprite(GetCardSpriteName(m_gambler.m_dealerCard, m_gambler.m_dealerSuit));
 
 			if (m_resultText !is null)
-				m_resultText.SetText(m_gambler.GetResultText());
+				m_resultText.SetText(m_notice != "" ? m_notice : m_gambler.GetResultText());
 
 			if (m_playButton !is null)
 				m_playButton.SetText(Resources::GetString(".hwp.gambler.reshuffle"));
@@ -576,8 +601,8 @@ class HWPGamblerMenu : AWindowObject
 			if (m_gambler.m_gameState == 1)
 				return;
 			auto sale = HWP::Market::Sell(m_gambler.m_player);
-			if (sale.count > 0 && m_resultText !is null)
-				m_resultText.SetText(Resources::GetString(".hwp.gambler.sold", { { "price", HWP::Market::Price(sale.gold, sale.tokens) } }));
+			if (sale.count > 0)
+				m_notice = Resources::GetString(".hwp.gambler.sold", { { "price", HWP::Market::Price(sale.gold, sale.tokens) } });
 			UpdateUI();
 			return;
 		}
@@ -596,25 +621,24 @@ class HWPGamblerMenu : AWindowObject
 			bool tokens = name == "reroll-tokens";
 			auto before = m_gambler.RerollSlotEquipment();
 			bool ok = m_gambler.Reroll(tokens);
-			if (m_resultText !is null)
-			{
-				if (ok)
-					m_resultText.SetText(Resources::GetString(".hwp.gambler.rerolled", { { "name", before.GetName() } }));
-				else if (before is null)
-					m_resultText.SetText(Resources::GetString(".hwp.gambler.reroll_nothing"));
-				else if (!m_gambler.IsRerollable(before))
-					m_resultText.SetText(Resources::GetString(".hwp.gambler.reroll_legendary"));
-				else if (tokens)
-					m_resultText.SetText(Resources::GetString(".hwp.gambler.reroll_poor_tokens", { { "n", m_gambler.RerollTokenCost() } }));
-				else
-					m_resultText.SetText(Resources::GetString(".hwp.gambler.reroll_poor", { { "gold", m_gambler.RerollCost() } }));
-			}
+			if (ok)
+				m_notice = Resources::GetString(".hwp.gambler.rerolled", { { "name", before.GetName() } });
+			else if (before is null)
+				m_notice = Resources::GetString(".hwp.gambler.reroll_nothing");
+			else if (!m_gambler.IsRerollable(before))
+				m_notice = Resources::GetString(".hwp.gambler.reroll_legendary");
+			else if (tokens)
+				m_notice = Resources::GetString(".hwp.gambler.reroll_poor_tokens", { { "n", m_gambler.RerollTokenCost() } });
+			else
+				m_notice = Resources::GetString(".hwp.gambler.reroll_poor", { { "gold", m_gambler.RerollCost() } });
 			UpdateUI();
 			return;
 		}
 
 		if (name == "play")
 		{
+			if (m_gambler.m_gameState != 1)
+				m_notice = "";
 			if (m_gambler.m_gameState == 0)
 			{
 				if (m_gambler.PlayGame())
@@ -640,6 +664,7 @@ class HWPGamblerMenu : AWindowObject
 				if (m_gambler.m_gameState == 0)
 				{
 					m_gambler.SelectBet(i);
+					m_notice = "";
 					UpdateUI();
 				}
 				return;

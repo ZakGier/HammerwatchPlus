@@ -1,0 +1,107 @@
+{
+ "name": "plan-t8",
+ "about": "Test plan, arithmetic checks through the plan_checks bot: gambler reroll (gold, tokens, refusals, legendary), selling wares, the merchant's bag slot, pirate fish traps, a catch with a full bag, silver and ace chests with keys, the X weapon swap.",
+ "fixture": "town-tavern",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "gambler,sell,merchant,traps,full_bag"
+   },
+   "save_as": "town",
+   "name": "town checks",
+   "expect": {
+    "rare_equipped": true,
+    "gambler_open": true,
+    "reroll_cost": true,
+    "reroll_changed": true,
+    "reroll_poor_refused": true,
+    "reroll_poor_message": true,
+    "reroll_message": true,
+    "token_poor_message": true,
+    "token_reroll": true,
+    "token_poor_refused": true,
+    "legendary_refused": true,
+    "sell_message": true,
+    "sell_fish_tokens": true,
+    "sell_crops_gold": true,
+    "sell_emptied": true,
+    "bag_slot_bought": true,
+    "bag_slot_paid": true,
+    "bag_slot_price_rises": true,
+    "traps_prices": true,
+    "traps_fourth_refused": true,
+    "traps_listed": true,
+    "full_bag_feet": true,
+    "full_bag_fish_on_ground": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "mission,chests,swap"
+   },
+   "save_as": "run",
+   "name": "run checks",
+   "expect": {
+    "mission_started": true,
+    "silver_unlocked": true,
+    "ace_legendary_unlocked": true,
+    "ace_legendary_given": true,
+    "ace_epic_unlocked": true,
+    "ace_epic_no_legendary": true,
+    "swap_empty_hands": true,
+    "swap_back_once": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

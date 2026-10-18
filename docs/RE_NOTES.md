@@ -738,3 +738,24 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   plots, visuals, well, hidden crops, dye markers) goes through them. Assumed, not
   measured: before this, a rebuild could make `ClearLocal`, `ClearVisuals` or
   `Placeable.Spawn` destroy (or `SetCropsHidden` hide) whatever vanilla unit took the id.
+- **The Gambler's result line was overwritten right away.** `UpdateUI()` sets the line to
+  the bet prompt (no hand) or the last hand's result, and the sell and reroll handlers
+  call it after writing their message, so "Rerolled ...", "Not enough gold ..." and "Sold
+  your wares ..." were never on screen (plan-t8 070630: the line read "Place your bet and
+  draw!" after every press). They now go to `m_notice`, which `UpdateUI` shows until the
+  next hand or bet. The reroll buttons are never disabled; the refusal is that line.
+- **A low item level has a small modifier pool.** A rare mace at ilvl 3 rerolled to the
+  same modifier it had (plan-t8 072725: token spent, item unchanged), and the same few
+  modifier ids came up across runs. A reroll now rolls up to 8 times for a set the item
+  didn't have.
+- **GameLab's `widgets` dump can't read a button's caption.** `ScalableSpriteButtonWidget`
+  text is a `BitmapString`; only `TextWidget.m_str` is dumped. The dump now also gives
+  `enabled` for `AInteractableWidget`s.
+- **GameLab `pathfind` answers `nodes: 0` both for "no path" and for some straight lines.**
+  A chest at +90,0 from the Bandit Keep start answered 0 in one run and 2 in the next, and
+  opened both times. `plan_checks.chest_spot` prefers `nodes > 0` spots.
+- **Bot timing.** The weapon swap has a 1 s cooldown, so a check that presses X again
+  sooner sees nothing (072156). A posted console line once arrived as "`hwp bag" (stray
+  backtick) and did nothing; `plan_checks.hwp(..., until=)` resends once when the reply
+  doesn't come. The Bandit Keep's bandits killed the player during the third chest, so the
+  chest checks `cull` first.

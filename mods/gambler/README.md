@@ -41,13 +41,16 @@ the `<` / `>` buttons and pay **2000 gold x item level** (ilvl 20 = 40,000) to
 regenerate the item's modifiers. The base item, quality, item level, upgrade
 level and colours stay; the modifiers (and so the name) are rolled fresh by the
 vanilla `Equipment::Generator::ModifyItem(..., clearMods=true)`, so the result is
-exactly what the item could have dropped as. Legendary, unique, quest and
+exactly what the item could have dropped as. A low item level has a small
+modifier pool, so a roll can match what the item already had; a reroll rolls
+up to 8 times for a different set (`REROLL_TRIES`). Legendary, unique, quest and
 cursed gear can't be rerolled (the row shows them as "can't be rerolled"). The new item is sent to the other players with the vanilla
 `PlayerEquipmentEquip` message, same as equipping it.
 
 Test: equip a rare, note its mods, reroll at the Gambler (gold drops by
 2000 x ilvl, name/mods change, character sheet updates); try it with no gold
-(refused with the price). **Token reroll:** the second button pays 1 bet token
+(refused; the line under the cards names the price, and stays until the next
+hand or bet, as do the reroll and sale messages). **Token reroll:** the second button pays 1 bet token
 per 5 item levels (ilvl 1-5 = 1, 6-10 = 2, ...) instead of gold; with too few
 tokens it is refused with the price. In co-op the other player sees the new item in your
 character inspect.

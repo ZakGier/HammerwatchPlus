@@ -463,6 +463,9 @@ namespace GameLab
 		auto t = cast<TextWidget>(w);
 		if (t !is null)
 			n.Str("text", t.m_str);
+		auto iw = cast<AInteractableWidget>(w);
+		if (iw !is null)
+			n.Bool("enabled", iw.m_enabled);
 		acc.insertLast(n.Close());
 		if (w.m_children is null)
 			return;
