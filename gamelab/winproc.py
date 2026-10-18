@@ -71,8 +71,14 @@ def game_window(pid: int) -> int | None:
     return None
 
 
+# Keys whose scancode is shared with the numeric keypad: without the extended-key flag
+# (lParam bit 24) SDL reads the arrows as keypad 8/2/4/6 and menus never move
+# (probe-options-menu 20261018-005245: four posted downs left "Continue" selected).
+EXTENDED = {0x25, 0x26, 0x27, 0x28}
+
+
 def key(hwnd: int, vk: int, hold: float = 0.05) -> None:
-    sc = u32.MapVirtualKeyW(vk, 0)
+    sc = u32.MapVirtualKeyW(vk, 0) | (0x100 if vk in EXTENDED else 0)
     u32.PostMessageW(hwnd, WM_KEYDOWN, vk, 1 | (sc << 16))
     if hold:
         time.sleep(hold)

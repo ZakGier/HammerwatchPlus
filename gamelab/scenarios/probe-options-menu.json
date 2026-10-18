@@ -1,0 +1,227 @@
+{
+ "name": "probe-options-menu",
+ "about": "Does the pause menu's Options > Game show mods/colors' 'projectile colors' line (gui/options/game.gui override)? The pause menu runs in the menu script; this checks whether mod resources reach it. Escape, four downs to Options, Enter, then 15 downs to the row above 'enemy health bars', shot game_tab.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "colors"
+ ],
+ "timeout": 120,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   }
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.0
+  },
+  {
+   "do": "shot",
+   "name": "pause0"
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.15
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.15
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.15
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.15
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "shot",
+   "name": "pause4"
+  },
+  {
+   "do": "key",
+   "key": "enter",
+   "hold": 0.15
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.0
+  },
+  {
+   "do": "shot",
+   "name": "options"
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "key",
+   "key": "down",
+   "hold": 0.1
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.25
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "shot",
+   "name": "game_tab"
+  }
+ ]
+}
