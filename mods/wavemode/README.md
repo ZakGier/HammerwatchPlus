@@ -8,7 +8,15 @@ rank, and the rank is the arena's NG+ level next time.
 - **Mission** `hwp_wave_arena` (set `hwp_wave`): one generated keep floor
   (bandits, elites, density 1.2) with the survival module: 10 minute clock,
   XP goal 15000, 4 spawn events (the vanilla shade / phantom / cult / wisp
-  events from `missions_heaven_actions.sval`), boss = `actors/hwp/wave_boss.unit`,
+  events from `missions_heaven_actions.sval`), boss =
+  `prefabs/hwp/wave_boss_spawner.pfb`. The survival module loads `boss` with
+  `Resources::GetPrefab`, so it must be a spawner prefab: a `.unit` there left
+  the prefab null and the champion never came (fixed 2026-10-18).
+  `tools/make_wave_boss_prefab.py` copies the valor trial's
+  `heaven_warrior_spawner.pfb` (intro, music, enemy clear-out, exit portal) with
+  the boss swapped for `actors/hwp/wave_boss.unit` and the trial's achievement
+  and `boss_warrior` character flag unlinked; rerun it (`--check` reports a stale
+  copy) after patches. `wave_boss.unit` is
   a copy of the valor spirit warrior with its `stat-reward valor` removed so
   arena clears never raise the heaven DLC valor rank (keep it in sync with
   `actors/bosses/spirits/warrior/boss_spirit_warrior.unit` after patches),
@@ -34,11 +42,17 @@ rank, and the rank is the arena's NG+ level next time.
   speed reward) once per floor, saves `wave.rank` in the town record and
   broadcasts `wave.awarded`; a client sends `wave.bosskill` and the host
   checks the mission before awarding.
-- Host spawns the statue (`HWP::Town::Placeable`) 0.6 s after the town loads at `wave.statue_x/y`
-  (default -1500,250, right of the campaign portal); `hwp wave here`
-  moves it, `hwp wave rank <n>` sets the rank (host), `hwp wave goal`
+- Host spawns the statue (`HWP::Town::Placeable`) 0.6 s after the town loads, beside
+  the campaign portal: 112 px left of the chapel's Pyre slot
+  (`HWP::Town::ChapelPyreSpot`, 872,-232 in the default town), or 72 px lower
+  when that is blocked (a built Pyre). It used to default to -1500,250, inside
+  the trading post's plot and 64 px from a beach fishing spot, so pressing use
+  there could open the fishing window instead (seen in GameLab, 2026-10-18).
+  A spot saved with `hwp wave here` (`wave.statue_x/y`) wins; `hwp wave here`
+  moves it, `hwp wave rank <n>` sets the rank (host), `hwp wave goal [percent]`
   (cheats, host, in the arena) fills the survival bar so the next kill brings
-  the champion, `hwp wave` shows
+  the champion (with a percent, part way: past a checkpoint, the next kill fires
+  that spawn event), `hwp wave` shows
   the state. `wave.enabled` turns it off.
 - Known limits for the morning: the arena uses heaven enemies for the
   spawn events (they exist for everyone, the DLC only gates the missions);
@@ -49,7 +63,7 @@ rank, and the rank is the arena's NG+ level next time.
 
 1. `python -m gamelab run mod-wavemode --mode lab`: `[HWP:wave] self-check done: mission ok, boon ok, 4/4 spawn
    actions, rank 0`; no missing unit lines.
-2. Town: the statue stands by the coast fishing spots (-1500,250). Interact opens the survival
+2. Town: the statue stands left of the campaign portal in the chapel courtyard (872,-232). Interact opens the survival
    window with "Wave Arena", the Arena Champion boon and rank 0; Start
    opens the loadout menu and the run begins on a keep floor with the
    survival bar on the HUD.

@@ -676,3 +676,27 @@ Verified means measured on the pinned build (run id or source line). Assumed is 
   copies around the box and the crack. This was also the "abyss wave stall" seen once
   in run 043107. `IsSpawnable` now takes only targetable, non-NPC actors whose unit is
   under `actors/`.
+- **`SurvivalMission`'s `boss` must be a prefab.** `Missions/SurvivalMission.as` loads it
+  with `Resources::GetPrefab` and, once the bar is full, fabricates it at the player's
+  position + (0,-100). The heaven trials pass a spawner prefab
+  (`prefabs/heaven/seg_heaven/boss_spawners/heaven_*_spawner.pfb`): an intro, a
+  `SpawnUnit` of the boss, and a `BossDefeated` ScriptLink that unlocks the trial's
+  achievement, sets its character flag and opens the exit. The wave arena passed
+  `actors/hwp/wave_boss.unit`, so the prefab was null and filling the bar threw "Null
+  pointer access" (`SurvivalMission.as:126`): the arena champion never spawned. Verified
+  in plan-t6b run 051540. `tools/make_wave_boss_prefab.py` now writes a copy of the
+  warrior spawner for the arena. Worldscript rows decode as `[type, id, pos, enabled,
+  triggerTimes, ?, (comment), params, (links)]`; a ScriptLink's links are flat
+  `id, delay` pairs.
+- **The wave statue's old default (-1500,250) was on the beach**, inside the trading post's
+  plot (-1536,256) and 64 px from coast fishing spot 3 (-1436,272). In plan-t6b run 052747
+  a use there opened `HWPFishingMenu`, not the survival window. The statue now stands left of
+  the chapel's Pyre slot (`HWP::Town::ChapelPyreSpot`, moved to core from the campaign):
+  872,-232 with the Pyre unbuilt, 872,-160 once a built Pyre blocks that spot. Verified with
+  the Pyre unbuilt and built (`gl build pyre` + `townrefresh`) in probe run 053923: use opens
+  `WindowSurvivalMission` both times.
+- **Survival spawn events sit at k/(n+1) of the bar** (`SurvivalMission.OnEventActorDestroyed`):
+  with 4 events, at 20/40/60/80%. A kill past a checkpoint fires one event. Once the bar
+  passes the goal the boss spawns and no more events fire, so jumping the bar straight to
+  full skips all of them. `hwp wave goal 21` then one kill fired "Spawning Event 1" in
+  plan-t6b run 052403.

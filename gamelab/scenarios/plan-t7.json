@@ -384,26 +384,21 @@
    "name": "farm"
   },
   {
-   "do": "log_capture",
-   "pattern": "wave_statue\\.unit spawned at (?P<x>-?\\d+),(?P<y>-?\\d+)",
-   "save_as": "statue",
-   "timeout": 10
-  },
-  {
-   "do": "pilot",
-   "call": "path_to",
+   "do": "gl",
+   "verb": "near",
    "args": [
-    "{$statue.match.x}",
-    "{$statue.match.y}",
-    "40"
+    "6000",
+    "wave_statue"
    ],
-   "timeout": 60
+   "save_as": "statue"
   },
   {
    "do": "pilot",
    "call": "use",
-   "args": [],
-   "timeout": 10
+   "args": [
+    "{$statue.units.0.unit}"
+   ],
+   "timeout": 60
   },
   {
    "do": "sleep",

@@ -33,7 +33,7 @@
   "weapons",
   "weaponswap"
  ],
- "timeout": 700,
+ "timeout": 800,
  "steps": [
   {
    "do": "console",
@@ -129,6 +129,50 @@
   },
   {
    "do": "console",
+   "line": "hwp wave goal 21"
+  },
+  {
+   "do": "log_has",
+   "pattern": "survival bar at 21%",
+   "timeout": 5,
+   "name": "survival bar part-filled"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/undead/guard/guard_sentry.unit",
+    "60",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "cull",
+   "args": [
+    "mine"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "SurvivalMission Spawning Event 1",
+   "timeout": 10,
+   "name": "spawn event fires at a checkpoint"
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "shot",
+   "name": "arena-event"
+  },
+  {
+   "do": "console",
    "line": "hwp wave goal"
   },
   {
@@ -204,6 +248,104 @@
    "pattern": "Wave Arena: on, rank ([6-9]|\\d\\d)\\.",
    "timeout": 5,
    "name": "rank rose from 5"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp wave"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:wave\\] self-check done: .*rank ([6-9]|\\d\\d)\\b",
+   "timeout": 10,
+   "name": "rank kept in town"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "wave_statue\\.unit spawned at (?P<x>-?[\\d.]+),(?P<y>-?[\\d.]+)",
+   "save_as": "statue",
+   "timeout": 10
+  },
+  {
+   "do": "gl",
+   "verb": "teleport",
+   "args": [
+    "{$statue.match.x}",
+    "-100"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "wave_statue"
+   ],
+   "save_as": "stu"
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$stu.units.0.unit}"
+   ],
+   "timeout": 15
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "ui"
+  },
+  {
+   "do": "shot",
+   "name": "statue-new-rank"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
   },
   {
    "do": "log_clean"

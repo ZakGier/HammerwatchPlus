@@ -27,6 +27,32 @@ namespace HWP
 		bool g_awarded = false; // this floor's boss already counted
 		HWP::Town::Placeable@ g_statue;
 
+		// The statue stands beside the campaign portal: left of the chapel's
+		// Pyre slot (the portal stands on its campfire, or below a built Pyre),
+		// on the first of these spots with nothing in the way. Fixed offsets,
+		// so every machine agrees. Its old default, -1500,250, was in the
+		// trading post's plot on the beach, 64 px from a fishing spot, so a
+		// press of use there could open the fishing window instead.
+		const array<vec2> BESIDE_PYRE = { vec2(-112, 0), vec2(-112, 72), vec2(112, 72), vec2(-112, -72) };
+
+		bool LocateStatue(vec3 &out pos)
+		{
+			vec2 slot;
+			if (!HWP::Town::ChapelPyreSpot(slot))
+				return false;
+			for (uint i = 0; i < BESIDE_PYRE.length(); i++)
+			{
+				vec2 p = slot + BESIDE_PYRE[i];
+				if (g_scene.QueryRect(p, 24, 24, ~0, RaycastType::Any).length() == 0)
+				{
+					pos = xyz(p);
+					return true;
+				}
+			}
+			pos = xyz(slot + BESIDE_PYRE[0]);
+			return true;
+		}
+
 		void RefreshSettings()
 		{
 			g_enabled = HWP::Settings::GetBool("wave.enabled", true);
@@ -174,7 +200,9 @@ namespace HWP
 			if (args.length() >= 1 && args[0] == "goal")
 			{
 				// cheats, host: fill the survival bar, so the next kill brings the
-				// champion (tests reach the boss without ~15,000 XP of kills)
+				// champion (tests reach the boss without ~15,000 XP of kills);
+				// 'goal <percent>' fills it part way, so the next kill crosses a
+				// checkpoint and fires that spawn event instead
 				if (!HWP::Cheats::On())
 					return;
 				auto gm = cast<AGameplayGameMode>(g_gameMode);
@@ -186,8 +214,14 @@ namespace HWP
 					HWP::Commands::Reply("hwp wave goal: host only, in the arena, before the champion");
 					return;
 				}
-				sm.m_experienceC = sm.GetXPGoal();
-				HWP::Log("wave", "survival bar filled (" + sm.m_experienceC + " xp); the next kill brings the champion");
+				int pct = 100;
+				if (args.length() >= 2 && HWP::Commands::IsInteger(args[1]))
+					pct = clamp(int(parseInt(args[1])), 0, 100);
+				sm.m_experienceC = sm.GetXPGoal() * pct / 100;
+				if (pct >= 100)
+					HWP::Log("wave", "survival bar filled (" + sm.m_experienceC + " xp); the next kill brings the champion");
+				else
+					HWP::Log("wave", "survival bar at " + pct + "% (" + sm.m_experienceC + " xp)");
 				return;
 			}
 			if (args.length() >= 1 && args[0] == "rank")
@@ -361,11 +395,12 @@ namespace Modules
 			HWP::Settings::Sync("wave.");
 			HWP::Wave::RefreshSettings();
 			@HWP::Wave::g_statue = HWP::Town::Placeable("wave", "wave.statue", HWP::Wave::STATUE_UNIT, -1500, 250);
+			@HWP::Wave::g_statue.m_locate = HWP::Town::PlaceableLocate(HWP::Wave::LocateStatue);
 			HWP::Net::OnRequest(HWP::Wave::BOSSKILL, HWP::Net::RequestHandler(HWP::Wave::OnBossKill));
 			HWP::Net::OnRequest(HWP::Wave::START, HWP::Net::RequestHandler(HWP::Wave::OnStartRequest));
 			HWP::Net::OnEvent(HWP::Wave::AWARDED, HWP::Net::EventHandler(HWP::Wave::OnAwarded));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Wave::OnSettingChanged));
-			HWP::Commands::Register("wave", " wave arena status; 'here' moves the statue, 'rank <n>' sets the rank (host), 'goal' fills the arena's bar (cheats)", HWP::Commands::Handler(HWP::Wave::CmdWave));
+			HWP::Commands::Register("wave", " wave arena status; 'here' moves the statue, 'rank <n>' sets the rank (host), 'goal [percent]' fills the arena's bar (cheats)", HWP::Commands::Handler(HWP::Wave::CmdWave));
 			HWP::CheckUnits("wavemode", { HWP::Wave::STATUE_UNIT, HWP::Wave::BOSS_UNIT });
 		}
 

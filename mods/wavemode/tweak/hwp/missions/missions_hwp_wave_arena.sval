@@ -38,7 +38,9 @@
 					<s>tweak/missions/missions_heaven_actions.sval:heaven_spawn_event_action_spawn_wisps</s>
 				</array>
 
-				<string name="boss">actors/hwp/wave_boss.unit</string>
+				<!-- SurvivalMission loads this with GetPrefab: a spawner prefab (intro, boss, exit
+				     portal), never a .unit. tools/make_wave_boss_prefab.py writes it. -->
+				<string name="boss">prefabs/hwp/wave_boss_spawner.pfb</string>
 				<string name="stat">valor</string>
 				<string name="display-name">.hwp.wave.bar</string>
 			</dict>

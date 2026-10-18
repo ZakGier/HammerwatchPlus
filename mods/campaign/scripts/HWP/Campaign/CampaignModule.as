@@ -17,15 +17,11 @@ namespace HWP
 		const int FLOORS_PER_ACT = 3;
 		const int FLOORS = 18;
 
-		// The portal stands in the chapel courtyard on the unbuilt Pyre. Where
-		// TownRecord::SpawnTown puts it: the base town segment (set
-		// town_segment_base) places the chapel, any tier, at a grid cell of its
-		// placed-prefabs; the chapel places pyre_tier_0.pfb (or the built pyre)
-		// at its unbuilt-placed-prefabs cell; cells are 16 px. The campfire is
-		// a static in vanilla, which no scene query returns, so our copy of
-		// pyre_tier_0.pfb places it as a unit we can hide.
+		// The portal stands in the chapel courtyard on the unbuilt Pyre
+		// (HWP::Town::ChapelPyreSpot). The campfire is a static in vanilla,
+		// which no scene query returns, so our copy of pyre_tier_0.pfb places
+		// it as a unit we can hide.
 		const string CAMPFIRE_UNIT = "doodads/generic/campfire.unit";
-		const vec2 FIRE_IN_PYRE = vec2(8, 8);
 		const float MATCH = 12.0f;
 		// a built Pyre is a real building (shadow curses): the portal stands below it
 		const vec2 BELOW_PYRE = vec2(0, 72);
@@ -34,48 +30,6 @@ namespace HWP
 		bool g_checked = false;
 		HWP::Town::Placeable@ g_portal;
 		UnitPtr g_campfire;  // hidden while the portal stands on it (local, every machine)
-
-		bool IsBuildingPrefab(BuildingManagement::BuildingDef@ def, Prefab@ pfb)
-		{
-			if (def.m_unbuiltPrefab is pfb)
-				return true;
-			for (uint i = 0; i < def.m_variations.length(); i++)
-			{
-				if (def.m_variations[i].m_prefab is pfb)
-					return true;
-			}
-			return false;
-		}
-
-		// world position of the chapel's pyre slot (the campfire's spot)
-		bool PyreSpot(vec2 &out pos)
-		{
-			BuildingManagement::BuildingDef@ chapel = null;
-			for (uint i = 0; i < BuildingManagement::BuildingDef::Instances.length(); i++)
-			{
-				if (BuildingManagement::BuildingDef::Instances[i].m_id == "chapel")
-					@chapel = BuildingManagement::BuildingDef::Instances[i];
-			}
-			if (chapel is null || chapel.m_unbuiltPlacedPrefabs.length() == 0)
-				return false;
-			uint baseSet = HashString("town_segment_base");
-			for (uint i = 0; i < MissionPrefabDef::Instances.length(); i++)
-			{
-				auto seg = MissionPrefabDef::Instances[i];
-				if (seg.m_set != baseSet)
-					continue;
-				for (uint j = 0; j < seg.m_placedPrefabs.length(); j++)
-				{
-					auto pfb = Resources::GetPrefab(seg.m_placedPrefabs[j].m_id);
-					if (pfb is null || !IsBuildingPrefab(chapel, pfb))
-						continue;
-					ivec2 cell = seg.m_placedPrefabs[j].m_pos + seg.m_gridOffset + chapel.m_unbuiltPlacedPrefabs[0].m_pos;
-					pos = vec2(float(cell.x * 16), float(cell.y * 16)) + FIRE_IN_PYRE;
-					return true;
-				}
-			}
-			return false;
-		}
 
 		void ShowCampfire()
 		{
@@ -90,7 +44,7 @@ namespace HWP
 		{
 			ShowCampfire();
 			vec2 spot;
-			if (!PyreSpot(spot))
+			if (!HWP::Town::ChapelPyreSpot(spot))
 			{
 				HWP::LogError("campaign", "chapel pyre slot not found in the town layout, portal at the default spot");
 				return false;
