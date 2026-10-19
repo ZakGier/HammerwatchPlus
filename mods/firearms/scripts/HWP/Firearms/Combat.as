@@ -146,9 +146,13 @@ namespace HWP
 		// clip next runs dry or a reload isn't perfect. It replaces any bonus already held, so
 		// the clip never holds more than a perfect reload of an empty clip gives.
 		const int OVER_WINDOW = 200;
+		const uint RELOAD_ID = HashString("hwp_fs_reload");
 		const array<uint> PERFECT = {
 			HashString(BUFFS + "perfect_reload_1"), HashString(BUFFS + "perfect_reload_2"),
 			HashString(BUFFS + "perfect_reload_3") };
+		const array<uint> OVER_MARKERS = {
+			HashString(BUFFS + "over_reload_1"), HashString(BUFFS + "over_reload_2"),
+			HashString(BUFFS + "over_reload_3") };
 
 		class OverReloadState
 		{
@@ -165,7 +169,7 @@ namespace HWP
 			{
 				for (int i = 3; i >= 1; i--)
 				{
-					if (HasBuff(plr, "over_reload_" + i))
+					if (plr.HasBuff(OVER_MARKERS[i - 1]))
 						return i;
 				}
 				return 0;
@@ -197,11 +201,16 @@ namespace HWP
 				m_windowStart = half + randi(max(1, m_total - half - OVER_WINDOW));
 			}
 
-			void Perfect(PlayerBase@ plr, int level)
+			// A perfect reload finishes at once: the cast jumps to just short of its castpoint, so
+			// it lands next frame. Its cast list (Explosive Reload's throw first) then reads the
+			// clip as it was, and the top-up two frames on fills the raised max.
+			void Perfect(PlayerBase@ plr, Skills::PlayerSkillDirectional@ dir, int level)
 			{
 				auto def = LoadActorBuff(BUFFS + "perfect_reload_" + level);
 				if (def !is null)
 					plr.ApplyBuff(ActorBuff(plr, def, 1.0f, false));
+				if (dir !is null && dir.m_castingT >= 0 && dir.m_castingT < dir.m_castpoint - 1)
+					dir.m_castingT = dir.m_castpoint - 1;
 				m_topUp = 2;
 			}
 
@@ -213,18 +222,17 @@ namespace HWP
 
 			void Update(PlayerBase@ plr, int ms)
 			{
-				// a perfect is judged at the Reload cast's start, while the clip is still empty:
-				// it is not a dry clip until the top-up has run
-				auto clip = ActorBuffStackDef::Get(CLIP);
-				if (clip !is null && m_topUp == 0 && plr.GetStacks(clip) <= 0)
-					ClearPerfect(plr);
-
-				if (m_topUp > 0 && --m_topUp == 0 && clip !is null)
-					plr.AddStacks(plr, clip, 999);
+				// the clip's lose-effects remove the bonus when it runs dry (stacks_firearms.sval)
+				if (m_topUp > 0 && --m_topUp == 0)
+				{
+					auto clip = ActorBuffStackDef::Get(CLIP);
+					if (clip !is null)
+						plr.AddStacks(plr, clip, 999);
+				}
 
 				int level = Level(plr);
 				auto st = FindStack(plr, ActorBuffStackDef::Get(RELOADING));
-				auto reload = FindSkill(plr, HashString("hwp_fs_reload"));
+				auto reload = FindSkill(plr, RELOAD_ID);
 				auto dir = cast<Skills::PlayerSkillDirectional>(reload);
 				bool casting = reload !is null && Casting(reload);
 				bool wasActive = m_active;
@@ -257,7 +265,7 @@ namespace HWP
 					ClearPerfect(plr);
 					if (hit)
 					{
-						Perfect(plr, level);
+						Perfect(plr, dir, level);
 						HWP::Log("firearms", "over-reload: perfect at " + m_elapsed + "/" + m_total + " ms");
 					}
 					else if (wasActive)
@@ -284,8 +292,7 @@ namespace HWP
 						{
 							if (InWindow())
 							{
-								Perfect(plr, level);
-								dir.m_castingT = dir.m_castpoint - 1;  // the cast lands next frame
+								Perfect(plr, dir, level);
 								HWP::Log("firearms", "over-reload: manual perfect at " + m_elapsed + "/" + m_total + " ms");
 							}
 							else
@@ -332,7 +339,8 @@ namespace HWP
 		}
 
 		// Critical Aim's focus: +1 per gun round that hits an actor, all lost when a round
-		// hits nothing. The stack's max is 0 (so nothing happens) without the passive.
+		// misses: it runs out of range or hits a wall or other non-actor (HWPFirearmsShot).
+		// The stack's max is 0 (so nothing happens) without the passive.
 		void Focus(Actor@ owner, bool hit)
 		{
 			auto plr = cast<PlayerBase>(owner);
@@ -388,13 +396,25 @@ namespace Projectile
 				HWP::Firearms::Focus(m_owner, true);
 		}
 
+		// A miss is the range running out (OnMiss) or a wall (OnCollide: a hit on a unit that
+		// isn't an actor). A round destroyed any other way, such as blocked by a shield
+		// (NewProjectile.HitUnit destroys it without OnHit) or unloaded, neither gains nor loses.
+		void Missed()
+		{
+			if (m_local && !m_hit)
+				HWP::Firearms::Focus(m_owner, false);
+			m_hit = true;
+		}
+
+		void OnMiss(vec2 pos) override { Missed(); }
+		void OnCollide(UnitPtr unit, vec2 pos) override { Missed(); }
+
+		// No m_hit here: Destroy() runs OnDestroyed before OnMiss on a range-out
+		// (NewProjectile.Update: m_unit.Destroy(), then the OnMiss loop).
 		void OnDestroyed() override
 		{
 			if (m_headshot)
 				HWP::Firearms::g_headshot = false;
-			if (m_local && !m_hit)
-				HWP::Firearms::Focus(m_owner, false);
-			m_hit = true;
 		}
 	}
 }

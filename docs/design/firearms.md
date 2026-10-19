@@ -13,7 +13,7 @@ This file holds the settled decisions and where each one is built.
   counts down per shot (Warlock essence in reverse). At 0 an automatic reload starts. It
   takes 1.6 s, and a dodge restarts it. The Reload skill refills at once.
   Built: `mods/firearms/players/hwp/firearms/stacks_firearms.sval`, `skills/fs_reload.sval`.
-- **Magazines:** rifle 30, pistol 12, dual pistols 24 (12 each, one shared clip).
+- **Magazines:** rifle 30, pistol 10, dual pistols 20 (10 each, one shared clip).
   Built: marker buffs in `buffs_firearms.sval`, one per gun.
 - **Rifle:** two-handed, slow and heavy, pierces. Its secondary is a grenade launcher
   that costs mana and no rounds.

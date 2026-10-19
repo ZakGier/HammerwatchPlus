@@ -22,8 +22,8 @@
 	%endblock
 
 	%block GunMarker rifle 30
-	%block GunMarker glock_main 12
-	%block GunMarker glock_off 12
+	%block GunMarker glock_main 10
+	%block GunMarker glock_off 10
 	<!--
 		Orb markers. An orb's Modifiers::Buff re-applies its marker while the orb is held, so
 		data elsewhere can branch on "buff has" and the module script can read the level.
@@ -41,11 +41,13 @@
 	%block Marker over_reload_2
 	%block Marker over_reload_3
 
-	<!-- Over-Reload's perfect reload: extra rounds until the clip next runs dry or reloads -->
+	<!-- Over-Reload's perfect reload: extra rounds until the clip next runs dry (the clip's
+	     lose-effects) or a reload isn't perfect (Combat.as OverReloadState). A buff always
+	     counts down, so the duration is as long as an int allows: about 23 days. -->
 	%defblock OverReload NAME MAG
 	<dict name="%%NAME%%">
 		<bool name="debuff">false</bool>
-		<int name="duration">120000</int>
+		<int name="duration">2000000000</int>
 		<bool name="ignore-buff-scaling">true</bool>
 		<array name="modifiers">
 			<dict>

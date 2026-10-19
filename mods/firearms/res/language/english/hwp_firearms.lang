@@ -18,17 +18,9 @@
 
 	<string name="skills.hwp_firearms.snipe.name">Snipe</string>
 	<string name="skills.hwp_firearms.snipe.desc">Take aim and fire a single high-velocity round for %damage% of weapon damage with %armor-pen% armor penetration. Uses %rounds% rounds.</string>
-	<string name="skills.hwp_firearms.flashbang.name">Flashbang</string>
-	<string name="skills.hwp_firearms.flashbang.desc">Throw a flashbang that blinds enemies for %duration% and briefly stuns them.</string>
-	<string name="skills.hwp_firearms.decoy.name">Decoy</string>
-	<string name="skills.hwp_firearms.decoy.desc">Deploy a decoy with %health% health that draws enemy fire for %duration%.</string>
 
-	<string name="skills.hwp_firearms.tube.name">Grenade Launcher</string>
-	<string name="skills.hwp_firearms.tube.desc">Fire an explosive shell from the under-barrel launcher dealing %damage% of weapon damage in an area. Costs ammunition.</string>
 	<string name="skills.hwp_firearms.rpg.name">Rocket Launcher</string>
 	<string name="skills.hwp_firearms.rpg.desc">Fire a rocket that explodes for %damage% fire damage in a wide radius.</string>
-	<string name="skills.hwp_firearms.jetpack.name">Jetpack</string>
-	<string name="skills.hwp_firearms.jetpack.desc">Blast off to the target spot, scorching enemies where you land for %damage% fire damage.</string>
 
 	<string name="skills.hwp_firearms.burst.name">Burst Fire</string>
 	<string name="skills.hwp_firearms.burst.desc">Fire a tight burst of %number% rounds. Costs ammunition.</string>

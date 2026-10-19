@@ -2,7 +2,7 @@
 <!--
 	Critical Aim (Marksman passive). Each gun shot or Sniper Shot that hits an enemy adds a
 	focus stack (stacks_firearms.sval:focus); a shot that hits nothing loses them all
-	(Projectile::HWPFirearmsShot, FirearmsModule.as). Every stack is +1% crit chance and
+	(Projectile::HWPFirearmsShot, Combat.as). Every stack is +1% crit chance and
 	+1% crit damage, for weapons and skills alike; the level sets the most stacks.
 	focus has extrapolate-intensity, so the injected modifiers get the stack count as their
 	intensity and "0 0.01" is 1% a stack (ActorBuff.as GetIntensity), as ran_rhythm.sval.
@@ -151,7 +151,7 @@
 		</dict>
 
 		<!-- Elemental Exposure: an extra crit roll for each element the target is taking
-		     damage from (its fire, ice, lightning and poison pools; FirearmsModule.as). -->
+		     damage from (its fire, ice, lightning and poison pools; Combat.as). -->
 		<dict>
 			<string name="name">.skills.hwp_firearms.focus_exposure.name</string>
 			<string name="description">.skills.hwp_firearms.focus_exposure.desc</string>

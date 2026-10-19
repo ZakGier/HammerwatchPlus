@@ -119,7 +119,8 @@ namespace GameLab
 	// targets [radius] [filter]: who each CompositeActorBehavior within radius (default 400) of the
 	// player is after: its m_target (unit, name; 0 / "" for none) and m_targetAggro, the value a
 	// new SetTarget must reach to take over (CompositeActorBehavior.SetTarget; a taunt's aggro -1
-	// always does). Filter as near (behaviour or .unit path). Read-only, capped at TARGETS_CAP.
+	// always does). Filter as near (behaviour or .unit path). Read-only, capped at TARGETS_CAP:
+	// count is every match, truncated the matches left out.
 	void VerbTargets(const string &in id, array<string>@ args)
 	{
 		auto plr = GetLocalPlayer();
@@ -133,7 +134,8 @@ namespace GameLab
 		vec2 center = xy(plr.m_unit.GetPosition());
 		auto units = g_scene.FetchAllUnits(~0, center, radius);
 		array<string> items;
-		for (uint i = 0; i < units.length() && items.length() < TARGETS_CAP; i++)
+		uint matched = 0;
+		for (uint i = 0; i < units.length(); i++)
 		{
 			UnitPtr u = units[i];
 			if (!u.IsValid() || u.IsDestroyed())
@@ -145,6 +147,8 @@ namespace GameLab
 			if (dist(center, xy(pos)) > radius)
 				continue;
 			if (filter != "" && Reflect::GetTypeName(a).findFirst(filter) < 0 && u.GetDebugName().findFirst(filter) < 0)
+				continue;
+			if (++matched > TARGETS_CAP)
 				continue;
 			int tid = 0;
 			string tname = "";
@@ -158,7 +162,8 @@ namespace GameLab
 				.Int("target", tid).Str("targetName", tname).Num("aggro", a.m_targetAggro);
 			items.insertLast(e.Close());
 		}
-		Emit(Reply(id, true).Int("count", items.length()).Raw("units", RawArray(items)));
+		int truncated = matched > TARGETS_CAP ? int(matched - TARGETS_CAP) : 0;
+		Emit(Reply(id, true).Int("count", matched).Int("truncated", truncated).Raw("units", RawArray(items)));
 	}
 
 	// orb <orbId> [times|down]: PlayerRecord.SkillTempUp on an orb (a skill's modifier-skills

@@ -1418,7 +1418,7 @@ class Checks:
         self.to_town()
 
     def firearms_guns(self):
-        """firearms s3 (guns): magazines add up (pistol 12, dual 24, rifle 30); a pistol with a
+        """firearms s3 (guns): magazines add up (pistol 10, dual 20, rifle 30); a pistol with a
         shield fires 2 rounds a left-click cycle; dual pistols fire 2 a left-click cycle (one
         from each) and 2 at once on right click, which won't fire on 1 round; an off-hand
         pistol with a sword fires 1. The shield and sword need STR the class
@@ -1446,7 +1446,7 @@ class Checks:
         eq = loadout("hwp_glock_mh_01", "offhand_shield_01")
         mx = self.clip_max()
         a = [self.press("main") for _ in range(2)]
-        self.flag("pistol_shield_mag_12", mx == 12, f"equip {eq}, clip max {mx}")
+        self.flag("pistol_shield_mag_10", mx == 10, f"equip {eq}, clip max {mx}")
         self.flag("pistol_shield_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
 
         eq = loadout("hwp_glock_mh_01", "hwp_glock_oh_01")
@@ -1457,7 +1457,7 @@ class Checks:
         if left > 1:
             self.gl("givestacks", self.CLIP, -(left - 1))
         one = self.press("off")
-        self.flag("dual_mag_24", mx == 24, f"equip {eq}, clip max {mx}")
+        self.flag("dual_mag_20", mx == 20, f"equip {eq}, clip max {mx}")
         self.flag("dual_left_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
         self.flag("dual_right_two_at_once", all(c0 - c1 == 2 for c0, c1 in b), f"{b}")
         self.flag("dual_right_needs_two", one == (1, 1), f"{one}")
@@ -1465,7 +1465,7 @@ class Checks:
         eq = loadout("mainhand_longsword_01", "hwp_glock_oh_01")
         mx = self.clip_max()
         c = [self.press("off") for _ in range(2)]
-        self.flag("offhand_pistol_mag_12", mx == 12, f"equip {eq}, clip max {mx}")
+        self.flag("offhand_pistol_mag_10", mx == 10, f"equip {eq}, clip max {mx}")
         self.flag("offhand_pistol_one_round", all(c0 - c1 == 1 for c0, c1 in c), f"{c}")
 
         eq = loadout("hwp_rifle_01")

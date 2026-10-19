@@ -7,7 +7,7 @@ in firearms_base_orbs. s2 (the clip) and the guns are plan_checks.firearms_ammo 
 style as plan_checks: each section flags booleans, the scenario's expect asserts them,
 measured values go in the notes.
 
-Targeted skills (frag, flashbang, stun grenade, jetpack: TargetingMode::TargetAOE) are cast
+Targeted skills (frag, Assault's stun grenade: TargetingMode::TargetAOE) are cast
 the way a player casts them: the skill button opens the targeting circle and the main-hand
 click casts at the cursor (PlayerTargetingHelper.Update; with g_quickcast on, the button's
 release). A posted mouse never reaches the game (RE_NOTES 2026-10-18), so `gl cursor dx dy`
@@ -67,6 +67,8 @@ def tooltip_cost(sval, level=1):
     if not m:
         return 0
     vals = re.findall(r"<s>([^<]*)</s>", m.group(1))[1:]  # the first is the label string
+    if not vals:
+        return 0
     return int(vals[min(level, len(vals)) - 1])
 
 
@@ -353,7 +355,7 @@ class Checks(Base):
         return pref, r
 
     def direction_test(self, tag, sid, sval, d, dist=80):
-        """A Direction skill (snipe, tube, rpg, burst) fired at a dummy `dist` along d: it casts
+        """A Direction skill (snipe, rpg, burst) fired at a dummy `dist` along d: it casts
         (its cooldown starts, the dummy loses HP) and costs the tooltip's mana."""
         self.clear_dummies()
         d, ray = self.clear_dir(d, dist)
@@ -372,8 +374,8 @@ class Checks(Base):
 
     # --- sections
     def firearms_frag(self):
-        """firearms s3: Frag Grenade (Skill2, 16-170 range, 56 radius) thrown at two spots 110
-        out, one dummy at each: the aimed one loses HP, the other doesn't, and the damage number
+        """firearms s3: Frag Grenade (Skill2, 16-170 range, 128 radius) thrown at two spots 110
+        out, as far apart as the open directions allow, one dummy at each: the aimed one loses HP, the other doesn't, and the damage number
         floats over the hit one."""
         self.gl("char", "hwp_firearms", "LabFrag")
         self.wait_phase("town", 60)
@@ -383,7 +385,11 @@ class Checks(Base):
             return
         dirs = self.open_dirs(110)
         a = dirs[0]
-        b = next((v for v in dirs[1:] if v[0] * a[0] + v[1] * a[1] < 0.1), (-a[1], a[0]))  # >= 84 deg: the spots 150 apart, the blast 56
+        # the open direction furthest round from a: at 84 deg the spots are only 147 apart for a
+        # 128 blast (grenade.inc), at 180 deg 220
+        b = min(dirs[1:], key=lambda v: v[0] * a[0] + v[1] * a[1], default=None)
+        if b is None or b[0] * a[0] + b[1] * a[1] >= 0.1:
+            b = (-a[1], a[0])
         rng = (16, 170)
         spots = [(a[0] * 110, a[1] * 110), (b[0] * 110, b[1] * 110)]
         eff = []
@@ -501,6 +507,30 @@ class Checks(Base):
         if wait:
             self.ready(sid)
         return self.gl("input", ms, 0, 0, d[0], d[1], "skill3")
+
+    def log_pos(self):
+        """The game log's size in bytes: a mark for log_from."""
+        p = self.g.log_path
+        return p.stat().st_size if p.exists() else 0
+
+    def log_from(self, pos):
+        """The game log from byte pos on (not the whole file: it is MBs by now)."""
+        p = self.g.log_path
+        if not p.exists():
+            return ""
+        with open(p, "rb") as f:
+            f.seek(pos)
+            return f.read().decode("utf-8", errors="replace")
+
+    def wait_log(self, pattern, pos, secs, poll=0.02):
+        """The first match of pattern logged after pos, polled every poll s, or None after secs.
+        The poll sleeps, so the bot doesn't take CPU from the game it is timing."""
+        end = time.time() + secs
+        while True:
+            m = re.search(pattern, self.log_from(pos))
+            if m or time.time() >= end:
+                return m
+            time.sleep(poll)
 
     def ready(self, sid, secs=20):
         end = time.time() + secs
@@ -681,10 +711,10 @@ class Checks(Base):
         self.gl("givestacks", self.CLIP, 999)
         rounds = self.clip()
         hp0 = self.hps([du])[du]
-        mark = len(self.g.read_log())
+        mark = self.log_pos()
         self.gl("input", hold("fs_reload.sval"), 0, 0, d1[0], d1[1], "skill1")
         texts, _, hp1 = self.dummy_watch(du, 2.5)
-        log = self.g.read_log()[mark:]
+        log = self.log_from(mark)
         first = re.search(r"explosive reload: (\d+) rounds at \d+, two magazines \(scene (\d+) ms\)", log)
         second = re.search(r"explosive reload: second magazine, (\d+) rounds \(scene (\d+) ms\)", log)
         gap = int(second[2]) - int(first[2]) if first and second else None
@@ -698,7 +728,6 @@ class Checks(Base):
         self.g.console("dbg_cht_ignore_equipment_requirements 0")
         self.orb_off("hwp_fs_reload_explosive")
         self.clear_dummies()
-        self.clear_dummies()
 
         base = self.refill_after_empty()
         ok, lvl = self.orb("hwp_fs_reload_dodge")
@@ -708,32 +737,34 @@ class Checks(Base):
         self.orb_off("hwp_fs_reload_dodge")
 
         ok, lvl = self.orb("hwp_fs_reload_over")
+        # with Explosive Reload too: a perfect on the automatic reload must not throw a
+        # magazine (the clip was empty; the top-up comes after the cast lands)
+        self.orb("hwp_fs_reload_explosive")
         mx0 = self.clip_max()
-        lag, tries, perfect = 0.0, [], False
+        lag, tries, perfect, thrown = 0.0, [], False, None
         for _ in range(5):
             self.ready("hwp_fs_reload")
-            mark = len(self.g.read_log())
+            mark = self.log_pos()
             self.gl("givestacks", self.CLIP, -999)
             t0 = time.time()
-            win = None
-            while time.time() - t0 < 1.0 and not win:
-                win = re.search(r"over-reload: window (\d+)-(\d+) of (\d+) ms, (\d+) ms in", self.g.read_log()[mark:])
+            win = self.wait_log(r"over-reload: window (\d+)-(\d+) of (\d+) ms", mark, 1.0)
             if not win:
                 tries.append("no window logged")
                 break
-            a, b, total, at = (int(x) for x in win.groups())
+            a, b, _ = (int(x) for x in win.groups())
             # t0 is about the reload's start; press so the game sees it mid-window, less the
             # lateness the last miss measured
-            time.sleep(max(0.0, (a + b) / 2000 - at / 1000 - (time.time() - t0) - lag))
+            time.sleep(max(0.0, t0 + (a + b) / 2000 - lag - time.time()))
             self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
             time.sleep(0.4)
-            log = self.g.read_log()[mark:]
+            log = self.log_from(mark)
             hit = re.search(r"over-reload: perfect at (\d+)", log)
             miss = re.search(r"over-reload: missed at (\d+)", log)
             got = int((hit or miss).group(1)) if (hit or miss) else None
             tries.append((a, b, got))
             if hit:
                 perfect = True
+                thrown = re.findall(r"explosive reload: .*", log)
                 break
             if got is not None:
                 lag += (got - (a + b) / 2) / 1000
@@ -742,6 +773,9 @@ class Checks(Base):
         c1, mx1 = self.clip(), self.clip_max()
         self.flag("over_reload_perfect", ok and perfect and mx1 == mx0 + 6 and c1 == mx1,
                   f"tries (window start, end, pressed at) {tries}; clip {c1}/{mx1}, max before {mx0}")
+        self.flag("over_reload_no_free_mag", perfect and thrown == [],
+                  f"magazines thrown by the perfect auto-reload with Explosive Reload: {thrown}")
+        self.orb_off("hwp_fs_reload_explosive")
         self.gl("givestacks", self.CLIP, -999)
         time.sleep(2.6)  # the automatic reload
         c2, mx2 = self.clip(), self.clip_max()
@@ -753,12 +787,10 @@ class Checks(Base):
             self.ready("hwp_fs_reload")
             self.gl("givestacks", self.CLIP, 999)
             self.gl("givestacks", self.CLIP, -10)
-            mark = len(self.g.read_log())
+            mark = self.log_pos()
             t0 = time.time()
             self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
-            win = None
-            while time.time() - t0 < 0.5 and not win:
-                win = re.search(r"over-reload: manual window (\d+)-(\d+) of (\d+) ms", self.g.read_log()[mark:])
+            win = self.wait_log(r"over-reload: manual window (\d+)-(\d+) of (\d+) ms", mark, 0.5)
             if not win:
                 return None, "no window logged"
             a, b, _ = (int(x) for x in win.groups())
@@ -767,7 +799,7 @@ class Checks(Base):
                 time.sleep(max(0.0, t0 + (a + b) / 2000 - lag - time.time()))
                 self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
             time.sleep(0.8)
-            log = self.g.read_log()[mark:]
+            log = self.log_from(mark)
             hit = re.search(r"over-reload: manual perfect at (\d+)", log)
             miss = re.search(r"over-reload: manual missed at (\d+)", log)
             got = int((hit or miss).group(1)) if (hit or miss) else None

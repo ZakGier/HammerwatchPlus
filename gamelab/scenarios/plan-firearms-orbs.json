@@ -65,7 +65,8 @@
     "explosive_reload_dual_in_turn": true,
     "over_reload_manual_perfect": true,
     "over_reload_capped": true,
-    "over_reload_plain_clears": true
+    "over_reload_plain_clears": true,
+    "over_reload_no_free_mag": true
    }
   },
   {

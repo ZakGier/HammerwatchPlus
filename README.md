@@ -29,7 +29,7 @@ in a lobby should run the same version of the same modules.
 | `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
 | `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (12 each, 24 dual). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault as first built. Plan: `docs/design/firearms.md`. |
+| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (10 each, 20 dual). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault as first built. Plan: `docs/design/firearms.md`. |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
@@ -82,7 +82,7 @@ pet scenarios found three more bugs, now fixed: a pet could stall after waiting 
 puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wild plot
 nearby kept Morale off.
 The Firearms Specialist's clip, reload and guns pass `plan-t14` and `plan-firearms-guns`
-(magazines 30/12/24, rounds per click for each loadout, dodge-interrupted reload). Its class
+(magazines 30/10/20, rounds per click for each loadout, dodge-interrupted reload). Its class
 planner also drafts a 4th spec and new orbs for every vanilla class (`docs/design/firearms.md`).
 Its Marksman and Demolitionist specializations and the base kit's orbs followed (2026-10-19),
 checked by `plan-firearms-a`, `-b` and `-orbs` through a new `gl orb` verb. Placeholder

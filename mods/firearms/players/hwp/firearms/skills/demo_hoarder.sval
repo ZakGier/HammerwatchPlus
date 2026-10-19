@@ -3,7 +3,7 @@
 	Ordinance Hoarder (Demolitionist passive). The Frag Grenade and the Rocket Launcher cool
 	down faster (cooldown-mul 1/1.1 .. 1/1.5) and store charges while they sit ready
 	(stacks_firearms.sval grenade_charges / rocket_charges, max raised here). The module
-	script (FirearmsModule.as Hoarder) adds a charge for every cooldown's worth of time the
+	script (Combat.as HoardedSkill) adds a charge for every cooldown's worth of time the
 	skill waits ready, and spends one to clear the cooldown right after a cast.
 -->
 <dict>

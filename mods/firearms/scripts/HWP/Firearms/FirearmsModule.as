@@ -19,7 +19,6 @@ namespace HWP
 			"players/hwp/firearms/projectiles/glock_round_off.unit",
 			"players/hwp/firearms/projectiles/bullet_snipe.unit",
 			"players/hwp/firearms/projectiles/grenade_frag.unit",
-			"players/hwp/firearms/projectiles/grenade_flash.unit",
 			"players/hwp/firearms/projectiles/grenade_stun.unit",
 			"players/hwp/firearms/projectiles/grenade_frag_stun.unit",
 			"players/hwp/firearms/projectiles/grenade_stun_flash.unit",
@@ -28,13 +27,11 @@ namespace HWP
 			"players/hwp/firearms/projectiles/grenade_gas.unit",
 			"players/hwp/firearms/projectiles/grenade_gas_cloud.unit",
 			"players/hwp/firearms/projectiles/reload_mag.unit",
-			"players/hwp/firearms/projectiles/tube_shell.unit",
 			"players/hwp/firearms/projectiles/rocket.unit",
 			"players/hwp/firearms/projectiles/rocket_fatboy.unit",
 			"players/hwp/firearms/projectiles/rocket_magic.unit",
 			"players/hwp/firearms/projectiles/rocket_magic_burn.unit",
-			"players/hwp/firearms/projectiles/rocket_quad.unit",
-			"players/hwp/firearms/units/decoy.unit" };
+			"players/hwp/firearms/projectiles/rocket_quad.unit" };
 
 		bool g_checked = false;
 

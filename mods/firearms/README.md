@@ -21,11 +21,11 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   no rounds. Dex-gated, crossbow anim set and model, tag `hwp_firearm`. The t1
   rifle is the starting weapon and sits in the armory pool.
 - **Pistols:** `hwp_glock_mh_01/02/03` (main hand, wand anim set) and
-  `hwp_glock_oh_01/02/03` (off hand, hand-crossbow anim), 12 rounds each.
+  `hwp_glock_oh_01/02/03` (off hand, hand-crossbow anim), 10 rounds each.
   Each grants a marker buff the other pistol's attack checks for.
   - A main-hand pistol with any other off hand fires one accurate round twice
     a left-click cycle.
-  - Dual pistols share a 24-round clip. Left click alternates muzzles with a
+  - Dual pistols share a 20-round clip. Left click alternates muzzles with a
     blooming spread; right click fires both at once with a wide spread (2
     rounds, not on 1).
   - An off-hand pistol with another main-hand weapon fires one round on right
@@ -81,7 +81,7 @@ the 4th (turret) doctrine and the remaining orbs. See `docs/design/firearms.md`.
    spawn fill, 1 round and no mana per shot, the launcher's mana cost, the empty
    clip (Reloading, won't fire, refills), the dodge restart and Reload.
 4. Guns: `python -m gamelab run plan-firearms-guns --mode lab`. Covers
-   magazines 12/24/30 and the rounds each loadout's clicks take.
+   magazines 10/20/30 and the rounds each loadout's clicks take.
 5. Frag grenade lands where aimed and explodes; damage numbers appear.
 6. Specializations and orbs: `plan-firearms-a` (Frag, the picker, Marksman),
    `plan-firearms-b` (Demolitionist, Assault) and `plan-firearms-orbs` (the
@@ -92,5 +92,5 @@ the 4th (turret) doctrine and the remaining orbs. See `docs/design/firearms.md`.
    Reload again on the mark: still +6, not +12.
 8. Ordinance Hoarder by hand: wait 8 s with the rocket ready, fire twice in a
    row.
-9. Co-op: a client sees the host's bullets, grenades and decoy, and the
+9. Co-op: a client sees the host's bullets, grenades and rockets, and the
    other way round.

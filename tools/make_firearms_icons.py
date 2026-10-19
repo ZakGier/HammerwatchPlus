@@ -121,14 +121,10 @@ ICONS = {
     "rocket_charges_hud": ("skills", 8, 2, "fire", [L("rocket"), badge("b_plus")]),
     "clip_hud": ("skills", 9, 2, "phys", [L("bullet", 4, 7, rot=90), L("bullet", 10, 7, rot=90),
                                           L("bullet", 16, 7, rot=90)]),
-    # row 3: Assault (as drawn), skills out of the class, the grenade launcher, reloading
+    # row 3: Assault (as drawn), the grenade launcher, reloading
     "burst": ("skills", 0, 3, None, []),
     "adrenaline": ("skills", 1, 3, None, []),
     "assault_stun": ("skills", 2, 3, None, []),
-    "tube": ("skills", 3, 3, None, []),
-    "jetpack": ("skills", 4, 3, None, []),
-    "flashbang": ("skills", 5, 3, None, []),
-    "decoy": ("skills", 6, 3, None, []),
     "gl_attack": ("skills", 7, 3, "phys", [L("rifle", 2, 6), badge("b_grenade")]),
     "reloading_hud": ("skills", 8, 3, "arcane", [L("b_reload", scale=2)]),
     # items: the guns' inventory icons, one per item tier

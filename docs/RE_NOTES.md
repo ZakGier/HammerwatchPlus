@@ -1202,7 +1202,8 @@ Checks: `plan-firearms-a` 20261019-020024, `-b` 20261019-015752, `-orbs` 2026101
   - Magic Missile reuses the ice and fire effects; there is no blue-fire asset.
   - Dual pistols throw the two magazines one after the other (owner, 2026-10-19), half
     the rounds each.
-  - The old doctrine skill files (flashbang, decoy, tube, jetpack) stay on disk, unlisted.
+  - The old doctrine skill files (flashbang, decoy, tube, jetpack) stayed on disk, unlisted.
+    Removed after the review below.
 - **Assumed, not measured:** how Focus and Hoarder charges look on the HUD, and how the
   Over-Reload ring reads at a glance (only its log lines were checked).
 
@@ -1230,3 +1231,37 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
 - Runs, all PASS: plan-firearms-orbs 20261019-091445 (new flags
   `explosive_reload_dual_in_turn`, `over_reload_manual_perfect`, `over_reload_capped`,
   `over_reload_plain_clears`), plan-t14 20261019-091715.
+- **Pistol magazine 12 → 10** (owner, 2026-10-19): `GunMarker glock_main/glock_off 10` in
+  buffs_firearms.sval, so dual pistols share 20. plan-firearms-guns 20261019-095245 PASS
+  (clip max 10 / 20 / 10, rifle 30); the planner's weapon records are updated to match.
+
+### Code review fixes (2026-10-19, /code-review high on all the firearms work)
+- **Over-Reload gave Explosive Reload a free magazine.** A perfect on the automatic reload
+  topped the clip up two frames after the Reload cast started, so the magazine thrown at
+  the castpoint held a full clip. Now every perfect jumps the cast to its castpoint
+  (`OverReloadState.Perfect`), so the cast's list (the throw first) reads the clip before the
+  top-up. New flag `over_reload_no_free_mag`: no magazine thrown by a perfect auto-reload
+  with Explosive Reload on (plan-firearms-orbs 20261019-102349).
+- **Critical Aim lost Focus on a blocked round.** `NewProjectile.HitUnit` destroys a round an
+  actor's `BlockProjectile` stops without `OnHit`, so counting every hitless `OnDestroyed` as
+  a miss wiped Focus. Focus is now lost only on `OnMiss` (range out) and `OnCollide` (a
+  non-actor). **Ordering found in the fix:** a range-out runs `m_unit.Destroy()`, and so
+  `OnDestroyed`, *before* the `OnMiss` loop (NewProjectile.Update), so `OnDestroyed` must not
+  mark the round done. The first try did, and `focus_lost_on_miss` failed (run
+  20261019-101136); fixed, PASS 20261019-101525.
+- **The Over-Reload bonus expired after 120 s.** A buff always counts down (ActorBuff.Update
+  `m_duration -= dt`), so `perfect_reload_N` now lasts 2 000 000 000 ms (about 23 days).
+- The per-frame ClearPerfect on an empty clip is gone: the clip's lose-effects already remove
+  the bonus (`over_reload_lost_when_dry` still PASS). Marker and skill ids are hashed once.
+- `gl targets` reports `count` (all matches) and `truncated`, as CLAUDE.md asks.
+- Bot: log waits read from a byte offset and sleep 20 ms between polls instead of re-reading
+  the whole log in a busy loop; the automatic-reload press no longer subtracts the elapsed
+  time twice; the frag test picks its second spot as far round as the open directions allow
+  (the blast is 128, not 56); a duplicate dummy clear and a crash on an empty cost list fixed.
+- **Removed** the unused Flashbang, Decoy, Jetpack and Grenade Tube skills, their units
+  (`decoy.unit`, `grenade_flash.unit`, `tube_shell.unit`), lang strings and icon entries;
+  `info.xml` describes the current specs. They remain in git history (a8d9803).
+- Not changed: stack defs are still looked up by path each frame (cheap next to the buff
+  scan that was removed).
+- Runs, all PASS: mod-firearms 20261019-101106, plan-firearms-a 20261019-101525, -b
+  20261019-102052, -orbs 20261019-102349, -guns 20261019-102615, plan-t14 20261019-102717.

@@ -134,7 +134,8 @@
 
 	<!--
 		Critical Aim (sniper_focus.sval): one stack per gun shot that hits, all lost on a shot
-		that hits nothing (Projectile::HWPFirearmsShot, FirearmsModule.as). max is 0 here; the
+		that misses: out of range or into a wall. A blocked shot changes nothing
+		(Projectile::HWPFirearmsShot, Combat.as). max is 0 here; the
 		passive raises it. The crit chance and damage per stack are injected by the passive
 		(InjectModifiersIntoStack), as Ranger's Rhythm does; intensity is the stack count.
 	-->
