@@ -1,7 +1,7 @@
 %include "players/skills_cost.inc"
 <!--
-	My Turret! (Engineer passive). While you stand within 160 px (10 m, at 16 px a metre:
-	assumed) of your turret it gains turret-repair HP a second and deals turret-dmg more
+	My Turret! (Engineer passive). While you stand within 60 px (10 m: the game shows 6 px a metre,
+	Tweak::PixelsPerMeter) of your turret it gains turret-repair HP a second and deals turret-dmg more
 	damage, and glows (buffs_firearms.sval turret_glow). All custom stats the turret's
 	script reads (Turret.as):
 	- hwp-turret-repair / hwp-turret-dmg: the passive.

@@ -1,0 +1,30 @@
+{
+ "name": "mod-core-pickup",
+ "about": "Core's pickup-first order (mods/core/scripts/HWP/Core/PickupFirst.as): with a Skill Trainer and a dropped rifle both at the player's feet, the top usable is the item and Use picks it up instead of opening the trainer. Also runs the firearms demo's one-line setup (gl setup) and checks every line of it succeeded.",
+ "fixture": "town-paladin",
+ "mods": ["core", "firearms"],
+ "timeout": 180,
+ "steps": [
+  {"do": "gl", "verb": "char", "args": ["hwp_firearms", "Gunner"]},
+  {"do": "wait_phase", "phase": "town", "timeout": 60},
+  {"do": "sleep", "seconds": 2},
+  {"do": "gl", "verb": "setup", "args": ["gamelab/setup_demo_firearms.sval"], "expect": {"failed": 0, "n": 29}, "name": "demo setup, every line ok"},
+  {"do": "gl", "verb": "state", "expect": {"player.level": 20}, "name": "levelup 20"},
+  {"do": "gl", "verb": "spawn", "args": ["actors/npcs/town/npc_skill_trainer.unit", "0", "0"]},
+  {"do": "gl", "verb": "dropitem", "args": ["hwp_rifle_02", "common", "0", "0"]},
+  {"do": "sleep", "seconds": 1},
+  {"do": "gl", "verb": "input", "args": ["200", "0", "1", "0", "1"], "name": "step off: a unit spawned on a standing player is not a usable until a collision starts (diag-usables 20261019-185932)"},
+  {"do": "sleep", "seconds": 0.5},
+  {"do": "gl", "verb": "input", "args": ["200", "0", "-1", "0", "1"], "name": "and back on"},
+  {"do": "sleep", "seconds": 1},
+  {"do": "gl", "verb": "usables", "save_as": "usables"},
+  {"do": "log_has", "pattern": "\\[HWP:core\\] pickup first", "timeout": 5},
+  {"do": "gl", "verb": "usables", "expect": {"usables.0.top": true, "usables.0.unit.name": "items/base.unit"}, "name": "the item is on top"},
+  {"do": "gl", "verb": "input", "args": ["150", "0", "0", "0", "1", "use"]},
+  {"do": "sleep", "seconds": 1},
+  {"do": "gl", "verb": "state", "expect": {"window": ""}, "name": "no vendor window"},
+  {"do": "gl", "verb": "bagitems", "save_as": "bag"},
+  {"do": "shot", "name": "after_use"},
+  {"do": "log_clean"}
+ ]
+}

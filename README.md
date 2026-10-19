@@ -29,7 +29,7 @@ in a lobby should run the same version of the same modules.
 | `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
 | `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (10 each, 20 dual). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault (Double Barrel Burst, Adrenaline) and Engineer (Deploy Turret, My Turret!) specializations with their orbs. Plan: `docs/design/firearms.md`. |
+| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); the Reload skill refills it at the end of a cast as long as its recharge (2.0-1.2 s), which a dodge cancels and a full clip refuses, and shows the same icon sweep; mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and one pistol item that fits either hand (10 each, 20 dual; rounds leave each gun, 6 px either side). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault (Double Barrel Burst, Adrenaline) and Engineer (Deploy Turret, My Turret!) specializations with their orbs. Plan: `docs/design/firearms.md`. |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
@@ -94,7 +94,13 @@ trigger pull on an empty clip reloads (`mod-firearms-clip`). Assault's old Stun 
 firearms sound` auditions firing sounds by ear; the guns, rockets and reload use the sounds
 picked that way (reload: unlock, then lever on, or lever off on a perfect). GameLab is pinned to build
 25932569 since 2026-10-19. The Engineer (a turret that wears down and that you repair and boost by standing near it)
-and Assault's checks pass `plan-firearms-b`, and the pistol arm stays raised between shots for 2 s (`plan-firearms-arm`).
+and Assault's checks pass `plan-firearms-b`; after a rifle or pistol shot the arm stays raised until 1 s without a shot (`plan-firearms-arm`).
+The Reload cast is now the whole 2.0-1.2 s recharge (a dodge cancels it, a full clip refuses it) and shows the
+automatic reload's icon sweep; one pistol item fits either hand, rounds leave each gun 6 px out, and a held trigger
+no longer says "cant" (`mod-firearms-pistols`). The demo has a Skill Trainer, training dummies and a 2560x1440 window, and its whole setup is one
+`gl setup` line. Core now puts a dropped item ahead of a vendor for the use key (`mod-core-pickup`).
+Rounds now leave the gun's tip (rifle 22 px out, pistols 12), and Snipe costs mana only and shows a red laser dot while it charges (`look-firearms-tips`).
+Dual pistols fire every 300 ms with even gaps, My Turret! boosts only within 10 m (60 px: the game's metre is 6 px), Double Barrel Burst hits x1.5-3.5 up close, and Ordinance Hoarder's icon counts every use ready while the slot's ring shows the next charge banking (`look-firearms-batch`, `plan-firearms-b`). The demo has an orb that stays after each pick, its trainer sells every tier, and it stays open four hours, closing early when the game does.
 A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines

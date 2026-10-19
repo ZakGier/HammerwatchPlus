@@ -62,6 +62,7 @@
     "quad_four_missiles": true,
     "hoarder_passive": true,
     "hoarder_banks_charge": true,
+    "hoarder_icon_counts_all": true,
     "hoarder_spends_charge": true,
     "demo_own_buttons": true
    }
@@ -109,6 +110,7 @@
     "myturret_boosts": true,
     "belt_feed_chance": true,
     "myturret_repairs": true,
+    "myturret_only_near": true,
     "myturret_glows": true,
     "engineer_own_buttons": true
    }

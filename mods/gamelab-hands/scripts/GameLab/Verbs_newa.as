@@ -64,8 +64,43 @@ namespace GameLab
 		Emit(Reply(id, true).Str("name", tab.m_name).Int("removed", removed));
 	}
 
+	// dropitem <baseItemId> <quality> [dx dy]: Equipment::Generator, then Item::DropItem at the player + (dx, dy), as cht_spawn_specific_equipment does (Console/Cheats.as:487-511). That cheat runs in the menu's script context, which has no player and no mod items ("No BaseItem" for every hwp_ item, a null pointer for a vanilla one), so the verb runs it in the game's context
+	void VerbDropItem(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 2)
+		{
+			Fail(id, "usage: dropitem <baseItemId> <quality> [dx dy]");
+			return;
+		}
+		auto rec = GetLocalPlayerRecord();
+		if (rec is null || rec.actor is null)
+		{
+			Fail(id, "no local player");
+			return;
+		}
+		auto baseItem = Equipment::BaseItem::Get(args[0]);
+		if (baseItem is null)
+		{
+			Fail(id, "no base item '" + args[0] + "'");
+			return;
+		}
+		Equipment::Generator gen;
+		gen.m_ilvl = rec.level;
+		gen.m_qualities = Item::ParseQuality(args[1]);
+		auto item = gen.GenerateItem(baseItem);
+		if (item is null)
+		{
+			Fail(id, "GenerateItem returned null for " + args[0] + " " + args[1]);
+			return;
+		}
+		vec2 off = args.length() > 3 ? vec2(parseFloat(args[2]), parseFloat(args[3])) : vec2(0, 25);
+		Item::DropItem(item, rec.actor.m_unit.GetPosition() + xyz(off), 1, true, null);
+		Emit(Reply(id, true).Str("item", args[0]).Int("ilvl", gen.m_ilvl));
+	}
+
 	void Register_newa()
 	{
+		RegisterVerb("dropitem", "<baseItemId> <quality> [dx dy]", Verb(VerbDropItem));
 		RegisterVerb("stashput", "<tab> <baseItemId> <quality> [ilvl]", Verb(VerbStashPut));
 		RegisterVerb("stashclear", "<tab>", Verb(VerbStashClear));
 	}

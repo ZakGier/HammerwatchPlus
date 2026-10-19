@@ -1,6 +1,6 @@
 {
  "name": "demo-firearms",
- "about": "Hands-on demo, run in watch mode: a fresh level 21 Firearms Specialist in the lab town with 60 skill points, the Subclass Picker beside them, spare guns on the ground and cheats on. Then the game stays open for an hour of play. Not evidence of anything.",
+ "about": "Hands-on demo, run in watch mode (2560x1440): a fresh level 20 Firearms Specialist in the lab town with 60 skill points, +100 to every attribute and 2x weapon attack speed (fire rate, gamelab/buffs_demo.sval), the Subclass Picker and the Skill Trainer (the lab town has none; skills are learned there) beside them, five training dummies in a row to the east (two normal, armored, magic, breakable), every firearms item on the ground (rifles, and two of each pistol tier: one pistol fits either hand) and cheats on. The whole setup is one typed command, gl setup gamelab/setup_demo_firearms.sval. Then the game stays open for four hours of play (an hour cut the user off mid-test, demo-firearms 20261019-170119). Not evidence of anything.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -33,21 +33,38 @@
   "weapons",
   "weaponswap"
  ],
- "timeout": 3900,
+ "timeout": 14700,
  "steps": [
-  {"do": "console", "line": "e_cheats 1"},
-  {"do": "gl", "verb": "char", "args": ["hwp_firearms", "Gunner"]},
-  {"do": "wait_phase", "phase": "town", "timeout": 60},
-  {"do": "sleep", "seconds": 2},
-  {"do": "console", "line": "hwp levelup 20"},
-  {"do": "sleep", "seconds": 1},
-  {"do": "console", "line": "hwp skillpoints 60"},
-  {"do": "sleep", "seconds": 1},
-  {"do": "gl", "verb": "spawn", "args": ["actors/npcs/town/npc_subclass_picker.unit", "40", "0"]},
-  {"do": "console", "line": "cht_spawn_specific_equipment hwp_glock_mh_01"},
-  {"do": "console", "line": "cht_spawn_specific_equipment hwp_glock_oh_01"},
-  {"do": "console", "line": "cht_spawn_specific_equipment hwp_rifle_03"},
-  {"do": "console", "line": "hwp material all 100000"},
-  {"do": "sleep", "seconds": 3600}
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Gunner"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "setup",
+   "args": [
+    "gamelab/setup_demo_firearms.sval"
+   ],
+   "expect": {
+    "failed": 0
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 14400
+  }
  ]
 }

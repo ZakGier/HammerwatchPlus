@@ -8,11 +8,15 @@
 //   gains hwp-turret-repair HP a second, deals hwp-turret-dmg more damage and glows
 //   (turret_glow). Elemental Belt-Feed (hwp-turret-feed) is then its elemental chance; the
 //   element weights and riders are the owner's Elemental Bullets orbs (Elemental.as).
+// - In co-op the host's copy is the turret (Actor.IsHusk is !IsServer): only it decays,
+//   repairs and dies (CompositeActorBehavior.OnDeath sends UnitKilled to the others). The
+//   others run the same decay and repair for their health bar and glow, but never die of it.
 namespace HWP
 {
 	namespace Firearms
 	{
-		const int NEAR = 160;
+		// 10 m: the game shows 6 px a metre (Tweak::PixelsPerMeter, Data/Misc.as:15)
+		const int NEAR = 60;
 	}
 }
 
@@ -22,8 +26,10 @@ class HWPFirearmsTurret : PlayerOwnedActor
 	int m_decay;
 	float m_boost;
 	float m_feed;
-	int m_glowC;
+	float m_repair;
+	int m_statC;
 	string m_booster;
+	ActorBuffDef@ m_glow;
 
 	HWPFirearmsTurret(UnitPtr unit, SValue& params)
 	{
@@ -35,6 +41,7 @@ class HWPFirearmsTurret : PlayerOwnedActor
 		PlayerOwnedActor::Initialize(owner, intensity, husk, weaponInfo);
 		m_hpPct = GetParamFloat(m_unit, m_params, "hp-pct", false, 0);
 		m_decay = max(1, GetParamInt(m_unit, m_params, "decay", false, 30000));
+		@m_glow = LoadActorBuff(HWP::Firearms::BUFFS + "turret_glow");
 		int rate = 0;
 		if (m_skills.length() > 0)
 		{
@@ -86,43 +93,47 @@ class HWPFirearmsTurret : PlayerOwnedActor
 		if (owner is null)
 			return;
 
-		float repair = HWP::Firearms::CustomStat(owner, "hwp-turret-repair");
-		string booster = repair > 0 ? FindBooster(owner) : "";
-		if (booster != m_booster)
+		// the owner's stats and who stands near, every 200 ms (the glow's refresh)
+		m_statC -= dt;
+		if (m_statC <= 0)
 		{
-			HWP::Log("firearms", booster == "" ? "turret: unboosted"
-				: "turret: boosted by " + booster + ", +" + int(repair) + " hp/s, +"
-				+ int(HWP::Firearms::CustomStat(owner, "hwp-turret-dmg") * 100 + 0.5f) + "% damage, "
-				+ int(HWP::Firearms::CustomStat(owner, "hwp-turret-feed") * 100 + 0.5f) + "% elemental");
-			m_booster = booster;
+			m_statC = 200;
+			m_repair = HWP::Firearms::CustomStat(owner, "hwp-turret-repair");
+			string booster = m_repair > 0 ? FindBooster(owner) : "";
+			if (booster != "")
+			{
+				m_boost = HWP::Firearms::CustomStat(owner, "hwp-turret-dmg");
+				m_feed = HWP::Firearms::CustomStat(owner, "hwp-turret-feed");
+				if (m_glow !is null)
+					ApplyBuff(ActorBuff(owner, m_glow, 1.0f, IsHusk()));
+			}
+			else
+			{
+				m_boost = 0;
+				m_feed = 0;
+			}
+			if (booster != m_booster)
+			{
+				HWP::Log("firearms", booster == "" ? "turret: unboosted"
+					: "turret: boosted by " + booster + ", +" + int(m_repair) + " hp/s, +"
+					+ int(m_boost * 100 + 0.5f) + "% damage, " + int(m_feed * 100 + 0.5f) + "% elemental");
+				m_booster = booster;
+			}
 		}
 
 		float hp = m_hp - dt / float(m_decay);
-		if (booster != "")
-		{
-			hp += repair * dt / 1000.0f / GetMaxHp();
-			m_boost = HWP::Firearms::CustomStat(owner, "hwp-turret-dmg");
-			m_feed = HWP::Firearms::CustomStat(owner, "hwp-turret-feed");
-			m_glowC -= dt;
-			if (m_glowC <= 0)
-			{
-				m_glowC = 200;
-				auto glow = LoadActorBuff(HWP::Firearms::BUFFS + "turret_glow");
-				if (glow !is null)
-					ApplyBuff(ActorBuff(owner, glow, 1.0f, false));
-			}
-		}
-		else
-		{
-			m_boost = 0;
-			m_feed = 0;
-		}
+		if (m_booster != "")
+			hp += m_repair * dt / 1000.0f / GetMaxHp();
 		m_hp = min(1.0f, hp);
-		if (m_hp <= 0)
+		if (m_hp > 0)
+			return;
+		if (IsHusk())
 		{
-			HWP::Log("firearms", "turret: decayed");
-			OnDeath(DamageInfo(), vec2(1, 0));
+			m_hp = 0.001f; // the host's UnitKilled ends it here
+			return;
 		}
+		HWP::Log("firearms", "turret: decayed");
+		OnDeath(DamageInfo(), vec2(1, 0));
 	}
 
 	DamageInfo DamageActor(Actor@ actor, DamageInfo di) override

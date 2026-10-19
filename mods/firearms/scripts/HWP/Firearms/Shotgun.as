@@ -3,6 +3,7 @@
 // would. Within close-range the hit's intensity is close-mul (the level's close-range bonus).
 // Cover blocks a hit as it blocks an explosion (Explode.as raycast). With ground-ttl above 0
 // (Dragon's Breath) the ground-effects run at points spread over the cone: the burning ground.
+// Breakables in the cone are hit too, as an explosion hits them.
 class HWPFirearmsShotgun : Explode
 {
 	float m_arcCos;
@@ -32,6 +33,8 @@ class HWPFirearmsShotgun : Explode
 
 	bool DoExplosion(Actor@ owner, vec2 pos, vec2 dir, float intensity, bool husk) override
 	{
+		// the cone test below needs a unit vector; the aim may arrive shorter
+		dir = length(dir) > 0.0001f ? normalize(dir) : vec2(1, 0);
 		if (m_fx != "")
 		{
 			dictionary ePs = { { 'radius', m_radius }, { 'angle', atan(dir.y, dir.x) } };
@@ -47,8 +50,9 @@ class HWPFirearmsShotgun : Explode
 			UnitPtr unit = results[i];
 			if (owner !is null && unit == owner.m_unit)
 				continue;
+			// enemies and, as Explode hits them, breakables (barrels, crates, props)
 			Actor@ taker = cast<Actor>(unit.GetScriptBehavior());
-			if (taker is null || taker.Team == ownerTeam)
+			if (taker !is null ? taker.Team == ownerTeam : (m_actorsOnly || cast<IDamageTaker>(unit.GetScriptBehavior()) is null))
 				continue;
 
 			vec2 upos = xy(unit.GetPosition());

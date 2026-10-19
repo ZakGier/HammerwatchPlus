@@ -579,10 +579,10 @@ class Checks(Base):
 
     # --- sections
     def firearms_marksman(self):
-        """Marksman: Snipe (Skill3) hits a dummy, costs its tooltip mana and 10 rounds; Critical
+        """Marksman: Snipe (Skill3) hits a dummy, costs its tooltip mana and no rounds; Critical
         Aim is passive, a gun round that hits gives Focus and one that hits nothing loses it all;
-        Piercing Bullet takes Snipe through a first dummy into a second; with Headshot the first
-        dummy a Snipe round hits takes a critical hit (2 of 2)."""
+        Piercing Bullet takes Snipe through a first dummy into a second; with Headshot (taken first, so the
+        round stops at its target) the first dummy a Snipe round hits takes a critical hit (2 of 2)."""
         self.new_char("LabMarksman", "hwp_firearms_sniper")
         if not self.enter_floor("marksman"):
             return
@@ -590,7 +590,7 @@ class Checks(Base):
         if self.level("snipe", "hwp_fs_snipe"):
             self.direction_test("snipe", "hwp_fs_snipe", "sniper_snipe.sval", d)
             c, mx = self.clip(), self.clip_max()
-            self.flag("snipe_uses_rounds", c == mx - 10, f"clip {c}/{mx} after one Snipe from full")
+            self.flag("snipe_no_rounds", c == mx, f"clip {c}/{mx} after one Snipe from full (mana only)")
         if self.level("focus", "hwp_fs_focus"):
             e = self.entry(self.bar(), "hwp_fs_focus")
             self.flag("focus_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
@@ -607,15 +607,8 @@ class Checks(Base):
             f2 = self.stacks("focus")
             self.flag("focus_gains", f1 >= f0 + 2, f"focus {f0} -> {f1} after 3 shots at a dummy")
             self.flag("focus_lost_on_miss", f1 > 0 and f2 == 0, f"focus {f1} -> {f2} after a shot at nothing")
-        ok, lvl = self.orb("hwp_fs_snipe_pierce", 3)
-        d3, (a, b) = self.line_dummies(d, [50, 90])
-        self.top_up()
-        hp0 = self.hps([a, b])
-        self.aimed_cast("hwp_fs_snipe", d3, hold("sniper_snipe.sval"))
-        time.sleep(1.0)
-        hp1 = self.hps([a, b])
-        self.flag("snipe_pierce_both", ok and hp1[a] < hp0[a] - 0.001 and hp1[b] < hp0[b] - 0.001,
-                  f"orb level {lvl}; dummies at 50/90: {hp0} -> {hp1}")
+        # Headshot before Piercing Bullet: a round that stops at its first target is destroyed
+        # before that hit's damage (NewProjectile.OnHit), the case that never crit
         ok, lvl = self.orb("hwp_fs_snipe_headshot")
         shots = []
         for _ in range(2):
@@ -625,6 +618,15 @@ class Checks(Base):
             texts = self.damage_texts(1.0)
             shots.append(([t.get("text") for t in texts], len(self.crits(texts))))
         self.flag("headshot_crits", ok and all(n >= 1 for _, n in shots), f"orb level {lvl}; per Snipe (texts, crits) {shots}")
+        ok, lvl = self.orb("hwp_fs_snipe_pierce", 3)
+        d3, (a, b) = self.line_dummies(d, [50, 90])
+        self.top_up()
+        hp0 = self.hps([a, b])
+        self.aimed_cast("hwp_fs_snipe", d3, hold("sniper_snipe.sval"))
+        time.sleep(1.0)
+        hp1 = self.hps([a, b])
+        self.flag("snipe_pierce_both", ok and hp1[a] < hp0[a] - 0.001 and hp1[b] < hp0[b] - 0.001,
+                  f"orb level {lvl}; dummies at 50/90: {hp0} -> {hp1}")
         self.buttons_flag("sniper", d)
         self.clear_dummies()
         self.to_town()
@@ -670,6 +672,7 @@ class Checks(Base):
                     break
                 time.sleep(0.5)
             banked = seen[-1][1]
+            shown0 = self.stacks("rocket_charges_shown")
             self.flag("hoarder_banks_charge", banked == 1 and seen[-1][0] >= 6.0, f"(s, charges) {seen[-3:]}")
             self.top_up()
             self.aimed_cast("hwp_fs_rpg", d, 420, wait=False)
@@ -678,6 +681,9 @@ class Checks(Base):
             self.aimed_cast("hwp_fs_rpg", d, 420, wait=False)
             time.sleep(1.6)
             cd2, ch2 = self.entry(self.bar(), "hwp_fs_rpg").get("cd", 0), self.stacks("rocket_charges")
+            shown2 = self.stacks("rocket_charges_shown")
+            # the icon counts every use ready: 1 stored + the skill = 2, then 0 on cooldown
+            self.flag("hoarder_icon_counts_all", shown0 == 2 and shown2 == 0, f"icon {shown0} ready, {shown2} on cooldown")
             self.flag("hoarder_spends_charge", banked == 1 and cd1 == 0 and ch1 == 0 and cd2 > 0,
                       f"after cast 1: cooldown {cd1}, charges {ch1}; after cast 2: cooldown {cd2}, charges {ch2}")
         self.buttons_flag("demo", d)
@@ -685,9 +691,10 @@ class Checks(Base):
         self.to_town()
 
     def firearms_base_orbs(self):
-        """The base kit's orbs. Explosive Reload: Reload throws the magazine, which blows up a
-        dummy; with dual pistols the second magazine follows the first by about 100 ms. Dodge
-        Reload Skip: a dodge 0.3 s into the automatic reload refills the clip at once.
+        """The base kit's orbs. Explosive Reload: Reload throws the magazine at its castpoint
+        (the 2 s reload), which blows up a dummy; with dual pistols the second magazine follows
+        the first by about 100 ms. Dodge Reload Skip: a dodge 0.3 s into the automatic reload
+        refills the clip at once, and so does one 0.8 s into a manual Reload.
         Over-Reload: a Reload inside the automatic reload's logged window is perfect (+6
         rounds of clip) and the bonus is lost when the clip runs dry; during a manual Reload a
         second press inside its window is perfect, a second perfect doesn't stack, and a plain
@@ -705,10 +712,11 @@ class Checks(Base):
         # a direction throw lands 100 out (IProjectile.as GetTargetPos; GroundBouncing hit-target)
         d1, (du,) = self.line_dummies(d, [100])
         self.gl("givestacks", self.CLIP, 999)
+        self.gl("givestacks", self.CLIP, -1)  # Reload won't start on a full clip
         rounds = self.clip()
         hp0 = self.hps([du])[du]
         self.gl("input", hold("fs_reload.sval"), 0, 0, d1[0], d1[1], "skill1")  # Reload re-aims to its castpoint
-        texts, _, hp1 = self.dummy_watch(du, 2.5)
+        texts, _, hp1 = self.dummy_watch(du, 3.5)  # thrown at the 2 s castpoint
         self.flag("explosive_reload_hits", ok and hp1 < hp0 - 0.001,
                   f"{rounds} rounds thrown: dummy {hp0} -> {hp1}, texts {texts}")
 
@@ -720,11 +728,12 @@ class Checks(Base):
         d1, (du,) = self.line_dummies(d, [100])
         self.ready("hwp_fs_reload")
         self.gl("givestacks", self.CLIP, 999)
+        self.gl("givestacks", self.CLIP, -2)
         rounds = self.clip()
         hp0 = self.hps([du])[du]
         mark = self.log_pos()
         self.gl("input", hold("fs_reload.sval"), 0, 0, d1[0], d1[1], "skill1")
-        texts, _, hp1 = self.dummy_watch(du, 2.5)
+        texts, _, hp1 = self.dummy_watch(du, 3.5)
         log = self.log_from(mark)
         first = re.search(r"explosive reload: (\d+) rounds at \d+, two magazines \(scene (\d+) ms\)", log)
         second = re.search(r"explosive reload: second magazine, (\d+) rounds \(scene (\d+) ms\)", log)
@@ -745,6 +754,24 @@ class Checks(Base):
         skip = self.refill_after_empty(dash_at=0.3)
         self.flag("dodge_skip_finishes_reload", ok and base is not None and skip is not None and skip < 0.9 and base > 1.3,
                   f"refill after emptying: {base} s without a dodge, {skip} s with a dodge at 0.3 s")
+        # dodges are charges that recharge (Player.as, BaseDashRechargeTime): one 4 s after the
+        # last never left (plan-firearms-orbs 20261019-154049), so wait for a charge first. The
+        # max is read before: the gl call after an hwp console line took ~3 s, and the dodge
+        # landed after the reload (plan-firearms-orbs 20261019-154656). The game logs the dodge.
+        mx = self.clip_max()
+        time.sleep(5)
+        self.ready("hwp_fs_reload")
+        self.gl("givestacks", self.CLIP, 999)
+        self.gl("givestacks", self.CLIP, -5)
+        before, mark, t0 = self.clip(), self.log_pos(), time.time()
+        self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+        time.sleep(max(0.0, t0 + 0.8 - time.time()))
+        self.gl("input", 120, 0, 1, 0, 1, "dash")
+        time.sleep(0.4)
+        after = self.clip()
+        line = re.search(r"reload: dodge at (\d+)/(\d+) ms finishes it", self.log_from(mark))
+        self.flag("dodge_skip_finishes_manual", ok and before < mx and line is not None and after == mx,
+                  f"clip {before}/{mx}, {after} after the dodge; logged {line and line.group(0)}")
         self.orb_off("hwp_fs_reload_dodge")
 
         ok, lvl = self.orb("hwp_fs_reload_over")
@@ -809,7 +836,7 @@ class Checks(Base):
                 # both presses take the same path in, so time the second from the first
                 time.sleep(max(0.0, t0 + (a + b) / 2000 - lag - time.time()))
                 self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
-            time.sleep(0.8)
+            time.sleep(0.8 if second else 2.6)  # a plain Reload lands at its 2 s castpoint
             log = self.log_from(mark)
             hit = re.search(r"over-reload: manual perfect at (\d+)", log)
             miss = re.search(r"over-reload: manual missed at (\d+)", log)
@@ -866,7 +893,7 @@ class Checks(Base):
     def firearms_assault(self):
         """firearms s4 for Assault. Double Barrel Burst fires two shells (logged by
         HWPFirearmsShotgun: "shotgun: N hit, M within R at xMUL"), a dummy 60 px out is in
-        close range (80 at level 1, x1.2); Triple Barrel fires three; Dragon's Breath logs its
+        close range (80 at level 1, x1.5); Triple Barrel fires three; Dragon's Breath logs its
         burning ground. Adrenaline is passive and a kill gives a stack."""
         self.new_char("LabAssault", "hwp_firearms_assault")
         if not self.enter_floor("assault"):
@@ -889,7 +916,7 @@ class Checks(Base):
             time.sleep(0.3)
             shells = re.findall(r"shotgun: (\d+) hit, (\d+) within (\d+) at x([\d.]+)", self.log_from(pos))
             self.flag("burst_two_shells", len(shells) == 2, f"{shells}")
-            self.flag("burst_close_range", bool(shells) and all(x[1] == "1" and x[2] == "80" and x[3].startswith("1.2") for x in shells),
+            self.flag("burst_close_range", bool(shells) and all(x[1] == "1" and x[2] == "80" and x[3].startswith("1.5") for x in shells),
                       f"{shells}")
             for orb, want, tag in (("hwp_fs_burst_triple", 3, "triple_barrel_three"), ("hwp_fs_burst_breath", 2, "dragons_breath_ground")):
                 ok, lvl = self.orb(orb)
@@ -997,7 +1024,7 @@ class Checks(Base):
             self.flag("myturret_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
             ok, lvl = self.orb("hwp_fs_myturret_feed", 3)
             pos = self.log_pos()
-            self.place(d)
+            self.place(d, 40)
             b = self.wait_log(r"turret: boosted by [^,]*, \+(\d+) hp/s, \+(\d+)% damage, (\d+)% elemental", pos, 3)
             self.flag("myturret_boosts", b is not None and b.group(1) == "10" and b.group(2) == "10",
                       f"log {b and b.group(0)}")
@@ -1014,6 +1041,22 @@ class Checks(Base):
             # actorbuffs gives no name for a buff without one: turret_glow is the 300 ms buff
             self.flag("myturret_glows", any(not bf.get("debuff") and 0 < bf.get("left", 0) <= 300 for bf in glow),
                       f"turret buffs {glow}")
+            # NEAR is 60 px: a turret placed 120 px out along the open direction (it replaces the
+            # first) is not boosted until the player walks up to it
+            pos = self.log_pos()
+            far = self.place(d, 120)
+            time.sleep(1.0)
+            early = self.wait_log(r"turret: boosted by", pos, 0.1)
+            p0 = self.gl("state").get("player") or {}
+            tu = [(u.get("x"), u.get("y")) for u in self.gl("near", 400, TURRET).get("units") or []]
+            pos = self.log_pos()
+            self.gl("input", 1500, d[0], d[1], d[0], d[1])
+            on = self.wait_log(r"turret: boosted by", pos, 2.5)
+            p1 = self.gl("state").get("player") or {}
+            self.flag("myturret_only_near", far is not None and early is None and on is not None,
+                      f"placed at 120: {far and far.group(0)}, boosted then: {early and early.group(0)}, "
+                      f"after walking up: {on and on.group(0)}; turrets at {tu}, player "
+                      f"{p0.get('x')},{p0.get('y')} -> {p1.get('x')},{p1.get('y')}")
             self.orb_off("hwp_fs_myturret_feed")
         self.buttons_flag("engineer", d)
         self.gl("kill", 400, TURRET)
@@ -1023,46 +1066,53 @@ class Checks(Base):
 
     # --- the pistol's raised arm (Combat.as AimHold)
     def firearms_pistol_arm(self):
-        """After a pistol shot the arm stays up (logged "pistol arm: held") and comes down
-        2 s after the last shot, or at once on a dodge or a reload. Frames: the arm 0.6 s
-        after a shot (up), and after it is lowered."""
+        """After a rifle or pistol shot the arm stays up (logged "gun arm: held") and comes down
+        1 s after the last shot, or at once on a dodge or a reload. Frames per gun: the arm
+        0.4 s after a shot (up), and after it is lowered."""
         self.gl("char", "hwp_firearms", "LabArm")
         self.wait_phase("town", 60)
         time.sleep(2)
         if not self.enter_floor("arm"):
             return
-        eq = self.gl("equip", "hwp_glock_mh_01", "common").get("ok")
+        for gun, item in (("rifle", "hwp_rifle_01"), ("pistol", "hwp_glock_mh_01")):
+            self.gun_arm(gun, item)
+        self.to_town()
+
+    def gun_arm(self, gun, item):
+        eq = self.gl("equip", item, "common").get("ok")
         time.sleep(1.0)
+        lowered = r"gun arm: lowered \(([^)]*)\)"
 
         def shoot():
             self.gl("givestacks", self.CLIP, 999)
             pos = self.log_pos()
             self.gl("input", 60, 0, 0, 1, 0, "main")
-            m = self.wait_log(r"pistol arm: held", pos, 2.0)
+            m = self.wait_log(r"gun arm: held", pos, 2.0)
             return pos, m, time.time()
 
         pos, held, t0 = shoot()
-        time.sleep(0.6)
-        self.g.shot("arm held")
-        low = self.wait_log(r"pistol arm: lowered \(([^)]*)\)", pos, 4.0)
-        dt = time.time() - t0
         time.sleep(0.4)
-        self.g.shot("arm lowered")
-        self.flag("pistol_arm_held", bool(eq) and held is not None, f"equip {eq}, log {held and held.group(0)}")
-        self.flag("pistol_arm_lowers_after_2s", low is not None and "without a shot" in low.group(1) and 1.6 < dt < 3.0,
+        self.g.shot(f"{gun} arm held")
+        low = self.wait_log(lowered, pos, 3.0)
+        dt = time.time() - t0
+        time.sleep(0.6)
+        self.g.shot(f"{gun} arm lowered")
+        self.flag(f"{gun}_arm_held", bool(eq) and held is not None, f"equip {eq}, log {held and held.group(0)}")
+        self.flag(f"{gun}_arm_lowers_after_1s", low is not None and "without a shot" in low.group(1) and 0.7 < dt < 1.8,
                   f"{low and low.group(0)} {round(dt, 2)} s after the shot was held")
+        time.sleep(0.5)
         pos, held, t0 = shoot()
         self.gl("input", 120, 0, 1, 0, 1, "dash")
-        low = self.wait_log(r"pistol arm: lowered \(([^)]*)\)", pos, 1.5)
-        self.flag("pistol_arm_lowers_on_dodge", held is not None and low is not None and "skill" in low.group(1)
-                  and time.time() - t0 < 1.4, f"{low and low.group(0)}")
+        low = self.wait_log(lowered, pos, 1.5)
+        self.flag(f"{gun}_arm_lowers_on_dodge", held is not None and low is not None and "skill" in low.group(1)
+                  and time.time() - t0 < 0.9, f"{low and low.group(0)}")
         time.sleep(1.0)
         pos, held, t0 = shoot()
         self.gl("givestacks", self.CLIP, -999)
-        low = self.wait_log(r"pistol arm: lowered \(([^)]*)\)", pos, 1.5)
-        self.flag("pistol_arm_lowers_on_reload", held is not None and low is not None and low.group(1) == "reloading",
+        low = self.wait_log(lowered, pos, 1.5)
+        self.flag(f"{gun}_arm_lowers_on_reload", held is not None and low is not None and low.group(1) == "reloading",
                   f"{low and low.group(0)}")
-        self.to_town()
+        time.sleep(1.5)
 
 
 def run(p, sections="firearms_frag", **_):

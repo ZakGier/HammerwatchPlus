@@ -57,6 +57,7 @@
    "expect": {
     "explosive_reload_hits": true,
     "dodge_skip_finishes_reload": true,
+    "dodge_skip_finishes_manual": true,
     "over_reload_perfect": true,
     "over_reload_lost_when_dry": true,
     "stun_grenade_stuns": true,

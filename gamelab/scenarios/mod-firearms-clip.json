@@ -158,6 +158,15 @@
   },
   {
    "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "-3"
+   ],
+   "name": "Reload won't start on a full clip: spend 3 rounds first"
+  },
+  {
+   "do": "gl",
    "verb": "castat",
    "args": [
     "hwp_fs_reload",
@@ -168,7 +177,7 @@
   },
   {
    "do": "sleep",
-   "seconds": 1.5
+   "seconds": 2.5
   },
   {
    "do": "console",

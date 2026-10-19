@@ -4,7 +4,7 @@
 	the current aim (update-aim covers the whole cast). A shell hits every enemy in a 50
 	degree cone out to 160 px (10 m, at 16 px a metre: assumed) for 200 physical damage
 	(HWPFirearmsShotgun, Shotgun.as); enemies within close-range (5/5/7/7/10 m) take
-	close-mul of that (+20..100%). The pellets (shotgun_pellet.unit) are the look only.
+	close-mul of that (+50..250%). The pellets (shotgun_pellet.unit) are the look only.
 	castpoint 1 so the mana is paid (PlayerSkillDirectional pays when crossing a castpoint
 	above 0); a dodge after it cancels the second shell without a refund.
 	Orbs: Dragon's Breath adds breath-dmg fire to each hit and burning ground over the
@@ -18,7 +18,7 @@
 
 	<array name="description-params">
 		<array><s>damage</s><s>.skills.desc.params.damage.physical</s><s>200</s></array>
-		<array><s>close-dmg</s><s>.skills.desc.params.hwp_close_dmg</s><s>+20%</s><s>+40%</s><s>+60%</s><s>+80%</s><s>+100%</s></array>
+		<array><s>close-dmg</s><s>.skills.desc.params.hwp_close_dmg</s><s>+50%</s><s>+100%</s><s>+150%</s><s>+200%</s><s>+250%</s></array>
 		<array><s>close-range</s><s>.skills.desc.params.hwp_close_range</s><s>5m</s><s>5m</s><s>7m</s><s>7m</s><s>10m</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>5</s><s>5</s><s>6</s><s>6</s><s>7</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>5s</s></array>
@@ -48,7 +48,7 @@
 		<int name="mana-cost">5</int>
 		<dict name="binds">
 			<int name="close-range">80</int>
-			<float name="close-mul">1.2</float>
+			<float name="close-mul">1.5</float>
 			<int name="breath-dmg">0</int>
 			<int name="breath-tick">0</int>
 			<int name="breath-ttl">0</int>
@@ -79,7 +79,7 @@
 				<dict>
 					<string name="class">ShootProjectileFan</string>
 					<string name="projectile">players/hwp/firearms/projectiles/shotgun_pellet.unit</string>
-					<int name="dist">8</int>
+					<int name="dist">22</int>
 					<int name="projectiles">7</int>
 					<int name="spread">50</int>
 					<float name="jitter">0.8</float>
@@ -103,7 +103,7 @@
 			<int name="mana-cost">5</int>
 			<dict name="binds">
 				<int name="close-range">80</int>
-				<float name="close-mul">1.4</float>
+				<float name="close-mul">2</float>
 			</dict>
 		</dict>
 		<dict>
@@ -111,7 +111,7 @@
 			<int name="mana-cost">6</int>
 			<dict name="binds">
 				<int name="close-range">112</int>
-				<float name="close-mul">1.6</float>
+				<float name="close-mul">2.5</float>
 			</dict>
 		</dict>
 		<dict>
@@ -119,7 +119,7 @@
 			<int name="mana-cost">6</int>
 			<dict name="binds">
 				<int name="close-range">112</int>
-				<float name="close-mul">1.8</float>
+				<float name="close-mul">3</float>
 			</dict>
 		</dict>
 		<dict>
@@ -127,7 +127,7 @@
 			<int name="mana-cost">7</int>
 			<dict name="binds">
 				<int name="close-range">160</int>
-				<float name="close-mul">2</float>
+				<float name="close-mul">3.5</float>
 			</dict>
 		</dict>
 	</array>

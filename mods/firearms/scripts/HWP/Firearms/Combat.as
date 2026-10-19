@@ -3,6 +3,9 @@
 //   Headshot's first-hit flag.
 // - Modifiers::HWPFirearmsHeadshot / HWPFirearmsExposure: Snipe orb and Critical Aim orb crits.
 // - HWPFirearmsThrowMag: Explosive Reload's thrown magazine, one round of damage per round left.
+// - HWPFirearmsReload: the Reload skill, a cast as long as its recharge that a dodge cancels.
+//   It shows the automatic reload's icon sweep while it casts (the reload_cast stack).
+// - HWPFirearmsGun: the guns' attacks; the empty-clip "cant" line only on a fresh click.
 // - Hoarder (Ordinance Hoarder charges) and OverReload (Over-Reload's timing window), ticked
 //   by the module for the local player only.
 namespace HWP
@@ -14,7 +17,11 @@ namespace HWP
 
 		// Set while a Snipe round is in flight and has hit nothing yet; HWPFirearmsHeadshot
 		// crits Snipe damage while it is set. Only the local player's rounds set it.
+		// g_headshotEnd: the round was destroyed before it hit anything; g_headshot is
+		// cleared on the next frame, not at once, because a round that stops at its first
+		// target is destroyed before that hit's damage is dealt (NewProjectile.OnHit).
 		bool g_headshot = false;
+		bool g_headshotEnd = false;
 
 		ActorBuffStacked@ FindStack(PlayerBase@ plr, ActorBuffStackDef@ def)
 		{
@@ -85,6 +92,10 @@ namespace HWP
 			int m_readyMs;
 			bool m_wasCooling;
 			bool m_spend;
+			// for the HUD (ChargeHUD.as): the skill held, and how far the next charge has
+			// banked (0..1), or -1 while none banks (cooling, full, or no Hoarder)
+			uint m_skillId;
+			float m_progress = -1;
 
 			HoardedSkill(const string &in stack, const string &in id, const string &in alt = "")
 			{
@@ -100,8 +111,10 @@ namespace HWP
 				Skills::Skill@ skill = null;
 				for (uint i = 0; i < m_ids.length() && skill is null; i++)
 					@skill = FindSkill(plr, m_ids[i]);
+				m_progress = -1;
 				if (def is null || skill is null)
 					return;
+				m_skillId = skill.m_skillId;
 				int mx = ClipMax(plr, def);
 				int have = plr.GetStacks(def);
 				bool cooling = CooldownLeft(skill) > 0;
@@ -123,6 +136,7 @@ namespace HWP
 					}
 				}
 
+				Show(plr, skill, have, mx);
 				if (cooling || have >= mx || mx <= 0)
 				{
 					m_readyMs = 0;
@@ -134,7 +148,24 @@ namespace HWP
 				{
 					m_readyMs -= period;
 					plr.AddStacks(plr, def, 1);
+					have++;
 				}
+				if (have < mx)
+					m_progress = m_readyMs / float(period);
+				Show(plr, skill, have, mx);
+			}
+
+			// the icon (ID_shown): every use ready, the stored charges and the skill itself
+			// when it is off cooldown; none without the passive (mx 0)
+			void Show(PlayerBase@ plr, Skills::Skill@ skill, int have, int mx)
+			{
+				auto shown = ActorBuffStackDef::Get(m_stack + "_shown");
+				if (shown is null)
+					return;
+				int total = mx <= 0 ? 0 : have + (CooldownLeft(skill) > 0 ? 0 : 1);
+				int now = plr.GetStacks(shown);
+				if (total != now)
+					plr.AddStacks(plr, shown, total - now);
 			}
 		}
 
@@ -145,9 +176,10 @@ namespace HWP
 
 		// Over-Reload: while a reload runs, a 200 ms window opens at a random point in its
 		// second half (drawn as a gold arc on a ring over the player). Two kinds of reload:
-		// - the automatic one (the reloading stack): casting Reload inside the window;
-		// - a manual Reload cast, up to its castpoint: pressing Reload again inside the window,
-		//   which also finishes the cast at once.
+		// - the automatic one (the reloading stack): casting Reload inside the window (a miss
+		//   ends the cast);
+		// - a manual Reload cast, up to its castpoint (HWPFirearmsReload): pressing Reload again
+		//   inside the window, which also finishes the cast at once.
 		// A perfect reload applies perfect_reload_<level>, which raises the clip max until the
 		// clip next runs dry or a reload isn't perfect. It replaces any bonus already held, so
 		// the clip never holds more than a perfect reload of an empty clip gives.
@@ -170,6 +202,9 @@ namespace HWP
 			bool m_manual;
 			bool m_wasDown;
 			int m_topUp;
+			// this automatic reload's one try has been judged: no window and no Reload cast
+			// (HWPFirearmsReload.CanActivate) until the reloading stack is gone
+			bool m_autoTried;
 
 			int Level(PlayerBase@ plr)
 			{
@@ -248,7 +283,9 @@ namespace HWP
 				bool wasActive = m_active;
 				// the reloading stack outlives the Reload cast's start (it drops at the castpoint):
 				// once a cast is under way, its press has been judged
-				if (st !is null && st.m_stacks > 0 && level > 0 && !(casting && m_wasCasting))
+				if (st is null || st.m_stacks <= 0)
+					m_autoTried = false;
+				if (st !is null && st.m_stacks > 0 && level > 0 && !m_autoTried && !(casting && m_wasCasting))
 				{
 					int total = Modifiers::lerp(st.m_defMod.m_timerTime, st.GetIntensity());
 					if (!m_active || total != m_total)
@@ -280,6 +317,12 @@ namespace HWP
 					}
 					else if (wasActive)
 						HWP::Log("firearms", "over-reload: missed at " + m_elapsed + " ms (window " + m_windowStart + ")");
+					// a missed try ends the cast: the automatic reload goes on (the cast, the
+					// whole Reload time, would outlast it)
+					if (fromAuto && !hit && dir !is null)
+						dir.Deactivate();
+					if (fromAuto)
+						m_autoTried = true;
 					m_active = false;
 
 					if (!fromAuto && dir !is null && dir.m_castpoint > 0)
@@ -426,17 +469,20 @@ namespace HWP
 		const string ADRENALINE = "players/hwp/firearms/stacks_firearms.sval:adrenaline";
 		int g_adrenalineHeal = 0;
 
-		// The Glocks' raised arm: after a pistol shot the shot's upper-body animation is
+		// The raised gun: after a rifle or pistol shot the shot's upper-body animation is
 		// played again on the skill layer (1) from its start and frozen there (speed FROZEN,
 		// AnimationLoopType::Hold; PlayerBase.SetUnitScene's call otherwise). The wand shot's
 		// first frame has the arm out and its last is the rest pose, so the arm stays up
-		// between shots instead of dropping to idle. It lets go after HOLD_MS without a pistol
+		// between shots instead of dropping to idle. It lets go after HOLD_MS without a gun
 		// shot, or at once when the clip reloads or another skill (a dodge, Reload, a spell)
 		// starts: the animation then runs on from the frozen frame at full speed, unheld, so
 		// the arm comes down the shot's own way and the layer is free.
-		const int HOLD_MS = 2000;
+		const int HOLD_MS = 1000;
 		const float FROZEN = 0.0001f;
-		const array<uint> PISTOLS = { HashString("hwp_attack_glock"), HashString("hwp_attack_glock_off") };
+		const array<uint> GUNS = {
+			HashString("hwp_attack_rifle"), HashString("hwp_attack_rifle_epic"),
+			HashString("hwp_attack_rifle_gl"), HashString("hwp_attack_rifle_gl_epic"),
+			HashString("hwp_attack_glock"), HashString("hwp_attack_glock_off") };
 
 		class AimHold
 		{
@@ -460,7 +506,7 @@ namespace HWP
 				if (m_holding)
 				{
 					Play(plr, false, AnimationLoopType::None, 1.0f);
-					HWP::Log("firearms", "pistol arm: lowered (" + why + ")");
+					HWP::Log("firearms", "gun arm: lowered (" + why + ")");
 				}
 				m_holding = false;
 				m_leftMs = 0;
@@ -477,7 +523,7 @@ namespace HWP
 					bool on = (skill !is null && skill.IsActive()) || (active !is null && active.IsActive());
 					if (!on)
 						continue;
-					if (skill !is null && PISTOLS.find(skill.m_skillId) >= 0)
+					if (skill !is null && GUNS.find(skill.m_skillId) >= 0)
 						@shooting = skill;
 					else if (other == "")
 						other = "skill " + plr.m_skills[i].m_skillId;
@@ -506,7 +552,7 @@ namespace HWP
 					// the shot just ended: back to its first frame, frozen
 					Play(plr, true, AnimationLoopType::Hold, FROZEN);
 					if (!m_holding)
-						HWP::Log("firearms", "pistol arm: held");
+						HWP::Log("firearms", "gun arm: held");
 					m_holding = true;
 					m_wasShooting = false;
 				}
@@ -524,6 +570,11 @@ namespace HWP
 			auto plr = cast<PlayerBase>(GetLocalPlayer());
 			if (plr is null || !IsFirearms(GetLocalPlayerRecord()))
 				return;
+			if (g_headshotEnd)
+			{
+				g_headshot = false;
+				g_headshotEnd = false;
+			}
 			if (g_adrenalineHeal > 0)
 			{
 				int healed = plr.Heal(g_adrenalineHeal, false);
@@ -579,16 +630,22 @@ namespace Projectile
 		bool m_local;
 		bool m_hit;
 
+		vec2 m_start;
+
 		HWPFirearmsShot(UnitPtr unit, SValue& params) {}
 
 		void Initialize(NewProjectile@ behavior, SValue& params, Actor@ owner, ProjectileTarget@ target, uint weapon) override
 		{
 			@m_owner = owner;
+			m_start = xy(behavior.m_unit.GetPosition());
 			m_hit = false;
 			m_local = !behavior.m_husk;
 			m_headshot = m_local && GetParamBool(behavior.m_unit, params, "headshot", false, false);
 			if (m_headshot)
+			{
 				HWP::Firearms::g_headshot = true;
+				HWP::Firearms::g_headshotEnd = false;
+			}
 		}
 
 		void OnHit(UnitPtr unit, vec2 pos) override
@@ -612,15 +669,22 @@ namespace Projectile
 			m_hit = true;
 		}
 
-		void OnMiss(vec2 pos) override { Missed(); }
+		void OnMiss(vec2 pos) override
+		{
+			if (m_local)
+				HWP::Firearms::g_lastRange = dist(m_start, pos);
+			Missed();
+		}
 		void OnCollide(UnitPtr unit, vec2 pos) override { Missed(); }
 
 		// No m_hit here: Destroy() runs OnDestroyed before OnMiss on a range-out
-		// (NewProjectile.Update: m_unit.Destroy(), then the OnMiss loop).
+		// (NewProjectile.Update: m_unit.Destroy(), then the OnMiss loop), and before the
+		// hit's damage and OnHit when the round stops at its target (NewProjectile.OnHit), so
+		// the headshot flag is only marked to clear on the next frame.
 		void OnDestroyed() override
 		{
-			if (m_headshot)
-				HWP::Firearms::g_headshot = false;
+			if (m_headshot && !m_hit)
+				HWP::Firearms::g_headshotEnd = true;
 		}
 	}
 }
@@ -856,10 +920,294 @@ class HWPFirearmsRocketJump : IEffect
 				continue;
 			dash.NetDoActivate(null, away);
 			dash.m_holding = false;
+			// as ActiveSkill's queued DoActivate does, so the others see the dash, not a slide
+			SValue@ none = null;
+			(Network::Message("PlayerActiveSkillDoActivate") << int(dash.m_skillId) << away << none).SendToAll();
 			break;
 		}
 		HWP::Log("firearms", "rocket jump: " + int(dist) + " of " + m_radius + " from the blast, away "
 			+ int(away.x * 100) + "," + int(away.y * 100));
 		return true;
+	}
+}
+
+// Reload (fs_reload.sval): the cast is the reload, and it refills at its castpoint, which is
+// the level's whole recharge time (2 s down to 1.2 s). While it runs the skill's cooldown
+// shows the time left, and once it ends (landed or not) Reload is ready again.
+// - It won't start with a full clip, or during the automatic reload unless Over-Reload is
+//   learned (the press is then that reload's timing try, Combat.as OverReloadState).
+// - A dodge cancels it (PlayerTargetingHelper.CancelOther) with the clip as it was; with
+//   Dodge Reload Skip it finishes at once instead: the cast list runs, then the cast ends.
+class HWPFirearmsReload : Skills::PlayerSkillDirectional
+{
+	HWPFirearmsReload(UnitPtr unit, SValue& params) { super(unit, params); }
+
+	bool CanActivate(bool warn = true) override
+	{
+		if (!Skills::PlayerSkillDirectional::CanActivate(warn))
+			return false;
+		auto plr = cast<PlayerBase>(m_owner);
+		auto clip = ActorBuffStackDef::Get(HWP::Firearms::CLIP);
+		if (plr is null || clip is null)
+			return true;
+		int mx = HWP::Firearms::ClipMax(plr, clip);
+		if (mx > 0 && plr.GetStacks(clip) >= mx)
+		{
+			if (warn)
+				plr.m_record.PlayVoice("cant");
+			return false;
+		}
+		auto reloading = ActorBuffStackDef::Get(HWP::Firearms::RELOADING);
+		// during the automatic reload only as Over-Reload's one timing try
+		if (reloading !is null && plr.GetStacks(reloading) > 0 && (HWP::Firearms::g_overReload.Level(plr) == 0
+			|| (HWP::Firearms::g_overReload.m_autoTried && plr is cast<PlayerBase>(GetLocalPlayer()))))
+			return false;
+		return true;
+	}
+
+	bool DashCancel()
+	{
+		auto plr = cast<PlayerBase>(m_owner);
+		if (plr is null)
+			return false;
+		for (uint i = 0; i < plr.m_skills.length(); i++)
+		{
+			auto s = plr.m_skills[i];
+			if (s !is null && s !is this && s.m_type == PlayerSkillType::Dash && HWP::Firearms::Casting(s))
+				return true;
+		}
+		return false;
+	}
+
+	void Deactivate() override
+	{
+		bool cut = m_castingT >= 0 && m_castingT < m_castpoint;
+		if (cut && DashCancel())
+		{
+			if (HWP::Firearms::HasBuff(m_owner, "dodge_skip"))
+			{
+				HWP::Log("firearms", "reload: dodge at " + m_castingT + "/" + m_castpoint + " ms finishes it");
+				m_timeline.Update(m_timeline.GetLength() + 1);
+				cut = false;
+			}
+			else
+				HWP::Log("firearms", "reload: dodge at " + m_castingT + "/" + m_castpoint + " ms cancels it");
+		}
+		// a perfect reload's top-up only follows a cast that got its clip in; the others stop
+		// the cast too (PlayerSkillDirectional.Deactivate sends nothing)
+		if (cut && cast<PlayerBase>(m_owner) is cast<PlayerBase>(GetLocalPlayer()))
+		{
+			HWP::Firearms::g_overReload.m_topUp = 0;
+			(Network::Message("PlayerActiveSkillDeactivate") << int(m_skillId)).SendToAll();
+		}
+		Skills::PlayerSkillDirectional::Deactivate();
+		m_cooldownC = 0;
+		CastIcon(0, 0);
+	}
+
+	// another player's Reload cut short (a missed Over-Reload try, a dodge)
+	void NetDeactivate() override
+	{
+		if (m_castingT >= 0 && m_castingT < m_castpoint)
+			Skills::PlayerSkillDirectional::Deactivate();
+	}
+
+	void Update(int dt, bool walking, vec2 aimDir) override
+	{
+		Skills::PlayerSkillDirectional::Update(dt, walking, aimDir);
+		if (m_castingT >= 0 && m_castingT < m_castpoint)
+		{
+			float speed = max(0.01f, m_modSkillSpeedMul * m_castSpeedMul * GetModSkillSpeedWalk(walking));
+			m_cooldownC = int((m_castpoint - m_castingT) / speed);
+			CastIcon(m_cooldownC, int(m_castpoint / speed));
+		}
+		else
+			CastIcon(0, 0);
+	}
+
+	// The automatic reload's buff icon (the reloading stack's radial sweep) for the cast:
+	// the reload_cast stack, held while the cast runs, its timer set to the time left out of
+	// the whole cast each frame. left 0 takes it off.
+	ActorBuffStackDefBase m_iconTime;
+	void CastIcon(int left, int total)
+	{
+		auto plr = cast<PlayerBase>(m_owner);
+		auto def = ActorBuffStackDef::Get(HWP::Firearms::RELOAD_CAST);
+		if (plr is null || def is null || plr !is cast<PlayerBase>(GetLocalPlayer()))
+			return;
+		auto st = HWP::Firearms::FindStack(plr, def);
+		if (left <= 0)
+		{
+			if (st !is null && st.m_stacks > 0)
+				plr.AddStacks(plr, def, -st.m_stacks);
+			return;
+		}
+		if (st is null || st.m_stacks <= 0)
+		{
+			plr.AddStacks(plr, def, 1);
+			@st = HWP::Firearms::FindStack(plr, def);
+			if (st is null)
+				return;
+			HWP::Log("firearms", "reload: cast icon on, " + left + "/" + total + " ms");
+		}
+		m_iconTime.Reset(def);
+		m_iconTime.m_timerTime = ivec2(total, total);
+		@st.m_defMod = m_iconTime;
+		st.m_timerTickC = left;
+	}
+}
+
+// The rifle's and the pistols' attacks. A gun on an empty clip (reloading) says "cant" only
+// for a fresh click: holding the trigger into or through a reload stays quiet. The warning is
+// armed while the trigger is up, and the first warned check (a shot or the warning) spends it.
+class HWPFirearmsGun : Skills::PlayerSkillDirectional
+{
+	bool m_warnArmed = true;
+
+	// A held trigger restarts the skill once it reaches its length (PlayerTargetingHelper.as:629,
+	// DirectionRepeating). The base Update deactivates in the frame the cycle ends and drops
+	// the part of the frame past the end (PlayerSkillDirectional.as:91-100). The helper only
+	// restarts it on a later pass, and the timeline's 0 entries (the first shot) fire on the
+	// Update after that. So the first shot of each cycle came a frame or more late, and a
+	// dual pistols' left-right gaps alternated short and long (264/330 ms,
+	// look-firearms-batch 20261019-183547).
+	// Instead, the gun restarts itself in that same frame, as the helper would: Activate, then
+	// CancelOther and TriggerModifierEffects. It carries the overshoot into the new cycle and
+	// fires its 0 entries at once.
+	int CARRY_MAX = 100; // AngelScript allows no const class properties
+	int m_carry = -1;
+
+	HWPFirearmsGun(UnitPtr unit, SValue& params) { super(unit, params); }
+
+	void NetActivate(vec2 target, float intensity) override
+	{
+		Skills::PlayerSkillDirectional::NetActivate(target, intensity);
+		if (m_carry >= 0)
+			m_castingT = m_carry;
+	}
+
+	bool CanActivate(bool warn = true) override
+	{
+		bool ok = Skills::PlayerSkillDirectional::CanActivate(warn && m_warnArmed);
+		if (warn && m_warnArmed && !ok)
+			HWP::Log("firearms", m_id + ": refused, warned (a fresh click)");
+		if (warn)
+			m_warnArmed = false;
+		return ok;
+	}
+
+	void Update(int dt, bool walking, vec2 aimDir) override
+	{
+		int carry = -1;
+		if (m_castingT >= 0 && m_repeating)
+		{
+			float skillSpeed = m_modSkillSpeedMul * m_castSpeedMul * GetModSkillSpeedWalk(walking);
+			int next = m_castingT + int(skillSpeed * dt);
+			if (next >= m_skillLen)
+				carry = min(next - m_skillLen, CARRY_MAX);
+		}
+		Skills::PlayerSkillDirectional::Update(dt, walking, aimDir);
+		auto plr = cast<Player>(m_owner);
+		if (plr is null || plr.m_targetHelper is null)
+			return;
+		bool down = plr.m_targetHelper.GetSkillInput(this).Down;
+		if (!down)
+			m_warnArmed = true;
+		else if (carry >= 0 && m_castingT < 0)
+		{
+			m_carry = carry;
+			bool ok = Activate(aimDir, 1.0f);
+			m_carry = -1;
+			if (ok)
+			{
+				plr.m_targetHelper.CancelOther(this, aimDir);
+				plr.m_targetHelper.TriggerModifierEffects(this);
+				m_timeline.Update(max(m_castingT, 1));
+			}
+		}
+	}
+}
+
+// Sniper Shot: while it winds up (before the castpoint), a red laser dot sits where the shot
+// will land: the first wall or body on the aim line (RaycastClosest, RaycastType::Shot, as
+// ShootProjectile clamps a muzzle), or the round's reach. Local player only; nothing is synced.
+// The module takes the dot away once the skill stops moving it (UpdateLaserDot): a skill no
+// longer updated mid-windup (death, a respec) never gets to HideDot.
+namespace HWP
+{
+	namespace Firearms
+	{
+		UnitPtr g_laserDot;
+		int g_laserDotAge = 0;
+
+		void UpdateLaserDot()
+		{
+			if (!g_laserDot.IsValid() || ++g_laserDotAge <= 2)
+				return;
+			g_laserDot.Destroy();
+			g_laserDot = UnitPtr();
+		}
+	}
+}
+
+class HWPFirearmsSnipe : Skills::PlayerSkillDirectional
+{
+	// a Sniper Shot round's flight before it runs out (bullet_snipe.unit), measured with
+	// hwp firearms muzzle (look-firearms-tips)
+	float SNIPE_REACH = 300;
+
+	UnitPtr m_dot;
+
+	HWPFirearmsSnipe(UnitPtr unit, SValue& params) { super(unit, params); }
+
+	void Update(int dt, bool walking, vec2 aimDir) override
+	{
+		Skills::PlayerSkillDirectional::Update(dt, walking, aimDir);
+		auto plr = cast<Player>(m_owner);
+		if (plr is null || m_castingT < 0 || m_castingT >= m_castpoint)
+		{
+			HideDot();
+			return;
+		}
+		vec2 dir = normalize(m_timeline.m_dirTarget);
+		vec2 from = xy(plr.m_unit.GetPosition());
+		vec2 to = from + dir * SNIPE_REACH;
+		auto hit = g_scene.RaycastClosest(from, to, ~0, RaycastType::Shot);
+		if (hit.fraction < 1.0f)
+			to = hit.point;
+		if (!m_dot.IsValid())
+		{
+			auto fx = Resources::GetEffect("players/hwp/firearms/effects/laser_dot.effect");
+			if (fx is null)
+				return;
+			m_dot = g_effectUnit.Produce(g_scene, xyz(to));
+			auto eb = cast<EffectBehavior>(m_dot.GetScriptBehavior());
+			if (eb is null)
+			{
+				m_dot.Destroy();
+				m_dot = UnitPtr();
+				return;
+			}
+			eb.Initialize(fx, dictionary());
+			HWP::Log("firearms", "snipe: laser dot on, " + formatFloat(dist(from, to), "", 0, 1) + " out"
+				+ (hit.fraction < 1.0f ? " (hit)" : " (reach)"));
+		}
+		m_dot.SetPosition(to.x, to.y, 0, true);
+		HWP::Firearms::g_laserDot = m_dot;
+		HWP::Firearms::g_laserDotAge = 0;
+	}
+
+	void Deactivate() override
+	{
+		Skills::PlayerSkillDirectional::Deactivate();
+		HideDot();
+	}
+
+	void HideDot()
+	{
+		if (!m_dot.IsValid())
+			return;
+		m_dot.Destroy();
+		m_dot = UnitPtr();
 	}
 }

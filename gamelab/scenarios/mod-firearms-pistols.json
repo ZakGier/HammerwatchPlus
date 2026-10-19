@@ -1,0 +1,331 @@
+{
+ "name": "mod-firearms-pistols",
+ "about": "One pistol for either hand: two pistols picked up and clicked in the bag go to the main hand and then the off hand (the off-hand twin); Reload's cast shows the reloading icon; holding the trigger through a reload says nothing, a fresh click while reloading warns once. Unequipped, the off-hand pistol is a main-hand pistol in the bag again, and goes back on the off hand.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 150,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Pistols"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] self-check done",
+   "timeout": 20
+  },
+  {
+   "do": "gl",
+   "verb": "dropitem",
+   "args": [
+    "hwp_glock_mh_01",
+    "common",
+    "0",
+    "16"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2.5
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "items/base.unit"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "dropitem",
+   "args": [
+    "hwp_glock_mh_01",
+    "common",
+    "0",
+    "16"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2.5
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "items/base.unit"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "bagitems",
+   "save_as": "bag0"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character",
+    "equipment-inventory"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.6
+  },
+  {
+   "do": "gl",
+   "verb": "hover",
+   "args": [
+    "equipment-inventory",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.6
+  },
+  {
+   "do": "gl",
+   "verb": "bagitems",
+   "save_as": "bag1"
+  },
+  {
+   "do": "gl",
+   "verb": "hover",
+   "args": [
+    "equipment-inventory",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.6
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] pistol to the off hand: hwp_glock_oh_01",
+   "timeout": 3
+  },
+  {
+   "do": "gl",
+   "verb": "skills",
+   "save_as": "dual"
+  },
+  {
+   "do": "shot",
+   "name": "dual_menu"
+  },
+  {
+   "do": "gl",
+   "verb": "hover",
+   "args": [
+    "offhand"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] pistol back in the bag as hwp_glock_mh_01",
+   "timeout": 3
+  },
+  {
+   "do": "gl",
+   "verb": "bagitems",
+   "save_as": "bag2"
+  },
+  {
+   "do": "gl",
+   "verb": "hover",
+   "args": [
+    "equipment-inventory",
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.4
+  },
+  {
+   "do": "key",
+   "key": "enter"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "gl",
+   "verb": "skills",
+   "expect": {
+    "skills.3.id": "hwp_attack_glock_off"
+   }
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "-3"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_reload",
+    "1",
+    "0",
+    "nocd"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] reload: cast icon on, \\d+/\\d+ ms",
+   "timeout": 3
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "shot",
+   "name": "reload_icon"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2.5
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "7000",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 7.5
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "\\[HWP:firearms\\] hwp_attack_glock: refused, warned"
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms empty"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:reloading",
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "300",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] hwp_attack_glock: refused, warned \\(a fresh click\\)",
+   "timeout": 3
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

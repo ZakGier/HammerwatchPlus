@@ -1331,7 +1331,8 @@ class Checks:
         """firearms s2 (clip): the rifle spawns with a full 30-round clip; a shot uses 1 round
         and no mana; the grenade launcher uses mana and no rounds; an empty clip starts
         Reloading, won't fire, and refills after ~1.6 s; a dodge mid-reload restarts it;
-        Reload (skill1) refills a part-used clip."""
+        Reload (skill1) won't start on a full clip, refills a part-used clip after its 2 s
+        recharge, and a dodge cancels it with the clip as it was."""
         self.gl("char", "hwp_firearms", "LabGunner")
         self.wait_phase("town", 60)
         time.sleep(2)
@@ -1407,14 +1408,44 @@ class Checks:
         ok = None not in base and None not in dodged
         self.flag("dodge_restarts_reload", ok and sorted(dodged)[1] > sorted(base)[1] + 0.6,
                   f"{base} vs {dodged} (medians compared)")
-        # tactical Reload (skill1) from a part-used clip
+        # Reload (skill1) is a cast as long as its recharge (2 s at level 1): it won't start on
+        # a full clip, refills a part-used clip only when the time is up, and a dodge cancels it
+        def full_after(t0, limit=4.0):
+            while time.time() - t0 < limit:
+                if self.clip() >= 30:
+                    return round(time.time() - t0, 2)
+                time.sleep(0.05)
+            return None
+
+        def reload_at(t0):
+            self.gl("input", 60, 0, 0, 1, 0, "skill1")
+            time.sleep(max(0.0, t0 + 1.0 - time.time()))
+            return self.clip()
+
+        c0 = self.clip()
+        self.gl("input", 60, 0, 0, 1, 0, "skill1")
+        time.sleep(0.3)
+        _, c1 = self.press("main", settle=0.5)  # a Reload cast would block the shot
+        self.flag("reload_refused_full", c0 == 30 and c1 == 29, f"clip {c0}, a shot just after Reload leaves {c1}")
+        for _ in range(2):
+            self.press("main", settle=0.6)
+        before, t0 = self.clip(), time.time()
+        mid = reload_at(t0)
+        t = full_after(t0)
+        self.flag("reload_takes_recharge", before < 30 and mid == before and t is not None and 1.8 <= t <= 2.9,
+                  f"clip {before}, {mid} 1 s into Reload, full {t} s after the press")
         for _ in range(3):
             self.press("main", settle=0.6)
-        before = self.clip()
-        self.shoot("skill1", 60)
-        time.sleep(0.6)
+        before, t0 = self.clip(), time.time()
+        mid = reload_at(t0)
+        self.gl("input", 120, 0, 1, 0, 1, "dash")
+        time.sleep(max(0.0, t0 + 3.2 - time.time()))
         after = self.clip()
-        self.flag("reload_refills", before < 30 and after == 30, f"clip {before} -> {after}")
+        t0 = time.time()
+        reload_at(t0)
+        t = full_after(t0)
+        self.flag("dodge_cancels_reload", before < 30 and mid == before and after == before and t is not None,
+                  f"clip {before}, dodge 1 s into Reload, {after} at 3.2 s; Reload again: full {t} s after")
         self.to_town()
 
     def firearms_guns(self):
@@ -1460,7 +1491,8 @@ class Checks:
         self.flag("dual_mag_20", mx == 20, f"equip {eq}, clip max {mx}")
         self.flag("dual_left_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
         self.flag("dual_right_two_at_once", all(c0 - c1 == 2 for c0, c1 in b), f"{b}")
-        self.flag("dual_right_needs_two", one == (1, 1), f"{one}")
+        # one round left: the off hand fires it alone (attacks_firearms.sval "last")
+        self.flag("dual_right_last_round", one == (1, 0), f"{one}")
 
         eq = loadout("mainhand_longsword_01", "hwp_glock_oh_01")
         mx = self.clip_max()

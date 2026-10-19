@@ -30,7 +30,7 @@ namespace GameLab
 		Emit(Reply(id, true).Int("returned", ret).Int("level", rec.level).Int("xp", rec.experience));
 	}
 
-	// material <gold|wood|stone|iron|crystals|dust|ore> <n>: PlayerRecord.GiveMaterial with skipGainMod, like cht_give_material: the amount lands as given (a pickup applies the gain modifiers: GetMaterialModifier)
+	// material <gold|wood|stone|iron|crystals|dust|ore|all> <n>: PlayerRecord.GiveMaterial with skipGainMod, like cht_give_material: the amount lands as given (a pickup applies the gain modifiers: GetMaterialModifier). "all" gives n of each.
 	void VerbMaterial(const string &in id, array<string>@ args)
 	{
 		auto rec = FixtureRecord(id);
@@ -38,13 +38,132 @@ namespace GameLab
 			return;
 		array<string> names = { "gold", "wood", "stone", "iron", "crystals", "dust", "ore" };
 		int type = args.length() > 0 ? names.find(args[0]) : -1;
-		if (type < 0 || args.length() < 2)
+		if ((type < 0 && (args.length() == 0 || args[0] != "all")) || args.length() < 2)
 		{
-			Fail(id, "usage: material <" + join(names, "|") + "> <n>");
+			Fail(id, "usage: material <" + join(names, "|") + "|all> <n>");
+			return;
+		}
+		if (type < 0)
+		{
+			for (uint i = 0; i < names.length(); i++)
+				rec.GiveMaterial(MaterialType(i), int(parseInt(args[1])), true);
+			Emit(Reply(id, true).Str("material", "all").Int("gold", rec.GetMaterial(MaterialType(0))));
 			return;
 		}
 		int got = rec.GiveMaterial(MaterialType(type), int(parseInt(args[1])), true);
 		Emit(Reply(id, true).Str("material", args[0]).Int("given", got).Int("now", rec.GetMaterial(MaterialType(type))));
+	}
+
+	// e_cheats on, a bool or an int cvar (the engine allows it in modded games; lab saves only)
+	void SetCheats(bool on)
+	{
+		if (GetVarType("e_cheats") == cvar_type::Bool)
+			SetVar("e_cheats", on);
+		else
+			SetVar("e_cheats", on ? 1 : 0);
+	}
+
+	bool CheatsOn()
+	{
+		return GetVarType("e_cheats") == cvar_type::Bool ? GetVarBool("e_cheats") : GetVarInt("e_cheats") != 0;
+	}
+
+	// cheats [on|off]: the e_cheats cvar, as typing "e_cheats 1" does. Character creation turns it
+	// off again, so a setup sets it after the character is in town.
+	void VerbCheats(const string &in id, array<string>@ args)
+	{
+		SetCheats(args.length() == 0 || args[0] != "off");
+		Emit(Reply(id, true).Bool("cheats", CheatsOn()));
+	}
+
+	// levelup <n>: n levels' worth of experience through PlayerRecord.GiveExperience, gain
+	// modifiers skipped, as core's "hwp levelup" (mods/core/scripts/HWP/Core/Cheats.as:89-102)
+	void VerbLevelup(const string &in id, array<string>@ args)
+	{
+		auto rec = FixtureRecord(id);
+		if (rec is null)
+			return;
+		int levels = args.length() > 0 ? max(1, int(parseInt(args[0]))) : 1;
+		for (int i = 0; i < levels; i++)
+			rec.GiveExperience(rec.LevelExperience(rec.level) - rec.LevelExperience(rec.level - 1), true);
+		rec.RefreshStats();
+		Emit(Reply(id, true).Int("level", rec.level));
+	}
+
+	// points <skill|stat> <n>: bonus skill or attribute points (PlayerRecord.bonusSkillPts /
+	// bonusStatPts, then SyncStatPoints), as core's "hwp skillpoints" and "hwp statpoints"
+	// (mods/core/scripts/HWP/Core/Cheats.as:119-146)
+	void VerbPoints(const string &in id, array<string>@ args)
+	{
+		auto rec = FixtureRecord(id);
+		if (rec is null)
+			return;
+		if (args.length() < 2 || (args[0] != "skill" && args[0] != "stat"))
+		{
+			Fail(id, "usage: points <skill|stat> <n>");
+			return;
+		}
+		int n = int(parseInt(args[1]));
+		if (args[0] == "skill")
+			rec.bonusSkillPts += n;
+		else
+			rec.bonusStatPts += n;
+		rec.SyncStatPoints();
+		auto actor = cast<PlayerBase>(rec.actor);
+		if (actor !is null)
+			actor.RefreshModifiers();
+		Emit(Reply(id, true).Int("skillFree", rec.GetFreeSkillPoints()).Int("statFree", rec.GetPlaceableStatPoints()));
+	}
+
+	const uint SETUP_FAILED_CAP = 8;
+
+	// setup <file>: one typed line for a whole hand-play setup. Runs each line of the file (an
+	// sval array of verb lines, e.g. gamelab/setup_demo_firearms.sval) in this frame, as multi
+	// does, the k-th replying under "<id>.<k>". The reply counts the lines and names the failed
+	// ones (at most SETUP_FAILED_CAP, "truncated" past that); ok is false when any failed.
+	void VerbSetup(const string &in id, array<string>@ args)
+	{
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: setup <file>");
+			return;
+		}
+		SValue@ sv = Resources::GetSValue(args[0]);
+		if (sv is null || sv.GetType() != SValueType::Array)
+		{
+			Fail(id, "no sval array '" + args[0] + "'");
+			return;
+		}
+		auto lines = sv.GetArray();
+		array<string> failed;
+		uint nFailed = 0;
+		for (uint k = 0; k < lines.length(); k++)
+		{
+			array<string> words;
+			auto parts = strTrim(lines[k].GetString()).split(" ");
+			for (uint i = 0; i < parts.length(); i++)
+			{
+				if (parts[i].length() > 0)
+					words.insertLast(parts[i]);
+			}
+			if (words.length() == 0)
+				continue;
+			string verb = words[0];
+			words.removeAt(0);
+			uint before = g_fails;
+			if (verb == "setup" || verb == "multi")
+				Fail(id + "." + k, verb + " does not nest in setup");
+			else
+				RunVerb(id + "." + k, verb, words);
+			if (g_fails != before)
+			{
+				nFailed++;
+				if (failed.length() < SETUP_FAILED_CAP)
+					failed.insertLast("" + k + ": " + verb);
+			}
+		}
+		Emit(Reply(id, nFailed == 0).Int("n", lines.length()).Int("failed", nFailed)
+			.Str("failedLines", join(failed, ", ")).Bool("truncated", nFailed > failed.length()));
 	}
 
 	// charflag <name>: PlayerRecord.SetCharFlag (mission rewards set these)
@@ -437,14 +556,10 @@ namespace GameLab
 		float x = max(0.1f, min(16.0f, parseFloat(args[0])));
 		// g_timescale only changes with e_cheats on (SetVar alone read back 1.0: timescale
 		// 20261017-175222); the engine allows e_cheats in modded games. Lab saves only.
-		auto t = GetVarType("e_cheats");
-		if (t == cvar_type::Bool)
-			SetVar("e_cheats", true);
-		else
-			SetVar("e_cheats", 1);
+		SetCheats(true);
 		SetVar("g_timescale", x);
 		Emit(Reply(id, true).Num("set", x).Num("timescale", GetVarFloat("g_timescale"))
-			.Int("cheatsType", int(t)).Bool("cheats", t == cvar_type::Bool ? GetVarBool("e_cheats") : GetVarInt("e_cheats") != 0));
+			.Int("cheatsType", int(GetVarType("e_cheats"))).Bool("cheats", CheatsOn()));
 	}
 
 	// cull: the cht_kill_all cheat's body (Console/Cheats.as:970-980): Kill every targetable

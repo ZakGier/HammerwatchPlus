@@ -7,7 +7,8 @@ mods/firearms/players/hwp/firearms/projectiles/:
   - right half, 32x16 cells: rows rocket, fatboy, magic, quad; columns f0, f1.
   Everything points right (+x is the flight direction, as crossbow_bolt.png).
 - one effect per sprite, laid out as players/projectiles/crossbow_bolt.effect (shadow,
-  sprite, trail, light) plus particles for the elemental rounds and the missiles:
+  sprite, trail, light; the rounds have no trail) plus particles for the elemental rounds
+  and the missiles:
   round_<rifle|pistol>[_<element>].effect, gl_shell.effect, missile_<name>.effect.
   Rifle-sized rounds are for the rifles, the sniper shot and the turret; pistol rounds
   are a little smaller. Params: angle, height (never r/g/b: those names render wrong).
@@ -329,11 +330,12 @@ def effect(comment: str, body: list[str]) -> str:
 def effects() -> dict[str, str]:
     out = {}
     for r, el in enumerate(BULLET_ROWS):
-        trail_rgb, light_rgb, specks = LOOK[el]
+        _trail_rgb, light_rgb, specks = LOOK[el]
         suffix = "" if el == "plain" else "_" + el
-        for kind, col0, origin, tsize, back in (("rifle", 0, "9 3.5", 1.6, 4), ("pistol", 2, "10 3.5", 1.1, 2)):
+        for kind, col0, origin, back in (("rifle", 0, "9 3.5", 4), ("pistol", 2, "10 3.5", 2)):
             frames = [f"{(col0 + f) * 16} {r * 8} 16 8" for f in (0, 1)]
-            body = [sprite_pair(frames, origin, 60), trail(trail_rgb, back, tsize, 0.55)]
+            # no trail on a round: only the missiles keep one
+            body = [sprite_pair(frames, origin, 60)]
             if specks:
                 body.append(speckles(specks, 10 if kind == "rifle" else 7, back, "rpick(150,350)"))
             body.append(light(light_rgb, 40 if kind == "rifle" else 30, 0.2 if el == "plain" else 0.35))

@@ -63,7 +63,9 @@
     "no_fire_empty": true,
     "auto_reload_refills": true,
     "dodge_restarts_reload": true,
-    "reload_refills": true
+    "reload_refused_full": true,
+    "reload_takes_recharge": true,
+    "dodge_cancels_reload": true
    }
   },
   {

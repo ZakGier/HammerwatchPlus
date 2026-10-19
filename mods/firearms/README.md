@@ -12,24 +12,33 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   applies stack modifiers before it adds equipment. The module fills the clip
   on spawn. Gun shots take rounds and no mana.
   At 0 rounds the **Reloading** stack starts (1.6 s timer; a dodge restarts it)
-  and refills the clip when it ends. **Reload** (starting skill, 0.55 s cast,
-  cooldown 2.0 s down to 1.2 s) refills at once and cancels the auto-reload.
+  and refills the clip when it ends. **Reload** (starting skill) is a cast of
+  2.0 s down to 1.2 s that refills when it ends, with the automatic reload's
+  icon sweep. A dodge cancels it; a full clip refuses it. A held trigger only
+  says "cant" on a fresh click (`HWPFirearmsGun`).
   Mana pays for gadgets: the grenade launcher, grenades, rockets, bursts.
 - **Rifles** `hwp_rifle_01/02/03` (`tweak/hwp/equipment_firearms.sval`):
   two-handed, 30 rounds, slow heavy piercing shot (560 ms, 160 %; epic 200 %).
   The secondary is an under-barrel grenade launcher: 4 mana, 1.5 s cooldown,
   no rounds. Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
   rifle is the starting weapon and sits in the armory pool.
-- **Pistols:** `hwp_glock_mh_01/02/03` (main hand, wand anim set) and
-  `hwp_glock_oh_01/02/03` (off hand, hand-crossbow anim), 10 rounds each.
-  Each grants a marker buff the other pistol's attack checks for.
+- **Pistols:** `hwp_glock_mh_01/02/03`, one item for either hand, 10 rounds each.
+  Clicked in the bag, a pistol goes to the main hand; with the main hand full
+  (and not two-handed) and the off hand free, it goes to the off hand. There it
+  is its off-hand twin `hwp_glock_oh_0N` (hand-crossbow anim, never dropped or
+  sold), which turns back into the main-hand pistol in the bag
+  (`scripts/HWP/Firearms/Pistols.as`, core's `HWP::Bag::OnEquip`). Each hand's
+  pistol grants a marker buff the other pistol's attack checks for.
   - A main-hand pistol with any other off hand fires one accurate round twice
     a left-click cycle.
   - Dual pistols share a 20-round clip. Left click alternates muzzles with a
-    blooming spread; right click fires both at once with a wide spread (2
+    blooming spread, one round every 300 ms (a 600 ms cycle; a held trigger
+    restarts it in the same frame, so the gaps are even); right click fires both at once with a wide spread (2
     rounds, not on 1).
   - An off-hand pistol with another main-hand weapon fires one round on right
     click.
+  - After a rifle or pistol shot the arm stays raised until 1 s without a shot
+    (or a dodge or reload).
 - **Base kit:** Reload and the Frag Grenade (targeted lob, `GroundBouncing` +
   `Explode` on landing, armor penetration). The two base passives are still to
   be designed; Scavenger and Steady Hands hold their places for now.
@@ -45,17 +54,25 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
     1/2/3 s), **Incendiary** (a burning, blinding fire patch), **Gas** (a
     poison cloud that fire ignites).
 - **Marksman:** **Snipe** (both hands' damage, 200-600 %, armor penetration,
-  10 rounds and 30-50 mana) and **Critical Aim** (passive: a gun round that
+  30-50 mana, no rounds; a red laser dot marks the aim while it charges) and **Critical Aim** (passive: a gun round that
   hits gives Focus, crit chance and damage per stack; one that hits nothing
   loses it all). Orbs: Headshot (the first enemy a Snipe hits is crit),
   Piercing Bullet (2/4/6 more enemies), BOOM Headshot! and Elemental Exposure.
 - **Demolitionist:** the **Rocket Launcher** (fire blast, mana, no rounds) and
   **Ordinance Hoarder** (passive: Frag and the rocket recharge faster and bank
-  charges while ready; a charge clears the cooldown after a cast). Orbs: Fat
+  charges while ready; a charge clears the cooldown after a cast). Its buff icon
+  counts every use ready (stored charges plus the skill when off cooldown) and
+  goes at 0; while a charge banks, the skill slot's ring fills around a bright
+  icon (`scripts/HWP/Firearms/ChargeHUD.as`). Orbs: Fat
   Boy (slow heavy rocket, poison, blind), Magic Missile (ice then fire), Quad
   Missile Chambers (4 small missiles), Elemental Shrapnel, Overpacked.
-- **Assault:** Burst Fire (3-5 round fan), Stun Grenade (1.5 s stun),
-  Adrenaline (damage taken down, kills refill ammo). Unchanged.
+- **Assault:** Double Barrel Burst (a shotgun blast: x1.5/2/2.5/3/3.5 damage
+  up close), Adrenaline (damage taken down, kills refill ammo); orbs include
+  Triple Barrel and Dragon's Breath.
+- **Engineer:** Deploy Turret (placed where aimed, wears down over 30 s; orbs
+  Second Turret, Reinforced Turret) and My Turret! (passive: within 60 px, 10 m
+  at the game's 6 px a metre, the turret is repaired and boosted; Belt Feed adds
+  an elemental chance).
 - The orb scripts (Focus, Headshot, Exposure, Hoarder charges, Over-Reload's
   ring, the magazine throw) are in `scripts/HWP/Firearms/Combat.as`.
 - **Art:** portrait piece and hero title reuse the ranger assets.

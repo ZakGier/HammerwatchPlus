@@ -51,8 +51,11 @@ namespace GameLab
 		return j;
 	}
 
+	uint g_fails = 0;       // failed replies this process (setup counts its lines' failures)
+
 	void Fail(const string &in id, const string &in error)
 	{
+		g_fails++;
 		Emit(Reply(id, false).Str("error", error));
 	}
 

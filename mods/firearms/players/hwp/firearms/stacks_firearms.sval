@@ -125,6 +125,40 @@
 	</dict>
 
 	<!--
+		The Reload skill's cast, as the automatic reload looks: the same icon and radial sweep.
+		HWPFirearmsReload (Combat.as) holds one stack while it casts and sets the timer to the
+		cast time left each frame; nothing happens when it ends.
+	-->
+	<dict>
+		<string name="id">reload_cast</string>
+		<string name="name">.stacks.hwp_firearms.reloading.name</string>
+		<string name="description">.stacks.hwp_firearms.reloading.desc</string>
+		<int name="max">1</int>
+		<bool name="hide-hud-text">true</bool>
+		<bool name="display-timer-radius">true</bool>
+
+		<dict name="timer">
+			<int name="time">2000</int>
+			<int name="add-stack">-1</int>
+			<bool name="gain-set">true</bool>
+			<bool name="gain-reset">true</bool>
+		</dict>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>192 72 14 14</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+
+	<!--
 		Critical Aim (sniper_focus.sval): one stack per gun shot that hits, all lost on a shot
 		that misses: out of range or into a wall. A blocked shot changes nothing
 		(Projectile::HWPFirearmsShot, Combat.as). max is 0 here; the
@@ -157,6 +191,9 @@
 		Ordinance Hoarder (demo_hoarder.sval): stored casts of the Frag Grenade, the Grenade
 		Launcher and the Rocket Launcher. max is 0 here; the passive raises it. The module script adds a charge each
 		cooldown the skill sits ready, and spends one to reset the cooldown after a cast.
+		ID holds the stored charges and has no icon; ID_shown is the icon, holding every use
+		ready: the stored charges, and one more while the skill is off cooldown. The script
+		sets it each frame and takes it off at 0.
 	-->
 	%defblock Charges ID X Y
 	<dict>
@@ -164,6 +201,22 @@
 		<string name="name">.stacks.hwp_firearms.%%ID%%.name</string>
 		<string name="description">.stacks.hwp_firearms.%%ID%%.desc</string>
 		<int name="max">0</int>
+		<bool name="refresh-on-max">true</bool>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<dict>
+		<string name="id">%%ID%%_shown</string>
+		<string name="name">.stacks.hwp_firearms.%%ID%%.name</string>
+		<string name="description">.stacks.hwp_firearms.%%ID%%.desc</string>
+		<int name="max">99</int>
 		<bool name="refresh-on-max">true</bool>
 
 		<dict name="buff">

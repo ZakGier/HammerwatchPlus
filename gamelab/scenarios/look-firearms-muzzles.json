@@ -1,0 +1,401 @@
+{
+ "name": "look-firearms-muzzles",
+ "about": "Measurement only (timescale 0.1): dual pistols firing in six directions, to read where the guns and the rounds are relative to the player. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 240,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Look"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "common"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "common"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "st"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "r_0"
+  },
+  {
+   "do": "shot",
+   "name": "r_1"
+  },
+  {
+   "do": "shot",
+   "name": "r_2"
+  },
+  {
+   "do": "shot",
+   "name": "r_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "0",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "r_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "r_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "r_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "0",
+    "1",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "d_0"
+  },
+  {
+   "do": "shot",
+   "name": "d_1"
+  },
+  {
+   "do": "shot",
+   "name": "d_2"
+  },
+  {
+   "do": "shot",
+   "name": "d_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "0",
+    "1",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "d_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "d_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "d_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "-1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "l_0"
+  },
+  {
+   "do": "shot",
+   "name": "l_1"
+  },
+  {
+   "do": "shot",
+   "name": "l_2"
+  },
+  {
+   "do": "shot",
+   "name": "l_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "-1",
+    "0",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "l_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "l_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "l_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "0",
+    "-1",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "u_0"
+  },
+  {
+   "do": "shot",
+   "name": "u_1"
+  },
+  {
+   "do": "shot",
+   "name": "u_2"
+  },
+  {
+   "do": "shot",
+   "name": "u_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "0",
+    "-1",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "u_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "u_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "u_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "1",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "dr_0"
+  },
+  {
+   "do": "shot",
+   "name": "dr_1"
+  },
+  {
+   "do": "shot",
+   "name": "dr_2"
+  },
+  {
+   "do": "shot",
+   "name": "dr_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "1",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "dr_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "dr_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "dr_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "-1",
+    "-1",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "ul_0"
+  },
+  {
+   "do": "shot",
+   "name": "ul_1"
+  },
+  {
+   "do": "shot",
+   "name": "ul_2"
+  },
+  {
+   "do": "shot",
+   "name": "ul_3"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "-1",
+    "-1",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "ul_off_0"
+  },
+  {
+   "do": "shot",
+   "name": "ul_off_1"
+  },
+  {
+   "do": "shot",
+   "name": "ul_off_2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  }
+ ]
+}

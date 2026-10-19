@@ -18,22 +18,6 @@
 		<frame time="60">48 0 16 8</frame>
 	</sprite>
 
-	<trail texture="special/empty.png" material="system/default.mats:default-simple">
-		<pos-x value="wposx(i)+cos(angle)*-2" />
-		<pos-y value="-height+(wposy(i))+sin(angle)*-2" />
-		<angle value="angle"/>
-		<length value="1000" />
-		<looping value="true" />
-		<segments value="3" />
-		<size value="1.1-((1.1/3)*i)" />
-		<uv-x value="0" />
-		<uv-y value="0" />
-		<color-r value="1" />
-		<color-g value="0.82" />
-		<color-b value="0.5" />
-		<color-a value="0.55-i*(0.183)" />
-	</trail>
-
 	<light pos-x="cos(angle)*2" pos-y="-height+sin(angle)*2">
 		<sprite texture="effects/lights/light2_L.png">
 			<frame time="800">0 0 128 128</frame>

@@ -81,7 +81,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">72 86</ivec2>
+				<ivec2 name="physical">53 62</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>
@@ -126,7 +126,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">100 120</ivec2>
+				<ivec2 name="physical">58 67</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>
@@ -179,9 +179,14 @@
 		</array>
 	</dict>
 
+	<!--
+		The off-hand twins of the pistols: never dropped or sold (spawn-chance 0, an item level
+		nothing rolls, no armory tag). A pistol clicked onto a full main hand becomes its twin,
+		and turns back when it returns to the bag (scripts/HWP/Firearms/Pistols.as).
+	-->
 	<dict>
 		<string name="id">hwp_glock_oh_01</string>
-		<string name="name">.equipment.offhand.hwp_glock.1a</string>
+		<string name="name">.equipment.mainhand.hwp_glock.1a</string>
 
 		<array name="icon">
 			<string>items/hwp/firearms_items.png</string>
@@ -195,12 +200,12 @@
 
 		<string name="slot">offhand</string>
 		<string name="quality">common</string>
-		<int name="ilvl">1</int>
-		<int name="ilvl-max">20</int>
+		<int name="ilvl">999</int>
+		<int name="ilvl-max">999</int>
+		<float name="spawn-chance">0</float>
 		<ivec2 name="req-dex">8 18</ivec2>
 
 		<array name="tags">
-			<string>armory</string>
 			<string>mods_weapon_offhand</string>
 			<string>mods_weapon_offhand_ranged</string>
 			<string>hwp_firearm</string>
@@ -253,7 +258,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">45 54</ivec2>
+				<ivec2 name="physical">33 39</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>
@@ -265,7 +270,7 @@
 
 	<dict>
 		<string name="id">hwp_glock_oh_02</string>
-		<string name="name">.equipment.offhand.hwp_glock.2a</string>
+		<string name="name">.equipment.mainhand.hwp_glock.2a</string>
 
 		<array name="icon">
 			<string>items/hwp/firearms_items.png</string>
@@ -279,8 +284,9 @@
 
 		<string name="slot">offhand</string>
 		<string name="quality">common</string>
-		<int name="ilvl">10</int>
-		<int name="ilvl-max">30</int>
+		<int name="ilvl">999</int>
+		<int name="ilvl-max">999</int>
+		<float name="spawn-chance">0</float>
 		<ivec2 name="req-dex">12 26</ivec2>
 
 		<array name="tags">
@@ -294,7 +300,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">45 54</ivec2>
+				<ivec2 name="physical">33 39</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>
@@ -336,7 +342,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">62 75</ivec2>
+				<ivec2 name="physical">36 42</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>
@@ -348,7 +354,7 @@
 
 	<dict>
 		<string name="id">hwp_glock_oh_03</string>
-		<string name="name">.equipment.offhand.hwp_glock.3a</string>
+		<string name="name">.equipment.mainhand.hwp_glock.3a</string>
 
 		<array name="icon">
 			<string>items/hwp/firearms_items.png</string>
@@ -362,8 +368,9 @@
 
 		<string name="slot">offhand</string>
 		<string name="quality">common</string>
-		<int name="ilvl">20</int>
-		<int name="ilvl-max">40</int>
+		<int name="ilvl">999</int>
+		<int name="ilvl-max">999</int>
+		<float name="spawn-chance">0</float>
 		<ivec2 name="req-dex">16 34</ivec2>
 
 		<array name="tags">
@@ -377,7 +384,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
-				<ivec2 name="physical">62 75</ivec2>
+				<ivec2 name="physical">36 42</ivec2>
 			</dict>
 			<dict>
 				<string name="class">Modifiers::Buff</string>

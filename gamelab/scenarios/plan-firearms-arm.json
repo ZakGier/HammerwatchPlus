@@ -1,6 +1,6 @@
 {
  "name": "plan-firearms-arm",
- "about": "Through the plan_firearms bot: the pistol arm stays raised after a shot and comes down 2 s after the last one, or on a dodge or a reload (Combat.as AimHold); frames of both poses.",
+ "about": "Through the plan_firearms bot: the gun arm (rifle and pistols) stays raised after a shot and comes down 1 s after the last one, or on a dodge or a reload (Combat.as AimHold); frames of both poses.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -53,10 +53,14 @@
    "kwargs": {
     "sections": "firearms_pistol_arm"
    },
-   "name": "pistol arm",
+   "name": "gun arm",
    "expect": {
+    "rifle_arm_held": true,
+    "rifle_arm_lowers_after_1s": true,
+    "rifle_arm_lowers_on_dodge": true,
+    "rifle_arm_lowers_on_reload": true,
     "pistol_arm_held": true,
-    "pistol_arm_lowers_after_2s": true,
+    "pistol_arm_lowers_after_1s": true,
     "pistol_arm_lowers_on_dodge": true,
     "pistol_arm_lowers_on_reload": true
    }

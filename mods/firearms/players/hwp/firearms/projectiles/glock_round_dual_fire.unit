@@ -1,2 +1,2 @@
 %include "players/hwp/firearms/projectiles/round_elemental.inc"
-%block Round 360 22 1 0.9 false pistol fire
+%block Round 180 44 0 0.9 false pistol fire

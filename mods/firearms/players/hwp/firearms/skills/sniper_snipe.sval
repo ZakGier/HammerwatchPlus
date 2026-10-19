@@ -1,6 +1,7 @@
 %include "players/skills_cost.inc"
 <!--
-	Sniper Shot (Marksman): spends 10 rounds and mana for one heavy armor-piercing shot.
+	Sniper Shot (Marksman): costs mana, no rounds, for one heavy armor-piercing shot. While it
+	winds up (the castpoint), a red laser dot marks where it will land (HWPFirearmsSnipe, Combat.as).
 	The damage is the main hand's plus the off hand's (bullet_snipe.unit, two PlayerDamage
 	that merge into one hit); a two-handed gun's damage sits in the main hand alone
 	(Modifiers.as SlotToRole), so a rifle counts once. Without Piercing Bullet the shot stops
@@ -14,7 +15,6 @@
 	<array name="description-params">
 		<array><s>damage</s><s>.skills.desc.params.damage.weapon</s><s>200%</s><s>300%</s><s>400%</s><s>500%</s><s>600%</s></array>
 		<array><s>armor-pen</s><s>.skills.desc.params.armor_pen</s><s>25%</s><s>25%</s><s>40%</s><s>40%</s><s>60%</s></array>
-		<array><s>rounds</s><s>.skills.desc.params.hwp_rounds</s><s>10</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>30</s><s>30</s><s>40</s><s>40</s><s>50</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>3s</s></array>
 	</array>
@@ -28,7 +28,7 @@
 
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
-		<string name="class">Skills::PlayerSkillDirectional</string>
+		<string name="class">HWPFirearmsSnipe</string>
 		<string name="anim">attack</string>
 		<int name="anim-length">900</int>
 
@@ -41,9 +41,6 @@
 		<ivec2 name="update-aim">0 650</ivec2>
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">30</int>
-		<array name="conditional">
-			<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>10</i>
-		</array>
 
 		<dict name="binds">
 			<float name="snipe-mul">2</float>
@@ -52,26 +49,29 @@
 		</dict>
 
 		<dict name="actions">
+			<!-- the sniper rifle in hand for the whole shot (HeldModel.as) -->
+			<array name="hold">
+				<dict>
+					<string name="class">HWPFirearmsHoldModel</string>
+					<string name="model">players/models/equipment/hwp_sniper.model</string>
+					<int name="duration">1000</int>
+				</dict>
+			</array>
 			<array name="cast">
 				<dict>
 					<string name="class">ShootProjectile</string>
 					<string name="projectile">players/hwp/firearms/projectiles/bullet_snipe.unit</string>
-					<int name="dist">10</int>
+					<int name="dist">22</int>
 				</dict>
 				<dict>
 					<string name="class">PlaySound</string>
 					<string name="sound">event:/sfx/actors/misc/ballista/ballista_shoot_hit</string>
 				</dict>
-				<dict>
-					<string name="class">AddStacks</string>
-					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
-					<int name="stacks">-10</int>
-					<bool name="target-self">true</bool>
-				</dict>
 			</array>
 		</dict>
 
 		<array name="timeline">
+			<i>0</i><s>hold</s>
 			<i>650</i><s>cast</s>
 		</array>
 	</dict>

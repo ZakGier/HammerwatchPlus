@@ -8,8 +8,8 @@ namespace HWP
 	namespace Firearms
 	{
 		const array<string> AUDITION = {
-			"event:/sfx/player/attacks/offhand/hand_crossbow_shot",          // 1: the pistols' sound now
-			"event:/sfx/player/attacks/twohanded/crossbow_quick_shot",       // 2: the rifle's sound now
+			"event:/sfx/player/attacks/offhand/hand_crossbow_shot",          // 1: the pistols' first sound
+			"event:/sfx/player/attacks/twohanded/crossbow_quick_shot",       // 2: the rifle's first sound
 			"event:/sfx/player/attacks/offhand/hand_crossbow_shot_hit",
 			"event:/sfx/player/attacks/twohanded/quick_shot_hit",
 			"event:/sfx/player/attacks/twohanded/crossbow_quick_shot_hit",
@@ -111,5 +111,61 @@ namespace HWP
 			g_auditionLeft--;
 			g_auditionWait = AUDITION_GAP;
 		}
+	}
+}
+
+// PlaySound with a volume: the guns' shots (attacks_firearms.sval). The instance is kept
+// (the last 16) so the handle isn't let go while the shot still plays. Above 1 is louder
+// than the event's own level: FMOD's instance volume is a linear gain.
+class HWPFirearmsSound : PlaySound
+{
+	float m_volume;
+
+	HWPFirearmsSound(UnitPtr unit, SValue& params)
+	{
+		super(unit, params);
+		m_volume = GetParamFloat(unit, params, "volume", false, 1.0f);
+	}
+
+	void Do(Actor@ owner, vec2 pos) override
+	{
+		if (m_snd is null)
+			return;
+		// the same three ways as PlaySound.Do: 2D, following the owner (main.as
+		// PlaySound3D(snd, unit), which lets go of sounds under 350 ms) or at the position
+		SoundInstance@ inst;
+		bool attach = m_attach && owner !is null;
+		if (m_2d)
+			@inst = m_snd.PlayTracked();
+		else if (attach)
+			@inst = m_snd.PlayTracked(owner.m_unit.GetPosition());
+		else
+			@inst = m_snd.PlayTracked(xyz(pos));
+		if (inst is null)
+			return;
+		inst.SetVolume(m_volume);
+		if (attach)
+		{
+			inst.SetPaused(false);
+			int len = inst.GetLength();
+			if (len < 0 || len > 350)
+			{
+				AttachedSound aSnd;
+				@aSnd.sound = inst;
+				aSnd.unit = owner.m_unit;
+				m_attachedSounds.insertLast(aSnd);
+			}
+		}
+		HWP::Firearms::g_shotSounds.insertLast(inst);
+		if (HWP::Firearms::g_shotSounds.length() > 16)
+			HWP::Firearms::g_shotSounds.removeAt(0);
+	}
+}
+
+namespace HWP
+{
+	namespace Firearms
+	{
+		array<SoundInstance@> g_shotSounds;
 	}
 }

@@ -60,7 +60,7 @@
     "dual_mag_20": true,
     "dual_left_two_rounds": true,
     "dual_right_two_at_once": true,
-    "dual_right_needs_two": true,
+    "dual_right_last_round": true,
     "offhand_pistol_mag_10": true,
     "offhand_pistol_one_round": true,
     "rifle_mag_30": true

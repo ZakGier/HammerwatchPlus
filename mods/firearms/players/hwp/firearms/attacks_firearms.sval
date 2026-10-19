@@ -34,7 +34,7 @@
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
 
 		<dict name="skill">
-			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
 			<int name="anim-length">560</int>
 
@@ -58,12 +58,13 @@
 						<string name="ice">players/hwp/firearms/projectiles/rifle_round_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/rifle_round_poison.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">22</int>
 						<int name="spread">2</int>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
+						<string name="class">HWPFirearmsSound</string>
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
 					</dict>
 					%block Spend 1
 				</array>
@@ -83,7 +84,7 @@
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
 
 		<dict name="skill">
-			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
 			<int name="anim-length">560</int>
 
@@ -107,12 +108,13 @@
 						<string name="ice">players/hwp/firearms/projectiles/rifle_round_epic_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_epic_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/rifle_round_epic_poison.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">22</int>
 						<int name="spread">2</int>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
+						<string name="class">HWPFirearmsSound</string>
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
 					</dict>
 					%block Spend 1
 				</array>
@@ -141,7 +143,9 @@
 			<ivec2 name="move-speed">0 600</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 600</ivec2>
-			<int name="castpoint">0</int>
+			<!-- 1, not 0: the mana is paid when the cast crosses its castpoint
+			     (PlayerSkillDirectional.Update), and a cast that starts at 0 never crosses 0 -->
+			<int name="castpoint">1</int>
 			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">false</bool>
 			<int name="mana-cost">4</int>
@@ -151,7 +155,7 @@
 					<dict>
 						<string name="class">ShootProjectile</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_gl_shell.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">22</int>
 					</dict>
 					<dict>
 						<string name="class">PlaySound</string>
@@ -183,7 +187,9 @@
 			<ivec2 name="move-speed">0 600</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 600</ivec2>
-			<int name="castpoint">0</int>
+			<!-- 1, not 0: the mana is paid when the cast crosses its castpoint
+			     (PlayerSkillDirectional.Update), and a cast that starts at 0 never crosses 0 -->
+			<int name="castpoint">1</int>
 			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">false</bool>
 			<int name="mana-cost">4</int>
@@ -193,7 +199,7 @@
 					<dict>
 						<string name="class">ShootProjectile</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_gl_shell.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">22</int>
 					</dict>
 					<dict>
 						<string name="class">PlaySound</string>
@@ -212,6 +218,10 @@
 		Glock, main hand (left click). Alone (shield, tome, empty off hand): two accurate
 		rounds a cycle. With the off-hand Glock's marker: one round from each muzzle in turn,
 		0.9 damage each and a spread that blooms while held - less control, a bit less DPS.
+		Each round leaves its own gun: the main hand's (right hand) 6 px right of the aim line
+		(rotate-offset 0 6), the off hand's 6 px left (0 -6); measured by look-firearms-muzzles.
+		Rounds start just past the gun's tip: dist 12 for a pistol, 22 for the rifle (ShootProjectile
+		clamps it to a wall in between), and are drawn 11 px up, the gun's height.
 	-->
 	<dict>
 		<string name="name">.skills.attacks.mainhand.hwp_glock.name</string>
@@ -222,17 +232,17 @@
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
 
 		<dict name="skill">
-			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
-			<int name="anim-length">520</int>
+			<int name="anim-length">600</int>
 
 			<int name="cooldown">0</int>
 			<float name="move-speed-mul">0.6</float>
-			<ivec2 name="move-speed">0 520</ivec2>
+			<ivec2 name="move-speed">0 600</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 520</ivec2>
+			<ivec2 name="blocking">0 600</ivec2>
 			<int name="castpoint">0</int>
-			<ivec2 name="update-aim">0 520</ivec2>
+			<ivec2 name="update-aim">0 600</ivec2>
 			<bool name="repeating">true</bool>
 			<int name="mana-cost">0</int>
 			%block HasRound
@@ -252,12 +262,14 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_poison.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 6</vec2>
+						<bool name="rotate-offset">true</bool>
 						<int name="spread">3</int>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_bounce</string>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
 				</array>
@@ -275,14 +287,14 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_dual_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_dual_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_dual_poison.unit</string>
-						<int name="dist">5</int>
-						<vec2 name="offset">0 -2</vec2>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_bounce</string>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
 				</array>
@@ -300,14 +312,14 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
-						<int name="dist">5</int>
-						<vec2 name="offset">0 2</vec2>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_bounce</string>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
 				</array>
@@ -316,8 +328,8 @@
 			<array name="timeline">
 				<i>0</i><s>solo</s>
 				<i>0</i><s>left</s>
-				<i>260</i><s>solo</s>
-				<i>260</i><s>right</s>
+				<i>300</i><s>solo</s>
+				<i>300</i><s>right</s>
 			</array>
 		</dict>
 	</dict>
@@ -335,7 +347,7 @@
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
 
 		<dict name="skill">
-			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">offhand-handcrossbow</string>
 			<int name="anim-length">520</int>
 
@@ -365,8 +377,8 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_dual_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_dual_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_dual_poison.unit</string>
-						<int name="dist">5</int>
-						<vec2 name="offset">0 -2</vec2>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<int name="spread">18</int>
 					</dict>
@@ -377,14 +389,14 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
-						<int name="dist">5</int>
-						<vec2 name="offset">0 2</vec2>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<int name="spread">18</int>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_bounce</string>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 2
 				</array>
@@ -408,18 +420,54 @@
 						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
 						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
 						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
-						<int name="dist">5</int>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 -6</vec2>
+						<bool name="rotate-offset">true</bool>
 						<int name="spread">4</int>
 					</dict>
 					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_bounce</string>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+					</dict>
+					%block Spend 1
+				</array>
+				<!-- both pistols out with one round left: the off hand fires it alone -->
+				<array name="last">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>has</s><s>players/hwp/firearms/buffs_firearms.sval:glock_main</s><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>lt</s><i>2</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">SpawnEffect</string>
+						<string name="effect">effects/generic/attacks/hand_crossbow_quickshot.effect</string>
+						<bool name="attach-to-owner">true</bool>
+						<bool name="send-angle">true</bool>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_off_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
+						<int name="dist">12</int>
+						<vec2 name="offset">0 -6</vec2>
+						<bool name="rotate-offset">true</bool>
+						<int name="spread">4</int>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
 				</array>
 			</dict>
 
 			<array name="timeline">
+				<!-- last before both: at one round it spends it, so both (2 or more) can't follow -->
+				<i>0</i><s>last</s>
 				<i>0</i><s>both</s>
 				<i>0</i><s>solo</s>
 			</array>

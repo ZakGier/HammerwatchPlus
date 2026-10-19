@@ -1,0 +1,40 @@
+<!-- Sniper Shot's laser dot (HWPFirearmsSnipe, Combat.as): a bright red point with a soft halo
+     and a faint red glow, pulsing a little. Drawn from vanilla's one-pixel laser texture, at x 32: its first pixels are 15% opaque. -->
+<effect looping="true" layer="200">
+	<sprite origin="0.5 0.5" texture="effects/player/player_white_singlepixel_gradient.png" material="effects/effects.mats:bright"
+		pos-x="0"
+		pos-y="0"
+		scale-x="7"
+		scale-y="7"
+		color-r="1"
+		color-g="0"
+		color-b="0"
+		color-a="0.55+0.15*sin(t*0.012)">
+		<frame time="1000">32 0 1 1</frame>
+	</sprite>
+	<sprite origin="0.5 0.5" texture="effects/player/player_white_singlepixel_gradient.png" material="effects/effects.mats:bright"
+		pos-x="0"
+		pos-y="0"
+		scale-x="3"
+		scale-y="3"
+		color-r="1"
+		color-g="0.35"
+		color-b="0.3"
+		color-a="1">
+		<frame time="1000">32 0 1 1</frame>
+	</sprite>
+
+	<light pos-x="0" pos-y="0">
+		<sprite texture="effects/lights/light2_L.png">
+			<frame time="800">0 0 128 128</frame>
+		</sprite>
+		<looping value="true" />
+		<length value="1000" />
+		<cast-shadows value="false" />
+		<size value="28" />
+		<color-r value="1" />
+		<color-g value="0.05" />
+		<color-b value="0.05" />
+		<color-a value="0"/>
+	</light>
+</effect>

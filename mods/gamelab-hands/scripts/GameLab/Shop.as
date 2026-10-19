@@ -3,6 +3,47 @@
 // ShopWindow through its own OnFunc("buy"); trinkets lists the run bag.
 namespace GameLab
 {
+	// shoplevel <filter> <level>: sets ShopLevel on every NPC within 3000 px whose unit or
+	// behaviour name contains filter, as a town building's placement does (the [Editable]
+	// field of CompositeActorBehaviorNPC / StateActorBehaviorNPC, NPCBehavior.as:244/431, which
+	// NPCBehavior passes to Interact). A spawned Skill Trainer starts at 0: tier 0 only
+	// (WindowSkillTrainer.as:192); 4 opens every tier.
+	void VerbShopLevel(const string &in id, array<string>@ args)
+	{
+		auto plr = GetLocalPlayer();
+		if (plr is null || args.length() < 2)
+		{
+			Fail(id, plr is null ? "no spawned local player" : "usage: shoplevel <filter> <level>");
+			return;
+		}
+		int level = int(parseInt(args[1]));
+		auto units = g_scene.FetchAllUnits(~0, xy(plr.m_unit.GetPosition()), 3000);
+		int n = 0;
+		for (uint i = 0; i < units.length(); i++)
+		{
+			if (!units[i].IsValid() || units[i].IsDestroyed())
+				continue;
+			ref@ b = units[i].GetScriptBehavior();
+			if (units[i].GetDebugName().findFirst(args[0]) < 0 && Reflect::GetTypeName(b).findFirst(args[0]) < 0)
+				continue;
+			auto c = cast<CompositeActorBehaviorNPC>(b);
+			auto st = cast<StateActorBehaviorNPC>(b);
+			if (c !is null)
+				c.ShopLevel = level;
+			else if (st !is null)
+				st.ShopLevel = level;
+			else
+				continue;
+			n++;
+		}
+		if (n == 0)
+		{
+			Fail(id, "no NPC matching '" + args[0] + "'");
+			return;
+		}
+		Emit(Reply(id, true).Int("n", n).Int("level", level));
+	}
+
 	// use <filter>: IUsable.Use of the nearest usable unit whose unit path or
 	// behaviour matches, from wherever the player stands
 	void VerbUse(const string &in id, array<string>@ args)

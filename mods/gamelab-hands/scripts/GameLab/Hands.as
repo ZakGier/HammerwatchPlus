@@ -350,7 +350,11 @@ namespace Modules
 			GameLab::RegisterVerb("save", "", GameLab::Verb(GameLab::VerbSave));
 			GameLab::RegisterVerb("menu", "[tab] [subtab|-] [widget] [func...]", GameLab::Verb(GameLab::VerbMenu));
 			GameLab::RegisterVerb("xp", "<amount>", GameLab::Verb(GameLab::VerbXp));
-			GameLab::RegisterVerb("material", "<type> <n>", GameLab::Verb(GameLab::VerbMaterial));
+			GameLab::RegisterVerb("material", "<type|all> <n>", GameLab::Verb(GameLab::VerbMaterial));
+			GameLab::RegisterVerb("cheats", "[on|off]", GameLab::Verb(GameLab::VerbCheats));
+			GameLab::RegisterVerb("levelup", "<n>", GameLab::Verb(GameLab::VerbLevelup));
+			GameLab::RegisterVerb("points", "<skill|stat> <n>", GameLab::Verb(GameLab::VerbPoints));
+			GameLab::RegisterVerb("setup", "<file>", GameLab::Verb(GameLab::VerbSetup));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));
 			GameLab::RegisterVerb("subclass", "<classId>", GameLab::Verb(GameLab::VerbSubclass));
 			GameLab::RegisterVerb("classskills", "<classId>", GameLab::Verb(GameLab::VerbClassSkills));
@@ -379,6 +383,7 @@ namespace Modules
 			GameLab::RegisterVerb("press", "<widgetId>", GameLab::Verb(GameLab::VerbPress));
 			GameLab::RegisterVerb("func", "<name...>", GameLab::Verb(GameLab::VerbFunc));
 			GameLab::RegisterVerb("use", "<filter>", GameLab::Verb(GameLab::VerbUse));
+			GameLab::RegisterVerb("shoplevel", "<filter> <level>", GameLab::Verb(GameLab::VerbShopLevel));
 			GameLab::RegisterVerb("shop", "[buy <index>]", GameLab::Verb(GameLab::VerbShop));
 			GameLab::RegisterVerb("trinkets", "", GameLab::Verb(GameLab::VerbTrinkets));
 			GameLab::RegisterVerb("prefab", "<file> <dx> <dy>", GameLab::Verb(GameLab::VerbPrefab));

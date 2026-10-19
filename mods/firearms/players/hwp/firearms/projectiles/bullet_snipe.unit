@@ -7,8 +7,8 @@
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
-		<int name="ttl">600</int>
-		<float name="speed">32</float>
+		<int name="ttl">300</int>
+		<float name="speed">64</float>
 		<string name="penetration-bind">snipe-pierce</string>
 		<bool name="bounce-on-collide">false</bool>
 
@@ -60,7 +60,7 @@
 		</array>
 
 		<dict name="effect-params">
-			<float name="height">8</float>
+			<float name="height">11</float>
 		</dict>
 	</behavior>
 

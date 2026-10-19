@@ -1,0 +1,308 @@
+{
+ "name": "look-firearms-tips",
+ "about": "Measurement only: where gun rounds start relative to the player (hwp firearms muzzle: ahead of the player along the aim, and to its right) for the rifle and dual pistols; then a Marksman's Sniper Shot: the laser dot during its windup (shot at timescale 0.1), its cost (mana, no rounds) and how far its round flies. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 180,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Look"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "300",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms muzzle"
+  },
+  {
+   "do": "log_capture",
+   "pattern": "muzzle: ahead (?P<ahead>[-0-9.]+) right (?P<right>[-0-9.]+)",
+   "save_as": "rifle_right",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "300",
+    "0",
+    "0",
+    "0",
+    "1",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms muzzle"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rifle_r_0"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "common"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "common"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "300",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms muzzle"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "dual_r_0"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_rifle_01",
+    "common"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms_sniper"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_snipe",
+    "1"
+   ],
+   "expect": {
+    "level": 1
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "0"
+   ],
+   "save_as": "clip_before"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "mana_before"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "3000",
+    "0",
+    "0",
+    "1",
+    "0",
+    "skill2"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "snipe: laser dot on",
+   "timeout": 5
+  },
+  {
+   "do": "shot",
+   "name": "snipe_dot_0"
+  },
+  {
+   "do": "shot",
+   "name": "snipe_dot_1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 8
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "0"
+   ],
+   "save_as": "clip_after"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "mana_after"
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms muzzle"
+  },
+  {
+   "do": "log_has",
+   "pattern": "muzzle: ahead 22.0 .* last miss flew",
+   "timeout": 5
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

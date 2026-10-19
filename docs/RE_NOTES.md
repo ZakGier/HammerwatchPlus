@@ -1376,3 +1376,261 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   firearms orb's level qualities match the svals (`orb_levels` check against a fresh
   dump), and Assault is Double Barrel Burst (2 shells, 200 each, +20..100% within
   5/5/7/7/10 m, 5/5/6/6/7 mana, 5 s) plus Adrenaline.
+
+## Firearms reload rework, faster rounds, drops in the demo (2026-10-19)
+
+- **The Reload cast is now the reload.** Before, it refilled at a 550 ms castpoint and the
+  2 s cooldown came afterwards. The user wanted the whole recharge to pass before the refill,
+  a dodge to cancel the reload, and no reload on a full mag. `fs_reload.sval` is now
+  `HWPFirearmsReload` (Combat.as), a `PlayerSkillDirectional` subclass:
+  - The castpoint is the level's recharge, 2000/1800/1600/1400/1200 ms.
+  - Each upgrade sets castpoint, blocking, update-aim and timeline to match.
+  - The cast list, Explosive Reload's throw and then the refill, lands at the castpoint;
+    the dual Glocks' second magazine follows 100 ms later.
+  - While the cast runs, `m_cooldownC` holds the time left, so the HUD icon sweeps over the
+    reload. Any end of the cast sets it to 0.
+- **Skill facts this rests on** (decompiled source):
+  - `PlayerSkillDirectional.Deactivate` starts the cooldown only when the castpoint was
+    reached, so a cancelled cast sets none.
+  - `PlayerSkill.m_cooldown` is not clamped to the castpoint; `ActiveSkill.Initialize` is the
+    one that does `max(castpoint, cooldown)`.
+  - The dash has `ignore-blocking` (`players/attacks/dash.sval`).
+    `PlayerTargetingHelper.CheckUseSkill` activates it, then `CancelOther` calls
+    `Deactivate()` on every other active skill. That is how a dodge cancels the Reload cast.
+  - `ActiveSkill.Activate` sets `m_castingC` (at least 1) before `CancelOther` runs. So when
+    the Reload's `Deactivate` sees a casting skill of type Dash, the cancel came from a dodge.
+  - Skill upgrades are per-level param layers (`PlayerClass.as`, `m_levelParams`).
+- **Dodge rules:**
+  - A dodge during a manual Reload cancels it and leaves the clip as it was.
+  - With Dodge Reload Skip, the dodge runs the rest of the timeline (`m_timeline.Update(GetLength() + 1)`)
+    and refills at once.
+  - An empty clip's automatic reload (the `reloading` stack, 1.6 s) still restarts on a
+    dodge. That is the planner's "if you are out of bullets, it will automatically start
+    reloading again".
+- **No Reload on a full clip:** `CanActivate` refuses when the clip is at its modified max,
+  and plays the class's `cant` voice line.
+  - It also refuses during the automatic reload unless Over-Reload is learned. Then the
+    press is that reload's timing try. A missed try now ends the cast, because the full-length
+    cast would outlast the automatic reload.
+  - Assumed, not measured: cooldown reduction (`m_modCooldownMul`) no longer shortens the
+    reload. Skill and cast speed do, because the castpoint is in skill time.
+- **Bullets fly 2x as fast, same range.** Every gun round has its speed doubled and its ttl
+  halved: rifle 52/240, pistol 44/180, sniper 64/300, turret 52/240, shotgun pellet 40/132,
+  and the 24 elemental rounds through `%block Round`. Hits were checked at 50-90 px and by
+  the turret (plan-firearms-a 20261019-152511, plan-firearms-b 20261019-152730 PASS).
+- **The rounds have no trail now** (`tools/make_bullet_art.py`). Missiles and the GL shell
+  keep theirs.
+- **Console item cheats can't give mod items.** `cht_spawn_specific_equipment` runs in the
+  [menu] script context, where there is no player and the mod's BaseItems are not loaded.
+  Character creation also resets `e_cheats`. The demo therefore turns cheats on after
+  `wait_phase`. It drops every firearms gun with the new `gl dropitem <baseItemId> <quality> [dx dy]`
+  verb (gamelab-hands, `Item::DropItem` on an `Equipment::Generator` item).
+- **The earlier demo's setup silently did nothing:** level-up, materials and spare guns all
+  ran with cheats off.
+- **A castpoint of 0 skips the mana cost.** `PlayerSkillDirectional.Update` calls
+  `UsePoints` only when `m_castingT` moves from below the castpoint to at or above it. A cast
+  starts at 0, so with castpoint 0 that never happens, while the timeline still fires its
+  entry at 0. The rifle launchers had been firing free since 68551d8 ("instant shots").
+  - plan-t14's `launcher_costs_mana` caught it (20261019-153855 and 20261019-154500).
+  - A probe with only the launcher kept mana at 60.000, both on HEAD and with the new work
+    (probe-launcher 20261019-155204, 20261019-155045).
+  - The launchers now use castpoint 1: 60.000 -> 56.436 after a press (probe-launcher 20261019-155332).
+  - The other castpoint-0 firearms skills cost no mana.
+- **Bot lesson:** a gl call sent right after an `hwp` console line can take about 3 s. The
+  manual Dodge Reload Skip check now reads the clip max first, and passes on the game's
+  `reload: dodge at N/M ms finishes it` line.
+
+## One pistol for either hand, the reload icon, quiet held trigger (2026-10-19)
+
+- **An item's slot is its base item's.** `Equipment::Item.GetSlot()` is `baseItem.slot`
+  (Items/Equipment.as:145), and the bag click equips by that slot
+  (EquipmentInventoryWidget.OnClick -> EquippedItems.Equip(item), EquippedItems.as:161-190).
+  No slot means "either hand". So the off-hand pistols `hwp_glock_oh_0N` stay, as twins
+  that never drop or sell: spawn-chance 0, ilvl 999-999 (GenerateBaseItem filters on ilvl,
+  EquipmentGenerator.as:197), no `armory` tag. `gl equip` still makes them
+  (Generator.GenerateItem skips both filters).
+  - A bag click runs core's new `HWP::Bag::OnEquip` callbacks first (BagSlots.as,
+    `HWPEquipmentInventoryWidget.OnClick`). Firearms swaps `item.baseItem` for the twin
+    when the main hand is full and not two-handed and the off hand is free.
+  - The swap is safe after Finalize. `GetModifiers` picks an item mod's main- or
+    off-hand list from `baseItem.slot` on every call (Equipment.as:147-161), and
+    `ItemModifier` loads both lists for any handed mod (Equipment.as:540-551).
+  - Back in the bag, a twin turns into the main-hand pistol (Pistols.as, 4 times a
+    second). That covers an unequip and a two-hander bumping it off.
+  - Verified: mod-firearms-pistols 20261019-162530. Two pistols clicked in the bag went
+    rifle -> main hand -> off hand (`hwp_attack_glock` + `_off`). Unequipped, the off-hand
+    one came back as `hwp_glock_mh_01` and went back on the off hand.
+- **Equipping is a menu accept on the bag slot.** The Equip hint isn't clickable
+  (`navbar` clickable `[true,false,...]`). A bot hovers `equipment-inventory <i>` and
+  posts Enter. A slot's index is its place in `EquipmentInventory.m_items`, and an
+  unequipped item is appended.
+- **The automatic reload's look for the Reload cast.** The HUD sweep on the reloading
+  icon is the stack's `display-timer-radius`: `GetBuffIconDuration` = `m_timerTickC`,
+  max = `m_defMod.m_timerTime` (ActorBuff.as:811-823). The new `reload_cast` stack uses
+  the same icon. HWPFirearmsReload holds one stack while it casts and sets `m_timerTickC`
+  to the time left each frame, with `m_defMod` pointed at its own copy whose timer is the
+  whole cast. Verified: "cast icon on, 1967/2000 ms" and the HUD frame (mod-firearms-pistols
+  20261019-162257, shot reload_icon).
+- **Why a held trigger said "cant".** A repeating attack held down calls
+  `skill.Activate` every frame (PlayerTargetingHelper.as:631-645). Activate calls
+  `CanActivate()` with warn on (PlayerSkillDirectional.as:49), and the clip conditional's
+  failure plays "cant" (PlayerSkill.as:344-349). `HWPFirearmsGun` (the 4 gun attacks)
+  warns only while armed. It arms whenever the button is up (`GetSkillInput(this).Down`
+  false, in Update) and disarms at the first warned check, shot or warning. Verified:
+  7 s held through the clip running dry and the reload gave no warning, and a fresh click
+  during a reload warned once (mod-firearms-pistols 20261019-162530).
+- **Muzzles.** The pistols sit about 5-6 px either side of the unit's position, the main
+  hand on the right (look-firearms-muzzles 20261019-161736, zoomed frames, six aims).
+  `rotate-offset` turns (0, +y) to the aim's right (ShootProjectile.as:96-97:
+  `addrot(offset, aim angle)`). So main-hand rounds use (0 6) and off-hand rounds (0 -6).
+  The old offsets were ±2 and had the main hand's rounds on the left.
+- **Gun sounds with a volume.** `HWPFirearmsSound` is a PlaySound whose instance
+  (`SoundEvent.PlayTracked`) gets `SetVolume`. The pistols now use the rifle's
+  `bandit_rogue_bomb_bounce` at 1. The rifle is at 1.4. Assumed, not measured: FMOD
+  treats an instance volume above 1 as gain (the lab is muted).
+- **The lab town has no Skill Trainer.** Skills are learned at its `npc_skill_trainer.unit`
+  (Town/SkillTrainer.as:19, `SkillUp`). Without one, a new Sniper's Sniper Shot can't be
+  learned in the demo. The demo spawns the trainer next to the Subclass Picker. Verified:
+  it opens with all six Marksman skills (probe-subclass 20261019-162631). Through `gl skill`,
+  Sniper Shot lands on skill key 2 (probe-subclass 20261019-161323).
+- **Demo:** watch mode is 2560x1440 now (`gamelab/env/settings/watch/HWR2.exe.cfg`). The demo
+  also has five training dummies (normal x2, armored, magic, breakable) and two of each
+  pistol tier.
+- **A one-off crash on quit.** mod-firearms 20261019-162710 passed every step, then the
+  game exited with 0xC0000005 while saving on quit. That left a dirty teardown. The same
+  code then passed 3 times with clean exits (20261019-162913, -162925, -162937). One
+  earlier run had the same exit code, with no firearms code involved (plan-pets-b
+  20261018-132915). Treated as an intermittent engine crash at shutdown, not a bug in the mod.
+
+## Items before vendors, the demo in one command (2026-10-19)
+
+- **Why a vendor blocked a pickup.** `Player.GetTopUsable` returns the first usable in
+  `m_usables` that CanUse. `AddUsable` keeps that list sorted by `UsePriority`, lowest first
+  (Behaviors/Actors/Player/Player.as:135-167). A dropped item is 1 (Items/UnitBehavior.as:299),
+  while NPCs, shops, chests, shrines and wells are 0. Revives and level exits are -1, and pyres
+  and beacons are -5. So with a vendor and an item both underfoot, Use always talked to the vendor.
+- **Fix: core reorders, no class swap.** `HWP::PickupFirst` (mods/core/scripts/HWP/Core/PickupFirst.as,
+  run from CoreModule.UpdateFrame) re-sorts the local player's list each frame. It uses a stable
+  sort that ranks an item between -1 and 0. A subclass of `Item::UnitBehavior` would not work:
+  vanilla pets find items with `FetchUnitsWithBehavior("Item::UnitBehavior", ...)`, and that
+  call's `includeInherited` defaults to false (api strings, MiniPet.as:284).
+  - The same default means `mods/pets`' `FetchUnitsWithBehavior("Chest", ...)` (Pets.as:993)
+    misses keys' `HWPChest`. Assumed, not yet measured.
+  - Verified: mod-core-pickup 20261019-163842. With a Skill Trainer and a dropped rifle at the
+    player's feet, `usables` listed `items/base.unit` on top, ahead of the
+    `CompositeActorBehaviorNPC`. Use put the rifle in the bag and opened no window.
+- **The demo setup is one typed command.** Typed console lines garble when the player presses
+  keys while the harness types (demo-firearms 20261019-163131: `.unit` arrived as `.sunist`, then
+  every line had a stray leading backtick, "No such cvar: `gl"). The runner gave up on a line
+  with no reply and closed the game. The script API has no way to run a console line, so
+  gamelab-hands has new verbs:
+  - `setup <file>` runs every line of an sval array of verb lines in one frame
+    (`gamelab/setup_demo_firearms.sval`, 27 lines). It replies with `failed` and the failed lines.
+    The probe's `Fail()` counts failures (`g_fails`).
+  - `cheats`, `levelup` and `points <skill|stat>` mirror core's `hwp` cheats.
+  - `material all <n>` gives n of each material.
+  - Verified: mod-core-pickup 20261019-163842 (`failed` 0). demo-firearms 20261019-163941
+    (watch, 27 lines, 0 failed).
+- `hwp levelup 20` from level 1 gives level 20, not 21. The old demo's "level 21" was wrong
+  (its 16:31:48 log line says "now level 20").
+- **Dummies hidden in the barricade.** The demo's dummies at dy -80..-100 stood inside the log
+  barricade north of the lab-town start (mod-core-pickup 20261019-163842, shot after_use). They
+  now stand in a row on the open road east of it, dx 110..230 (20261019-164119, shot after_use).
+- **Rounds start at the gun tip.** ShootProjectile starts a round at
+  `pos + dir * dist + offset` and clamps it to the first wall on the way (`RaycastClosest`,
+  ShootProjectile.as:121-128). The guns' `dist` was 5, the body. Measured from frames, the
+  rifle's tip is about 13 px ahead of the player's centre, the pistols' about 8-9 px, and both
+  are held about 10-12 px up (look-firearms-muzzles 20261019-161736, look-firearms-tips
+  20261019-164426).
+  - First values: the rifle, its launcher, Burst and Snipe dist 14, the pistols 9. Every gun
+    round's `effect-params height` is 11, up from 8.
+  - Assumed, not seen: the frames show the guns, but every round had already left the frame
+    by the time it was taken, even at timescale 0.1.
+  - The rifle's round still looked as if it started too close in play. The round sprite is centred
+    on its spawn point (rifle round origin "9 3.5", about 10 px long), so half of it was drawn
+    behind the tip. Now: the rifle, its launcher, Burst and Snipe use dist 22, the pistols 12.
+    `HWPFirearmsGunShot.ProduceProjectile` (Elemental.as) records where the last round started,
+    relative to the aim, and `hwp firearms muzzle` prints it. Measured: rifle 22.0 ahead, pistols
+    12.0 ahead and 5.2 to the side (look-firearms-tips 20261019-165353). Verified.
+- **Snipe uses mana, not rounds.** sniper_snipe.sval lost its clip conditional and its
+  `AddStacks -10`; it still costs 30/30/40/40/50 mana. Measured: clip 27 before and after one
+  Snipe, mana 60 to 32 (look-firearms-tips 20261019-165353). Verified.
+- **Snipe's laser dot.** Snipe is a PlayerSkillDirectional whose castpoint (650 ms) is the
+  charge. `HWPFirearmsSnipe` (Combat.as) overrides `Update`: while `0 <= m_castingT < m_castpoint`
+  it raycasts (`RaycastType::Shot`) from the player along `m_timeline.m_dirTarget`, up to
+  `SNIPE_REACH` 300, and keeps `effects/laser_dot.effect` at the hit point or the end of
+  reach. It destroys the dot when the cast ends and in `Deactivate`.
+  - The texture is vanilla's 64x1 `player_white_singlepixel_gradient.png`, whose pixels 0-1 are
+    only 15% opaque (alpha 38), so the dot was invisible until its frame moved to x 32.
+  - Measured: "snipe: laser dot on, 199.5 out (hit)", and the frame shows a red dot on the tree
+    trunk that the aim line hits (look-firearms-tips 20261019-165939). Verified.
+  - Assumed: 300 is about the rifle round's range. The range record stayed 0.0 because every
+    round in the measurement hit something.
+
+## Gun hold, even pistols, turret radius, Hoarder HUD, demo orb and trainer (2026-10-19)
+
+Status: measured where a run is cited; the rest says which run checks it.
+
+- **The game's metre is 6 px** (`Tweak::PixelsPerMeter`, Data/Misc.as:15; `formatMeters`
+  divides by it, Utils/Functions.as:777). The firearms notes assumed 16 px. That is wrong, so
+  "10 m" was 160 px, about 27 m.
+  - My Turret!'s `NEAR` is now 60 px, a true 10 m. The user saw the boost stay on after walking
+    away. The demo's log shows it did switch off ("turret: unboosted" at 17:05:08, 17:05:14 and
+    17:05:27, demo-firearms 20261019-170119), just far out.
+  - plan-firearms-b's `myturret_only_near` places a turret 120 px out, sees no boost, then walks
+    up and sees one (20261019-191214 PASS). Walking off at once failed (20261019-183730): no
+    "unboosted" within 2 s of a 1.5 s walk, so the check now walks in.
+  - Double Barrel Burst's close ranges (80/112/160 px, labelled 5/7/10 m) are left as tuned.
+- **The arm hold covers every gun.** `AimHold` (Combat.as) only listed the two pistol attacks,
+  so the rifle lowered after each shot. `GUNS` now lists the rifle, the epic rifle, both grenade
+  launchers and both pistols, and `HOLD_MS` is 1000.
+  - The rifle's `crossbow-2h` set plays `attack_2h_crossbow.anim`. Assumed: its first frame has
+    the rifle up, as the wand shot has the arm out. plan-firearms-arm takes frames for both guns.
+- **A held repeating attack drops the overshoot.** PlayerSkillDirectional.Update deactivates
+  at `m_castingT >= m_skillLen` (:99), and the next activation starts at 0. So the cycle runs up to
+  a frame long, and the right gun's gap back to the left one is longer than left to right.
+  - Measured before the fix: gaps alternated 264/330 ms (look-firearms-batch 20261019-183547).
+    PlayerTargetingHelper's restart of a held repeating skill (:629-646) comes a frame after the
+    deactivation, so the shot at 0 fired a frame late.
+  - `HWPFirearmsGun.Update` now restarts the held skill itself, in the same frame it ends. It
+    carries the overshoot, capped at 100 ms (`CARRY_MAX`), into `NetActivate`, then calls
+    `CancelOther`, `TriggerModifierEffects` and `m_timeline.Update` as the helper does. A `const`
+    class property doesn't compile in AngelScript, so `CARRY_MAX` is a plain `int`.
+  - The pistol cycle is now 600 ms, with shots at 0 and 300; it was 520 and 260.
+  - `hwp firearms shots` prints the gaps between the local player's last 16 rounds. After the fix:
+    `264 297 297 297 297 264 297 297 297 297 297` (look-firearms-batch 20261019-190049). Mostly
+    18 frames, with a 16-frame gap about one in five, where it used to alternate 16 and 20.
+- **Ordinance Hoarder on the HUD.**
+  - SkillWidget dims the icon whenever its frame ring shows a cooldown (:333), and draws the
+    whole ring when the skill is ready (:362).
+  - `HWPFirearmsChargeHUD` (ChargeHUD.as, added by a `HUDConstructor` hook and drawn after
+    HUDPlayer with its transform) darkens the part of the ring not banked yet. It uses the
+    two-ended `DrawSpriteRadial(pos, sprite, time, a, b, color)` (the engine's API strings),
+    from `HoardedSkill.m_progress`.
+  - The charges' icon is now `<id>_shown`: every use ready, the stored charges plus one when the
+    skill is off cooldown, removed at 0. `<id>` keeps the store with no icon.
+  - Measured: plan-firearms-b `hoarder_icon_counts_all` (icon 2 ready, 0 on cooldown,
+    20261019-191214). In look-firearms-batch 20261019-191742 the icon goes 2 -> 1 when a rocket
+    spends the stored charge, and the ring starts banking ("slot ring shows a charge banking, 0%").
+    Frame `ring_banking` (640x360) shows the rocket slot's ring dark with its icon bright; frame
+    `ring_full` shows the whole ring.
+- **Demo orb** (verified: two picks from one sphere, look-firearms-batch 20261019-183547 frame
+  `orb_second`). `GameLabEndlessSphere` (gamelab-hands DemoSphere.as) is a SkillSphere whose
+  `PickedSkill` clears the rolled picks and returns true instead of hiding the sphere.
+  GiveSkillSphereMenu grants the orb only when it returns true (:266-287).
+  The unit is gamelab/skill_sphere_endless.unit.
+- **A spawned Skill Trainer sells tier 0 only.** NPCs get `ShopLevel` (an `[Editable]` field,
+  NPCBehavior.as:244/431) from their town building, and the trainer opens tiers up to it
+  (WindowSkillTrainer.as:192/255; tiers 0-4). The new verb `shoplevel <filter> <level>` sets it;
+  the demo setup sets 4. Frame `trainer` (look-firearms-batch 20261019-183547) shows no locked tier.
+- **Double Barrel Burst's close bonus** is now x1.5/2/2.5/3/3.5, up from x1.2-2.0, because the
+  user asked for much more. It is still a step at close-range.
+- **A unit spawned on a standing player is not a usable** until a collision starts: usables are
+  added in the unit's `Collide` (SkillSphere.as:6-17, NPCBehavior.as:341) and dropped by the
+  player's 250 ms `IsInside` sentinel (Player.as:1009-1019). After the demo setup, a trainer and
+  a rifle dropped at the player's feet gave `usables []` until the player stepped off and back
+  (diag-usables 20261019-185932). mod-core-pickup now takes that step (20261019-190009 PASS).
+- **`hwp levelup` and `hwp skillpoints` need `e_cheats 1`** ("cheats are off",
+  look-firearms-batch 20261019-190049); `gl setup`'s `cheats on` line is what the demo uses.
+- **The demo's watch run ends after its 3600 s sleep** (demo-firearms 20261019-170119, 3638 s).
+  The game closes then, even mid-play.

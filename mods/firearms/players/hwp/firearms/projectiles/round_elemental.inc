@@ -17,7 +17,7 @@
 		<array name="modifiers">
 			<dict>
 				<string name="class">Projectile::Speed</string>
-				<float name="hit-intensity-mul">0.85</float>
+				<float name="hit-intensity-mul">0.5</float>
 			</dict>
 			<!-- Critical Aim's focus (Combat.as Projectile::HWPFirearmsShot) -->
 			<dict>
@@ -56,7 +56,7 @@
 		</array>
 
 		<dict name="effect-params">
-			<float name="height">8</float>
+			<float name="height">11</float>
 		</dict>
 	</behavior>
 

@@ -1,2 +1,2 @@
 %include "players/hwp/firearms/projectiles/round_elemental.inc"
-%block Round 520 28 3 2 false rifle ice
+%block Round 260 56 2 2 false rifle ice

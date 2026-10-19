@@ -1,13 +1,13 @@
 <!--
 	Double Barrel Burst's pellets (assault_burst.sval): the look of the shell only. The
 	damage is the shell's cone (HWPFirearmsShotgun, Shotgun.as), so a pellet deals none.
-	speed 20 for 264 ms is the cone's 160 (Projectile speed is per 33 ms).
+	speed 40 for 132 ms is the cone's 160 (Projectile speed is per 33 ms).
 -->
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
-		<int name="ttl">264</int>
-		<float name="speed">20</float>
+		<int name="ttl">132</int>
+		<float name="speed">40</float>
 		<bool name="bounce-on-collide">false</bool>
 
 		<array name="hit-effects">
@@ -26,7 +26,7 @@
 		</array>
 
 		<dict name="effect-params">
-			<float name="height">8</float>
+			<float name="height">11</float>
 		</dict>
 	</behavior>
 

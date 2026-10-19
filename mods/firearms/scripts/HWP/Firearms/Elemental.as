@@ -71,10 +71,20 @@ namespace HWP
 	}
 }
 
+// where the last gun round of the local player started, in the aim's frame: x ahead of the
+// player's position, y to the aim's right ("hwp firearms muzzle")
+namespace HWP { namespace Firearms { vec2 g_lastMuzzle; float g_lastRange; } }
+// g_lastRange: how far the local player's last gun round flew before it ran out
+// g_shotTimes: when (g_scene.GetTime) the local player's last SHOT_TIMES gun rounds started
+// ("hwp firearms shots")
+namespace HWP { namespace Firearms { const uint SHOT_TIMES = 16; array<int> g_shotTimes; } }
+
 class HWPFirearmsGunShot : ShootProjectile
 {
 	UnitProducer@ m_plain;
 	array<UnitProducer@> m_rounds;
+	Actor@ m_shooter;
+	vec2 m_aim;
 
 	HWPFirearmsGunShot(UnitPtr unit, SValue& params)
 	{
@@ -106,10 +116,26 @@ class HWPFirearmsGunShot : ShootProjectile
 		builder.PushArray();
 		builder.PushInteger(e);
 		Pick(e);
+		@m_shooter = owner;
+		m_aim = normalize(dir);
 		bool shot = ShootProjectile::DoAction(builder, owner, target, pos, dir, intensity);
+		@m_shooter = null;
 		Pick(-1);
 		builder.PopArray();
 		return shot;
+	}
+
+	UnitPtr ProduceProjectile(vec2 shootPos, int id = 0) override
+	{
+		if (m_shooter !is null && cast<Player>(m_shooter) !is null)
+		{
+			vec2 d = shootPos - xy(m_shooter.m_unit.GetPosition());
+			HWP::Firearms::g_lastMuzzle = vec2(dot(d, m_aim), dot(d, vec2(-m_aim.y, m_aim.x)));
+			HWP::Firearms::g_shotTimes.insertLast(g_scene.GetTime());
+			if (HWP::Firearms::g_shotTimes.length() > HWP::Firearms::SHOT_TIMES)
+				HWP::Firearms::g_shotTimes.removeAt(0);
+		}
+		return ShootProjectile::ProduceProjectile(shootPos, id);
 	}
 
 	bool NetDoAction(SValue@ param, Actor@ owner, vec2 pos, vec2 dir) override
@@ -188,14 +214,33 @@ class HWPFirearmsBulletRider : IEffect
 namespace Modifiers
 {
 	// Extended Clip Crit: each gun worn (its marker, buffs_firearms.sval) holds pct more rounds,
-	// rounded, so dual pistols gain per pistol.
+	// rounded, so dual pistols gain per pistol. A gun's magazine is its marker's add-max on
+	// the clip (GunMarker), read once.
 	class HWPFirearmsExtendedClip : Modifier
 	{
 		vec2 m_pct;
+		array<string> m_markers = { "rifle", "glock_main", "glock_off" };
+		array<int> m_mags;
+		array<uint> m_hashes;
 
 		HWPFirearmsExtendedClip(UnitPtr unit, SValue& params)
 		{
 			m_pct = GetParamVec2(unit, params, "pct", true, 0);
+		}
+
+		int MarkerMag(const string &in name)
+		{
+			auto def = LoadActorBuff(HWP::Firearms::BUFFS + name);
+			if (def is null)
+				return 0;
+			for (uint i = 0; i < def.m_modifiers.length(); i++)
+			{
+				auto mod = cast<ModifyStack>(def.m_modifiers[i]);
+				if (mod !is null && mod.m_buffName == HWP::Firearms::CLIP)
+					return mod.m_addMaxStacks.x;
+			}
+			HWP::LogError("firearms", "extended clip: marker " + name + " carries no magazine");
+			return 0;
 		}
 
 		ModDynamism HasModifyStacks() override { return ModDynamism::Dynamic; }
@@ -204,14 +249,21 @@ namespace Modifiers
 			auto def = ActorBuffStackDef::Get(HWP::Firearms::CLIP);
 			if (def is null)
 				return;
+			if (m_mags.length() == 0)
+			{
+				for (uint i = 0; i < m_markers.length(); i++)
+				{
+					m_mags.insertLast(MarkerMag(m_markers[i]));
+					m_hashes.insertLast(HashString(HWP::Firearms::BUFFS + m_markers[i]));
+				}
+			}
 			float pct = lerp(m_pct, intensity);
 			int add = 0;
-			if (HWP::Firearms::HasBuff(player, "rifle"))
-				add += int(30 * pct + 0.5f);
-			if (HWP::Firearms::HasBuff(player, "glock_main"))
-				add += int(10 * pct + 0.5f);
-			if (HWP::Firearms::HasBuff(player, "glock_off"))
-				add += int(10 * pct + 0.5f);
+			for (uint i = 0; i < m_markers.length(); i++)
+			{
+				if (player.HasBuff(m_hashes[i]))
+					add += int(m_mags[i] * pct + 0.5f);
+			}
 			player.m_record.GetModifiedStack(def, true).m_maxStacks += add;
 		}
 	}

@@ -1,9 +1,9 @@
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
-		<int name="ttl">360</int>
-		<float name="speed">22</float>
-		<int name="penetration">1</int>
+		<int name="ttl">180</int>
+		<float name="speed">44</float>
+		<int name="penetration">0</int>
 		<bool name="bounce-on-collide">false</bool>
 
 		<array name="modifiers">
@@ -48,7 +48,7 @@
 		</array>
 
 		<dict name="effect-params">
-			<float name="height">8</float>
+			<float name="height">11</float>
 		</dict>
 	</behavior>
 

@@ -1,0 +1,54 @@
+<!-- The firearms demo's orb (setup_demo_firearms.sval): items/skill_sphere.unit with a
+     behaviour that never uses itself up (GameLabEndlessSphere, DemoSphere.as). -->
+<unit slot="doodad" netsync="false">
+	<behavior class="GameLabEndlessSphere">
+	</behavior>
+	<scenes>
+		<scene>
+			<minimap_sprite origin="5 5" texture="gui/minimap.png" frame="74 83 9 9" />
+			<scene src="special/shadow.unit:8"/>
+			<collision static="true">
+				<circle sensor="true" offset="0 0" radius="9" />
+			</collision>
+			<group pos="0 3" >
+				<effect pos="0 -4" layer="0" ulayer="0" src="doodads/generic/skill_sphere_bouncing.effect" />
+			</group>
+			
+			<light pos="0 -4">
+				<sprite texture="effects/lights/light_L.png">
+					<frame>0 0 128 128</frame>
+				</sprite>
+				<length value="6400" />
+				<looping value="true" />
+				<overbright value="6" />
+				<cast-shadows value="false" />
+				<shadow-cast-pos value="0 0" />
+				<shadow-cast-pos-jitter value="0 0 0 0" />
+				<sizes>
+					<size value="32" />
+				</sizes>
+				<colors>
+					<color value="0 100 255 0" />
+					<color value="180 60 200 0" />
+				</colors>
+			</light>
+			<light pos="0 -4">
+				<sprite texture="effects/lights/light_L.png">
+					<frame>0 0 128 128</frame>
+				</sprite>
+				<length value="450" />
+				<looping value="true" />
+				<overbright value="3" />
+				<cast-shadows value="false" />
+				<shadow-cast-pos value="0 0" />
+				<shadow-cast-pos-jitter value="0 0 0 0" />
+				<sizes>
+					<size value="48" />
+				</sizes>
+				<colors>
+					<color value="0 10 75 0" />
+				</colors>
+			</light>
+		</scene>
+	</scenes>
+</unit>

@@ -5,7 +5,7 @@
 	<string name="description">.skills.hwp_firearms.reload.desc</string>
 
 	<array name="description-params">
-		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>2s</s><s>1.8s</s><s>1.6s</s><s>1.4s</s><s>1.2s</s></array>
+		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.hwp_reload_time</s><s>2s</s><s>1.8s</s><s>1.6s</s><s>1.4s</s><s>1.2s</s></array>
 	</array>
 
 	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 0 24 24</vec4></array>
@@ -17,17 +17,21 @@
 
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTLEVEL_1</int>
-		<string name="class">Skills::PlayerSkillDirectional</string>
+		<!-- the cast is the reload: it refills at the castpoint, the level's whole recharge
+		     time (cooldown, the same number, is what the tooltip shows). A dodge cancels it
+		     (HWPFirearmsReload, Combat.as). Each level sets castpoint, blocking, update-aim
+		     and timeline together. -->
+		<string name="class">HWPFirearmsReload</string>
 		<string name="anim">cast</string>
 		<int name="anim-length">700</int>
 
 		<int name="cooldown">2000</int>
-		<int name="castpoint">550</int>
+		<int name="castpoint">2000</int>
 		<float name="cast-speed-mul">1</float>
 		<float name="move-speed-mul">0.5</float>
 		<ivec2 name="move-speed">0 700</ivec2>
-		<ivec2 name="blocking">0 700</ivec2>
-		<ivec2 name="update-aim">0 550</ivec2>
+		<ivec2 name="blocking">0 2100</ivec2>
+		<ivec2 name="update-aim">0 2100</ivec2>
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">0</int>
 
@@ -91,8 +95,8 @@
 		</dict>
 
 		<array name="timeline">
-			<i>550</i><s>cast</s>
-			<i>650</i><s>cast2</s>
+			<i>2000</i><s>cast</s>
+			<i>2100</i><s>cast2</s>
 		</array>
 	</dict>
 
@@ -100,18 +104,46 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
 			<int name="cooldown">1800</int>
+			<int name="castpoint">1800</int>
+			<ivec2 name="blocking">0 1900</ivec2>
+			<ivec2 name="update-aim">0 1900</ivec2>
+			<array name="timeline">
+				<i>1800</i><s>cast</s>
+				<i>1900</i><s>cast2</s>
+			</array>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
 			<int name="cooldown">1600</int>
+			<int name="castpoint">1600</int>
+			<ivec2 name="blocking">0 1700</ivec2>
+			<ivec2 name="update-aim">0 1700</ivec2>
+			<array name="timeline">
+				<i>1600</i><s>cast</s>
+				<i>1700</i><s>cast2</s>
+			</array>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
 			<int name="cooldown">1400</int>
+			<int name="castpoint">1400</int>
+			<ivec2 name="blocking">0 1500</ivec2>
+			<ivec2 name="update-aim">0 1500</ivec2>
+			<array name="timeline">
+				<i>1400</i><s>cast</s>
+				<i>1500</i><s>cast2</s>
+			</array>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
 			<int name="cooldown">1200</int>
+			<int name="castpoint">1200</int>
+			<ivec2 name="blocking">0 1300</ivec2>
+			<ivec2 name="update-aim">0 1300</ivec2>
+			<array name="timeline">
+				<i>1200</i><s>cast</s>
+				<i>1300</i><s>cast2</s>
+			</array>
 		</dict>
 	</array>
 

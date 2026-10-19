@@ -558,7 +558,10 @@ class Run:
         elif kind == "minimize":
             self.assert_("window minimized", winproc.minimize(game.window()))
         elif kind == "sleep":
-            time.sleep(s["seconds"])
+            # in 1 s slices, so a watch demo the player quits doesn't hold the lock for its full sleep
+            end = time.time() + s["seconds"]
+            while time.time() < end and game.alive():
+                time.sleep(min(1.0, max(0.0, end - time.time())))
         elif kind == "key":
             game.key(s["key"], s.get("hold", 0.05))
         elif kind == "type":

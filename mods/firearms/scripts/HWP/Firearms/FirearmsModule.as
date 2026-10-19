@@ -9,6 +9,7 @@ namespace HWP
 		const string CLASS_ID = "hwp_firearms";
 		const string CLIP = "players/hwp/firearms/stacks_firearms.sval:clip";
 		const string RELOADING = "players/hwp/firearms/stacks_firearms.sval:reloading";
+		const string RELOAD_CAST = "players/hwp/firearms/stacks_firearms.sval:reload_cast";
 		const array<string> UNITS = {
 			"players/hwp/firearms/projectiles/bullet.unit",
 			"players/hwp/firearms/projectiles/rifle_round.unit",
@@ -178,9 +179,17 @@ namespace HWP
 					HWP::Log("firearms", "skill tag " + tags[i] + " is bit " + bit);
 			}
 			if (items)
-				HWP::CheckEquipment("firearms", { "hwp_rifle_01", "hwp_rifle_02", "hwp_rifle_03",
-					"hwp_glock_mh_01", "hwp_glock_mh_02", "hwp_glock_mh_03",
-					"hwp_glock_oh_01", "hwp_glock_oh_02", "hwp_glock_oh_03" });
+			{
+				// the pistols from the lists their hand swap uses (Pistols.as)
+				array<string> ids = { "hwp_rifle_01", "hwp_rifle_02", "hwp_rifle_03" };
+				for (uint i = 0; i < PISTOL_MAIN.length(); i++)
+					ids.insertLast(PISTOL_MAIN[i]);
+				for (uint i = 0; i < PISTOL_OFF.length(); i++)
+					ids.insertLast(PISTOL_OFF[i]);
+				if (PISTOL_MAIN.length() != PISTOL_OFF.length())
+					HWP::LogError("firearms", "PISTOL_MAIN and PISTOL_OFF differ in length: a pistol has no twin");
+				HWP::CheckEquipment("firearms", ids);
+			}
 			HWP::CheckUnits("firearms", UNITS);
 			HWP::Log("firearms", "self-check done");
 		}
@@ -190,6 +199,24 @@ namespace HWP
 			if (args.length() > 0 && args[0] == "sound")
 			{
 				CmdSound(args);
+				return;
+			}
+			// "muzzle": where the last gun round started, ahead of the player and to the aim's right
+			if (args.length() > 0 && args[0] == "muzzle")
+			{
+				auto m = HWP::Firearms::g_lastMuzzle;
+				HWP::Commands::Reply("muzzle: ahead " + formatFloat(m.x, "", 0, 1) + " right " + formatFloat(m.y, "", 0, 1)
+					+ ", last miss flew " + formatFloat(HWP::Firearms::g_lastRange, "", 0, 1));
+				return;
+			}
+			// "shots": the gaps between the local player's last gun rounds, in ms, oldest first
+			if (args.length() > 0 && args[0] == "shots")
+			{
+				string gaps = "";
+				auto t = HWP::Firearms::g_shotTimes;
+				for (uint i = 1; i < t.length(); i++)
+					gaps += (i > 1 ? " " : "") + (t[i] - t[i - 1]);
+				HWP::Commands::Reply("shots: " + t.length() + " rounds, gaps " + gaps);
 				return;
 			}
 			// "empty" (cheat): the clip at 0 with no reload running, as after going down a
@@ -249,6 +276,7 @@ namespace Modules
 			super("hwp-firearms");
 			HWP::Commands::Register("firearms", "[empty|sound [n|next|prev|again|list] [shots]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
 			HWP::Firearms::SelfCheck(false);
+			HWP::Bag::OnEquip(HWP::Bag::EquipPrepare(HWP::Firearms::PistolEquip));
 		}
 
 		void Start(StartMode sMode)
@@ -259,6 +287,7 @@ namespace Modules
 			HWP::Firearms::g_filledClass = "";
 			HWP::Firearms::g_levelStart = true;
 			HWP::Firearms::g_headshot = false;
+			HWP::Firearms::g_headshotEnd = false;
 			HWP::Firearms::g_overReload = HWP::Firearms::OverReloadState();
 			for (uint i = 0; i < HWP::Firearms::g_hoarded.length(); i++)
 			{
@@ -275,6 +304,9 @@ namespace Modules
 			HWP::Firearms::UpdateFill(ms);
 			HWP::Firearms::UpdateEmptyTrigger(gameInput);
 			HWP::Firearms::UpdateCombat(ms);
+			HWP::Firearms::UpdatePistols(ms);
+			HWP::Firearms::UpdateAudition(ms);
+			HWP::Firearms::UpdateLaserDot();
 		}
 
 		void RenderFrame(int idt, SpriteBatch& sb) override

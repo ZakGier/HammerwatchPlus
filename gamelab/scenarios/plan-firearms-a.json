@@ -86,7 +86,7 @@
    "expect": {
     "snipe_casts": true,
     "snipe_cost": true,
-    "snipe_uses_rounds": true,
+    "snipe_no_rounds": true,
     "focus_passive": true,
     "focus_gains": true,
     "focus_lost_on_miss": true,

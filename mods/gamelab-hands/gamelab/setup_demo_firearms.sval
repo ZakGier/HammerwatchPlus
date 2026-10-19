@@ -1,0 +1,45 @@
+<!--
+	The firearms hand-play demo's setup (gamelab/scenarios/demo-firearms.json), run in one frame
+	by "gl setup gamelab/setup_demo_firearms.sval": one typed line, so a player pressing keys
+	while the demo starts can't garble a long list of typed commands. Each line is a gl verb.
+-->
+<array>
+	<string>cheats on</string>
+	<string>levelup 20</string>
+	<string>points skill 60</string>
+	<string>points stat 500</string>
+	<string>assign str 100</string>
+	<string>assign dex 100</string>
+	<string>assign int 100</string>
+	<string>assign foc 100</string>
+	<string>assign vit 100</string>
+	<string>material all 100000</string>
+	<string>givebuff gamelab/buffs_demo.sval:fire_rate_x2 36000000</string>
+
+	<!-- the Subclass Picker, and the Skill Trainer the lab town lacks (skills are learned there) -->
+	<string>spawn actors/npcs/town/npc_subclass_picker.unit 40 0</string>
+	<string>spawn actors/npcs/town/npc_skill_trainer.unit -40 0</string>
+	<!-- a spawned trainer sells tier 0 only; a town building would set its ShopLevel -->
+	<string>shoplevel npc_skill_trainer 4</string>
+	<!-- an orb that stays after each pick, for trying the orb mods (DemoSphere.as) -->
+	<string>spawn gamelab/skill_sphere_endless.unit -80 0</string>
+
+	<!-- training dummies in a row on the open road east of the start (north of it is the log
+	     barricade, where they were hidden: mod-core-pickup 20261019-163842, shot after_use) -->
+	<string>spawn doodads/generic/target_dummy_normal.unit 110 20</string>
+	<string>spawn doodads/generic/target_dummy_normal.unit 140 30</string>
+	<string>spawn doodads/generic/target_dummy_armored.unit 170 20</string>
+	<string>spawn doodads/generic/target_dummy_magic.unit 200 30</string>
+	<string>spawn doodads/generic/target_dummy_breakable.unit 230 20</string>
+
+	<!-- every firearms gun on the ground: the rifles, and two of each pistol (one fits either hand) -->
+	<string>dropitem hwp_rifle_01 common -40 40</string>
+	<string>dropitem hwp_rifle_02 common 0 40</string>
+	<string>dropitem hwp_rifle_03 common 40 40</string>
+	<string>dropitem hwp_glock_mh_01 common -40 70</string>
+	<string>dropitem hwp_glock_mh_01 common -40 86</string>
+	<string>dropitem hwp_glock_mh_02 common 0 70</string>
+	<string>dropitem hwp_glock_mh_02 common 0 86</string>
+	<string>dropitem hwp_glock_mh_03 common 40 70</string>
+	<string>dropitem hwp_glock_mh_03 common 40 86</string>
+</array>

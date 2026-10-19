@@ -8,7 +8,8 @@
 // The character screen (core gui/playermenu/character.gui) uses
 // <hwp-equipmentinventory>: the vanilla bag widget, but it draws as many
 // slots as you can carry (vanilla always draws 24); the screen shows four
-// rows, so a full bag fits without scrolling.
+// rows, so a full bag fits without scrolling. A click to equip runs the
+// HWP::Bag::OnEquip callbacks first.
 namespace HWP
 {
 	namespace Bag
@@ -26,6 +27,13 @@ namespace HWP
 		}
 
 		int Capacity(PlayerRecord@ rec) { return BASE + Extra(rec); }
+
+		// Called with the bag item a click is about to equip, before the vanilla equip. A
+		// module may swap its base item for a twin of another slot (firearms: one pistol
+		// that fits either hand). Script globals reset per level: register in a module ctor.
+		funcdef void EquipPrepare(PlayerRecord@ rec, Equipment::Equipment@ item);
+		array<EquipPrepare@> g_equipPrepare;
+		void OnEquip(EquipPrepare@ f) { g_equipPrepare.insertLast(f); }
 
 		// gold for the next slot; 0 when the bag is full size
 		int NextPrice(PlayerRecord@ rec)
@@ -137,6 +145,26 @@ class HWPEquipmentInventoryWidget : EquipmentInventoryWidget
 		auto sb = cast<ScrollbarWidget>(m_parent);
 		if (m_visible && sb !is null && m_owner !is null)
 			sb.m_enabled = m_height > sb.m_height;
+	}
+
+	// The prepare callbacks (HWP::Bag::OnEquip) run only for an item vanilla may equip, and
+	// a base item they swapped goes back if the item stayed in the bag after all (no room
+	// to bump a two-handed weapon's pair, Remove failed).
+	void OnClick(Equipment::Equipment@ item) override
+	{
+		auto it = cast<Equipment::Item>(item);
+		Equipment::BaseItem@ was = it !is null ? it.baseItem : null;
+		if (item !is null && m_owner !is null && m_owner.equipped.MayEquip(item))
+		{
+			for (uint i = 0; i < HWP::Bag::g_equipPrepare.length(); i++)
+				HWP::Bag::g_equipPrepare[i](m_owner, item);
+		}
+		EquipmentInventoryWidget::OnClick(item);
+		if (it !is null && it.baseItem !is was && m_owner !is null && m_owner.equipInventory.m_items.findByRef(item) >= 0)
+		{
+			@it.baseItem = was;
+			m_owner.equipInventory.m_isDirty = true;
+		}
 	}
 
 	void Update(int dt) override
