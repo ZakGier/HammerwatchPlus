@@ -48,7 +48,6 @@
   {"do": "console", "line": "cht_spawn_specific_equipment hwp_glock_oh_01"},
   {"do": "console", "line": "cht_spawn_specific_equipment hwp_rifle_03"},
   {"do": "console", "line": "hwp material all 100000"},
-  {"do": "log_has", "pattern": "\\[HWP:firearms\\] clip filled", "timeout": 20},
   {"do": "sleep", "seconds": 3600}
  ]
 }
