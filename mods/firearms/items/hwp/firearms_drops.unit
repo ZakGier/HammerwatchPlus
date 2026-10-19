@@ -1,0 +1,45 @@
+<!-- HammerwatchPlus Firearms: the guns lying on the ground (scene = gun + tier). Sprites: items/hwp/firearms_drops.png. -->
+<unit slot="item">
+	<behavior class="Pickup">
+		<bool name="global">true</bool>
+		<bool name="secure">true</bool>
+	</behavior>
+	<scenes>
+		<scene name="rifle_01">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>0 0 16 16</frame>
+			</sprite>
+		</scene>
+		<scene name="rifle_02">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>16 0 16 16</frame>
+			</sprite>
+		</scene>
+		<scene name="rifle_03">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>32 0 16 16</frame>
+			</sprite>
+		</scene>
+		<scene name="glock_01">
+			<data name="sound"><s>event:/sfx/items/item_metal</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>48 0 16 16</frame>
+			</sprite>
+		</scene>
+		<scene name="glock_02">
+			<data name="sound"><s>event:/sfx/items/item_metal</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>64 0 16 16</frame>
+			</sprite>
+		</scene>
+		<scene name="glock_03">
+			<data name="sound"><s>event:/sfx/items/item_metal</s></data>
+			<sprite origin="8 8" texture="items/hwp/firearms_drops.png" material="items/items.mats:item">
+				<frame>80 0 16 16</frame>
+			</sprite>
+		</scene>
+	</scenes>
+</unit>

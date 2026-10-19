@@ -1,0 +1,186 @@
+{
+ "name": "look-firearms-models",
+ "about": "Look only: the Firearms rifle (with under-barrel launcher) and Glock held models, their ground sprites, and the character screen's item icons. Judged by eye from the shots; not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 240,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Look"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_rifle_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "console",
+   "line": "cht_spawn_specific_equipment hwp_rifle_01"
+  },
+  {
+   "do": "console",
+   "line": "cht_spawn_specific_equipment hwp_glock_mh_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "items",
+   "args": [
+    "200"
+   ],
+   "save_as": "drops"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_town"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "600",
+    "1",
+    "0",
+    "0",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rifle_fire"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "rifle_inventory"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "glocks_town"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "600",
+    "-1",
+    "0",
+    "0",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "glocks_fire"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "glocks_inventory"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

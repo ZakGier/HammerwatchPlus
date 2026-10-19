@@ -23,6 +23,10 @@
 			%block Shrapnel true
 			<dict>
 				<string name="class">ApplyBuff</string>
+				<string name="buff-bind">shrapnel-buff</string>
+			</dict>
+			<dict>
+				<string name="class">ApplyBuff</string>
 				<string name="buff">players/hwp/firearms/buffs_firearms.sval:burn_blind</string>
 			</dict>
 		</array>

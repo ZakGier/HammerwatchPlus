@@ -1,0 +1,28 @@
+<!--
+	Dragon's Breath's burning ground (assault_burst.sval): six of these over each shell's cone
+	(HWPFirearmsShotgun). Each burns for breath-ttl (1/3 s, the orb's level) and every 0.5 s
+	deals breath-tick as fire: per second, the share breath-dmg adds to a hit.
+-->
+<unit>
+	<behavior class="DangerAreaBehaviorP">
+		<int name="freq">500</int>
+		<string name="ttl-bind">breath-ttl</string>
+
+		<array name="effects">
+			<dict>
+				<string name="class">Damage</string>
+				<string name="fire-bind">breath-tick</string>
+				<bool name="true-strike">true</bool>
+			</dict>
+		</array>
+	</behavior>
+
+	<scenes>
+		<scene>
+			<collision static="false">
+				<circle radius="28" sensor="true" shoot-through="true" aim-through="true" />
+			</collision>
+			<effect src="effects/generic/areas/fire_area_ground_1.effect?radius=28" />
+		</scene>
+	</scenes>
+</unit>

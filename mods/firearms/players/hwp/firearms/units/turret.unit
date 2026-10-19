@@ -1,0 +1,162 @@
+<!--
+	Deploy Turret's turret (engineer_turret.sval): the game's Heavy Ballista
+	(players/shared/units/ballista_heavy.unit) made a target: mortal, targetable and with
+	health. Its HP (turret-hp), Reinforced Turret's share of its owner's max HP
+	(turret-hp-pct) and its fire rate (turret-rate) are the skill's binds; the script
+	(Turret.as HWPFirearmsTurret) drains it over decay ms and runs My Turret!.
+	It fires rifle rounds at 0.6x weapon damage (turret_round.unit), elemental ones while
+	Elemental Belt-Feed is on (Elemental.as HWPFirearmsGunShot).
+-->
+<unit netsync="position" save="false">
+	<behavior class="HWPFirearmsTurret">
+		<string name="team">player</string>
+		<string name="hp-bind">turret-hp</string>
+		<string name="hp-pct-bind">turret-hp-pct</string>
+		<int name="decay">30000</int>
+		<int name="armor">20</int>
+		<int name="aggro-range">200</int>
+		<int name="max-range">2000</int>
+		<bool name="must-see-target">true</bool>
+		<int name="teleport-leash">0</int>
+		<int name="aggro-leash">0</int>
+
+		<array name="tags">
+			<string>summon</string>
+		</array>
+
+		<dict name="movement">
+			<string name="class">PassiveMovement</string>
+			<string name="anim-idle">idle 8</string>
+			<bool name="rotate-to-target">true</bool>
+		</dict>
+
+		<array name="skills">
+			<dict>
+				<string name="class">CompositeActorSkill</string>
+				<string name="anim">attack 8</string>
+
+				<string name="cooldown-bind">turret-rate</string>
+				<int name="castpoint">0</int>
+				<int name="range">200</int>
+				<bool name="must-see">true</bool>
+				<bool name="is-attack">true</bool>
+
+				<float name="vision-arc">10</float>
+				<bool name="must-be-inside-arc">true</bool>
+
+				<array name="actions">
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/turret_round.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/turret_round_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/turret_round_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/turret_round_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/turret_round_poison.unit</string>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+					</dict>
+				</array>
+			</dict>
+		</array>
+
+		<dict name="effect-params">
+		</dict>
+	</behavior>
+
+	<scenes start="idle-0 idle-1 idle-2 idle-3 idle-4 idle-5 idle-6 idle-7">
+		<scene name="shared">
+			<collision static="true">
+				<circle radius="8" sensor="false" shoot-through="false" aim-through="true" charge-through="true" ignore-player="true" />
+			</collision>
+			<sprite ulayer="-1" origin="10 11" looping="true" texture="players/shared/units/ballista_heavy.png" material="system/default.mats:default-noxray">
+				<frame time="100">0 65 19 20</frame>
+			</sprite>
+			<sprite ulayer="-1" origin="1 16" looping="true" texture="players/shared/units/ballista_heavy.png" material="system/default.mats:shadow">
+				<frame time="100">19 65 11 24</frame>
+			</sprite>
+		</scene>
+
+		<scene name="idle-0">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=0&xcoord=0"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=0&xcoord=0" layer="-6"/>
+		</scene>
+		<scene name="idle-1">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=45&xcoord=64"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=45&xcoord=64" layer="-6"/>
+		</scene>
+		<scene name="idle-2">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=90&xcoord=128"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=90&xcoord=128" layer="-6"/>
+		</scene>
+		<scene name="idle-3">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=135&xcoord=192"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=135&xcoord=192" layer="-6"/>
+		</scene>
+		<scene name="idle-4">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=180&xcoord=256"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=180&xcoord=256" layer="-6"/>
+		</scene>
+		<scene name="idle-5">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=225&xcoord=320"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=225&xcoord=320" layer="-6"/>
+		</scene>
+		<scene name="idle-6">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=270&xcoord=384"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=270&xcoord=384" layer="-6"/>
+		</scene>
+		<scene name="idle-7">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_idle.effect?baseangle=315&xcoord=448"/>
+			<effect src="players/shared/units/ballista_heavy_idle_shadow.effect?baseangle=315&xcoord=448" layer="-6"/>
+		</scene>
+		<scene name="attack-0">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=0&xcoord=0"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=0&xcoord=0" layer="-6"/>
+		</scene>
+		<scene name="attack-1">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=45&xcoord=64"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=45&xcoord=64" layer="-6"/>
+		</scene>
+		<scene name="attack-2">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=90&xcoord=128"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=90&xcoord=128" layer="-6"/>
+		</scene>
+		<scene name="attack-3">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=135&xcoord=192"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=135&xcoord=192" layer="-6"/>
+		</scene>
+		<scene name="attack-4">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=180&xcoord=256"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=180&xcoord=256" layer="-6"/>
+		</scene>
+		<scene name="attack-5">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=225&xcoord=320"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=225&xcoord=320" layer="-6"/>
+		</scene>
+		<scene name="attack-6">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=270&xcoord=384"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=270&xcoord=384" layer="-6"/>
+		</scene>
+		<scene name="attack-7">
+			<scene src="shared" />
+			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=315&xcoord=448"/>
+			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=315&xcoord=448" layer="-6"/>
+		</scene>
+	</scenes>
+</unit>

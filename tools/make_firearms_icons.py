@@ -12,7 +12,9 @@ padded to power-of-two sides, which the engine requires):
 
 Where each icon's pixels come from, first match wins:
 1. art/firearms/override/<name>.png: hand-made art. Any size: a 24x24 is used as is, a
-   whole multiple of 24 is scaled down by that factor (nearest), anything else is fitted
+   whole multiple of 24 is scaled down by that factor (nearest), a 14x14 (vanilla's buff-bar
+   size, for the *_hud stack icons) goes in the cell's top-left corner unscaled and the
+   stacks point at it with a 14x14 rect, anything else is fitted
    with a smooth resize and then snapped to 32 colours and hard alpha. Export it from
    Aseprite, LibreSprite or Pixelorama (or any editor) as a PNG with transparency.
 2. The placeholder in ICONS below: sprites from art/firearms/sprites.txt (ASCII pixel
@@ -34,6 +36,7 @@ MOD = ROOT / "mods" / "firearms"
 SKILLS_PNG = MOD / "players" / "hwp" / "firearms" / "icons.png"
 ITEMS_PNG = MOD / "items" / "hwp" / "firearms_items.png"
 CELL = 24
+HUD = 14  # vanilla's buff-bar icon size
 
 PALETTE = {
     "k": (22, 18, 26), "x": (28, 22, 30),
@@ -124,9 +127,32 @@ ICONS = {
     # row 3: Assault (as drawn), the grenade launcher, reloading
     "burst": ("skills", 0, 3, None, []),
     "adrenaline": ("skills", 1, 3, None, []),
-    "assault_stun": ("skills", 2, 3, None, []),
+    # Engineer (planned): override art only, no skill files yet
+    "turret": ("skills", 3, 3, None, []),
+    "my_turret": ("skills", 4, 3, None, []),
     "gl_attack": ("skills", 7, 3, "phys", [L("rifle", 2, 6), badge("b_grenade")]),
     "reloading_hud": ("skills", 8, 3, "arcane", [L("b_reload", scale=2)]),
+    # orbs and HUD icons for the class-planner skills (hand-drawn overrides)
+    "turret_reinforced": ("skills", 2, 3, None, []),
+    "turret_second": ("skills", 5, 3, None, []),
+    "myturret_feed": ("skills", 6, 3, None, []),
+    "myturret_shared": ("skills", 9, 3, None, []),
+    "burst_breath": ("skills", 0, 4, None, []),
+    "burst_triple": ("skills", 1, 4, None, []),
+    "adrenaline_crit": ("skills", 2, 4, None, []),
+    "adrenaline_epipen": ("skills", 3, 4, None, []),
+    "steady_crit": ("skills", 4, 4, None, []),
+    "frag_shrapnel": ("skills", 5, 4, None, []),
+    "rpg_jump": ("skills", 6, 4, None, []),
+    "adrenaline_hud": ("skills", 7, 4, None, []),
+    "gl_charges_hud": ("skills", 8, 4, None, []),
+    "scavenger_fire": ("skills", 0, 5, None, []),
+    "scavenger_ice": ("skills", 1, 5, None, []),
+    "scavenger_poison": ("skills", 2, 5, None, []),
+    "scavenger_lightning": ("skills", 3, 5, None, []),
+    "scavenger_blind": ("skills", 4, 5, None, []),
+    "scavenger_slow": ("skills", 5, 5, None, []),
+    "scavenger_stun": ("skills", 6, 5, None, []),
     # items: the guns' inventory icons, one per item tier
     "rifle_01": ("items", 0, 0, None, [L("rifle")]),
     "rifle_02": ("items", 1, 0, None, [L("rifle", swap=DARKWOOD)]),
@@ -137,8 +163,12 @@ ICONS = {
     "glock_oh_01": ("items", 6, 0, None, [L("pistol", flip=True)]),
     "glock_oh_02": ("items", 7, 0, None, [L("pistol", swap=STEEL, flip=True)]),
     "glock_oh_03": ("items", 8, 0, None, [L("pistol", swap=GOLD, flip=True)]),
+    # close-ups of the rifles' under-barrel launcher, for the off-hand slot
+    "rifle_gl_01": ("items", 0, 1, None, [L("rifle", 2, 6)]),
+    "rifle_gl_02": ("items", 1, 1, None, [L("rifle", 2, 6, swap=DARKWOOD)]),
+    "rifle_gl_03": ("items", 2, 1, None, [L("rifle", 2, 6, swap=GILDED)]),
 }
-ATLAS_SIZE = {"skills": (10, 4), "items": (9, 1)}
+ATLAS_SIZE = {"skills": (10, 6), "items": (9, 2)}
 
 
 def load_sprites(path: Path) -> dict[str, list[str]]:
@@ -238,6 +268,10 @@ def load_override(path: Path) -> Image.Image:
     im = Image.open(path).convert("RGBA")
     if im.size == (CELL, CELL):
         return im
+    if im.size == (HUD, HUD):
+        out = Image.new("RGBA", (CELL, CELL), (0, 0, 0, 0))
+        out.paste(im, (0, 0))
+        return out
     if im.width == im.height and im.width % CELL == 0:
         return im.resize((CELL, CELL), Image.Resampling.NEAREST)
     im.thumbnail((CELL, CELL), Image.Resampling.LANCZOS)
@@ -292,7 +326,7 @@ def check() -> int:
     """Every icon rect in mods/firearms that points at our atlases must name an icon."""
     cells = {(a, col * CELL, row * CELL) for a, col, row, _, _ in ICONS.values()}
     pat = re.compile(r"(players/hwp/firearms/icons\.png|items/hwp/firearms_items\.png)</(?:s|string)>\s*"
-                     r"<(?:i|int)>\d+</(?:i|int)>\s*<vec4>(\S+) (\S+) 24 24</vec4>")
+                     r"<(?:i|int)>\d+</(?:i|int)>\s*<vec4>(\S+) (\S+) (?:24 24|14 14)</vec4>")
     bad = 0
     for f in sorted(MOD.rglob("*.sval")):
         text = f.read_text(encoding="utf-8")

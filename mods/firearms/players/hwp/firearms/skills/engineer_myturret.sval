@@ -1,0 +1,166 @@
+%include "players/skills_cost.inc"
+<!--
+	My Turret! (Engineer passive). While you stand within 160 px (10 m, at 16 px a metre:
+	assumed) of your turret it gains turret-repair HP a second and deals turret-dmg more
+	damage, and glows (buffs_firearms.sval turret_glow). All custom stats the turret's
+	script reads (Turret.as):
+	- hwp-turret-repair / hwp-turret-dmg: the passive.
+	- hwp-turret-feed: Elemental Belt-Feed, the turret's elemental chance while boosted; the
+	  element and riders follow your Elemental Bullets orbs.
+	- hwp-turret-shared: Our Turret!, any player near counts; boosts don't stack.
+	Each orb has its own modifiers slot (1-2).
+-->
+<dict>
+	<string name="name">.skills.hwp_firearms.myturret.name</string>
+	<string name="type-name">.skills.type.passive</string>
+	<string name="description">.skills.hwp_firearms.myturret.desc</string>
+
+	<array name="description-params">
+		<array><s>repair</s><s>.skills.desc.params.hwp_repair</s><s>10/s</s><s>15/s</s><s>15/s</s><s>20/s</s><s>20/s</s></array>
+		<array><s>damage</s><s>.skills.desc.params.hwp_turret_dmg</s><s>+10%</s><s>+10%</s><s>+15%</s><s>+15%</s><s>+20%</s></array>
+	</array>
+
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 72 24 24</vec4></array>
+
+	<string name="id">hwp_fs_myturret</string>
+	<array name="tags"><s>passive</s></array>
+	<int name="starting-level">0</int>
+
+	<dict name="skill">
+		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
+		<string name="class">Skills::PassiveSkill</string>
+		<dict name="binds">
+			<float name="turret-repair">10</float>
+			<float name="turret-dmg">0.1</float>
+		</dict>
+		<array name="modifiers">
+			<array>
+				<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-turret-repair</string>
+							<string name="add-bind">turret-repair</string>
+						</dict>
+				<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-turret-dmg</string>
+							<string name="add-bind">turret-dmg</string>
+						</dict>
+			</array>
+		</array>
+	</dict>
+
+	<array name="upgrades">
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
+			<dict name="binds">
+				<float name="turret-repair">15</float>
+				<float name="turret-dmg">0.1</float>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
+			<dict name="binds">
+				<float name="turret-repair">15</float>
+				<float name="turret-dmg">0.15</float>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
+			<dict name="binds">
+				<float name="turret-repair">20</float>
+				<float name="turret-dmg">0.15</float>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
+			<dict name="binds">
+				<float name="turret-repair">20</float>
+				<float name="turret-dmg">0.2</float>
+			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.myturret_feed.name</string>
+			<string name="description">.skills.hwp_firearms.myturret_feed.desc</string>
+
+			<array name="description-params">
+				<array><s>chance</s><s>.skills.desc.params.chance</s><s>20%</s><s>40%</s><s>60%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 72 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_myturret_feed</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="turret-feed">0.2</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-turret-feed</string>
+							<string name="add-bind">turret-feed</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="turret-feed">0.4</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="turret-feed">0.6</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.myturret_shared.name</string>
+			<string name="description">.skills.hwp_firearms.myturret_shared.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>216 72 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_myturret_shared</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="turret-shared">1</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-turret-shared</string>
+							<string name="add-bind">turret-shared</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>

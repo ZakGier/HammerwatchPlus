@@ -1,6 +1,6 @@
 {
  "name": "plan-firearms-b",
- "about": "Test plan through the plan_firearms bot: the Demolitionist (the Rocket Launcher, its Fat Boy, Magic Missile and Quad orbs, Ordinance Hoarder's charges) and Assault.",
+ "about": "Test plan through the plan_firearms bot: the Demolitionist (the Rocket Launcher, its Fat Boy, Magic Missile and Quad orbs, Ordinance Hoarder's charges) and Assault, and the Engineer (Deploy Turret, its orbs, My Turret!).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -81,7 +81,36 @@
     "adrenaline_passive": true,
     "burst_casts": true,
     "burst_cost": true,
-    "assault_own_buttons": true
+    "assault_own_buttons": true,
+    "adrenaline_on_kill": true,
+    "burst_two_shells": true,
+    "burst_close_range": true,
+    "triple_barrel_three": true,
+    "dragons_breath_ground": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_engineer"
+   },
+   "name": "engineer skills",
+   "expect": {
+    "turret_casts": true,
+    "turret_where_aimed": true,
+    "turret_cost": true,
+    "turret_decays": true,
+    "turret_shoots": true,
+    "turret_one_at_a_time": true,
+    "second_turret_two": true,
+    "reinforced_turret_hp": true,
+    "myturret_passive": true,
+    "myturret_boosts": true,
+    "belt_feed_chance": true,
+    "myturret_repairs": true,
+    "myturret_glows": true,
+    "engineer_own_buttons": true
    }
   },
   {

@@ -207,7 +207,7 @@
 			<string name="description">.skills.hwp_firearms.reload_over.desc</string>
 
 			<array name="description-params">
-				<array><s>rounds</s><s>.skills.desc.params.hwp_rounds</s><s>+6</s><s>+9</s><s>+12</s></array>
+				<array><s>rounds</s><s>.skills.desc.params.hwp_rounds</s><s>+5</s><s>+10</s><s>+15</s></array>
 				<array><s>window</s><b>t</b><s>.skills.desc.params.hwp_window</s><s>0.2s</s></array>
 			</array>
 

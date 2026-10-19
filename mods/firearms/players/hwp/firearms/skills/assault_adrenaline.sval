@@ -1,12 +1,21 @@
 %include "players/skills_cost.inc"
+<!--
+	Adrenaline (Assault passive): every kill adds an adrenaline stack
+	(stacks_firearms.sval:adrenaline), up to adr-max. Getting hurt spends them all to heal
+	adr-heal of your maximum health per stack (HWPFirearmsAdrenaline, Combat.as; the heal
+	lands the frame after the hit, since the hurt trigger runs before the damage).
+	Orbs: Critical Focus, a crit roll at crit chance per stack (HWPFirearmsStackCrit);
+	EpiPen, a dodge with no stacks gives epi-stacks. Each orb has its own modifiers slot
+	(1 and 2), as sniper_focus.sval's orbs do.
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.adrenaline.name</string>
 	<string name="type-name">.skills.type.passive</string>
 	<string name="description">.skills.hwp_firearms.adrenaline.desc</string>
 
 	<array name="description-params">
-		<array><s>damage-taken</s><s>.skills.desc.params.dmg_taken</s><s>-6%</s><s>-9%</s><s>-12%</s><s>-15%</s><s>-18%</s></array>
-		<array><s>mana</s><s>.skills.desc.params.restore.mana.max</s><s>10%</s><s>12%</s><s>14%</s><s>16%</s><s>20%</s></array>
+		<array><s>heal</s><s>.skills.desc.params.hwp_heal_per_stack</s><s>0.5%</s><s>0.5%</s><s>1%</s><s>1%</s><s>1.5%</s></array>
+		<array><s>stacks-max</s><s>.skills.desc.params.stacks.max</s><s>20</s><s>25</s><s>25</s><s>30</s><s>30</s></array>
 	</array>
 
 	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 72 24 24</vec4></array>
@@ -18,15 +27,16 @@
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
 		<string name="class">Skills::PassiveSkill</string>
-			<dict name="binds">
-				<float name="dmg-taken">0.94</float>
-				<float name="adr-mana">0.1</float>
-			</dict>
+		<dict name="binds">
+			<ivec2 name="adr-max">20 20</ivec2>
+			<float name="adr-heal">0.005</float>
+		</dict>
 		<array name="modifiers">
 			<array>
 				<dict>
-					<string name="class">Modifiers::Armor</string>
-					<string name="dmg-taken-mul-bind">dmg-taken</string>
+					<string name="class">Modifiers::ModifyStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:adrenaline</string>
+					<string name="add-max-bind">adr-max</string>
 				</dict>
 				<dict>
 					<string name="class">Modifiers::TriggerEffect</string>
@@ -35,9 +45,22 @@
 					<bool name="target-self">true</bool>
 					<array name="effects">
 						<dict>
-							<string name="class">GivePercentageMana</string>
-							<string name="mana-bind">adr-mana</string>
-							<bool name="curr-mana">false</bool>
+							<string name="class">AddStacks</string>
+							<string name="buff">players/hwp/firearms/stacks_firearms.sval:adrenaline</string>
+							<int name="stacks">1</int>
+							<bool name="target-self">true</bool>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::TriggerEffect</string>
+					<string name="trigger">hurt</string>
+					<float name="chance">1</float>
+					<bool name="target-self">true</bool>
+					<array name="effects">
+						<dict>
+							<string name="class">HWPFirearmsAdrenaline</string>
+							<string name="heal-bind">adr-heal</string>
 						</dict>
 					</array>
 				</dict>
@@ -49,30 +72,134 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
 			<dict name="binds">
-				<float name="dmg-taken">0.91</float>
-				<float name="adr-mana">0.12</float>
+				<ivec2 name="adr-max">25 25</ivec2>
+				<float name="adr-heal">0.005</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
 			<dict name="binds">
-				<float name="dmg-taken">0.88</float>
-				<float name="adr-mana">0.14</float>
+				<ivec2 name="adr-max">25 25</ivec2>
+				<float name="adr-heal">0.01</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
 			<dict name="binds">
-				<float name="dmg-taken">0.85</float>
-				<float name="adr-mana">0.16</float>
+				<ivec2 name="adr-max">30 30</ivec2>
+				<float name="adr-heal">0.01</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
 			<dict name="binds">
-				<float name="dmg-taken">0.82</float>
-				<float name="adr-mana">0.2</float>
+				<ivec2 name="adr-max">30 30</ivec2>
+				<float name="adr-heal">0.015</float>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.adrenaline_crit.name</string>
+			<string name="description">.skills.hwp_firearms.adrenaline_crit.desc</string>
+
+			<array name="description-params">
+				<array><s>crit-chance</s><s>.skills.desc.params.hwp_crit_per_stack</s><s>0.5%</s><s>1%</s><s>1.5%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 96 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_adrenaline_crit</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="adr-crit">0.005</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::HWPFirearmsStackCrit</string>
+							<string name="buff">players/hwp/firearms/stacks_firearms.sval:adrenaline</string>
+							<string name="chance-bind">adr-crit</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="adr-crit">0.01</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">epic</string>
+					<dict name="binds">
+						<float name="adr-crit">0.015</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.adrenaline_epipen.name</string>
+			<string name="description">.skills.hwp_firearms.adrenaline_epipen.desc</string>
+
+			<array name="description-params">
+				<array><s>stacks</s><s>.skills.desc.params.hwp_stacks_gained</s><s>8</s><s>15</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 96 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_adrenaline_epipen</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="epi-stacks">8</int>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::TriggerEffect</string>
+							<string name="trigger">dash</string>
+							<float name="chance">1</float>
+							<bool name="target-self">true</bool>
+							<array name="effects">
+								<dict>
+									<string name="class">HWPFirearmsAdrenaline</string>
+									<string name="epipen-bind">epi-stacks</string>
+								</dict>
+							</array>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<int name="epi-stacks">15</int>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

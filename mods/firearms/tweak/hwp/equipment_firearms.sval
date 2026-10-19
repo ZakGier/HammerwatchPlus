@@ -9,8 +9,8 @@
 			<int>100</int><vec4>0 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/2h_crossbow_t2_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:rifle_01</string>
+		<string name="model">players/models/equipment/hwp_rifle.model</string>
 		<string name="anim-set">crossbow-2h</string>
 		<string name="color">wood_t1</string>
 		<string name="color-secondary">metal_t1</string>
@@ -55,8 +55,8 @@
 			<int>100</int><vec4>24 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/2h_crossbow_t2_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:rifle_02</string>
+		<string name="model">players/models/equipment/hwp_rifle.model</string>
 		<string name="anim-set">crossbow-2h</string>
 		<string name="color">wood_t2</string>
 		<string name="color-secondary">metal_t2</string>
@@ -100,8 +100,8 @@
 			<int>100</int><vec4>48 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/2h_crossbow_t2_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:rifle_03</string>
+		<string name="model">players/models/equipment/hwp_rifle.model</string>
 		<string name="anim-set">crossbow-2h</string>
 		<string name="color">wood_t3</string>
 		<string name="color-secondary">metal_t3</string>
@@ -145,8 +145,8 @@
 			<int>100</int><vec4>72 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
-		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_01</string>
+		<string name="model">players/models/equipment/hwp_glock_mh.model</string>
 		<string name="anim-set">wand-1h</string>
 		<string name="color">metal_t1</string>
 		<string name="color-secondary">leather_t1</string>
@@ -188,8 +188,8 @@
 			<int>100</int><vec4>144 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_01</string>
+		<string name="model">players/models/equipment/hwp_glock_oh.model</string>
 		<string name="color">metal_t1</string>
 		<string name="color-secondary">leather_t1</string>
 
@@ -230,8 +230,8 @@
 			<int>100</int><vec4>96 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
-		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_02</string>
+		<string name="model">players/models/equipment/hwp_glock_mh.model</string>
 		<string name="anim-set">wand-1h</string>
 		<string name="color">metal_t2</string>
 		<string name="color-secondary">leather_t2</string>
@@ -272,8 +272,8 @@
 			<int>100</int><vec4>168 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_02</string>
+		<string name="model">players/models/equipment/hwp_glock_oh.model</string>
 		<string name="color">metal_t2</string>
 		<string name="color-secondary">leather_t2</string>
 
@@ -313,8 +313,8 @@
 			<int>100</int><vec4>120 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
-		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_03</string>
+		<string name="model">players/models/equipment/hwp_glock_mh.model</string>
 		<string name="anim-set">wand-1h</string>
 		<string name="color">metal_t3</string>
 		<string name="color-secondary">leather_t3</string>
@@ -355,8 +355,8 @@
 			<int>100</int><vec4>192 0 24 24</vec4>
 		</array>
 
-		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
-		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="graphic">items/hwp/firearms_drops.unit:glock_03</string>
+		<string name="model">players/models/equipment/hwp_glock_oh.model</string>
 		<string name="color">metal_t3</string>
 		<string name="color-secondary">leather_t3</string>
 

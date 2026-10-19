@@ -69,7 +69,7 @@
 			<collision static="false">
 				<circle radius="6" projectile="true" />
 			</collision>
-			<effect src="players/projectiles/crossbow_bolt_explosive.effect" />
+			<effect src="players/hwp/firearms/projectiles/gl_shell.effect" />
 		</scene>
 	</scenes>
 </unit>

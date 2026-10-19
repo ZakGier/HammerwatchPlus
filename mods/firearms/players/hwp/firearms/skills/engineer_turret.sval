@@ -1,0 +1,173 @@
+%include "players/skills_cost.inc"
+<!--
+	Deploy Turret (Engineer): place a turret (units/turret.unit, Turret.as) at the target
+	spot, up to range away and in sight, as Sorcerer's flame_step targets. It shoots the
+	nearest enemy in 200 px every turret-rate ms (0.6 .. 0.2 s) for 0.6x weapon damage,
+	can be targeted and hit by enemies, and wears down over 30 s.
+	turret-hp is its base HP (assumed: the planner gives none); Reinforced Turret's
+	turret-hp-pct adds that share of your max HP. One turret at a time (the game's summon
+	cap: placing another destroys the oldest); Second Turret raises the cap to two.
+-->
+<dict>
+	<string name="name">.skills.hwp_firearms.turret.name</string>
+	<string name="type-name">.skills.type.spell</string>
+	<string name="description">.skills.hwp_firearms.turret.desc</string>
+
+	<array name="description-params">
+		<array><s>damage</s><s>.skills.desc.params.damage</s><s>60%</s></array>
+		<array><s>health</s><s>.skills.desc.params.health</s><s>100</s></array>
+		<array><s>rate</s><s>.skills.desc.params.hwp_fire_rate</s><s>0.6s</s><s>0.5s</s><s>0.4s</s><s>0.3s</s><s>0.2s</s></array>
+		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>50</s></array>
+		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>12s</s></array>
+	</array>
+
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 72 24 24</vec4></array>
+
+	<string name="id">hwp_fs_turret</string>
+	<string name="type">spell</string>
+	<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s></array>
+	<int name="starting-level">0</int>
+
+	<dict name="skill">
+		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
+		<string name="class">Skills::PlayerSkillPosition</string>
+		<string name="anim">cast</string>
+		<int name="anim-length">600</int>
+
+		<int name="cooldown">12000</int>
+		<int name="castpoint">150</int>
+		<float name="cast-speed-mul">1</float>
+		<float name="move-speed-mul">0</float>
+		<ivec2 name="move-speed">0 150</ivec2>
+		<ivec2 name="blocking">0 150</ivec2>
+		<ivec2 name="update-aim">0 0</ivec2>
+		<bool name="repeating">false</bool>
+
+		<int name="mana-cost">50</int>
+
+		<int name="radius">12</int>
+		<int name="range">120</int>
+		<int name="range-min">0</int>
+		<bool name="raycast-to-target">true</bool>
+
+		<dict name="binds">
+			<int name="turret-hp">100</int>
+			<float name="turret-hp-pct">0</float>
+			<ivec2 name="turret-rate">600 600</ivec2>
+		</dict>
+
+		<dict name="actions">
+			<array name="cast">
+				<dict>
+					<string name="class">SpawnEffect</string>
+					<string name="effect">effects/generic/other/spawn_smoke_puff.effect</string>
+				</dict>
+				<dict>
+					<string name="class">SpawnUnit</string>
+					<string name="unit">players/hwp/firearms/units/turret.unit</string>
+				</dict>
+			</array>
+		</dict>
+
+		<array name="timeline">
+			<i>150</i><s>cast</s>
+		</array>
+	</dict>
+
+	<array name="upgrades">
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
+			<int name="mana-cost">50</int>
+			<dict name="binds">
+				<ivec2 name="turret-rate">500 500</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
+			<int name="mana-cost">50</int>
+			<dict name="binds">
+				<ivec2 name="turret-rate">400 400</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
+			<int name="mana-cost">50</int>
+			<dict name="binds">
+				<ivec2 name="turret-rate">300 300</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
+			<int name="mana-cost">50</int>
+			<dict name="binds">
+				<ivec2 name="turret-rate">200 200</ivec2>
+			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.turret_reinforced.name</string>
+			<string name="description">.skills.hwp_firearms.turret_reinforced.desc</string>
+
+			<array name="description-params">
+				<array><s>health</s><s>.skills.desc.params.hwp_turret_hp</s><s>+25%</s><s>+50%</s><s>+75%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 72 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_turret_reinforced</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="turret-hp-pct">0.25</float>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="turret-hp-pct">0.5</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="turret-hp-pct">0.75</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.turret_second.name</string>
+			<string name="description">.skills.hwp_firearms.turret_second.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 72 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_turret_second</string>
+			<string name="quality">rare</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::ModifySummons</string>
+							<string name="unit">players/hwp/firearms/units/turret.unit</string>
+							<int name="add-max-num">1</int>
+						</dict>
+					</array>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>

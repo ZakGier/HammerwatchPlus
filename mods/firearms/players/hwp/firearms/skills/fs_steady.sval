@@ -1,11 +1,20 @@
 %include "players/skills_cost.inc"
+<!--
+	Extended Clip Crit (base passive; the file and id keep Steady Hands' name, which it
+	replaced). Each gun's magazine holds clip-pct more rounds (HWPFirearmsExtendedClip,
+	Elemental.as: per gun, rounded, so dual pistols gain per pistol), and every round left in
+	the clip is +2% critical damage for everything (injected into the clip stack, whose
+	intensity is its rounds, as sniper_focus.sval does for focus).
+	Orb: Extended Crit Chance, a crit roll at crit chance per round left (HWPFirearmsStackCrit).
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.steady.name</string>
 	<string name="type-name">.skills.type.passive</string>
 	<string name="description">.skills.hwp_firearms.steady.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage.weapon</s><s>+5%</s><s>+10%</s><s>+15%</s><s>+20%</s><s>+25%</s></array>
+				<array><s>clip</s><s>.skills.desc.params.hwp_magazine</s><s>+10%</s><s>+20%</s><s>+30%</s><s>+40%</s><s>+50%</s></array>
+				<array><s>crit-damage</s><s>.skills.desc.params.hwp_crit_dmg_per_round</s><s>+2%</s></array>
 	</array>
 
 	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 48 24 24</vec4></array>
@@ -17,14 +26,25 @@
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTLEVEL_1</int>
 		<string name="class">Skills::PassiveSkill</string>
-			<dict name="binds">
-				<float name="atk-mul">1.05</float>
-			</dict>
+		<dict name="binds">
+			<float name="clip-pct">0.1</float>
+		</dict>
 		<array name="modifiers">
 			<array>
 				<dict>
-					<string name="class">Modifiers::Damage</string>
-					<string name="attack-mul-bind">atk-mul</string>
+					<string name="class">Modifiers::HWPFirearmsExtendedClip</string>
+					<string name="pct-bind">clip-pct</string>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::InjectModifiersIntoStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+					<array name="modifiers">
+						<dict>
+							<string name="class">Modifiers::CritDamage</string>
+							<vec2 name="attack-crit-dmg">0 0.02</vec2>
+							<vec2 name="spell-crit-dmg">0 0.02</vec2>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</array>
@@ -34,26 +54,77 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
 			<dict name="binds">
-				<float name="atk-mul">1.1</float>
+				<float name="clip-pct">0.2</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
 			<dict name="binds">
-				<float name="atk-mul">1.15</float>
+				<float name="clip-pct">0.3</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
 			<dict name="binds">
-				<float name="atk-mul">1.2</float>
+				<float name="clip-pct">0.4</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
 			<dict name="binds">
-				<float name="atk-mul">1.25</float>
+				<float name="clip-pct">0.5</float>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.steady_crit.name</string>
+			<string name="description">.skills.hwp_firearms.steady_crit.desc</string>
+
+			<array name="description-params">
+				<array><s>crit-chance</s><s>.skills.desc.params.hwp_crit_per_round</s><s>+0.25%</s><s>+0.5%</s><s>+0.75%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 96 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_steady_crit</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="clip-crit">0.0025</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::HWPFirearmsStackCrit</string>
+							<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+							<string name="chance-bind">clip-crit</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="clip-crit">0.005</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="clip-crit">0.0075</float>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

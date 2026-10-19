@@ -1325,3 +1325,54 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   come, or `buttons/lever_off` on a perfect reload and no lever on. Measured in
   plan-firearms-orbs 20261019-134726: every reload logged an unlock and then one lever, off for
   each of the 3 perfects, on for the misses and plain reloads, including Dodge Reload Skip.
+
+## Firearms Engineer, Assault checks, the pistol arm (2026-10-19)
+
+- **The Engineer subclass** (`hwp_firearms_engineer`): Deploy Turret (`engineer_turret.sval`,
+  `Skills::PlayerSkillPosition`, a TargetAOE cast that spawns `units/turret.unit` where aimed)
+  and My Turret! (`engineer_myturret.sval`, passive). The turret is `HWPFirearmsTurret`
+  (`Turret.as`, a `PlayerOwnedActor`): it wears down over `decay` (30 s for the whole bar),
+  and the owner within 10 m repairs it, raises its damage and feeds it elemental rounds
+  (Elemental Belt-Feed), with a `turret_glow` buff as the look.
+- **A summon reads its owner's skill binds through `-bind` keys.** `PlayerOwnedActor.FetchData`
+  goes to the owner after `PrepareSkillFetchData(weaponInfo)` (the crusader's `hp-bind` does
+  the same). Verified: the turret logged `100 hp`, `a shot every 600 ms` from Deploy Turret's
+  binds (plan-firearms-b 20261019-144539).
+- **One summon of a kind unless a modifier says more.** `Player.Update` resets
+  `m_maxSummons = 1` for each unit producer every frame, then destroys the oldest above the
+  cap. `Modifiers::ModifySummons` (`unit`, `add-max-num`) raises it: Second Turret keeps two,
+  and a third placement replaces the oldest (plan-firearms-b 20261019-144539).
+- **`CompositeActorBehavior.m_hp` is a fraction (0..1)**, and its `Damage()` calls
+  `dmg.Attacker.DamageActor(this, dmg)`. `PlayerOwnedActorImpl.DamageActor` forwards to the
+  player and skips the buff `DamageMul`, so the turret's boost scales its own damage in a
+  `DamageActor` override.
+- **`AnimationLoopType::Hold` at the end of a shot is the rest pose.** The wand shot
+  (`attack_wand.anim`, 0.45 s, read from the ozz header) has the arm out on its first frame
+  and down by its last. Holding the end looked the same as lowered (plan-firearms-arm
+  20261019-143933 frames). `PlayAnimation3D` takes a trailing `animSpeedScale`, so the hold now
+  replays the shot from its start at speed 0.0001: the arm stays up, and comes down by playing
+  on at full speed (plan-firearms-arm 20261019-144417, the "arm held" and "arm lowered" frames differ:
+  gun raised vs at the side). Assumed: the off-hand's `attack_offhand_handcrossbow.anim`
+  (0.6 s) also starts arm-out; only the main hand was looked at.
+- **The pistol arm comes down** 2.0 s after the last shot, at once on a dodge (logged
+  `skill 1404514473`) or a reload (plan-firearms-arm 20261019-144417).
+- **Bots: hold a press past the timeline.** Burst's second shell aims at 200 ms, where the
+  press points; a 121 ms press sent it nowhere (plan-firearms-b 20261019-143401). The bot holds
+  for max(castpoint, last timeline entry) + 120 ms. Deploy Turret's 50 mana regenerates at
+  1.1/s, so the bot gives mana (`cht_give_mana`) between placements.
+- **`actorbuffs` gives no name for a buff without one**; the turret glow is found as the
+  300 ms buff.
+- Assumed, not measured: 1 m = 16 px; the turret's base 100 hp, 0.6 of the rifle round's
+  damage, armor 20 and 200 px range; NEAR = 10 m. Our Turret! (any player near) needs a
+  second player and is not run.
+- **Over-Reload is now +5/+10/+15 rounds** (the planner's numbers; it was +6/+9/+12). The
+  bot still expected +6 and plan-firearms-orbs 20261019-145155 failed on 35/35; the game was
+  right and the bot was fixed (plan-firearms-orbs 20261019-145513 PASS).
+- Runs on this work: mod-firearms 20261019-144527, plan-firearms-a 20261019-144935 (the
+  picker shows four doctrines), plan-firearms-b 20261019-144539 (Engineer, Assault: two
+  shells at x1.2 within 80 px, Triple Barrel three, Dragon's Breath ground, a kill gives
+  Adrenaline), plan-firearms-guns 20261019-145404, plan-firearms-arm 20261019-144417.
+- Against a fresh planner dump after the user's orb-level changes: every
+  firearms orb's level qualities match the svals (`orb_levels` check against a fresh
+  dump), and Assault is Double Barrel Burst (2 shells, 200 each, +20..100% within
+  5/5/7/7/10 m, 5/5/6/6/7 mana, 5 s) plus Adrenaline.

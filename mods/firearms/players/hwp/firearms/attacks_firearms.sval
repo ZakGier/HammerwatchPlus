@@ -6,6 +6,8 @@
 	The keywords of one "conditional" array must all hold; a "conditionals" list of arrays
 	passes when any one array does (Conditional.as CheckConditionals), so the gates are flat.
 	The Glocks read the other hand's marker buff (buffs_firearms.sval) to pair up.
+	The rounds are shot by HWPFirearmsGunShot (Elemental.as), which may swap in an element's
+	round for Elemental Bullets (fs_scavenger.sval).
 -->
 
 <array>
@@ -50,8 +52,12 @@
 			<dict name="actions">
 				<array name="cast">
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_round.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_poison.unit</string>
 						<int name="dist">5</int>
 						<int name="spread">2</int>
 					</dict>
@@ -95,8 +101,12 @@
 			<dict name="actions">
 				<array name="cast">
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_round_epic.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_epic_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_epic_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_epic_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_epic_poison.unit</string>
 						<int name="dist">5</int>
 						<int name="spread">2</int>
 					</dict>
@@ -236,8 +246,12 @@
 						</array>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_poison.unit</string>
 						<int name="dist">5</int>
 						<int name="spread">3</int>
 					</dict>
@@ -255,8 +269,12 @@
 						</array>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round_dual.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_dual_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_dual_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_dual_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_dual_poison.unit</string>
 						<int name="dist">5</int>
 						<vec2 name="offset">0 -2</vec2>
 						<bool name="rotate-offset">true</bool>
@@ -276,8 +294,12 @@
 						</array>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_off_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
 						<int name="dist">5</int>
 						<vec2 name="offset">0 2</vec2>
 						<bool name="rotate-offset">true</bool>
@@ -337,16 +359,24 @@
 						</array>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round_dual.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_dual_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_dual_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_dual_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_dual_poison.unit</string>
 						<int name="dist">5</int>
 						<vec2 name="offset">0 -2</vec2>
 						<bool name="rotate-offset">true</bool>
 						<int name="spread">18</int>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_off_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
 						<int name="dist">5</int>
 						<vec2 name="offset">0 2</vec2>
 						<bool name="rotate-offset">true</bool>
@@ -372,8 +402,12 @@
 						<bool name="send-angle">true</bool>
 					</dict>
 					<dict>
-						<string name="class">ShootProjectile</string>
+						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/glock_round_off_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/glock_round_off_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/glock_round_off_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/glock_round_off_poison.unit</string>
 						<int name="dist">5</int>
 						<int name="spread">4</int>
 					</dict>

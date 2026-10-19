@@ -30,7 +30,9 @@ namespace HWP
 			"players/hwp/firearms/projectiles/rocket_fatboy.unit",
 			"players/hwp/firearms/projectiles/rocket_magic.unit",
 			"players/hwp/firearms/projectiles/rocket_magic_burn.unit",
-			"players/hwp/firearms/projectiles/rocket_quad.unit" };
+			"players/hwp/firearms/projectiles/rocket_quad.unit",
+			"players/hwp/firearms/projectiles/turret_round.unit",
+			"players/hwp/firearms/units/turret.unit" };
 
 		bool g_checked = false;
 
@@ -154,7 +156,8 @@ namespace HWP
 
 			array<string> stacks = { CLIP, RELOADING, FOCUS,
 				"players/hwp/firearms/stacks_firearms.sval:grenade_charges",
-				"players/hwp/firearms/stacks_firearms.sval:rocket_charges" };
+				"players/hwp/firearms/stacks_firearms.sval:rocket_charges",
+				"players/hwp/firearms/stacks_firearms.sval:gl_charges", ADRENALINE };
 			for (uint i = 0; i < stacks.length(); i++)
 			{
 				if (ActorBuffStackDef::Get(stacks[i]) is null)

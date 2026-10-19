@@ -18,7 +18,7 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
 - **Rifles** `hwp_rifle_01/02/03` (`tweak/hwp/equipment_firearms.sval`):
   two-handed, 30 rounds, slow heavy piercing shot (560 ms, 160 %; epic 200 %).
   The secondary is an under-barrel grenade launcher: 4 mana, 1.5 s cooldown,
-  no rounds. Dex-gated, crossbow anim set and model, tag `hwp_firearm`. The t1
+  no rounds. Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
   rifle is the starting weapon and sits in the armory pool.
 - **Pistols:** `hwp_glock_mh_01/02/03` (main hand, wand anim set) and
   `hwp_glock_oh_01/02/03` (off hand, hand-crossbow anim), 10 rounds each.
@@ -58,11 +58,28 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   Adrenaline (damage taken down, kills refill ammo). Unchanged.
 - The orb scripts (Focus, Headshot, Exposure, Hoarder charges, Over-Reload's
   ring, the magazine throw) are in `scripts/HWP/Firearms/Combat.as`.
-- **Art:** portrait piece and hero title reuse the ranger assets. Skill, orb
-  and item icons are placeholders drawn by `tools/make_firearms_icons.py` from
-  `art/firearms/sprites.txt` (palette sprites) into
-  `players/hwp/firearms/icons.png` and `items/hwp/firearms_items.png`, with a
-  preview in `art/firearms/preview.png`. To hand-draw one, save a 24x24 PNG
+- **Art:** portrait piece and hero title reuse the ranger assets.
+  - Held guns: voxel meshes in `players/models/equipment/` (`hwp_rifle`, with
+    the under-barrel launcher; `hwp_glock_mh` on the right hand bone,
+    `hwp_glock_oh` on the left). They sample vanilla `character.tif`: the
+    item's `color` dye is the rifle's wood and the pistol's slide, and
+    `color-secondary` is the rifle's metal.
+  - Rounds and missiles in flight: `tools/make_bullet_art.py` draws
+    `projectiles/rounds.png` and writes one effect per sprite. The rifle/turret
+    round is `round_rifle`; the pistol round is the same idea a little smaller,
+    `round_pistol`. Each comes in `_fire`, `_ice`, `_lightning` and `_poison`
+    variants for Elemental Bullets, which has no units yet. The rest are
+    `gl_shell` (the launcher's 40 mm shell) and `missile_rocket`, `_fatboy`,
+    `_magic` and `_quad`. Edit the tool, not its output.
+  - Ground sprites: `items/hwp/firearms_drops.unit`, one scene per gun and tier
+    (`rifle_0N`, `glock_0N`), in `items/hwp/firearms_drops.png`.
+  - Icons are built by `tools/make_firearms_icons.py` into
+    `players/hwp/firearms/icons.png` (skills, orbs, attacks) and
+    `items/hwp/firearms_items.png`. The items atlas has the guns in row 0 and
+    the launcher close-ups `rifle_gl_0N`, meant for the off-hand slot, in
+    row 1. Hand-drawn art in `art/firearms/override/` wins over the
+    `art/firearms/sprites.txt` placeholders; a preview of both sheets goes in
+    `art/firearms/preview.png`. To hand-draw one, save a 24x24 PNG
   as `art/firearms/override/<name>.png` (Aseprite, LibreSprite or Pixelorama)
   and re-run the tool. Atlases must be power-of-two sized: the game hangs on
   load otherwise.

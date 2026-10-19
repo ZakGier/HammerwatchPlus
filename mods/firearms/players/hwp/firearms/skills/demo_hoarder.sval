@@ -1,8 +1,9 @@
 %include "players/skills_cost.inc"
 <!--
-	Ordinance Hoarder (Demolitionist passive). The Frag Grenade and the Rocket Launcher cool
-	down faster (cooldown-mul 1/1.1 .. 1/1.5) and store charges while they sit ready
-	(stacks_firearms.sval grenade_charges / rocket_charges, max raised here). The module
+	Ordinance Hoarder (Demolitionist passive). The Frag Grenade, the rifle's Grenade Launcher
+	(either rifle's) and the Rocket Launcher cool down faster (cooldown-mul 1/1.1 .. 1/1.5)
+	and store charges while they sit ready (stacks_firearms.sval grenade_charges /
+	gl_charges / rocket_charges, max raised here). The module
 	script (Combat.as HoardedSkill) adds a charge for every cooldown's worth of time the
 	skill waits ready, and spends one to clear the cooldown right after a cast.
 -->
@@ -42,6 +43,16 @@
 					<string name="cooldown-mul-bind">hoard-cd</string>
 				</dict>
 				<dict>
+					<string name="class">Modifiers::BaseSkillModifier</string>
+					<string name="skill-id">hwp_attack_rifle_gl</string>
+					<string name="cooldown-mul-bind">hoard-cd</string>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::BaseSkillModifier</string>
+					<string name="skill-id">hwp_attack_rifle_gl_epic</string>
+					<string name="cooldown-mul-bind">hoard-cd</string>
+				</dict>
+				<dict>
 					<string name="class">Modifiers::ModifyStack</string>
 					<string name="buff">players/hwp/firearms/stacks_firearms.sval:grenade_charges</string>
 					<string name="add-max-bind">hoard-max</string>
@@ -49,6 +60,11 @@
 				<dict>
 					<string name="class">Modifiers::ModifyStack</string>
 					<string name="buff">players/hwp/firearms/stacks_firearms.sval:rocket_charges</string>
+					<string name="add-max-bind">hoard-max</string>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::ModifyStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:gl_charges</string>
 					<string name="add-max-bind">hoard-max</string>
 				</dict>
 			</array>
@@ -94,19 +110,19 @@
 			<string name="description">.skills.hwp_firearms.hoarder_overpacked.desc</string>
 
 			<array name="description-params">
-				<array><s>damage</s><s>.skills.desc.params.hwp_explosive_dmg</s><s>+10%</s><s>+15%</s><s>+20%</s></array>
+				<array><s>damage</s><s>.skills.desc.params.hwp_explosive_dmg</s><s>+15%</s><s>+25%</s></array>
 			</array>
 
 			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 48 24 24</vec4></array>
 
 			<array name="tags"><s>passive</s></array>
 			<string name="id">hwp_fs_hoarder_overpacked</string>
-			<string name="quality">common</string>
+			<string name="quality">uncommon</string>
 			<int name="starting-level">0</int>
 
 			<dict name="skill">
 				<dict name="binds">
-					<float name="overpacked-mul">1.1</float>
+					<float name="overpacked-mul">1.15</float>
 				</dict>
 				<array name="modifiers">
 					<array>
@@ -122,18 +138,12 @@
 				</array>
 			</dict>
 
-			<!-- the planner has uncommon for both upper levels -->
+			<!-- the planner has uncommon for both levels -->
 			<array name="upgrades">
 				<dict>
 					<string name="quality">uncommon</string>
 					<dict name="binds">
-						<float name="overpacked-mul">1.15</float>
-					</dict>
-				</dict>
-				<dict>
-					<string name="quality">uncommon</string>
-					<dict name="binds">
-						<float name="overpacked-mul">1.2</float>
+						<float name="overpacked-mul">1.25</float>
 					</dict>
 				</dict>
 			</array>
@@ -146,19 +156,19 @@
 			<string name="description">.skills.hwp_firearms.hoarder_shrapnel.desc</string>
 
 			<array name="description-params">
-				<array><s>pen</s><s>.skills.desc.params.ele_pen</s><s>+5%</s><s>+8%</s><s>+12%</s></array>
+				<array><s>pen</s><s>.skills.desc.params.ele_pen</s><s>+6%</s><s>+12%</s></array>
 			</array>
 
 			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 48 24 24</vec4></array>
 
 			<array name="tags"><s>passive</s></array>
 			<string name="id">hwp_fs_hoarder_shrapnel</string>
-			<string name="quality">common</string>
+			<string name="quality">uncommon</string>
 			<int name="starting-level">0</int>
 
 			<dict name="skill">
 				<dict name="binds">
-					<float name="shrapnel-pen">0.05</float>
+					<float name="shrapnel-pen">0.06</float>
 				</dict>
 				<array name="modifiers">
 					<array>
@@ -178,12 +188,6 @@
 			</dict>
 
 			<array name="upgrades">
-				<dict>
-					<string name="quality">uncommon</string>
-					<dict name="binds">
-						<float name="shrapnel-pen">0.08</float>
-					</dict>
-				</dict>
 				<dict>
 					<string name="quality">rare</string>
 					<dict name="binds">

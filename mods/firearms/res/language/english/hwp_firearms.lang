@@ -1,31 +1,70 @@
 <lang name="English" official="false">
 	<string name="menu.class.hwp_firearms">Firearms Specialist</string>
-	<string name="menu.class.hwp_firearms.description">A gunslinger from far-off lands. Every shot spends a round from the clip; an empty clip reloads by itself, and a dodge interrupts it. Mana powers gadgets. Specializes as a Marksman, a Demolitionist or in Assault.</string>
+	<string name="menu.class.hwp_firearms.description">A gunslinger from far-off lands. Every shot spends a round from the clip; an empty clip reloads by itself, and a dodge interrupts it. Mana powers gadgets. Specializes as a Marksman, a Demolitionist, in Assault or as an Engineer.</string>
 	<string name="htitle.hwp_firearms.desc">Grants %num%% Critical Hit Chance, %num-per%% per level.</string>
 
 	<string name="skills.hwp_firearms.mastery_1.name">Marksman</string>
 	<string name="skills.hwp_firearms.mastery_2.name">Demolitionist</string>
 	<string name="skills.hwp_firearms.mastery_3.name">Assault</string>
+	<string name="skills.hwp_firearms.mastery_4.name">Engineer</string>
 
 	<string name="skills.hwp_firearms.reload.name">Reload</string>
 	<string name="skills.hwp_firearms.reload.desc">Slam a fresh magazine in, filling the clip without waiting for it to run dry. Cannot be used while shooting.</string>
 	<string name="skills.hwp_firearms.frag.name">Frag Grenade</string>
 	<string name="skills.hwp_firearms.frag.desc">Lob a grenade at the target spot. It bursts for %damage% physical damage with %armor-pen% armor penetration. Orbs change the grenade's type.</string>
-	<string name="skills.hwp_firearms.scavenger.name">Scavenger</string>
-	<string name="skills.hwp_firearms.scavenger.desc">Every kill has a %chance% chance to recover %mana% rounds of ammunition.</string>
-	<string name="skills.hwp_firearms.steady.name">Steady Hands</string>
-	<string name="skills.hwp_firearms.steady.desc">Weapon attacks deal %damage% more damage.</string>
+	<string name="skills.hwp_firearms.scavenger.name">Elemental Bullets</string>
+	<string name="skills.hwp_firearms.scavenger.desc">Every gun shot has a %chance% chance to be a fire, ice, lightning or poison round, dealing its weapon damage as that element instead of physical, without armor penetration. Skills and bonus weapons are not affected.</string>
+	<string name="skills.hwp_firearms.scavenger_fire.name">Burning Bullets</string>
+	<string name="skills.hwp_firearms.scavenger_fire.desc">Elemental rounds are %chance% more likely to be fire.</string>
+	<string name="skills.hwp_firearms.scavenger_ice.name">Freezing Bullets</string>
+	<string name="skills.hwp_firearms.scavenger_ice.desc">Elemental rounds are %chance% more likely to be ice.</string>
+	<string name="skills.hwp_firearms.scavenger_poison.name">Poisoning Bullets</string>
+	<string name="skills.hwp_firearms.scavenger_poison.desc">Elemental rounds are %chance% more likely to be poison.</string>
+	<string name="skills.hwp_firearms.scavenger_lightning.name">Shocking Bullets</string>
+	<string name="skills.hwp_firearms.scavenger_lightning.desc">Elemental rounds are %chance% more likely to be lightning.</string>
+	<string name="skills.hwp_firearms.scavenger_blind.name">Blinding Poison</string>
+	<string name="skills.hwp_firearms.scavenger_blind.desc">Poison rounds blind for 1s. Each hit adds to the blindness.</string>
+	<string name="skills.hwp_firearms.scavenger_slow.name">Slowing Freeze</string>
+	<string name="skills.hwp_firearms.scavenger_slow.desc">Ice rounds slow for 1s. Each hit adds to the slow.</string>
+	<string name="skills.hwp_firearms.scavenger_stun.name">Stunning Shock</string>
+	<string name="skills.hwp_firearms.scavenger_stun.desc">Lightning rounds stun for %duration%. Each hit adds to the stun.</string>
+	<string name="skills.hwp_firearms.steady.name">Extended Clip Crit</string>
+	<string name="skills.hwp_firearms.steady.desc">Your magazines hold %clip% more rounds, and every round left in the clip gives %crit-damage% critical damage to all weapons and skills.</string>
+	<string name="skills.hwp_firearms.steady_crit.name">Extended Crit Chance</string>
+	<string name="skills.hwp_firearms.steady_crit.desc">Every round left in the clip gives %crit-chance% critical hit chance.</string>
 
-	<string name="skills.hwp_firearms.snipe.name">Snipe</string>
+	<string name="skills.hwp_firearms.snipe.name">Sniper Shot</string>
 	<string name="skills.hwp_firearms.snipe.desc">Take aim and fire a single high-velocity round for %damage% of weapon damage with %armor-pen% armor penetration. Uses %rounds% rounds.</string>
 
 	<string name="skills.hwp_firearms.rpg.name">Rocket Launcher</string>
 	<string name="skills.hwp_firearms.rpg.desc">Fire a rocket that explodes for %damage% fire damage in a wide radius.</string>
 
-	<string name="skills.hwp_firearms.burst.name">Burst Fire</string>
-	<string name="skills.hwp_firearms.burst.desc">Fire a tight burst of %number% rounds. Costs ammunition.</string>
+	<string name="skills.hwp_firearms.burst.name">Double Barrel Burst</string>
+	<string name="skills.hwp_firearms.burst.desc">Fire two shotgun shells in quick succession, each where you aim. A shell deals %damage% physical damage to every enemy in a wide cone, and %close-dmg% more to enemies within %close-range%. Dodging cancels the burst.</string>
+	<string name="skills.hwp_firearms.burst_breath.name">Dragon's Breath</string>
+	<string name="skills.hwp_firearms.burst_breath.desc">The shells deal %damage% bonus fire damage and set the ground in their cone on fire for %duration%.</string>
+	<string name="skills.hwp_firearms.burst_triple.name">Triple Barrel</string>
+	<string name="skills.hwp_firearms.burst_triple.desc">Double Barrel Burst fires three shells.</string>
 	<string name="skills.hwp_firearms.adrenaline.name">Adrenaline</string>
-	<string name="skills.hwp_firearms.adrenaline.desc">You take {damage-taken} damage and every kill restores %mana% of your maximum ammunition.</string>
+	<string name="skills.hwp_firearms.adrenaline.desc">Every kill gives a stack of adrenaline, up to %stacks-max%. When you take damage, all stacks are spent to heal %heal% of your maximum health each.</string>
+	<string name="skills.hwp_firearms.adrenaline_crit.name">Critical Focus</string>
+	<string name="skills.hwp_firearms.adrenaline_crit.desc">%crit-chance% critical hit chance for every adrenaline stack.</string>
+	<string name="skills.hwp_firearms.adrenaline_epipen.name">EpiPen</string>
+	<string name="skills.hwp_firearms.adrenaline_epipen.desc">Dodging with no adrenaline grants %stacks% stacks.</string>
+	<string name="stacks.hwp_firearms.adrenaline.name">Adrenaline</string>
+	<string name="stacks.hwp_firearms.adrenaline.desc">Gained from kills. Spent to heal when you take damage.</string>
+	<string name="skills.hwp_firearms.turret.name">Deploy Turret</string>
+	<string name="skills.hwp_firearms.turret.desc">Place a turret at the target spot. It shoots nearby enemies for %damage% of your weapon damage, a shot every %rate%, until it is destroyed or wears down after 30 seconds. Enemies can attack it.</string>
+	<string name="skills.hwp_firearms.turret_reinforced.name">Reinforced Turret</string>
+	<string name="skills.hwp_firearms.turret_reinforced.desc">Your turrets gain %health% of your maximum health.</string>
+	<string name="skills.hwp_firearms.turret_second.name">Second Turret</string>
+	<string name="skills.hwp_firearms.turret_second.desc">You can have two turrets out. Placing a third destroys the oldest.</string>
+	<string name="skills.hwp_firearms.myturret.name">My Turret!</string>
+	<string name="skills.hwp_firearms.myturret.desc">Standing within 10m of your turret repairs it by %repair% and makes it deal %damage% more damage. The turret glows while boosted.</string>
+	<string name="skills.hwp_firearms.myturret_feed.name">Elemental Belt-Feed</string>
+	<string name="skills.hwp_firearms.myturret_feed.desc">While you stand near your turret, its rounds have a %chance% chance to be elemental, with your Elemental Bullets orbs.</string>
+	<string name="skills.hwp_firearms.myturret_shared.name">Our Turret!</string>
+	<string name="skills.hwp_firearms.myturret_shared.desc">Teammates near your turrets also repair and boost them, with your bonuses. Boosts do not stack.</string>
 
 	<string name="equipment.twohanded.hwp_rifle.1a">Flintlock Rifle</string>
 	<string name="equipment.twohanded.hwp_rifle.2a">Field Rifle</string>
@@ -60,7 +99,7 @@
 	<string name="skills.hwp_firearms.reload_dodge.desc">Dodging while reloading finishes the reload at once.</string>
 	<string name="skills.hwp_firearms.reload_explosive.name">Explosive Reload</string>
 	<string name="skills.hwp_firearms.reload_explosive.desc">Reload throws the old magazine, which explodes for %damage% physical damage per round left in it. With a pistol in each hand, both magazines are thrown, one right after the other.</string>
-	<string name="skills.hwp_firearms.reload_over.name">Over-Reload</string>
+	<string name="skills.hwp_firearms.reload_over.name">Perfect Reload</string>
 	<string name="skills.hwp_firearms.reload_over.desc">Every reload shows a ring with a gold mark. Hit Reload in the mark (%window%) for a perfect reload, which finishes at once: during the automatic reload, use Reload; during your own Reload, press it again. The clip then holds %rounds% more rounds, never more, until it next runs dry or a reload is not perfect.</string>
 
 	<!-- Frag Grenade orbs: each makes the grenade a different type -->
@@ -70,16 +109,18 @@
 	<string name="skills.hwp_firearms.frag_fire.desc">The grenade leaves a fire for %duration% that burns and blinds enemies standing in it.</string>
 	<string name="skills.hwp_firearms.frag_gas.name">Gas Grenade</string>
 	<string name="skills.hwp_firearms.frag_gas.desc">The grenade leaves a poison cloud for %duration%. Fire ignites the gas.</string>
+	<string name="skills.hwp_firearms.frag_shrapnel.name">Shrapnel</string>
+	<string name="skills.hwp_firearms.frag_shrapnel.desc">Enemies damaged by your grenades lose %armor% armor for %duration%.</string>
 
 	<!-- Marksman -->
 	<string name="skills.hwp_firearms.snipe_headshot.name">Headshot</string>
-	<string name="skills.hwp_firearms.snipe_headshot.desc">The first enemy a Snipe round hits takes a critical hit.</string>
+	<string name="skills.hwp_firearms.snipe_headshot.desc">The first enemy a Sniper Shot hits takes a critical hit.</string>
 	<string name="skills.hwp_firearms.snipe_pierce.name">Piercing Bullet</string>
-	<string name="skills.hwp_firearms.snipe_pierce.desc">The Snipe round passes through %pierce% more enemies.</string>
+	<string name="skills.hwp_firearms.snipe_pierce.desc">The Sniper Shot passes through %pierce% more enemies, dealing 15% less damage after each one.</string>
 	<string name="skills.hwp_firearms.focus.name">Critical Aim</string>
 	<string name="skills.hwp_firearms.focus.desc">Every gun round that hits an enemy gives a Focus stack, %stacks-crit% critical hit chance and damage each, up to %stacks-max%. A round that hits nothing loses all Focus.</string>
 	<string name="skills.hwp_firearms.focus_boom.name">BOOM Headshot!</string>
-	<string name="skills.hwp_firearms.focus_boom.desc">%crit-chance% critical hit chance and %crit-damage% critical damage, and the same again for Snipe.</string>
+	<string name="skills.hwp_firearms.focus_boom.desc">%crit-chance% critical hit chance and %crit-damage% critical damage for all weapons and skills, and double that for Sniper Shot.</string>
 	<string name="skills.hwp_firearms.focus_exposure.name">Elemental Exposure</string>
 	<string name="skills.hwp_firearms.focus_exposure.desc">%crit-chance% chance to critically hit for each element (fire, ice, lightning, poison) afflicting the target.</string>
 	<string name="stacks.hwp_firearms.focus.name">Focus</string>
@@ -91,9 +132,11 @@
 	<string name="skills.hwp_firearms.rpg_magic.name">Magic Missile</string>
 	<string name="skills.hwp_firearms.rpg_magic.desc">The rocket explodes in ice for %damage-ice% of its damage, then bursts into flame for %damage-fire% of it.</string>
 	<string name="skills.hwp_firearms.rpg_quad.name">Quad Missile Chambers</string>
+	<string name="skills.hwp_firearms.rpg_jump.name">Rocket Jump</string>
+	<string name="skills.hwp_firearms.rpg_jump.desc">When you are inside your own rocket's explosion, it throws you away from its center, and you evade all damage while you fly.</string>
 	<string name="skills.hwp_firearms.rpg_quad.desc">Fire four small missiles in quick succession, each dealing %damage% of the rocket's damage in %radius% of its radius.</string>
 	<string name="skills.hwp_firearms.hoarder.name">Ordinance Hoarder</string>
-	<string name="skills.hwp_firearms.hoarder.desc">The Frag Grenade and the Rocket Launcher recharge %cooldown% faster, and store %stacks-max% charges while ready: a stored charge is spent to use the skill again at once.</string>
+	<string name="skills.hwp_firearms.hoarder.desc">The Frag Grenade, the Grenade Launcher and the Rocket Launcher recharge %cooldown% faster, and store %stacks-max% charges while ready: a stored charge is spent to use the skill again at once.</string>
 	<string name="skills.hwp_firearms.hoarder_overpacked.name">Overpacked Explosives</string>
 	<string name="skills.hwp_firearms.hoarder_overpacked.desc">Explosive skills deal %damage% damage.</string>
 	<string name="skills.hwp_firearms.hoarder_shrapnel.name">Elemental Shrapnel</string>
@@ -102,6 +145,8 @@
 	<string name="stacks.hwp_firearms.grenade_charges.desc">Stored Frag Grenade uses.</string>
 	<string name="stacks.hwp_firearms.rocket_charges.name">Rocket Charges</string>
 	<string name="stacks.hwp_firearms.rocket_charges.desc">Stored Rocket Launcher uses.</string>
+	<string name="stacks.hwp_firearms.gl_charges.name">Launcher Charges</string>
+	<string name="stacks.hwp_firearms.gl_charges.desc">Stored Grenade Launcher uses.</string>
 
 	<!-- description param labels -->
 	<string name="skills.desc.params.hwp_dmg_per_round">Damage per Round:</string>
@@ -119,4 +164,17 @@
 	<string name="skills.desc.params.hwp_charge_rate">Recharge Speed:</string>
 	<string name="skills.desc.params.hwp_charges">Charges:</string>
 	<string name="skills.desc.params.hwp_explosive_dmg">Explosive Damage:</string>
+	<string name="skills.desc.params.hwp_close_dmg">Close Range Damage:</string>
+	<string name="skills.desc.params.hwp_close_range">Close Range:</string>
+	<string name="skills.desc.params.hwp_heal_per_stack">Heal per Stack:</string>
+	<string name="skills.desc.params.hwp_stacks_gained">Stacks Gained:</string>
+	<string name="skills.desc.params.hwp_likelihood">Likelihood:</string>
+	<string name="skills.desc.params.hwp_armor_break">Armor Reduction:</string>
+	<string name="skills.desc.params.hwp_magazine">Magazine Size:</string>
+	<string name="skills.desc.params.hwp_crit_dmg_per_round">Crit Damage per Round:</string>
+	<string name="skills.desc.params.hwp_crit_per_round">Crit Chance per Round:</string>
+	<string name="skills.desc.params.hwp_fire_rate">Fire Rate:</string>
+	<string name="skills.desc.params.hwp_turret_hp">Turret Health:</string>
+	<string name="skills.desc.params.hwp_repair">Repair:</string>
+	<string name="skills.desc.params.hwp_turret_dmg">Turret Damage:</string>
 </lang>

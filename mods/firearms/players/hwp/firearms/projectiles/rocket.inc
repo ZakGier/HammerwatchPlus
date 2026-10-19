@@ -45,6 +45,16 @@
 %endif
 				</array>
 			</dict>
+			<!-- Rocket Jump (demo_rpg.sval orb): the blast dashes its owner away (Combat.as) -->
+			<dict>
+				<string name="class">HWPFirearmsRocketJump</string>
+				<string name="jump-bind">rocket-jump</string>
+%if QUAD
+				<string name="radius-bind">quad-radius</string>
+%else
+				<string name="radius-bind">area-radius</string>
+%endif
+			</dict>
 %if FATBOY
 			<dict>
 				<string name="class">SpawnEffect</string>
@@ -140,9 +150,16 @@
 %endif
 			</collision>
 %if MAGIC
-			<effect src="players/wizard/projectiles/wiz_arcane_bolt_ice.effect" />
-%else
-			<effect src="players/projectiles/crossbow_bolt_explosive.effect" />
+			<effect src="players/hwp/firearms/projectiles/missile_magic.effect" />
+%endif
+%if FATBOY
+			<effect src="players/hwp/firearms/projectiles/missile_fatboy.effect" />
+%endif
+%if QUAD
+			<effect src="players/hwp/firearms/projectiles/missile_quad.effect" />
+%endif
+%if ROCKET
+			<effect src="players/hwp/firearms/projectiles/missile_rocket.effect" />
 %endif
 		</scene>
 	</scenes>

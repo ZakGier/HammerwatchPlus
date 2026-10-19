@@ -137,4 +137,25 @@
 
 		%block SharedStats
 	</dict>
+
+	<dict>
+		<string name="parent">hwp_firearms</string>
+		<string name="id">hwp_firearms_engineer</string>
+		<string name="name">.skills.hwp_firearms.mastery_4.name</string>
+		<string name="description">subclass of hwp_firearms</string>
+
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 72 24 24</vec4></array>
+
+		<array name="skills">
+			<string>players/attacks/dash.sval</string>
+			<string>players/hwp/firearms/skills/fs_reload.sval</string>
+			<string>players/hwp/firearms/skills/fs_frag.sval</string>
+			<string>players/hwp/firearms/skills/fs_scavenger.sval</string>
+			<string>players/hwp/firearms/skills/fs_steady.sval</string>
+			<string>players/hwp/firearms/skills/engineer_turret.sval</string>
+			<string>players/hwp/firearms/skills/engineer_myturret.sval</string>
+		</array>
+
+		%block SharedStats
+	</dict>
 </array>

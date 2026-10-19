@@ -59,9 +59,9 @@
 	</dict>
 	%endblock
 
-	%block OverReload perfect_reload_1 6
-	%block OverReload perfect_reload_2 9
-	%block OverReload perfect_reload_3 12
+	%block OverReload perfect_reload_1 5
+	%block OverReload perfect_reload_2 10
+	%block OverReload perfect_reload_3 15
 
 	<!--
 		Stun Grenade. Two buffs per level: the stun (tag stun) and a slow of the same length
@@ -113,8 +113,70 @@
 
 	%block Blind burn_blind 700 0.3
 	%block Blind fatboy_blind_1 2000 0.4
-	%block Blind fatboy_blind_2 3000 0.4
 	%block Blind fatboy_blind_3 4000 0.4
+
+	<!-- Shrapnel (Frag Grenade orb): the game's armor break (tweak/buffs/status_effects.sval
+	     ArmorBreak) for 2 s; shrapnel_0 is the frag's empty default -->
+	%defblock ArmorBreak NAME NUM
+	<dict name="%%NAME%%">
+		<array name="tags"><string>debuff</string><string>armor_break</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">2000</int>
+		<string name="icon">special/icons/armorbreak.unit</string>
+		<float name="armor-mul">%%NUM%%</float>
+		<string name="category">armorbreak</string>
+		<int name="category-level">2000</int>
+	</dict>
+	%endblock
+
+	%block ArmorBreak shrapnel_1 0.9
+	%block ArmorBreak shrapnel_2 0.8
+	%block ArmorBreak shrapnel_3 0.7
+	<!-- Rocket Jump: evade everything while the blast throws you (Rogue's flurry_of_blades) -->
+	<dict name="rocket_jump">
+		<bool name="debuff">false</bool>
+		<int name="duration">500</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::Evade</string>
+				<float name="chance">1</float>
+			</dict>
+		</array>
+	</dict>
+	<!-- My Turret!: the turret's glow while someone boosts it (Turret.as re-applies it) -->
+	<dict name="turret_glow">
+		<bool name="debuff">false</bool>
+		<int name="duration">300</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<string name="fx">players/items/symbol_buff.effect?cR=1&cG=0.85&cB=0.4</string>
+	</dict>
+	<dict name="shrapnel_0">
+		<bool name="debuff">false</bool>
+		<int name="duration">1</int>
+		<bool name="ignore-buff-scaling">true</bool>
+	</dict>
+
+	<!-- Elemental Bullets' orbs (Elemental.as HWPFirearmsBulletRider): each hit adds its time
+	     to what is left, so the durations here are only the defaults -->
+	%block Blind ele_blind 1000 0.4
+	<dict name="ele_slow">
+		<array name="tags"><string>debuff</string><string>slow</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">1000</int>
+		<string name="icon">special/icons/slow.unit</string>
+		<float name="speed-mul">0.6</float>
+	</dict>
+	<dict name="ele_stun">
+		<array name="tags"><string>debuff</string><string>stun</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">250</int>
+		<string name="icon">special/icons/stun.unit</string>
+		<float name="speed-mul">0</float>
+		<bool name="disarm">true</bool>
+		<bool name="silence">true</bool>
+		<string name="category">stun</string>
+	</dict>
 
 	<!--
 		Gas Grenade. The cloud keeps "gassed" on everyone inside. A gassed enemy that is burning

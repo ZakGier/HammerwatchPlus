@@ -1,13 +1,27 @@
 %include "players/skills_cost.inc"
+<!--
+	Double Barrel Burst (Assault): two shotgun shells, one right after the other, each at
+	the current aim (update-aim covers the whole cast). A shell hits every enemy in a 50
+	degree cone out to 160 px (10 m, at 16 px a metre: assumed) for 200 physical damage
+	(HWPFirearmsShotgun, Shotgun.as); enemies within close-range (5/5/7/7/10 m) take
+	close-mul of that (+20..100%). The pellets (shotgun_pellet.unit) are the look only.
+	castpoint 1 so the mana is paid (PlayerSkillDirectional pays when crossing a castpoint
+	above 0); a dodge after it cancels the second shell without a refund.
+	Orbs: Dragon's Breath adds breath-dmg fire to each hit and burning ground over the
+	cone (dragons_breath.unit) for breath-ttl; Triple Barrel fires a third shell (its
+	timeline wins, being first in the level params).
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.burst.name</string>
 	<string name="type-name">.skills.type.spell</string>
 	<string name="description">.skills.hwp_firearms.burst.desc</string>
 
 	<array name="description-params">
-		<array><s>number</s><s>.skills.desc.params.projectile.number</s><s>3</s><s>3</s><s>4</s><s>4</s><s>5</s></array>
-		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>3</s><s>3</s><s>4</s><s>4</s><s>5</s></array>
-		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>0.7s</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage.physical</s><s>200</s></array>
+		<array><s>close-dmg</s><s>.skills.desc.params.hwp_close_dmg</s><s>+20%</s><s>+40%</s><s>+60%</s><s>+80%</s><s>+100%</s></array>
+		<array><s>close-range</s><s>.skills.desc.params.hwp_close_range</s><s>5m</s><s>5m</s><s>7m</s><s>7m</s><s>10m</s></array>
+		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>5</s><s>5</s><s>6</s><s>6</s><s>7</s></array>
+		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>5s</s></array>
 	</array>
 
 	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 72 24 24</vec4></array>
@@ -21,28 +35,54 @@
 		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
 		<string name="class">Skills::PlayerSkillDirectional</string>
 		<string name="anim">attack</string>
-		<int name="anim-length">400</int>
+		<int name="anim-length">450</int>
 
-		<int name="cooldown">700</int>
-		<int name="castpoint">80</int>
+		<int name="cooldown">5000</int>
+		<int name="castpoint">1</int>
 		<float name="cast-speed-mul">1</float>
 		<float name="move-speed-mul">0.6</float>
-		<ivec2 name="move-speed">0 400</ivec2>
-		<ivec2 name="blocking">0 400</ivec2>
-		<ivec2 name="update-aim">0 80</ivec2>
+		<ivec2 name="move-speed">0 450</ivec2>
+		<ivec2 name="blocking">0 450</ivec2>
+		<ivec2 name="update-aim">0 450</ivec2>
 		<bool name="repeating">false</bool>
-		<int name="mana-cost">3</int>
-			<dict name="binds">
-				<int name="burst-num">3</int>
-			</dict>
+		<int name="mana-cost">5</int>
+		<dict name="binds">
+			<int name="close-range">80</int>
+			<float name="close-mul">1.2</float>
+			<int name="breath-dmg">0</int>
+			<int name="breath-tick">0</int>
+			<int name="breath-ttl">0</int>
+		</dict>
 		<dict name="actions">
 			<array name="cast">
 				<dict>
+					<string name="class">HWPFirearmsShotgun</string>
+					<int name="radius">160</int>
+					<int name="arc">50</int>
+					<string name="close-range-bind">close-range</string>
+					<string name="close-mul-bind">close-mul</string>
+					<string name="ground-ttl-bind">breath-ttl</string>
+					<array name="effects">
+						<dict>
+							<string name="class">Damage</string>
+							<int name="physical">200</int>
+							<string name="fire-bind">breath-dmg</string>
+						</dict>
+					</array>
+					<array name="ground-effects">
+						<dict>
+							<string name="class">SpawnUnit</string>
+							<string name="unit">players/hwp/firearms/projectiles/dragons_breath.unit</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
 					<string name="class">ShootProjectileFan</string>
-					<string name="projectile">players/hwp/firearms/projectiles/bullet.unit</string>
-					<int name="dist">6</int>
-					<string name="projectiles-bind">burst-num</string>
-					<int name="spread">8</int>
+					<string name="projectile">players/hwp/firearms/projectiles/shotgun_pellet.unit</string>
+					<int name="dist">8</int>
+					<int name="projectiles">7</int>
+					<int name="spread">50</int>
+					<float name="jitter">0.8</float>
 				</dict>
 				<dict>
 					<string name="class">PlaySound</string>
@@ -52,37 +92,106 @@
 		</dict>
 
 		<array name="timeline">
-			<i>80</i><s>cast</s>
+			<i>0</i><s>cast</s>
+			<i>200</i><s>cast</s>
 		</array>
 	</dict>
 
 	<array name="upgrades">
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
-			<int name="mana-cost">3</int>
+			<int name="mana-cost">5</int>
 			<dict name="binds">
-				<int name="burst-num">3</int>
+				<int name="close-range">80</int>
+				<float name="close-mul">1.4</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
-			<int name="mana-cost">4</int>
+			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="burst-num">4</int>
+				<int name="close-range">112</int>
+				<float name="close-mul">1.6</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
-			<int name="mana-cost">4</int>
+			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="burst-num">4</int>
+				<int name="close-range">112</int>
+				<float name="close-mul">1.8</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
-			<int name="mana-cost">5</int>
+			<int name="mana-cost">7</int>
 			<dict name="binds">
-				<int name="burst-num">5</int>
+				<int name="close-range">160</int>
+				<float name="close-mul">2</float>
+			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<!-- breath-dmg is 15/30% of the shell's 200 as fire on every hit; the ground burns for
+		     breath-ttl and deals breath-tick every 0.5 s, the same share each second -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.burst_breath.name</string>
+			<string name="description">.skills.hwp_firearms.burst_breath.desc</string>
+
+			<array name="description-params">
+				<array><s>damage</s><s>.skills.desc.params.hwp_fire_share</s><s>15%</s><s>30%</s></array>
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.duration</s><s>1s</s><s>3s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 96 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>fire</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_burst_breath</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="breath-dmg">30</int>
+					<int name="breath-tick">15</int>
+					<int name="breath-ttl">1000</int>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<int name="breath-dmg">60</int>
+						<int name="breath-tick">30</int>
+						<int name="breath-ttl">3000</int>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.burst_triple.name</string>
+			<string name="description">.skills.hwp_firearms.burst_triple.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 96 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_burst_triple</string>
+			<string name="quality">rare</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<int name="anim-length">650</int>
+				<ivec2 name="move-speed">0 650</ivec2>
+				<ivec2 name="blocking">0 650</ivec2>
+				<ivec2 name="update-aim">0 650</ivec2>
+				<array name="timeline">
+					<i>0</i><s>cast</s>
+					<i>200</i><s>cast</s>
+					<i>400</i><s>cast</s>
+				</array>
 			</dict>
 		</dict>
 	</array>

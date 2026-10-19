@@ -1,0 +1,2 @@
+%include "players/hwp/firearms/projectiles/round_elemental.inc"
+%block Round 480 26 1 0.6 false rifle ice

@@ -10,7 +10,7 @@
  "steps": [
   {
    "do": "log_has",
-   "pattern": "\\[HWP:firearms\\] class registered with 3 subclass\\(es\\)",
+   "pattern": "\\[HWP:firearms\\] class registered with 4 subclass\\(es\\)",
    "timeout": 20
   },
   {

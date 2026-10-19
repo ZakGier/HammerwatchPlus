@@ -65,6 +65,11 @@
 					</dict>
 %endif
 					%block Shrapnel false
+					<!-- the Shrapnel orb's armor break (fs_frag.sval) -->
+					<dict>
+						<string name="class">ApplyBuff</string>
+						<string name="buff-bind">shrapnel-buff</string>
+					</dict>
 %if STUN
 					<dict>
 						<bool name="only-actors">true</bool>

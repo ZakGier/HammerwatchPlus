@@ -5,4 +5,5 @@
 *.lvl binary
 *.pfb binary
 *.hps binary
+*.model binary
 *.orig -text

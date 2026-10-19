@@ -1,0 +1,405 @@
+{
+ "name": "look-firearms-rounds",
+ "about": "Look only (timescale 0.1, spawned missiles): the Firearms rounds and missiles in flight (rifle round, 40 mm launcher shell, rocket, then Fat Boy, Magic Missile and Quad spawned beside the player, then the smaller pistol round), and no load errors for rounds.png or the round/missile effects. Crop around (322,170) at 4-6x. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Rounds"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "hwp levelup 20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms_demolitions"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 40"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_reload",
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_frag",
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_rpg",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rifle_00"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_01"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_02"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_03"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_04"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_05"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_00"
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_01"
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_02"
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_03"
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_04"
+  },
+  {
+   "do": "shot",
+   "name": "gl_shell_05"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "skill3"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rocket_00"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_01"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_02"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_03"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_04"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_05"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_06"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_07"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "players/hwp/firearms/projectiles/rocket_fatboy.unit",
+    "16",
+    "0"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rocket_fatboy_00"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_fatboy_01"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_fatboy_02"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_fatboy_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "players/hwp/firearms/projectiles/rocket_magic.unit",
+    "16",
+    "0"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rocket_magic_00"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_magic_01"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_magic_02"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_magic_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "players/hwp/firearms/projectiles/rocket_quad.unit",
+    "16",
+    "0"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rocket_quad_00"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_quad_01"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_quad_02"
+  },
+  {
+   "do": "shot",
+   "name": "rocket_quad_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "pistol_00"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_01"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_02"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_03"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_04"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_05"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "(?i)(error|warn|fail|could not|missing|not found).*(rounds\\.png|round_(rifle|pistol)|missile_\\w+\\.effect|gl_shell\\.effect)"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

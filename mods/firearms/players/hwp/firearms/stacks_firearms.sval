@@ -48,7 +48,7 @@
 			<bool name="debuff">false</bool>
 			<array name="hud">
 				<string>players/hwp/firearms/icons.png</string>
-				<int>100</int><vec4>216 48 24 24</vec4>
+				<int>100</int><vec4>216 48 14 14</vec4>
 			</array>
 			<array name="modifiers">
 				<dict>
@@ -97,7 +97,7 @@
 			<bool name="debuff">false</bool>
 			<array name="hud">
 				<string>players/hwp/firearms/icons.png</string>
-				<int>100</int><vec4>192 72 24 24</vec4>
+				<int>100</int><vec4>192 72 14 14</vec4>
 			</array>
 			<array name="modifiers">
 				<dict>
@@ -143,7 +143,7 @@
 			<bool name="debuff">false</bool>
 			<array name="hud">
 				<string>players/hwp/firearms/icons.png</string>
-				<int>100</int><vec4>144 48 24 24</vec4>
+				<int>100</int><vec4>144 48 14 14</vec4>
 			</array>
 			<array name="modifiers">
 				<dict>
@@ -154,11 +154,11 @@
 	</dict>
 
 	<!--
-		Ordinance Hoarder (demo_hoarder.sval): stored casts of the Frag Grenade and the Rocket
-		Launcher. max is 0 here; the passive raises it. The module script adds a charge each
+		Ordinance Hoarder (demo_hoarder.sval): stored casts of the Frag Grenade, the Grenade
+		Launcher and the Rocket Launcher. max is 0 here; the passive raises it. The module script adds a charge each
 		cooldown the skill sits ready, and spends one to reset the cooldown after a cast.
 	-->
-	%defblock Charges ID X
+	%defblock Charges ID X Y
 	<dict>
 		<string name="id">%%ID%%</string>
 		<string name="name">.stacks.hwp_firearms.%%ID%%.name</string>
@@ -170,7 +170,7 @@
 			<bool name="debuff">false</bool>
 			<array name="hud">
 				<string>players/hwp/firearms/icons.png</string>
-				<int>100</int><vec4>%%X%% 48 24 24</vec4>
+				<int>100</int><vec4>%%X%% %%Y%% 14 14</vec4>
 			</array>
 			<array name="modifiers">
 				<dict>
@@ -181,6 +181,32 @@
 	</dict>
 	%endblock
 
-	%block Charges grenade_charges 168
-	%block Charges rocket_charges 192
+	%block Charges grenade_charges 168 48
+	%block Charges rocket_charges 192 48
+	%block Charges gl_charges 192 96
+
+	<!--
+		Adrenaline (assault_adrenaline.sval): one stack per kill, all spent to heal when you
+		are hurt (HWPFirearmsAdrenaline, Combat.as). max is 0 here; the passive raises it.
+	-->
+	<dict>
+		<string name="id">adrenaline</string>
+		<string name="name">.stacks.hwp_firearms.adrenaline.name</string>
+		<string name="description">.stacks.hwp_firearms.adrenaline.desc</string>
+		<int name="max">0</int>
+		<bool name="refresh-on-max">true</bool>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>168 96 14 14</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </array>

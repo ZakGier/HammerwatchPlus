@@ -1,12 +1,26 @@
 %include "players/skills_cost.inc"
+<!--
+	Elemental Bullets (base passive; the file and id keep Scavenger's name, which it
+	replaced). Each gun shot has ele-chance to be a round of one of the four elements, its
+	weapon damage all that element and without armor penetration (Elemental.as
+	HWPFirearmsGunShot, round_elemental.inc). Skills, the shotgun and the turret's rounds are
+	not gun shots. The chance and every orb are custom stats (Modifiers::CustomStat) that
+	the script reads:
+	- hwp-ele-chance: the passive's chance.
+	- hwp-ele-<element>: a bullet-type orb (one at a time) adds that much weight to its
+	  element, on top of 1 each: +30/60/100% likelihood.
+	- hwp-ele-blind / hwp-ele-slow: poison rounds blind, ice rounds slow, 1 s a hit.
+	- hwp-ele-stun: lightning rounds stun this many ms a hit.
+	The riders add their time to what is left (HWPFirearmsBulletRider), up to 3 s.
+	Each orb has its own modifiers slot (1-7), as sniper_focus.sval's orbs do.
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.scavenger.name</string>
 	<string name="type-name">.skills.type.passive</string>
 	<string name="description">.skills.hwp_firearms.scavenger.desc</string>
 
 	<array name="description-params">
-		<array><s>chance</s><s>.skills.desc.params.chance</s><s>20%</s><s>25%</s><s>30%</s><s>35%</s><s>40%</s></array>
-		<array><s>mana</s><s>.skills.desc.params.mana</s><s>3</s><s>3</s><s>4</s><s>4</s><s>5</s></array>
+				<array><s>chance</s><s>.skills.desc.params.chance</s><s>10%</s><s>20%</s><s>30%</s><s>40%</s><s>50%</s></array>
 	</array>
 
 	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>216 0 24 24</vec4></array>
@@ -18,23 +32,15 @@
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTLEVEL_1</int>
 		<string name="class">Skills::PassiveSkill</string>
-			<dict name="binds">
-				<float name="scav-chance">0.2</float>
-				<int name="scav-mana">3</int>
-			</dict>
+		<dict name="binds">
+			<float name="ele-chance">0.1</float>
+		</dict>
 		<array name="modifiers">
 			<array>
 				<dict>
-					<string name="class">Modifiers::TriggerEffect</string>
-					<string name="trigger">kill</string>
-					<string name="chance-bind">scav-chance</string>
-					<bool name="target-self">true</bool>
-					<array name="effects">
-						<dict>
-							<string name="class">GiveMana</string>
-							<string name="mana-bind">scav-mana</string>
-						</dict>
-					</array>
+					<string name="class">Modifiers::CustomStat</string>
+					<string name="name">hwp-ele-chance</string>
+					<string name="add-bind">ele-chance</string>
 				</dict>
 			</array>
 		</array>
@@ -44,30 +50,394 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
 			<dict name="binds">
-				<float name="scav-chance">0.25</float>
-				<int name="scav-mana">3</int>
+				<float name="ele-chance">0.2</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
 			<dict name="binds">
-				<float name="scav-chance">0.3</float>
-				<int name="scav-mana">4</int>
+				<float name="ele-chance">0.3</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
 			<dict name="binds">
-				<float name="scav-chance">0.35</float>
-				<int name="scav-mana">4</int>
+				<float name="ele-chance">0.4</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
 			<dict name="binds">
-				<float name="scav-chance">0.4</float>
-				<int name="scav-mana">5</int>
+				<float name="ele-chance">0.5</float>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_fire.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_fire.desc</string>
+
+			<array name="description-params">
+				<array><s>chance</s><s>.skills.desc.params.hwp_likelihood</s><s>+30%</s><s>+60%</s><s>+100%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>fire</s></array>
+			<string name="id">hwp_fs_scavenger_fire</string>
+			<array name="blocked-by-skills"><s>hwp_fs_scavenger_ice</s><s>hwp_fs_scavenger_poison</s><s>hwp_fs_scavenger_lightning</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-fire">0.3</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-fire</string>
+							<string name="add-bind">ele-fire</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="ele-fire">0.6</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="ele-fire">1</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_ice.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_ice.desc</string>
+
+			<array name="description-params">
+				<array><s>chance</s><s>.skills.desc.params.hwp_likelihood</s><s>+30%</s><s>+60%</s><s>+100%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>ice</s></array>
+			<string name="id">hwp_fs_scavenger_ice</string>
+			<array name="blocked-by-skills"><s>hwp_fs_scavenger_fire</s><s>hwp_fs_scavenger_poison</s><s>hwp_fs_scavenger_lightning</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-ice">0.3</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-ice</string>
+							<string name="add-bind">ele-ice</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="ele-ice">0.6</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="ele-ice">1</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_poison.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_poison.desc</string>
+
+			<array name="description-params">
+				<array><s>chance</s><s>.skills.desc.params.hwp_likelihood</s><s>+30%</s><s>+60%</s><s>+100%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>poison</s></array>
+			<string name="id">hwp_fs_scavenger_poison</string>
+			<array name="blocked-by-skills"><s>hwp_fs_scavenger_fire</s><s>hwp_fs_scavenger_ice</s><s>hwp_fs_scavenger_lightning</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-poison">0.3</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-poison</string>
+							<string name="add-bind">ele-poison</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="ele-poison">0.6</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="ele-poison">1</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_lightning.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_lightning.desc</string>
+
+			<array name="description-params">
+				<array><s>chance</s><s>.skills.desc.params.hwp_likelihood</s><s>+30%</s><s>+60%</s><s>+100%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>lightning</s></array>
+			<string name="id">hwp_fs_scavenger_lightning</string>
+			<array name="blocked-by-skills"><s>hwp_fs_scavenger_fire</s><s>hwp_fs_scavenger_ice</s><s>hwp_fs_scavenger_poison</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-lightning">0.3</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-lightning</string>
+							<string name="add-bind">ele-lightning</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="ele-lightning">0.6</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="ele-lightning">1</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_blind.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_blind.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>poison</s></array>
+			<string name="id">hwp_fs_scavenger_blind</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-blind">1</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-blind</string>
+							<string name="add-bind">ele-blind</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_slow.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_slow.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>ice</s></array>
+			<string name="id">hwp_fs_scavenger_slow</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-slow">1</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-slow</string>
+							<string name="add-bind">ele-slow</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.scavenger_stun.name</string>
+			<string name="description">.skills.hwp_firearms.scavenger_stun.desc</string>
+
+			<array name="description-params">
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.hwp_stun</s><s>0.25s</s><s>0.5s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 120 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s><s>lightning</s></array>
+			<string name="id">hwp_fs_scavenger_stun</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="ele-stun">250</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CustomStat</string>
+							<string name="name">hwp-ele-stun</string>
+							<string name="add-bind">ele-stun</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="ele-stun">500</float>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

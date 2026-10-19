@@ -29,7 +29,7 @@ in a lobby should run the same version of the same modules.
 | `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
 | `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
 | `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (10 each, 20 dual). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault as first built. Plan: `docs/design/firearms.md`. |
+| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); mana pays for gadgets. Weapons: rifle (30 rounds, grenade-launcher secondary) and pistols for either hand (10 each, 20 dual). Base kit Reload and Frag Grenade with orbs (Explosive Reload, Over-Reload's timed perfect reload, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault (Double Barrel Burst, Adrenaline) and Engineer (Deploy Turret, My Turret!) specializations with their orbs. Plan: `docs/design/firearms.md`. |
 | `fishing` | Six fishing spots on the town coast (timing minigame), more at the potion wells of run floors. A pirate sells bait, rods and fish traps. Fish are swords and sell for bet tokens. |
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
@@ -90,10 +90,11 @@ icons come from `tools/make_firearms_icons.py`. Over-Reload now works on a manua
 (a second press on the mark), and dual pistols throw their magazines one after the other.
 Rounds are now small tinted bullets fired on the attack's first frame, and the clip fills
 only in the village and on a run's first floor, carrying its count between floors; a
-trigger pull on an empty clip reloads (`mod-firearms-clip`). Assault's old Stun Grenade is gone (Burst and Adrenaline remain), and `hwp
+trigger pull on an empty clip reloads (`mod-firearms-clip`). Assault's old Stun Grenade is gone (Double Barrel Burst and Adrenaline remain), and `hwp
 firearms sound` auditions firing sounds by ear; the guns, rockets and reload use the sounds
 picked that way (reload: unlock, then lever on, or lever off on a perfect). GameLab is pinned to build
-25932569 since 2026-10-19.
+25932569 since 2026-10-19. The Engineer (a turret that wears down and that you repair and boost by standing near it)
+and Assault's checks pass `plan-firearms-b`, and the pistol arm stays raised between shots for 2 s (`plan-firearms-arm`).
 A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines

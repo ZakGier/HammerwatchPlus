@@ -1,0 +1,68 @@
+{
+ "name": "plan-firearms-arm",
+ "about": "Through the plan_firearms bot: the pistol arm stays raised after a shot and comes down 2 s after the last one, or on a dodge or a reload (Combat.as AimHold); frames of both poses.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 240,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_pistol_arm"
+   },
+   "name": "pistol arm",
+   "expect": {
+    "pistol_arm_held": true,
+    "pistol_arm_lowers_after_2s": true,
+    "pistol_arm_lowers_on_dodge": true,
+    "pistol_arm_lowers_on_reload": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

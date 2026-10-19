@@ -73,28 +73,33 @@ namespace HWP
 			return p !is null && p.m_castingT >= 0;
 		}
 
-		// Ordinance Hoarder: while the Frag Grenade or the Rocket Launcher sits ready it banks a
-		// charge per cooldown's worth of time, up to the charges stack's max (0 without the
-		// passive). When the skill goes on cooldown and a charge is banked, the charge is spent
-		// and the cooldown cleared once the cast is over.
+		// Ordinance Hoarder: while the Frag Grenade, the Grenade Launcher or the Rocket Launcher
+		// sits ready it banks a charge per cooldown's worth of time, up to the charges stack's
+		// max (0 without the passive). When the skill goes on cooldown and a charge is banked,
+		// the charge is spent and the cooldown cleared once the cast is over. ids are the
+		// skill's alternatives, the first one held counting (alt: the other rifle's launcher).
 		class HoardedSkill
 		{
-			uint m_id;
+			array<uint> m_ids;
 			string m_stack;
 			int m_readyMs;
 			bool m_wasCooling;
 			bool m_spend;
 
-			HoardedSkill(const string &in id, const string &in stack)
+			HoardedSkill(const string &in stack, const string &in id, const string &in alt = "")
 			{
-				m_id = HashString(id);
+				m_ids.insertLast(HashString(id));
+				if (alt != "")
+					m_ids.insertLast(HashString(alt));
 				m_stack = stack;
 			}
 
 			void Update(PlayerBase@ plr, int ms)
 			{
 				auto def = ActorBuffStackDef::Get(m_stack);
-				auto skill = FindSkill(plr, m_id);
+				Skills::Skill@ skill = null;
+				for (uint i = 0; i < m_ids.length() && skill is null; i++)
+					@skill = FindSkill(plr, m_ids[i]);
 				if (def is null || skill is null)
 					return;
 				int mx = ClipMax(plr, def);
@@ -134,8 +139,9 @@ namespace HWP
 		}
 
 		array<HoardedSkill@> g_hoarded = {
-			HoardedSkill("hwp_fs_frag", "players/hwp/firearms/stacks_firearms.sval:grenade_charges"),
-			HoardedSkill("hwp_fs_rpg", "players/hwp/firearms/stacks_firearms.sval:rocket_charges") };
+			HoardedSkill("players/hwp/firearms/stacks_firearms.sval:grenade_charges", "hwp_fs_frag"),
+			HoardedSkill("players/hwp/firearms/stacks_firearms.sval:gl_charges", "hwp_attack_rifle_gl", "hwp_attack_rifle_gl_epic"),
+			HoardedSkill("players/hwp/firearms/stacks_firearms.sval:rocket_charges", "hwp_fs_rpg") };
 
 		// Over-Reload: while a reload runs, a 200 ms window opens at a random point in its
 		// second half (drawn as a gold arc on a ring over the player). Two kinds of reload:
@@ -416,15 +422,119 @@ namespace HWP
 
 		ReloadSounds g_reloadSounds;
 
+		// Adrenaline: the heal the last hurt bought, landed next frame (HWPFirearmsAdrenaline)
+		const string ADRENALINE = "players/hwp/firearms/stacks_firearms.sval:adrenaline";
+		int g_adrenalineHeal = 0;
+
+		// The Glocks' raised arm: after a pistol shot the shot's upper-body animation is
+		// played again on the skill layer (1) from its start and frozen there (speed FROZEN,
+		// AnimationLoopType::Hold; PlayerBase.SetUnitScene's call otherwise). The wand shot's
+		// first frame has the arm out and its last is the rest pose, so the arm stays up
+		// between shots instead of dropping to idle. It lets go after HOLD_MS without a pistol
+		// shot, or at once when the clip reloads or another skill (a dodge, Reload, a spell)
+		// starts: the animation then runs on from the frozen frame at full speed, unheld, so
+		// the arm comes down the shot's own way and the layer is free.
+		const int HOLD_MS = 2000;
+		const float FROZEN = 0.0001f;
+		const array<uint> PISTOLS = { HashString("hwp_attack_glock"), HashString("hwp_attack_glock_off") };
+
+		class AimHold
+		{
+			int m_leftMs;
+			bool m_holding;
+			bool m_wasShooting;
+			PlayerAnimationSetEntry@ m_anim;
+
+			void Play(PlayerBase@ plr, bool resetTime, AnimationLoopType loop, float speed)
+			{
+				if (m_anim is null)
+					return;
+				if (m_anim.m_skel3dset !is null)
+					plr.m_effectParams.PlayAnimation3D(m_anim.m_anim3d, m_anim.m_skel3dset, plr.m_unit, 1, m_anim.m_priority, resetTime, loop, speed);
+				else
+					plr.m_effectParams.PlayAnimation3D(m_anim.m_anim3d, plr.m_skeleton, plr.m_unit, 1, m_anim.m_priority, resetTime, loop, speed);
+			}
+
+			void Release(PlayerBase@ plr, const string &in why)
+			{
+				if (m_holding)
+				{
+					Play(plr, false, AnimationLoopType::None, 1.0f);
+					HWP::Log("firearms", "pistol arm: lowered (" + why + ")");
+				}
+				m_holding = false;
+				m_leftMs = 0;
+			}
+
+			void Update(PlayerBase@ plr, int ms)
+			{
+				Skills::PlayerSkill@ shooting = null;
+				string other = "";
+				for (uint i = 0; i < plr.m_skills.length(); i++)
+				{
+					auto skill = cast<Skills::PlayerSkill>(plr.m_skills[i]);
+					auto active = cast<Skills::ActiveSkill>(plr.m_skills[i]);
+					bool on = (skill !is null && skill.IsActive()) || (active !is null && active.IsActive());
+					if (!on)
+						continue;
+					if (skill !is null && PISTOLS.find(skill.m_skillId) >= 0)
+						@shooting = skill;
+					else if (other == "")
+						other = "skill " + plr.m_skills[i].m_skillId;
+				}
+				auto reload = ActorBuffStackDef::Get(RELOADING);
+				if (reload !is null && plr.GetStacks(reload) > 0)
+					other = "reloading";
+
+				if (shooting !is null)
+				{
+					if (plr.m_animSet !is null)
+						@m_anim = plr.m_animSet.GetAnimation(shooting.m_animation);
+					m_leftMs = HOLD_MS;
+					m_holding = false;
+					m_wasShooting = true;
+					return;
+				}
+				if (other != "")
+				{
+					Release(plr, other);
+					m_wasShooting = false;
+					return;
+				}
+				if (m_wasShooting && m_leftMs > 0)
+				{
+					// the shot just ended: back to its first frame, frozen
+					Play(plr, true, AnimationLoopType::Hold, FROZEN);
+					if (!m_holding)
+						HWP::Log("firearms", "pistol arm: held");
+					m_holding = true;
+					m_wasShooting = false;
+				}
+				if (!m_holding)
+					return;
+				m_leftMs -= ms;
+				if (m_leftMs <= 0)
+					Release(plr, HOLD_MS + " ms without a shot");
+			}
+		}
+		AimHold g_aimHold;
+
 		void UpdateCombat(int ms)
 		{
 			auto plr = cast<PlayerBase>(GetLocalPlayer());
 			if (plr is null || !IsFirearms(GetLocalPlayerRecord()))
 				return;
+			if (g_adrenalineHeal > 0)
+			{
+				int healed = plr.Heal(g_adrenalineHeal, false);
+				HWP::Log("firearms", "adrenaline: healed " + healed + " of " + g_adrenalineHeal);
+				g_adrenalineHeal = 0;
+			}
 			for (uint i = 0; i < g_hoarded.length(); i++)
 				g_hoarded[i].Update(plr, ms);
 			g_overReload.Update(plr, ms);
 			g_reloadSounds.Update(plr);
+			g_aimHold.Update(plr, ms);
 		}
 
 		void RenderCombat(int idt, SpriteBatch& sb)
@@ -563,6 +673,78 @@ namespace Modifiers
 			return 0;
 		}
 	}
+
+	// A crit roll at chance per stack of buff held: Critical Focus (adrenaline) and Extended
+	// Crit Chance (the clip's rounds left).
+	class HWPFirearmsStackCrit : Modifier
+	{
+		vec2 m_chance;
+		string m_buff;
+
+		HWPFirearmsStackCrit(UnitPtr unit, SValue& params)
+		{
+			m_chance = GetParamVec2(unit, params, "chance", true, 0);
+			m_buff = GetParamString(unit, params, "buff", true);
+		}
+
+		ModDynamism HasCrit() override { return ModDynamism::Dynamic; }
+		int Crit(PlayerBase@ player, Actor@ attacked, Skills::Skill@ skill, float intensity) override
+		{
+			auto def = ActorBuffStackDef::Get(m_buff);
+			if (player is null || def is null)
+				return 0;
+			int stacks = player.GetStacks(def);
+			return (stacks > 0 && roll_chance(player, lerp(m_chance, intensity) * stacks)) ? 1 : 0;
+		}
+	}
+}
+
+// Adrenaline's effects on the player (assault_adrenaline.sval), local only:
+// - heal (the hurt trigger): spend every stack for heal of max health each. The trigger runs
+//   before the damage, so the heal waits a frame (g_adrenalineHeal, UpdateCombat).
+// - epipen (EpiPen's dash trigger): with no stacks, gain epipen stacks.
+class HWPFirearmsAdrenaline : IEffect
+{
+	float m_heal;
+	int m_epipen;
+
+	HWPFirearmsAdrenaline(UnitPtr unit, SValue& params)
+	{
+		m_heal = GetParamFloat(unit, params, "heal", false, 0);
+		m_epipen = GetParamInt(unit, params, "epipen", false, 0);
+	}
+
+	CanEvade IsEvadable(Actor@ attacker) { return CanEvade::Neither; }
+	void SetWeaponInformation(uint weapon) {}
+
+	bool CanApply(Actor@ owner, UnitPtr target, vec2 pos, vec2 dir, float intensity) override
+	{
+		return cast<PlayerBase>(target.GetScriptBehavior()) !is null;
+	}
+
+	bool Apply(Actor@ owner, UnitPtr target, vec2 pos, vec2 dir, float intensity, bool husk)
+	{
+		auto plr = cast<PlayerBase>(target.GetScriptBehavior());
+		auto def = ActorBuffStackDef::Get(HWP::Firearms::ADRENALINE);
+		if (husk || plr is null || def is null || plr !is cast<PlayerBase>(GetLocalPlayer()))
+			return false;
+		int stacks = plr.GetStacks(def);
+		if (m_epipen > 0)
+		{
+			if (stacks > 0)
+				return false;
+			plr.AddStacks(plr, def, m_epipen);
+			HWP::Log("firearms", "adrenaline: epipen, " + plr.GetStacks(def) + " stacks");
+			return true;
+		}
+		if (stacks <= 0 || m_heal <= 0)
+			return false;
+		int amount = max(1, int(stacks * m_heal * plr.GetMaxHp() + 0.5f));
+		HWP::Firearms::g_adrenalineHeal += amount;
+		plr.AddStacks(plr, def, -stacks);
+		HWP::Log("firearms", "adrenaline: hurt, " + stacks + " stacks spent for " + amount + " health");
+		return true;
+	}
 }
 
 // Explosive Reload: throws the magazine before the refill, as a projectile whose intensity
@@ -631,5 +813,53 @@ class HWPFirearmsThrowMag : ShootProjectile
 		if (second > 0)
 			HWP::Firearms::g_secondMag.set(key, second);
 		return ShootProjectile::DoAction(builder, owner, target, pos, addrot(dir, -HWP::Firearms::MAG_ANGLE), intensity * (rounds - second));
+	}
+}
+
+// Rocket Jump (demo_rpg.sval orb, jump 1): a rocket blast whose radius reaches its owner
+// dashes them away from its centre with their own dash (the first Skills::Charge, started
+// directly, so it costs no dash charge) and gives rocket_jump, 100% evade for the flight
+// (as Rogue's flurry_of_blades). The rocket never hurts its owner (Explode hit-self).
+class HWPFirearmsRocketJump : IEffect
+{
+	int m_jump;
+	int m_radius;
+
+	HWPFirearmsRocketJump(UnitPtr unit, SValue& params)
+	{
+		m_jump = GetParamInt(unit, params, "jump", false, 0);
+		m_radius = GetParamInt(unit, params, "radius", false, 0);
+	}
+
+	CanEvade IsEvadable(Actor@ attacker) { return CanEvade::Neither; }
+	void SetWeaponInformation(uint weapon) {}
+	bool CanApply(Actor@ owner, UnitPtr target, vec2 pos, vec2 dir, float intensity) override { return true; }
+
+	bool Apply(Actor@ owner, UnitPtr target, vec2 pos, vec2 dir, float intensity, bool husk)
+	{
+		auto plr = cast<Player>(owner);
+		if (husk || m_jump <= 0 || plr is null || plr.IsDead())
+			return false;
+		vec2 at = xy(plr.m_unit.GetPosition());
+		float dist = length(at - pos);
+		if (dist > m_radius)
+			return false;
+		vec2 away = dist > 1 ? (at - pos) / dist : plr.GetDirection() * -1.0f;
+
+		auto buff = LoadActorBuff(HWP::Firearms::BUFFS + "rocket_jump");
+		if (buff !is null)
+			plr.ApplyBuff(ActorBuff(plr, buff, 1.0f, false));
+		for (uint i = 0; i < plr.m_skills.length(); i++)
+		{
+			auto dash = cast<Skills::Charge>(plr.m_skills[i]);
+			if (dash is null)
+				continue;
+			dash.NetDoActivate(null, away);
+			dash.m_holding = false;
+			break;
+		}
+		HWP::Log("firearms", "rocket jump: " + int(dist) + " of " + m_radius + " from the blast, away "
+			+ int(away.x * 100) + "," + int(away.y * 100));
+		return true;
 	}
 }
