@@ -1,0 +1,551 @@
+{
+ "name": "look-firearms-held",
+ "about": "Look only (timescale 0.1): the held-only guns (HWPFirearmsHoldModel) for Rocket Launcher, the Fat Boy and Quad orbs and Sniper Shot, the off hand hidden while one is out, the gear's models back after; plus the damage numbers of one rifle round and one Glock round through four wolves in a row (rifle 100/50/25%, Glock one hit). Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Held"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "hwp levelup 20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms_demolitions"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 40"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_rpg",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "idle_00"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_rpg",
+    "1",
+    "0",
+    "nocd"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_00"
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_01"
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_02"
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 10
+  },
+  {
+   "do": "shot",
+   "name": "restored_rpg_00"
+  },
+  {
+   "do": "gl",
+   "verb": "orb",
+   "args": [
+    "hwp_fs_rpg_fatboy"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_rpg",
+    "1",
+    "0",
+    "nocd"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "held_fatboy_00"
+  },
+  {
+   "do": "shot",
+   "name": "held_fatboy_01"
+  },
+  {
+   "do": "shot",
+   "name": "held_fatboy_02"
+  },
+  {
+   "do": "sleep",
+   "seconds": 10
+  },
+  {
+   "do": "gl",
+   "verb": "orb",
+   "args": [
+    "hwp_fs_rpg_fatboy",
+    "down"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "orb",
+   "args": [
+    "hwp_fs_rpg_quad"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_rpg",
+    "1",
+    "0",
+    "nocd"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "held_quad_00"
+  },
+  {
+   "do": "shot",
+   "name": "held_quad_01"
+  },
+  {
+   "do": "shot",
+   "name": "held_quad_02"
+  },
+  {
+   "do": "sleep",
+   "seconds": 10
+  },
+  {
+   "do": "gl",
+   "verb": "orb",
+   "args": [
+    "hwp_fs_rpg_quad",
+    "down"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "restored_all_00"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "22",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "40",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "58",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "76",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "150",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "floats",
+   "args": []
+  },
+  {
+   "do": "gl",
+   "verb": "kill",
+   "args": [
+    "600",
+    "target_dummy"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "22",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "40",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "58",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/generic/target_dummy_normal.unit",
+    "76",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "100",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "floats",
+   "args": []
+  },
+  {
+   "do": "gl",
+   "verb": "kill",
+   "args": [
+    "600",
+    "target_dummy"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_rpg",
+    "1",
+    "0",
+    "nocd"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_glocks_00"
+  },
+  {
+   "do": "shot",
+   "name": "held_rpg_glocks_01"
+  },
+  {
+   "do": "sleep",
+   "seconds": 10
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "restored_glocks_00"
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms_sniper"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 40"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_snipe",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_snipe",
+    "1",
+    "0",
+    "nocd"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "shot",
+   "name": "held_sniper_00"
+  },
+  {
+   "do": "shot",
+   "name": "held_sniper_01"
+  },
+  {
+   "do": "shot",
+   "name": "held_sniper_02"
+  },
+  {
+   "do": "shot",
+   "name": "held_sniper_03"
+  },
+  {
+   "do": "sleep",
+   "seconds": 12
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "restored_sniper_00"
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "(?i)held model missing|hwp_(rocket_launcher|fat_boy|quad_launcher|sniper|held_none)\\.model.*(error|fail|not found|missing)"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -53,8 +53,17 @@
 			<float name="magic-fire">0.25</float>
 			<int name="quad-radius">24</int>
 			<int name="rocket-jump">0</int>
+			<!-- the gun in hand while firing (HeldModel.as); Fat Boy and Quad swap it -->
+			<string name="held-model">players/models/equipment/hwp_rocket_launcher.model</string>
 		</dict>
 		<dict name="actions">
+			<array name="hold">
+				<dict>
+					<string name="class">HWPFirearmsHoldModel</string>
+					<string name="model-bind">held-model</string>
+					<int name="duration">800</int>
+				</dict>
+			</array>
 			<array name="cast">
 				<dict>
 					<string name="class">ShootProjectile</string>
@@ -69,6 +78,7 @@
 		</dict>
 
 		<array name="timeline">
+			<i>0</i><s>hold</s>
 			<i>300</i><s>cast</s>
 		</array>
 	</dict>
@@ -125,6 +135,7 @@
 			<dict name="skill">
 				<dict name="binds">
 					<string name="proj-unit">players/hwp/firearms/projectiles/rocket_fatboy.unit</string>
+					<string name="held-model">players/models/equipment/hwp_fat_boy.model</string>
 				</dict>
 			</dict>
 
@@ -206,6 +217,7 @@
 			<dict name="skill">
 				<dict name="binds">
 					<string name="proj-unit">players/hwp/firearms/projectiles/rocket_quad.unit</string>
+					<string name="held-model">players/models/equipment/hwp_quad_launcher.model</string>
 					<float name="quad-mul">0.3</float>
 					<int name="quad-radius">24</int>
 				</dict>
@@ -227,6 +239,7 @@
 					</array>
 				</dict>
 				<array name="timeline">
+					<i>0</i><s>hold</s>
 					<i>300</i><s>cast</s>
 					<i>400</i><s>cast</s>
 					<i>500</i><s>cast</s>
