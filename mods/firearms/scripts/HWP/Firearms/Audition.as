@@ -1,6 +1,8 @@
 // hwp firearms sound: a cheat for picking the guns' firing sound by ear. A mod can't add a
 // sound file (the FMOD banks aren't in the unpack), so the pick is one of the game's own
-// events. Each is played 2D as a short burst, three shots apart, the way the pistols fire.
+// events. Each is played as a short burst at the player, three shots apart, the way the
+// pistols fire. They are 3D events: played without a position (SoundEvent.Play()) they sit
+// at the world origin and fade out with distance, which was silent in the demo town.
 namespace HWP
 {
 	namespace Firearms
@@ -101,7 +103,11 @@ namespace HWP
 			g_auditionWait -= ms;
 			if (g_auditionWait > 0)
 				return;
-			g_auditionSnd.Play();
+			auto plr = GetLocalPlayer();
+			if (plr is null)
+				g_auditionSnd.Play();
+			else
+				PlaySound3D(g_auditionSnd, plr.m_unit.GetPosition());
 			g_auditionLeft--;
 			g_auditionWait = AUDITION_GAP;
 		}
