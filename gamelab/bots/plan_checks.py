@@ -1290,9 +1290,139 @@ class Checks:
         self.gl("input", ms, 0, 0, aim[0], aim[1], button)
         time.sleep(0.6)
 
+    CLIP = "players/hwp/firearms/stacks_firearms.sval:clip"
+    RELOADING = "players/hwp/firearms/stacks_firearms.sval:reloading"
+
+    def clip(self):
+        """Rounds in the clip: givestacks with 0 adds nothing (ActorBuffStacked.AddStacks returns
+        at once) and replies with GetStacks."""
+        return self.gl("givestacks", self.CLIP, 0).get("stacks", -1)
+
+    def reloading(self):
+        return self.gl("givestacks", self.RELOADING, 0).get("stacks", -1)
+
+    def clip_max(self):
+        """The clip's modified max, from the hwp firearms status line (clip n/max)."""
+        txt = self.hwp("firearms", until="clip ")
+        m = re.findall(r"clip (-?\d+)/(-?\d+)", txt)
+        return int(m[-1][1]) if m else -1
+
+    def press(self, button, ms=60, settle=0.8):
+        """One emulated press aimed east; the clip before and after the cycle."""
+        c0 = self.clip()
+        self.gl("input", ms, 0, 0, 1, 0, button)
+        time.sleep(settle)
+        return c0, self.clip()
+
+    def refill_time(self, limit=6.0, dash_at=None):
+        """Seconds from now until the clip reads above 0, polled; with dash_at, a dodge is
+        pressed that many seconds in. None if it never refills within limit."""
+        t0, dashed = time.time(), False
+        while time.time() - t0 < limit:
+            if dash_at is not None and not dashed and time.time() - t0 >= dash_at:
+                self.gl("input", 120, 0, 1, 0, 1, "dash")
+                dashed = True
+            if self.clip() > 0:
+                return round(time.time() - t0, 2)
+            time.sleep(0.05)
+        return None
+
     def firearms_ammo(self):
-        """firearms s2: a shot costs 1 mana, nothing fires at 0, Reload refills, the aimed
-        shot costs 2 and pierces (bullet_aimed penetration 3)."""
+        """firearms s2 (clip): the rifle spawns with a full 30-round clip; a shot uses 1 round
+        and no mana; the grenade launcher uses mana and no rounds; an empty clip starts
+        Reloading, won't fire, and refills after ~1.6 s; a dodge mid-reload restarts it;
+        Reload (skill1) refills a part-used clip."""
+        self.gl("char", "hwp_firearms", "LabGunner")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+        mark = len(self.g.read_log())
+        if not self.start_floor(0):
+            self.flag("firearms_mission", False)
+            return
+        self.hwp("god")
+        self.gl("kill", 6000, "tag:enemy")
+        time.sleep(1)
+        filled = re.findall(r"\[HWP:firearms\] clip filled (\d+)/(\d+) after (\d+) ms", self.g.read_log()[mark:])
+        c, mx = self.clip(), self.clip_max()
+        self.notes.append(f"main hand {self.main_hand()}; spawn fill {filled}")
+        self.flag("spawn_clip_full", c == 30 and mx == 30, f"clip {c}/{mx}")
+
+        def exact():
+            return self.gl("state").get("player", {}).get("manaExact", -1.0)
+
+        m0 = exact()
+        drops = []
+        for _ in range(4):
+            c0, c1 = self.press("main")
+            drops.append(c0 - c1)
+        m1 = exact()
+        self.flag("shot_costs_round", drops == [1, 1, 1, 1], f"rounds per shot {drops}")
+        self.flag("shot_no_mana", abs(m1 - m0) < 0.2, f"mana {m0:.2f} -> {m1:.2f}")
+        # the lowest mana in the 0.9 s after the click: regen starts putting it back at once
+        c0, mg0 = self.clip(), exact()
+        self.gl("input", 60, 0, 0, 1, 0, "off")
+        mg1, end = mg0, time.time() + 0.9
+        while time.time() < end:
+            mg1 = min(mg1, exact())
+        c1 = self.clip()
+        mul = self.gl("state").get("player", {}).get("manaCostMul", 1.0) or 1.0
+        self.flag("launcher_costs_mana", c1 == c0 and abs((mg0 - mg1) - 4 * mul) < 0.5,
+                  f"clip {c0} -> {c1}, mana {mg0:.2f} -> {mg1:.2f} (cost 4 x {mul:.3f})")
+        # drain by firing: short holds (two rounds at most) until the clip reads 0, so the
+        # check below starts while Reloading (1.6 s) still runs
+        for _ in range(40):
+            if self.clip() <= 0:
+                break
+            self.gl("input", 500, 0, 0, 1, 0, "main")
+            end = time.time() + 0.6
+            while time.time() < end and self.clip() > 0:
+                time.sleep(0.03)
+        t_empty, c_empty, r = time.time(), self.clip(), self.reloading()
+        self.flag("empty_starts_reload", c_empty == 0 and r == 1, f"clip {c_empty}, reloading {r}")
+        t = self.refill_time()
+        t = None if t is None else round(time.time() - t_empty, 2)
+        time.sleep(0.2)
+        c = self.clip()
+        self.flag("auto_reload_refills", t is not None and c == 30, f"refilled to {c}, {t} s after it ran dry")
+        # the trigger on an empty clip: empty it and hold fire in one frame (one gl call takes
+        # ~0.3 s, too slow to land inside the reload otherwise), read 0.45 s later
+        t0 = time.time()
+        self.gl("multi", "givestacks", self.CLIP, -999, "+", "input", 400, 0, 0, 1, 0, "main")
+        time.sleep(0.45)
+        c_held = self.clip()
+        self.flag("no_fire_empty", c_held == 0, f"clip {c_held} {time.time() - t0:.2f} s after emptying with the trigger held")
+        self.refill_time()
+        time.sleep(0.5)
+        # the dodge: empty the clip at once (its lose-effects start Reloading), dodge 0.9 s in
+        base, dodged = [], []
+        for _ in range(3):
+            self.gl("givestacks", self.CLIP, -999)
+            base.append(self.refill_time())
+            time.sleep(0.5)
+            self.gl("givestacks", self.CLIP, -999)
+            dodged.append(self.refill_time(dash_at=0.9))
+            time.sleep(0.8)
+        self.notes.append(f"reload without dodge {base} s, dodge at 0.9 s {dodged} s")
+        # medians: one read in a run can stall (seen: 3.61 s beside 1.75 s, no dodge)
+        ok = None not in base and None not in dodged
+        self.flag("dodge_restarts_reload", ok and sorted(dodged)[1] > sorted(base)[1] + 0.6,
+                  f"{base} vs {dodged} (medians compared)")
+        # tactical Reload (skill1) from a part-used clip
+        for _ in range(3):
+            self.press("main", settle=0.6)
+        before = self.clip()
+        self.shoot("skill1", 60)
+        time.sleep(0.6)
+        after = self.clip()
+        self.flag("reload_refills", before < 30 and after == 30, f"clip {before} -> {after}")
+        self.to_town()
+
+    def firearms_guns(self):
+        """firearms s3 (guns): magazines add up (pistol 12, dual 24, rifle 30); a pistol with a
+        shield fires 2 rounds a left-click cycle; dual pistols fire 2 a left-click cycle (one
+        from each) and 2 at once on right click, which won't fire on 1 round; an off-hand
+        pistol with a sword fires 1. The shield and sword need STR the class
+        lacks at level 1; this sets dbg_cht_ignore_equipment_requirements."""
         self.gl("char", "hwp_firearms", "LabGunner")
         self.wait_phase("town", 60)
         time.sleep(2)
@@ -1301,106 +1431,47 @@ class Checks:
             return
         self.hwp("god")
         self.gl("kill", 6000, "tag:enemy")
+        # set on the floor, off then on: the script global behind the cvar is back to false
+        # after a level load while the cvar still reads 1 (a step-time set did not hold)
+        self.g.console("dbg_cht_ignore_equipment_requirements 0")
+        self.g.console("dbg_cht_ignore_equipment_requirements 1")
         time.sleep(1)
-        pl = self.gl("state").get("player", {})
-        self.notes.append(f"gunner mana {pl.get('mana')}/{pl.get('manaMax')}, main hand {self.main_hand()}")
-        def dummies(r=400):
-            return {u["unit"]: u for u in self.gl("near", r, "bandit_brute").get("units", [])}
 
-        def exact():
-            return self.gl("state").get("player", {}).get("manaExact", -1.0)
+        def loadout(*items):
+            got = [bool(self.gl("equip", it, "common").get("ok")) for it in items]
+            time.sleep(1.0)  # the markers re-apply every 250 ms; an old one lasts 600 ms
+            self.gl("givestacks", self.CLIP, 999)
+            return got
 
-        def drops(button, n, gap, regen):
-            """Each cast's cost on the float mana: polled, a fall between two reads is the
-            cost less the regen in between, so that regen (rate x the read gap) is added back."""
-            out = []
-            for _ in range(n):
-                prev, tp = exact(), time.time()
-                self.gl("input", 60, 0, 0, 1, 0, button)
-                best, end = 0.0, time.time() + 0.9
-                while time.time() < end:
-                    cur, tc = exact(), time.time()
-                    if prev - cur > 0.1:
-                        best = (prev - cur) + regen * (tc - tp)
-                        break
-                    prev, tp = cur, tc
-                out.append(round(best, 2))
-                time.sleep(gap)
-            return out
+        eq = loadout("hwp_glock_mh_01", "offhand_shield_01")
+        mx = self.clip_max()
+        a = [self.press("main") for _ in range(2)]
+        self.flag("pistol_shield_mag_12", mx == 12, f"equip {eq}, clip max {mx}")
+        self.flag("pistol_shield_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
 
-        def regen_rate():
-            self.gl("input", 1200, 0, 0, 1, 0, "main")  # spend a few rounds: regen shows below the cap only
-            time.sleep(1.5)
-            m0, t0 = exact(), time.time()
-            time.sleep(2.5)
-            return (exact() - m0) / (time.time() - t0)
+        eq = loadout("hwp_glock_mh_01", "hwp_glock_oh_01")
+        mx = self.clip_max()
+        a = [self.press("main") for _ in range(2)]
+        b = [self.press("off") for _ in range(2)]
+        left = self.clip()
+        if left > 1:
+            self.gl("givestacks", self.CLIP, -(left - 1))
+        one = self.press("off")
+        self.flag("dual_mag_24", mx == 24, f"equip {eq}, clip max {mx}")
+        self.flag("dual_left_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
+        self.flag("dual_right_two_at_once", all(c0 - c1 == 2 for c0, c1 in b), f"{b}")
+        self.flag("dual_right_needs_two", one == (1, 1), f"{one}")
 
-        regen = regen_rate()
-        c1 = drops("main", 5, 0.4, regen)
-        c2 = drops("off", 5, 0.5, regen)  # the aimed shot has an 800 ms cooldown
-        self.notes.append(f"mana regen {regen:.2f}/s")
-        mul = self.gl("state").get("player", {}).get("manaCostMul", 1.0)
-        # the cost is the sval's mana-cost times the modifiers' skill cost multiplier (chapel
-        # blessing, shrines, gear; 1.0 for this character); the median of five, within 0.2
-        med = lambda xs: sorted(xs)[len(xs) // 2]
-        self.flag("shot_costs_1", abs(med(c1) - 1 * mul) < 0.2, f"cost mul {mul:.3f}: drop per shot {c1}")
-        self.flag("aimed_costs_2", abs(med(c2) - 2 * mul) < 0.2, f"drop per aimed shot {c2}")
-        # pierce: three brutes in a line and the aimed shot, all in one frame (gl multi), so the
-        # round (castpoint 420 ms) leaves before they walk in and steer round each other (one gl
-        # command a frame let them break the line; totems took no projectile hits at all)
-        brute = "actors/humans/bandits/bandit_brute.unit"
-        hit, aim = [], (1, 0)
-        for aim in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            self.gl("kill", 600, "tag:enemy")
-            time.sleep(0.5)
-            m = exact()
-            args = []
-            for k in (60, 100, 140):
-                args += ["spawn", brute, aim[0] * k, aim[1] * k, "+"]
-            # held past the 420 ms castpoint: the aimed shot keeps updating its aim until then
-            # (update-aim 0 420), and once the emulated aim lets go the mouse's takes over
-            args += ["input", 500, 0, 0, aim[0], aim[1], "off"]
-            self.gl("multi", *args)
-            time.sleep(1.0)
-            t1 = dummies()
-            hit = [k for k, u in t1.items() if u.get("hp", 1.0) < 1.0]
-            self.notes.append(f"pierce along {aim}: mana {m:.1f} -> {exact():.1f}, hp {[round(u.get('hp', 1), 3) for u in t1.values()]}")
-            if len(hit) >= 2:
-                break
-        self.flag("aimed_pierces", len(hit) >= 2, f"{len(hit)} brutes hit by one aimed round along {aim}")
-        # drain the magazine: hold the trigger until mana reads 0
-        for _ in range(40):
-            if self.mana() <= 0:
-                break
-            self.gl("input", 2000, 0, 0, 1, 0, "main")
-            time.sleep(2.1)
-        empty = self.mana()
-        # 3 s on the trigger from empty: a round goes off only once regen has put its cost
-        # back (Player.CanAfford), so mana never dips below 0 and every fall starts at >= cost
-        self.gl("input", 3000, 0, 0, 1, 0, "main")
-        prev, lows, starts, end = exact(), [], [], time.time() + 3.0
-        tp = time.time()
-        while time.time() < end:
-            cur = exact()
-            lows.append(cur)
-            tc = time.time()
-            if prev - cur > 0.2:
-                starts.append(round(prev + regen * (tc - tp), 2))  # mana when the round went off, at most
-            prev, tp = cur, tc
-        cost = 1 * mul
-        self.flag("no_fire_empty", empty <= 1 and lows and min(lows) >= -0.01 and starts
-                  and all(st >= cost - 0.1 for st in starts),
-                  f"mana {empty}; 3 s on the trigger: {len(starts)} round(s), each fired at mana {starts} "
-                  f"(cost {cost:.2f}), lowest {min(lows) if lows else None}")
-        time.sleep(0.3)
-        self.gl("kill", 600, "tag:enemy")
-        # Reload (the class's first skill): 50 % of the magazine at level 1
-        before = self.mana()
-        self.shoot("skill1", 60)
-        time.sleep(0.5)
-        after = self.mana()
-        mx = self.gl("state").get("player", {}).get("manaMax", 0)
-        self.flag("reload_refills", after - before >= mx // 2 - 1, f"mana {before} -> {after} of {mx}")
+        eq = loadout("mainhand_longsword_01", "hwp_glock_oh_01")
+        mx = self.clip_max()
+        c = [self.press("off") for _ in range(2)]
+        self.flag("offhand_pistol_mag_12", mx == 12, f"equip {eq}, clip max {mx}")
+        self.flag("offhand_pistol_one_round", all(c0 - c1 == 1 for c0, c1 in c), f"{c}")
+
+        eq = loadout("hwp_rifle_01")
+        mx = self.clip_max()
+        self.flag("rifle_mag_30", mx == 30, f"equip {eq}, clip max {mx}")
+        self.g.console("dbg_cht_ignore_equipment_requirements 0")
         self.to_town()
 
     def to_town(self):

@@ -1,9 +1,11 @@
 """Test-plan checks for the Firearms Specialist (mods/firearms): firearms s3 (the Frag Grenade
 lands where aimed and explodes with damage numbers), s4 (`hwp levelup 20`, the Subclass
-Picker offers three doctrines; each doctrine skill casts and costs what its tooltip says) and
-s5 (Decoy pulls enemies onto the dummy and is gone after 8 s; Jetpack lands at the cursor with
-a fire burst). s2 (ammo) is plan_checks.firearms_ammo. Same style as plan_checks: each section
-flags booleans, the scenario's expect asserts them, measured values go in the notes.
+Picker offers three specializations; each one's active casts and costs what its tooltip says,
+its passive is passive) and the orbs (`gl orb`, Verbs_firearms.as: the skill sphere's
+SkillTempUp): Marksman and Demolitionist orbs in their sections, the base kit's (Reload, Frag)
+in firearms_base_orbs. s2 (the clip) and the guns are plan_checks.firearms_ammo / _guns. Same
+style as plan_checks: each section flags booleans, the scenario's expect asserts them,
+measured values go in the notes.
 
 Targeted skills (frag, flashbang, stun grenade, jetpack: TargetingMode::TargetAOE) are cast
 the way a player casts them: the skill button opens the targeting circle and the main-hand
@@ -11,24 +13,25 @@ click casts at the cursor (PlayerTargetingHelper.Update; with g_quickcast on, th
 release). A posted mouse never reaches the game (RE_NOTES 2026-10-18), so `gl cursor dx dy`
 (Verbs_firearms.as) writes GameInput.MousePos and reads it back; whatever the cursor reads at
 the click is where the cast is expected to land (CalcMouseTargetPos: its direction, the
-distance clamped to the skill's range).
+distance clamped to the skill's range). Orb tests cast with `gl castat <skill> dx dy nocd`
+instead (Skill.Activate as the helper calls it, the cooldown cleared first), so they need not
+wait out each variant's cooldown.
 
 The game has three skill buttons: vanilla GetSkillInput (PlayerTargetingHelper.as:744-749)
 gives the third and every later active spell Skill3. Core's extra skill keys (mods/core,
 SkillKeys.as) give the 4th to 6th their own key, which `gl input` holds as hwp_skill4..6.
-Reload and frag hold Skill1 and Skill2; a doctrine's skills are levelled in reverse class
-order, so the newest one is the 3rd active (Skill3) when it is tested. `<spec>_own_buttons`:
-the finished doctrine has a button per active skill (`gl skillbar`), and a press of Skill3 and
-of each extra key casts its skill and no other.
+Reload and frag hold Skill1 and Skill2; a specialization's active is the 3rd (Skill3).
+`<spec>_own_buttons`: the finished doctrine has a button per active skill (`gl skillbar`), and
+a press of Skill3 and of each extra key casts its skill and no other.
 
 Mana is read unrounded from `gl skillbar` (m_record.mana x max, = state manaExact). A costed
-cast starts from a full magazine (topped up with Reload), so regeneration only runs after the
-cost is taken: the fall between the last full reading and the next is the cost less at most
-the regen over that gap (the rate measured from the rise after). Expected = tooltip x the
+cast starts from full mana (top_up waits out the regen) and a full clip (givestacks), so
+regeneration only runs after the cost is taken: the fall between the last full reading and
+the next is the cost less at most the regen over that gap (the rate measured from the rise after). Expected = tooltip x the
 state's manaCostMul. Direction presses are held past the skill's castpoint.
 
-Sections: firearms_frag (s3), firearms_spec_pick, firearms_sniper (s4 + the s5 decoy),
-firearms_demo (s4 + the s5 jetpack), firearms_assault (s4)."""
+Sections: firearms_frag (s3), firearms_spec_pick, firearms_marksman, firearms_demolitionist,
+firearms_assault (s4), firearms_base_orbs."""
 import math
 import re
 import time
@@ -41,20 +44,16 @@ MOD = Path(__file__).resolve().parents[2] / "mods" / "firearms"
 SKILLS = MOD / "players" / "hwp" / "firearms" / "skills"
 LANG = MOD / "res" / "language" / "english" / "hwp_firearms.lang"
 DUMMY = "doodads/generic/target_dummy_breakable.unit"  # 500 hp, stands still, enemy team
-BRUTE = "actors/humans/bandits/bandit_brute.unit"
 PICKER = "actors/npcs/town/npc_subclass_picker.unit"
-DECOY = "units/decoy"
 DMG_TEXTS = {7, 8, 9, 11}  # FloatingTextType EnemyHurt, EnemyHurtLocal, EnemyHurtHusk, EnemyImmortal (a crit)
 TOL = 0.4  # mana units
 
 # subclass -> its skills in class order: (id, sval, tag, targeted range or None)
 SPECS = {
     "hwp_firearms_sniper": [("hwp_fs_snipe", "sniper_snipe.sval", "snipe", None),
-                            ("hwp_fs_flashbang", "sniper_flashbang.sval", "flashbang", (16, 170)),
-                            ("hwp_fs_decoy", "sniper_decoy.sval", "decoy", None)],
-    "hwp_firearms_demolitions": [("hwp_fs_tube", "demo_tube.sval", "tube", None),
-                                 ("hwp_fs_rpg", "demo_rpg.sval", "rpg", None),
-                                 ("hwp_fs_jetpack", "demo_jetpack.sval", "jetpack", (40, 190))],
+                            ("hwp_fs_focus", "sniper_focus.sval", "focus", None)],
+    "hwp_firearms_demolitions": [("hwp_fs_rpg", "demo_rpg.sval", "rpg", None),
+                                 ("hwp_fs_hoarder", "demo_hoarder.sval", "hoarder", None)],
     "hwp_firearms_assault": [("hwp_fs_burst", "assault_burst.sval", "burst", None),
                              ("hwp_fs_stun", "assault_stun.sval", "stun", (16, 170)),
                              ("hwp_fs_adrenaline", "assault_adrenaline.sval", "adrenaline", None)],
@@ -82,6 +81,12 @@ def castpoint(sval):
     aim goes back to the real mouse when the emulated input lets go (lessons from live runs)."""
     m = re.search(r'<int name="castpoint">(\d+)</int>', (SKILLS / sval).read_text(encoding="utf-8"))
     return int(m.group(1)) if m else 0
+
+
+# one rifle round: past its castpoint (80, attacks_firearms.sval), inside its 560 anim
+RIFLE_PRESS = 200
+# what a projectile hits before the dummy (gl near behaviors)
+BLOCKERS = {"Breakable", "CompositeActorBehavior", "CompositeActorBehaviorNPC", "StateActorBehavior"}
 
 
 def hold(sval):
@@ -197,16 +202,16 @@ class Checks(Base):
         return list(seen.values())
 
     def top_up(self):
-        """Fill the magazine with Reload (Skill1, 50 %, 2 s cooldown) so the next cost is measured
-        from a full one."""
-        for _ in range(4):
+        """A full clip (givestacks) and full mana (waits out the regen, up to 15 s), so the next
+        cost is measured from a full pool and a round-gated skill can fire."""
+        self.gl("givestacks", self.CLIP, 999)
+        end = time.time() + 15
+        while time.time() < end:
             b = self.bar()
             if b.get("mana", 0) >= b.get("manaMax", 1) - 0.01:
                 return True
-            self.gl("input", 60, 0, 0, 1, 0, "skill1")
-            time.sleep(2.3)
-        b = self.bar()
-        return b.get("mana", 0) >= b.get("manaMax", 1) - 0.01
+            time.sleep(0.4)
+        return False
 
     def cursor_on(self, dx, dy, rng):
         """Write the cursor onto player + (dx, dy) and read it back: (the offset a cast at it uses,
@@ -322,39 +327,28 @@ class Checks(Base):
                   f"active spells {act}; presses (skill, button, cast, others cooled) {tried}")
 
     # --- direction skills: a dummy in the line of fire
-    def brute_spot(self, plr, decoy):
-        """Where to drop the decoy test's brutes (absolute): 70 from where the player will stand,
-        nearer the player than the decoy by 30+, within 240 of the decoy (taunt radius 280), and
-        in clear line (gl rayhit: no wall, no hard tile) of both, so the brutes see the player
-        (aggro-range 160, must-see-target) and a pull is them leaving it. None if none is."""
-        for ang in range(0, 360, 45):
-            u = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
-            c = (plr[0] + u[0] * 70, plr[1] + u[1] * 70)
-            dd, dp = math.hypot(c[0] - decoy[0], c[1] - decoy[1]), 70
-            if dd > 240 or dd < dp + 30:
-                continue
-            ok = True
-            for end in (plr, decoy):
-                r = self.gl("rayhit", round(c[0], 1), round(c[1], 1), round(end[0], 1), round(end[1], 1))
-                if not r.get("ok") or r.get("wall") or r.get("tile"):
-                    ok = False
-                    break
-            if ok:
-                return c
-        return None
-
     def clear_dir(self, pref, dist):
         """A direction from where the player stands now with a clear shot dist (+16) out (gl
-        rayhit: no wall, no hard tile), pref first. Run 20261018-130918: snipe fired along the
-        direction probed before the decoy walks moved the player, and hit nothing."""
+        rayhit: no wall, no hard tile; and no breakable or actor within 12 of the line, which a
+        round that stops at its first hit would hit instead), pref first. Run 20261018-130918:
+        snipe fired along the direction probed before the decoy walks moved the player, and hit
+        nothing."""
         px, py = self.pos()
         cands = [pref] + sorted(((round(math.cos(math.radians(a)), 3), round(math.sin(math.radians(a)), 3))
                                  for a in range(0, 360, 45)), key=lambda q: -(q[0] * pref[0] + q[1] * pref[1]))
+        near = [u for u in self.gl("near", dist + 30).get("units") or []
+                if u.get("behavior") in BLOCKERS and "target_dummy" not in u.get("name", "")]
         r = {}
         for u in cands:
             r = self.gl("rayhit", round(px, 1), round(py, 1), round(px + u[0] * (dist + 16), 1), round(py + u[1] * (dist + 16), 1))
-            if r.get("ok") and not r.get("wall") and not r.get("tile"):
-                return u, r
+            if not r.get("ok") or r.get("wall") or r.get("tile"):
+                continue
+            on = [n["name"] for n in near if 6 < (n["x"] - px) * u[0] + (n["y"] - py) * u[1] < dist + 16
+                  and abs((n["x"] - px) * u[1] - (n["y"] - py) * u[0]) < 12]
+            if on:
+                self.notes.append(f"line {u} from {round(px)},{round(py)} blocked by {on}")
+                continue
+            return u, r
         self.notes.append(f"no clear line {dist} out from {round(px)},{round(py)}: last rayhit {r}")
         return pref, r
 
@@ -477,160 +471,352 @@ class Checks(Base):
             took.append(self.gl("subclass", sub).get("class"))
         self.flag("spec_pick_takes", took == list(SPECS), f"{took}")
 
-    def firearms_sniper(self):
-        """firearms s4 for the Sniper (decoy, flashbang, snipe, levelled in that order) and the
-        s5 decoy: three brutes beside it go for the dummy, not the player who walked off; it
-        is gone 8 s after the cast."""
-        sc, pl = self.new_char("LabSniper", "hwp_firearms_sniper")
-        if not self.enter_floor("sniper"):
+    # --- clip, stacks and orbs
+    STACKS = "players/hwp/firearms/stacks_firearms.sval:"
+
+    def stacks(self, name):
+        """A firearms stack's count (givestacks 0 adds nothing and replies GetStacks)."""
+        return self.gl("givestacks", self.STACKS + name, 0).get("stacks", -1)
+
+    def orb(self, oid, times=1):
+        r = self.gl("orb", oid, times)
+        time.sleep(0.6)  # SkillTempUp reloads the skills (LoadSkills)
+        return r.get("ok", False), r.get("level", 0)
+
+    def orb_off(self, oid):
+        for _ in range(5):
+            if not self.gl("orb", oid, "down").get("ok"):
+                break
+        time.sleep(0.6)
+
+    @staticmethod
+    def crits(texts):
+        return [t for t in texts if t.get("type") == 11 or str(t.get("text", "")).endswith("!")]
+
+    def aimed_cast(self, sid, d, ms, wait=True):
+        """A held Skill3 press along d (ms: past the skill's update-aim, which re-reads the aim
+        until its castpoint), the cooldown waited out first unless wait is False. Not castat:
+        run 20261019-013510, castat Snipe with the aim held along d took its rounds and hit
+        neither dummy on the line, where a held skill3 press hit."""
+        if wait:
+            self.ready(sid)
+        return self.gl("input", ms, 0, 0, d[0], d[1], "skill3")
+
+    def ready(self, sid, secs=20):
+        end = time.time() + secs
+        while self.entry(self.bar(), sid).get("cd", 0) > 0 and time.time() < end:
+            time.sleep(0.25)
+
+    def line_dummies(self, d, dists):
+        """Dummies along a clear line from the player (d first) at each distance: (direction
+        used, ids)."""
+        self.clear_dummies()
+        d, _ = self.clear_dir(d, max(dists))
+        return d, [self.dummy(d[0] * r, d[1] * r) for r in dists]
+
+    def dummy_watch(self, du, secs):
+        """Damage numbers and the dummies' buff tags seen over secs, and the dummy's hp after."""
+        seen, tags = {}, set()
+        end = time.time() + secs
+        while time.time() < end:
+            for t in self.gl("floats").get("texts") or []:
+                if t.get("type") in DMG_TEXTS:
+                    seen.setdefault((t.get("text"), round(t.get("x", 0.0))), t)
+            for ac in self.gl("actorbuffs", 300, "target_dummy").get("actors") or []:
+                for bf in ac.get("buffs") or []:
+                    tags.update(bf.get("tags") or [])
+            time.sleep(0.05)
+        return [t.get("text") for t in seen.values()], sorted(tags), self.hps([du])[du]
+
+    def refill_after_empty(self, dash_at=None):
+        """Seconds from emptying the clip to it refilling (the automatic reload)."""
+        self.ready("hwp_fs_reload", 5)
+        self.gl("givestacks", self.CLIP, -999)
+        t = self.refill_time(dash_at=dash_at)
+        time.sleep(0.5)
+        return t
+
+    # --- sections
+    def firearms_marksman(self):
+        """Marksman: Snipe (Skill3) hits a dummy, costs its tooltip mana and 10 rounds; Critical
+        Aim is passive, a gun round that hits gives Focus and one that hits nothing loses it all;
+        Piercing Bullet takes Snipe through a first dummy into a second; with Headshot the first
+        dummy a Snipe round hits takes a critical hit (2 of 2)."""
+        self.new_char("LabMarksman", "hwp_firearms_sniper")
+        if not self.enter_floor("marksman"):
             return
-        dirs = self.open_dirs(130)
-        # the decoy goes along d and the player walks off along -d (run 20261018-121101: a wall
-        # stopped that walk 41 px from it), so d is one whose opposite is open too
-        d = next((v for v in dirs if any(v[0] * u[0] + v[1] * u[1] < -0.9 for u in dirs)), dirs[0])
-        perp = next((v for v in dirs if abs(v[0] * d[0] + v[1] * d[1]) < 0.2), (-d[1], d[0]))
-        # decoy: Direction, SpawnUnit 24 px along the aim. Cast 1 alone times its life (castpoint
-        # 200 + ttl 8000); cast 2, after the 15 s cooldown, gets three brutes beside it.
-        if self.level("decoy", "hwp_fs_decoy"):
-            self.top_up()
-            c0 = self.gl("clock").get("sceneMs", 0)
-            w = self.cast_watch("hwp_fs_decoy", lambda: self.gl("input", hold("sniper_decoy.sval"), 0, 0, d[0], d[1], "skill3"), secs=0.6)
-            dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
-            self.flag("decoy_casts", w["cd"] > 0 and len(dec) == 1, f"cooldown {w['cd']}, decoys {len(dec)}")
-            self.cost_flag("decoy", "hwp_fs_decoy", "sniper_decoy.sval", w)
-            last, gone, hp_last = None, None, None
-            end = time.time() + 12
-            while time.time() < end:
-                now = self.gl("clock").get("sceneMs", 0) - c0
-                us = [u for u in self.gl("near", 800, DECOY).get("units") or [] if not u.get("dead")]
-                if us:
-                    last, hp_last = now, us[0].get("hp")
-                elif last is not None:
-                    gone = now
-                    break
-                time.sleep(0.15 if now > 6500 else 0.8)
-            self.flag("decoy_vanishes_8s", last is not None and gone is not None and last >= 7200 and gone <= 9500,
-                      f"seen until {last} ms after the press (hp {hp_last}), gone at {gone} (castpoint 200 + ttl 8000)")
-            # cast 2 (s5 pull). Run 20261018-130918: the walk off the decoy hit walls and the
-            # decoy's ttl ran out first, so the walk is found during the cooldown: a direction
-            # the player really covers >= 110 px in 1.2 s (a -> p1); the decoy is cast at p1
-            # and the player walks straight back. Run 20261018-134847: the brutes, spawned 70
-            # beside the player, never moved in 4 s, not even to the player 76 px off (brute
-            # aggro-range 160, must-see-target): a wall stood between. So their spot is picked
-            # beforehand too: in clear line (gl rayhit) of both the player's end point and the
-            # decoy, nearer the player, inside the 280 taunt. `gl targets` then reads who each
-            # brute is after (the taunt: AlertActors -> SetTarget(decoy, -1)).
-            p0 = self.pos()
-            v, moved, a, b = None, 0.0, p0, p0
-            for u in sorted(dirs, key=lambda q: q[0] * d[0] + q[1] * d[1]):
-                a = self.pos()
-                self.gl("input", 1200, u[0], u[1])
-                time.sleep(1.4)
-                b = self.pos()
-                moved = math.hypot(b[0] - a[0], b[1] - a[1])
-                if moved >= 110:
-                    v = u
-                    break
-            spot = self.brute_spot(a, (b[0] + v[0] * 24, b[1] + v[1] * 24)) if v else None
-            while self.entry(self.bar(), "hwp_fs_decoy").get("cd", 0) > 0 and time.time() < end + 30:
-                time.sleep(0.4)
-            if v is None:
-                self.flag("decoy_pulls", False, f"no direction from {[round(x) for x in p0]} walked >= 110 px in 1.2 s (last {round(moved)})")
-            else:
-                c2 = time.time()  # wall clock: no extra round trips inside the decoy's 8 s
-                self.gl("input", hold("sniper_decoy.sval"), 0, 0, v[0], v[1], "skill3")
-                time.sleep(0.5)
-                dec = [u for u in self.gl("near", 300, DECOY).get("units") or [] if not u.get("dead")]
-                if not dec:
-                    self.flag("decoy_pulls", False, "no decoy on the second cast")
-                else:
-                    did, dx0, dy0 = dec[0]["unit"], dec[0]["x"], dec[0]["y"]
-                    self.gl("input", 1200, -v[0], -v[1])
-                    time.sleep(1.4)
-                    px, py = self.pos()
-                    if spot is None:  # nothing clear found: 70 beside the player, as before
-                        side = (-v[1], v[0])
-                        spot = (px + side[0] * 70, py + side[1] * 70)
-                        self.notes.append("decoy pull: no brute spot in clear line of both, used 70 beside the player")
-                    perp = unit(-(spot[1] - py), spot[0] - px)
-                    spawns = []  # one gl multi: the three land in the same frame
-                    for k in (-14, 0, 14):
-                        spawns += ["+", "spawn", BRUTE, round(spot[0] - px + perp[0] * k, 1), round(spot[1] - py + perp[1] * k, 1)]
-                    self.gl("multi", *spawns[1:])
-                    t_spawn = round((time.time() - c2) * 1000)
-                    start = {u["unit"]: (u["x"], u["y"]) for u in self.gl("near", 600, "bandit_brute").get("units") or []}
-                    on_decoy, dec_target = {}, set()
-                    stop = time.time() + 3.0
-                    while time.time() < stop:
-                        for t in self.gl("targets", 600, "bandit_brute").get("units") or []:
-                            if t.get("target") == did:
-                                on_decoy[t["unit"]] = on_decoy.get(t["unit"], 0) + 1
-                        for t in self.gl("targets", 600, "decoy").get("units") or []:
-                            dec_target.add(t.get("targetName", "").rsplit("/", 1)[-1])
-                    px, py = self.pos()
-                    t_check = round((time.time() - c2) * 1000)
-                    br = [u for u in self.gl("near", 600, "bandit_brute").get("units") or [] if not u.get("dead")]
-                    dd = [round(math.hypot(u["x"] - dx0, u["y"] - dy0)) for u in br]
-                    dp = [round(math.hypot(u["x"] - px, u["y"] - py)) for u in br]
-                    d0 = [round(math.hypot(start[u["unit"]][0] - dx0, start[u["unit"]][1] - dy0)) for u in br if u["unit"] in start]
-                    dhp = [u.get("hp") for u in self.gl("near", 600, DECOY).get("units") or []]
-                    away = round(math.hypot(px - dx0, py - dy0))
-                    self.flag("decoy_taunts", len(on_decoy) >= 2,
-                              f"brutes seen targeting the decoy (polls each) {on_decoy}; the decoy's own target {sorted(dec_target)}")
-                    self.flag("decoy_pulls", len(br) >= 2 and sum(1 for x, y in zip(dd, dp) if x < y) >= 2 and away >= 80,
-                              f"player {away} from the decoy; brutes at the spot {[round(c) for c in spot]} at {t_spawn} ms "
-                              f"after the cast ({d0} from the decoy), at {t_check} ms: to decoy {dd}, to player {dp}, "
-                              f"decoy hp {dhp} (gone = they killed it or its ttl ran out)")
-                    self.gl("kill", 600, "bandit_brute")
-        # flashbang: TargetAOE, no damage: its cooldown is the cast
-        if self.level("flashbang", "hwp_fs_flashbang"):
-            tgt = (d[0] * 100, d[1] * 100)
-            self.top_up()
-            w = self.cast_watch("hwp_fs_flashbang", lambda: self.targeted("skill3", tgt[0], tgt[1], (16, 170)))
-            self.flag("flashbang_casts", w["cd"] > 0, f"cooldown {w['cd']}, also cooled {w['others']}")
-            self.cost_flag("flashbang", "hwp_fs_flashbang", "sniper_flashbang.sval", w)
+        d = self.open_dirs(130)[0]
         if self.level("snipe", "hwp_fs_snipe"):
             self.direction_test("snipe", "hwp_fs_snipe", "sniper_snipe.sval", d)
+            c, mx = self.clip(), self.clip_max()
+            self.flag("snipe_uses_rounds", c == mx - 10, f"clip {c}/{mx} after one Snipe from full")
+        if self.level("focus", "hwp_fs_focus"):
+            e = self.entry(self.bar(), "hwp_fs_focus")
+            self.flag("focus_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
+            d2, _ = self.line_dummies(d, [60])
+            self.gl("givestacks", self.CLIP, 999)
+            f0 = self.stacks("focus")
+            for _ in range(3):
+                self.gl("input", RIFLE_PRESS, 0, 0, d2[0], d2[1], "main")
+                time.sleep(0.8)
+            f1 = self.stacks("focus")
+            self.clear_dummies()
+            self.gl("input", RIFLE_PRESS, 0, 0, -d2[0], -d2[1], "main")
+            time.sleep(2.0)  # the round flies until a wall or its ttl
+            f2 = self.stacks("focus")
+            self.flag("focus_gains", f1 >= f0 + 2, f"focus {f0} -> {f1} after 3 shots at a dummy")
+            self.flag("focus_lost_on_miss", f1 > 0 and f2 == 0, f"focus {f1} -> {f2} after a shot at nothing")
+        ok, lvl = self.orb("hwp_fs_snipe_pierce", 3)
+        d3, (a, b) = self.line_dummies(d, [50, 90])
+        self.top_up()
+        hp0 = self.hps([a, b])
+        self.aimed_cast("hwp_fs_snipe", d3, hold("sniper_snipe.sval"))
+        time.sleep(1.0)
+        hp1 = self.hps([a, b])
+        self.flag("snipe_pierce_both", ok and hp1[a] < hp0[a] - 0.001 and hp1[b] < hp0[b] - 0.001,
+                  f"orb level {lvl}; dummies at 50/90: {hp0} -> {hp1}")
+        ok, lvl = self.orb("hwp_fs_snipe_headshot")
+        shots = []
+        for _ in range(2):
+            d4, (du,) = self.line_dummies(d, [70])
+            self.top_up()
+            self.aimed_cast("hwp_fs_snipe", d4, hold("sniper_snipe.sval"))
+            texts = self.damage_texts(1.0)
+            shots.append(([t.get("text") for t in texts], len(self.crits(texts))))
+        self.flag("headshot_crits", ok and all(n >= 1 for _, n in shots), f"orb level {lvl}; per Snipe (texts, crits) {shots}")
         self.buttons_flag("sniper", d)
         self.clear_dummies()
         self.to_town()
 
-    def firearms_demo(self):
-        """firearms s4 for Demolitions (jetpack, rpg, tube) and the s5 jetpack: the leap lands
-        where the cursor is and the landing's fire burst hurts a dummy beside it."""
+    def firearms_demolitionist(self):
+        """Demolitionist: the Rocket Launcher (Skill3) hits a dummy and costs its tooltip mana;
+        Fat Boy's rocket blinds, Magic Missile hits twice (ice, then the fire), Quad Missile
+        Chambers fires 4 missiles; Ordinance Hoarder (passive) banks a rocket charge while the
+        launcher waits ready and spends it to clear the cooldown after a cast."""
         self.new_char("LabDemo", "hwp_firearms_demolitions")
         if not self.enter_floor("demo"):
             return
-        dirs = self.open_dirs(130)
-        d = dirs[0]
-        if self.level("jetpack", "hwp_fs_jetpack"):
-            rng = (40, 190)
-            (lx, ly), held, c = self.cursor_on(d[0] * 120, d[1] * 120, rng)
-            px, py = self.pos()
-            perp = (-d[1], d[0])
-            du = self.dummy(lx + perp[0] * 22, ly + perp[1] * 22)  # inside the 40 burst, off the landing spot
-            hp0 = self.hps([du])
+        d = self.open_dirs(130)[0]
+        if not self.level("rpg", "hwp_fs_rpg"):
+            return
+        self.direction_test("rpg", "hwp_fs_rpg", "demo_rpg.sval", d)
+
+        def fire(orb, watch=1.4):
+            ok, lvl = self.orb(orb)
+            dd, (du,) = self.line_dummies(d, [80])
             self.top_up()
-            box = {}
-            w = self.cast_watch("hwp_fs_jetpack", lambda: box.setdefault("at", self.targeted("skill3", lx, ly, rng)), secs=1.4)
-            (tx, ty), held2 = box.get("at", ((lx, ly), False))
-            time.sleep(0.3)
-            texts = self.damage_texts(0.6)
-            qx, qy = self.pos()
-            hp1 = self.hps([du])
-            miss = math.hypot((qx - px) - tx, (qy - py) - ty)
-            self.flag("jetpack_casts", w["cd"] > 0, f"cooldown {w['cd']}, also cooled {w['others']}")
-            self.flag("jetpack_lands_at_cursor", miss <= 16 and math.hypot(qx - px, qy - py) >= 30,
-                      f"cursor at {round(tx)},{round(ty)} (held {held and held2}), landed {round(qx - px)},{round(qy - py)}: {round(miss)} off")
-            self.flag("jetpack_fire_burst", hp1[du] < hp0[du] - 0.001,
-                      f"dummy 22 off the landing hp {hp0[du]} -> {hp1[du]}, damage texts {[t.get('text') for t in texts]}")
-            self.cost_flag("jetpack", "hwp_fs_jetpack", "demo_jetpack.sval", w)
-            time.sleep(0.5)
-        if self.level("rpg", "hwp_fs_rpg"):
-            self.direction_test("rpg", "hwp_fs_rpg", "demo_rpg.sval", d)
-        if self.level("tube", "hwp_fs_tube"):
-            self.direction_test("tube", "hwp_fs_tube", "demo_tube.sval", d)
+            hp0 = self.hps([du])[du]
+            self.aimed_cast("hwp_fs_rpg", dd, 720)  # Quad re-aims to 600
+            texts, tags, hp1 = self.dummy_watch(du, watch)
+            self.orb_off(orb)
+            return {"ok": ok, "lvl": lvl, "hit": hp1 < hp0 - 0.001, "hp": (hp0, hp1), "texts": texts, "tags": tags}
+
+        r = fire("hwp_fs_rpg_fatboy")
+        self.flag("fatboy_blinds", r["ok"] and r["hit"] and "blindness" in r["tags"], f"{r}")
+        r = fire("hwp_fs_rpg_magic")
+        self.flag("magic_missile_two_hits", r["ok"] and r["hit"] and len(r["texts"]) >= 2, f"{r}")
+        r = fire("hwp_fs_rpg_quad", watch=1.8)
+        self.flag("quad_four_missiles", r["ok"] and r["hit"] and len(r["texts"]) >= 4, f"{r}")
+        if self.level("hoarder", "hwp_fs_hoarder"):
+            e = self.entry(self.bar(), "hwp_fs_hoarder")
+            self.flag("hoarder_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
+            self.ready("hwp_fs_rpg")
+            # level 1: a charge per 8 s x 0.9091 = 7.27 s ready, max 1
+            seen, t0 = [], time.time()
+            while time.time() - t0 < 9.5:
+                seen.append((round(time.time() - t0, 1), self.stacks("rocket_charges")))
+                if seen[-1][1] >= 1:
+                    break
+                time.sleep(0.5)
+            banked = seen[-1][1]
+            self.flag("hoarder_banks_charge", banked == 1 and seen[-1][0] >= 6.0, f"(s, charges) {seen[-3:]}")
+            self.top_up()
+            self.aimed_cast("hwp_fs_rpg", d, 420, wait=False)
+            time.sleep(1.6)
+            cd1, ch1 = self.entry(self.bar(), "hwp_fs_rpg").get("cd", 0), self.stacks("rocket_charges")
+            self.aimed_cast("hwp_fs_rpg", d, 420, wait=False)
+            time.sleep(1.6)
+            cd2, ch2 = self.entry(self.bar(), "hwp_fs_rpg").get("cd", 0), self.stacks("rocket_charges")
+            self.flag("hoarder_spends_charge", banked == 1 and cd1 == 0 and ch1 == 0 and cd2 > 0,
+                      f"after cast 1: cooldown {cd1}, charges {ch1}; after cast 2: cooldown {cd2}, charges {ch2}")
         self.buttons_flag("demo", d)
+        self.clear_dummies()
+        self.to_town()
+
+    def firearms_base_orbs(self):
+        """The base kit's orbs. Explosive Reload: Reload throws the magazine, which blows up a
+        dummy; with dual pistols the second magazine follows the first by about 100 ms. Dodge
+        Reload Skip: a dodge 0.3 s into the automatic reload refills the clip at once.
+        Over-Reload: a Reload inside the automatic reload's logged window is perfect (+6
+        rounds of clip) and the bonus is lost when the clip runs dry; during a manual Reload a
+        second press inside its window is perfect, a second perfect doesn't stack, and a plain
+        Reload clears the bonus. Frag orbs: Stun Grenade stuns or slows, Incendiary and Gas
+        keep hurting after the blast."""
+        self.gl("char", "hwp_firearms", "LabOrbs")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+        self.base_skills()
+        if not self.enter_floor("orbs"):
+            return
+        d = self.open_dirs(130)[0]
+
+        ok, lvl = self.orb("hwp_fs_reload_explosive")
+        # a direction throw lands 100 out (IProjectile.as GetTargetPos; GroundBouncing hit-target)
+        d1, (du,) = self.line_dummies(d, [100])
+        self.gl("givestacks", self.CLIP, 999)
+        rounds = self.clip()
+        hp0 = self.hps([du])[du]
+        self.gl("input", hold("fs_reload.sval"), 0, 0, d1[0], d1[1], "skill1")  # Reload re-aims to its castpoint
+        texts, _, hp1 = self.dummy_watch(du, 2.5)
+        self.flag("explosive_reload_hits", ok and hp1 < hp0 - 0.001,
+                  f"{rounds} rounds thrown: dummy {hp0} -> {hp1}, texts {texts}")
+
+        # dual pistols: the off hand's magazine is a second timeline entry, 100 ms on
+        self.g.console("dbg_cht_ignore_equipment_requirements 0")
+        self.g.console("dbg_cht_ignore_equipment_requirements 1")
+        eq = [bool(self.gl("equip", it, "common").get("ok")) for it in ("hwp_glock_mh_01", "hwp_glock_oh_01")]
+        time.sleep(1.0)  # the gun markers re-apply every 250 ms
+        d1, (du,) = self.line_dummies(d, [100])
+        self.ready("hwp_fs_reload")
+        self.gl("givestacks", self.CLIP, 999)
+        rounds = self.clip()
+        hp0 = self.hps([du])[du]
+        mark = len(self.g.read_log())
+        self.gl("input", hold("fs_reload.sval"), 0, 0, d1[0], d1[1], "skill1")
+        texts, _, hp1 = self.dummy_watch(du, 2.5)
+        log = self.g.read_log()[mark:]
+        first = re.search(r"explosive reload: (\d+) rounds at \d+, two magazines \(scene (\d+) ms\)", log)
+        second = re.search(r"explosive reload: second magazine, (\d+) rounds \(scene (\d+) ms\)", log)
+        gap = int(second[2]) - int(first[2]) if first and second else None
+        self.flag("explosive_reload_dual_in_turn",
+                  all(eq) and gap is not None and 50 <= gap <= 250 and int(first[1]) == rounds
+                  and int(second[1]) == rounds // 2 and hp1 < hp0 - 0.001,
+                  f"equip {eq}, {rounds} rounds; first {first and first.group(0)}, second "
+                  f"{second and second.group(0)}, gap {gap} ms; dummy {hp0} -> {hp1}")
+        self.gl("equip", "hwp_rifle_01", "common")
+        time.sleep(1.0)
+        self.g.console("dbg_cht_ignore_equipment_requirements 0")
+        self.orb_off("hwp_fs_reload_explosive")
+        self.clear_dummies()
+        self.clear_dummies()
+
+        base = self.refill_after_empty()
+        ok, lvl = self.orb("hwp_fs_reload_dodge")
+        skip = self.refill_after_empty(dash_at=0.3)
+        self.flag("dodge_skip_finishes_reload", ok and base is not None and skip is not None and skip < 0.9 and base > 1.3,
+                  f"refill after emptying: {base} s without a dodge, {skip} s with a dodge at 0.3 s")
+        self.orb_off("hwp_fs_reload_dodge")
+
+        ok, lvl = self.orb("hwp_fs_reload_over")
+        mx0 = self.clip_max()
+        lag, tries, perfect = 0.0, [], False
+        for _ in range(5):
+            self.ready("hwp_fs_reload")
+            mark = len(self.g.read_log())
+            self.gl("givestacks", self.CLIP, -999)
+            t0 = time.time()
+            win = None
+            while time.time() - t0 < 1.0 and not win:
+                win = re.search(r"over-reload: window (\d+)-(\d+) of (\d+) ms, (\d+) ms in", self.g.read_log()[mark:])
+            if not win:
+                tries.append("no window logged")
+                break
+            a, b, total, at = (int(x) for x in win.groups())
+            # t0 is about the reload's start; press so the game sees it mid-window, less the
+            # lateness the last miss measured
+            time.sleep(max(0.0, (a + b) / 2000 - at / 1000 - (time.time() - t0) - lag))
+            self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+            time.sleep(0.4)
+            log = self.g.read_log()[mark:]
+            hit = re.search(r"over-reload: perfect at (\d+)", log)
+            miss = re.search(r"over-reload: missed at (\d+)", log)
+            got = int((hit or miss).group(1)) if (hit or miss) else None
+            tries.append((a, b, got))
+            if hit:
+                perfect = True
+                break
+            if got is not None:
+                lag += (got - (a + b) / 2) / 1000
+            time.sleep(1.8)
+        time.sleep(0.3)
+        c1, mx1 = self.clip(), self.clip_max()
+        self.flag("over_reload_perfect", ok and perfect and mx1 == mx0 + 6 and c1 == mx1,
+                  f"tries (window start, end, pressed at) {tries}; clip {c1}/{mx1}, max before {mx0}")
+        self.gl("givestacks", self.CLIP, -999)
+        time.sleep(2.6)  # the automatic reload
+        c2, mx2 = self.clip(), self.clip_max()
+        self.flag("over_reload_lost_when_dry", perfect and mx2 == mx0 and c2 == mx0, f"clip {c2}/{mx2} after running dry")
+
+        # a manual Reload with rounds left: the cast is the timed reload, and a second press
+        # inside its window is perfect (and lands the cast at once)
+        def manual(second=True, lag=0.0):
+            self.ready("hwp_fs_reload")
+            self.gl("givestacks", self.CLIP, 999)
+            self.gl("givestacks", self.CLIP, -10)
+            mark = len(self.g.read_log())
+            t0 = time.time()
+            self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+            win = None
+            while time.time() - t0 < 0.5 and not win:
+                win = re.search(r"over-reload: manual window (\d+)-(\d+) of (\d+) ms", self.g.read_log()[mark:])
+            if not win:
+                return None, "no window logged"
+            a, b, _ = (int(x) for x in win.groups())
+            if second:
+                # both presses take the same path in, so time the second from the first
+                time.sleep(max(0.0, t0 + (a + b) / 2000 - lag - time.time()))
+                self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+            time.sleep(0.8)
+            log = self.g.read_log()[mark:]
+            hit = re.search(r"over-reload: manual perfect at (\d+)", log)
+            miss = re.search(r"over-reload: manual missed at (\d+)", log)
+            got = int((hit or miss).group(1)) if (hit or miss) else None
+            return bool(hit), (a, b, got)
+
+        def perfect_manual():
+            lag, tries = 0.0, []
+            for _ in range(6):
+                hit, t = manual(lag=lag)
+                tries.append(t)
+                if hit:
+                    return True, tries
+                if isinstance(t, tuple) and t[2] is not None:
+                    lag += (t[2] - (t[0] + t[1]) / 2) / 1000
+            return False, tries
+
+        mp1, mtries1 = perfect_manual()
+        c3, mx3 = self.clip(), self.clip_max()
+        self.flag("over_reload_manual_perfect", mp1 and mx3 == mx0 + 6 and c3 == mx3,
+                  f"tries (window start, end, pressed at) {mtries1}; clip {c3}/{mx3}, max before {mx0}")
+        mp2, mtries2 = perfect_manual()
+        c4, mx4 = self.clip(), self.clip_max()
+        self.flag("over_reload_capped", mp1 and mp2 and mx4 == mx0 + 6 and c4 == mx4,
+                  f"second perfect: tries {mtries2}; clip {c4}/{mx4} (empty-clip perfect gives {mx0 + 6})")
+        _, plain = manual(second=False)
+        c5, mx5 = self.clip(), self.clip_max()
+        self.flag("over_reload_plain_clears", mp1 and mx5 == mx0 and c5 == mx0,
+                  f"plain manual Reload {plain}: clip {c5}/{mx5}")
+        self.orb_off("hwp_fs_reload_over")
+
+        def frag(orb, secs, land=0.9):
+            ok, _ = self.orb(orb)
+            dd, (du,) = self.line_dummies(d, [90])
+            self.top_up()
+            self.gl("castat", "hwp_fs_frag", dd[0] * 90, dd[1] * 90, "nocd")
+            time.sleep(land)  # the throw lands ~0.8 s after the cast (castpoint 150, arc 650)
+            h0 = self.hps([du])[du]
+            _, tags, h1 = self.dummy_watch(du, secs)
+            self.orb_off(orb)
+            return ok, h0, h1, tags
+
+        # level 1 stuns and slows for 1 s from the landing: watch from before it lands (run
+        # 20261019-014544 read the tags from ~1.5 s, after the hp read, and saw none)
+        ok, h0, h1, tags = frag("hwp_fs_frag_stun", 1.4, land=0.2)
+        self.flag("stun_grenade_stuns", ok and ("stun" in tags or "slow" in tags), f"dummy buffs {tags}, hp {h0} -> {h1}")
+        ok, h0, h1, tags = frag("hwp_fs_frag_fire", 2.5)
+        self.flag("incendiary_burns", ok and h1 < h0 - 0.001, f"hp after the blast {h0} -> {h1} 2.5 s later, buffs {tags}")
+        ok, h0, h1, tags = frag("hwp_fs_frag_gas", 2.5)
+        self.flag("gas_lingers", ok and h1 < h0 - 0.001, f"hp after the blast {h0} -> {h1} 2.5 s later, buffs {tags}")
         self.clear_dummies()
         self.to_town()
 

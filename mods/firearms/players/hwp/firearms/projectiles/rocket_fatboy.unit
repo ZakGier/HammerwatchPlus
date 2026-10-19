@@ -1,0 +1,2 @@
+%define FATBOY
+%include "players/hwp/firearms/projectiles/rocket.inc"

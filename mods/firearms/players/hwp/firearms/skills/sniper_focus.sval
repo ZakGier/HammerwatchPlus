@@ -1,0 +1,206 @@
+%include "players/skills_cost.inc"
+<!--
+	Critical Aim (Marksman passive). Each gun shot or Sniper Shot that hits an enemy adds a
+	focus stack (stacks_firearms.sval:focus); a shot that hits nothing loses them all
+	(Projectile::HWPFirearmsShot, FirearmsModule.as). Every stack is +1% crit chance and
+	+1% crit damage, for weapons and skills alike; the level sets the most stacks.
+	focus has extrapolate-intensity, so the injected modifiers get the stack count as their
+	intensity and "0 0.01" is 1% a stack (ActorBuff.as GetIntensity), as ran_rhythm.sval.
+-->
+<dict>
+	<string name="name">.skills.hwp_firearms.focus.name</string>
+	<string name="type-name">.skills.type.passive</string>
+	<string name="description">.skills.hwp_firearms.focus.desc</string>
+
+	<array name="description-params">
+		<array><s>stacks-crit</s><s>.skills.desc.params.hwp_crit_per_stack</s><s>1%</s></array>
+		<array><s>stacks-max</s><s>.skills.desc.params.stacks.max</s><s>15</s><s>20</s><s>25</s><s>30</s><s>40</s></array>
+	</array>
+
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 0 24 24</vec4></array>
+
+	<string name="id">hwp_fs_focus</string>
+	<array name="tags"><s>passive</s></array>
+	<int name="starting-level">0</int>
+
+	<dict name="skill">
+		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
+		<string name="class">Skills::PassiveSkill</string>
+		<dict name="binds">
+			<ivec2 name="focus-max">15 15</ivec2>
+		</dict>
+		<array name="modifiers">
+			<array>
+				<dict>
+					<string name="class">Modifiers::ModifyStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:focus</string>
+					<string name="add-max-bind">focus-max</string>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::InjectModifiersIntoStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:focus</string>
+					<array name="modifiers">
+						<dict>
+							<string name="class">Modifiers::CriticalHit</string>
+							<vec2 name="chance">0 0.01</vec2>
+							<vec2 name="spell-chance">0 0.01</vec2>
+						</dict>
+						<dict>
+							<string name="class">Modifiers::CritDamage</string>
+							<vec2 name="attack-crit-dmg">0 0.01</vec2>
+							<vec2 name="spell-crit-dmg">0 0.01</vec2>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</array>
+	</dict>
+
+	<array name="upgrades">
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
+			<dict name="binds">
+				<ivec2 name="focus-max">20 20</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
+			<dict name="binds">
+				<ivec2 name="focus-max">25 25</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
+			<dict name="binds">
+				<ivec2 name="focus-max">30 30</ivec2>
+			</dict>
+		</dict>
+		<dict>
+			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
+			<dict name="binds">
+				<ivec2 name="focus-max">40 40</ivec2>
+			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<!-- BOOM Headshot!: base crit chance and damage for everything, and the same again on
+		     Sniper Shot (SkillCrit adds to the skill's own crit, PlayerBase.as crit roll). -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.focus_boom.name</string>
+			<string name="description">.skills.hwp_firearms.focus_boom.desc</string>
+
+			<array name="description-params">
+				<array><s>crit-chance</s><s>.skills.desc.params.crit.chance</s><s>+3%</s><s>+4%</s><s>+5%</s></array>
+				<array><s>crit-damage</s><s>.skills.desc.params.crit.damage</s><s>+10%</s><s>+20%</s><s>+30%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 24 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_focus_boom</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="boom-chance">0.03</float>
+					<float name="boom-dmg">0.1</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::CriticalHit</string>
+							<string name="chance-bind">boom-chance</string>
+							<string name="spell-chance-bind">boom-chance</string>
+						</dict>
+						<dict>
+							<string name="class">Modifiers::CritDamage</string>
+							<string name="attack-crit-dmg-bind">boom-dmg</string>
+							<string name="spell-crit-dmg-bind">boom-dmg</string>
+						</dict>
+						<dict>
+							<string name="class">Modifiers::SkillCrit</string>
+							<string name="skill-id">hwp_fs_snipe</string>
+							<string name="chance-bind">boom-chance</string>
+							<string name="crit-dmg-bind">boom-dmg</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="boom-chance">0.04</float>
+						<float name="boom-dmg">0.2</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="boom-chance">0.05</float>
+						<float name="boom-dmg">0.3</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<!-- Elemental Exposure: an extra crit roll for each element the target is taking
+		     damage from (its fire, ice, lightning and poison pools; FirearmsModule.as). -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.focus_exposure.name</string>
+			<string name="description">.skills.hwp_firearms.focus_exposure.desc</string>
+
+			<array name="description-params">
+				<array><s>crit-chance</s><s>.skills.desc.params.hwp_crit_per_element</s><s>1%</s><s>2%</s><s>3%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 24 24 24</vec4></array>
+
+			<array name="tags"><s>passive</s></array>
+			<string name="id">hwp_fs_focus_exposure</string>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<float name="exposure-chance">0.01</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::HWPFirearmsExposure</string>
+							<string name="chance-bind">exposure-chance</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="exposure-chance">0.02</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">epic</string>
+					<dict name="binds">
+						<float name="exposure-chance">0.03</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>

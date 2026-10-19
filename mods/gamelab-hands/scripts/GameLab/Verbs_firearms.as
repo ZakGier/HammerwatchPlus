@@ -1,6 +1,6 @@
 // gamelab-hands: read-outs the firearms plan checks need (gamelab/bots/plan_firearms.py):
 // where the mouse cursor points in the world, the floating combat texts on screen, and the
-// live skill bar with the button each skill answers to.
+// live skill bar with the button each skill answers to, and orb, which grants a skill orb.
 namespace GameLab
 {
 	// cursor [dx dy]: the current GameInput's mouse position in world space, the point a
@@ -161,8 +161,46 @@ namespace GameLab
 		Emit(Reply(id, true).Int("count", items.length()).Raw("units", RawArray(items)));
 	}
 
+	// orb <orbId> [times|down]: PlayerRecord.SkillTempUp on an orb (a skill's modifier-skills
+	// entry, PlayerClass.GetSkillDef) times times (default 1), as a picked-up skill sphere does
+	// (Cheats.as:669); "down" takes one level off (SkillTempDown). Does not check
+	// blocked-by-skills: the sphere menu filters those. Replies the orb's temp level after.
+	void VerbOrb(const string &in id, array<string>@ args)
+	{
+		auto rec = GetLocalPlayerRecord();
+		if (rec is null || rec.playerClass is null)
+		{
+			Fail(id, "no local character");
+			return;
+		}
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: orb <orbId> [times|down]");
+			return;
+		}
+		auto def = rec.playerClass.GetSkillDef(HashString(args[0]));
+		if (def is null)
+		{
+			Fail(id, "no skill " + args[0] + " in " + rec.playerClass.m_id);
+			return;
+		}
+		bool down = args.length() > 1 && args[1] == "down";
+		int times = down ? 1 : (args.length() > 1 ? int(parseInt(args[1])) : 1);
+		int done = 0;
+		for (int i = 0; i < times; i++)
+		{
+			if (down ? rec.SkillTempDown(def) : rec.SkillTempUp(def))
+				done++;
+		}
+		int level = 0;
+		if (!rec.pickedTempSkills.get(def.m_id, level))
+			level = 0;
+		Emit(Reply(id, done == times).Str("orb", args[0]).Int("changed", done).Int("level", level));
+	}
+
 	void Register_firearms()
 	{
+		RegisterVerb("orb", "<orbId> [times|down]", Verb(VerbOrb));
 		RegisterVerb("cursor", "[dx dy]", Verb(VerbCursor));
 		RegisterVerb("floats", "", Verb(VerbFloats));
 		RegisterVerb("skillbar", "", Verb(VerbSkillbar));

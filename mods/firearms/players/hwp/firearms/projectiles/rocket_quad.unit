@@ -1,0 +1,2 @@
+%define QUAD
+%include "players/hwp/firearms/projectiles/rocket.inc"

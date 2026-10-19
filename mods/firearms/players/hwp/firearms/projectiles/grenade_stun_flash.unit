@@ -1,0 +1,18 @@
+<!-- Stun Grenade's flash: no effects, only Sorcerer's static field drawn over the radius for a moment -->
+<unit layer="1">
+	<behavior class="DangerAreaBehaviorP">
+		<int name="freq">1000</int>
+		<int name="ttl">700</int>
+		<array name="effects">
+		</array>
+	</behavior>
+
+	<scenes>
+		<scene>
+			<collision static="false">
+				<circle radius="8" sensor="true" shoot-through="true" aim-through="true" />
+			</collision>
+			<effect layer="-1" src="players/sorcerer/effects/static_field.effect?radius=128" />
+		</scene>
+	</scenes>
+</unit>

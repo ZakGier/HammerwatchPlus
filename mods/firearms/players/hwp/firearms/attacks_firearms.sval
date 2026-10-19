@@ -1,10 +1,32 @@
 <loader order="-2">Item::ItemSkillDef::LoadMultiple</loader>
+<!--
+	Gun attacks. Every round spends one clip stack (stacks_firearms.sval:clip); a skill
+	won't start without a round left, and an action list whose conditional fails stops
+	there (IAction.as DoActions), so each list below checks what it needs before it shoots.
+	The keywords of one "conditional" array must all hold; a "conditionals" list of arrays
+	passes when any one array does (Conditional.as CheckConditionals), so the gates are flat.
+	The Glocks read the other hand's marker buff (buffs_firearms.sval) to pair up.
+-->
 
 <array>
+%defblock Spend N
+				<dict>
+					<string name="class">AddStacks</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+					<int name="stacks">-%%N%%</int>
+					<bool name="target-self">true</bool>
+				</dict>
+%endblock
+%defblock HasRound
+		<array name="conditional">
+			<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+		</array>
+%endblock
+
 	<dict>
 		<string name="name">.skills.attacks.twohanded.hwp_rifle1.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle1.desc?dmg=100%</string>
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 24 24 24</vec4></array>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle1.desc?dmg=160%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 48 24 24</vec4></array>
 		<string name="id">hwp_attack_rifle</string>
 		<string name="type">mainhand</string>
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
@@ -12,42 +34,44 @@
 		<dict name="skill">
 			<string name="class">Skills::PlayerSkillDirectional</string>
 			<string name="anim">attack</string>
-			<int name="anim-length">350</int>
+			<int name="anim-length">560</int>
 
 			<int name="cooldown">0</int>
-			<float name="move-speed-mul">0.6</float>
-			<ivec2 name="move-speed">0 350</ivec2>
+			<float name="move-speed-mul">0.5</float>
+			<ivec2 name="move-speed">0 560</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 350</ivec2>
-			<int name="castpoint">60</int>
-			<ivec2 name="update-aim">0 60</ivec2>
+			<ivec2 name="blocking">0 560</ivec2>
+			<int name="castpoint">80</int>
+			<ivec2 name="update-aim">0 80</ivec2>
 			<bool name="repeating">true</bool>
-			<int name="mana-cost">1</int>
+			<int name="mana-cost">0</int>
+			%block HasRound
 
 			<dict name="actions">
 				<array name="cast">
 					<dict>
 						<string name="class">ShootProjectile</string>
-						<string name="projectile">players/hwp/firearms/projectiles/bullet.unit</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round.unit</string>
 						<int name="dist">5</int>
+						<int name="spread">2</int>
 					</dict>
 					<dict>
 						<string name="class">PlaySound</string>
 						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 					</dict>
+					%block Spend 1
 				</array>
 			</dict>
 
 			<array name="timeline">
-				<i>60</i><s>cast</s>
+				<i>80</i><s>cast</s>
 			</array>
 		</dict>
 	</dict>
-
 	<dict>
 		<string name="name">.skills.attacks.twohanded.hwp_rifle1.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle1_epic.desc?dmg=125%</string>
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 24 24 24</vec4></array>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle1_epic.desc?dmg=200%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 48 24 24</vec4></array>
 		<string name="id">hwp_attack_rifle_epic</string>
 		<string name="type">mainhand</string>
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
@@ -55,120 +79,315 @@
 		<dict name="skill">
 			<string name="class">Skills::PlayerSkillDirectional</string>
 			<string name="anim">attack</string>
-			<int name="anim-length">350</int>
+			<int name="anim-length">560</int>
+
+			<int name="cooldown">0</int>
+			<float name="move-speed-mul">0.5</float>
+			<ivec2 name="move-speed">0 560</ivec2>
+			<float name="cast-speed-mul">1</float>
+			<ivec2 name="blocking">0 560</ivec2>
+			<int name="castpoint">80</int>
+			<ivec2 name="update-aim">0 80</ivec2>
+			<bool name="repeating">true</bool>
+			<int name="mana-cost">0</int>
+			%block HasRound
+
+			<dict name="actions">
+				<array name="cast">
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round_epic.unit</string>
+						<int name="dist">5</int>
+						<int name="spread">2</int>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+					</dict>
+					%block Spend 1
+				</array>
+			</dict>
+
+			<array name="timeline">
+				<i>80</i><s>cast</s>
+			</array>
+		</dict>
+	</dict>
+	<dict>
+		<string name="name">.skills.attacks.twohanded.hwp_rifle_gl.name</string>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle_gl.desc?dmg=120%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>168 72 24 24</vec4></array>
+		<string name="id">hwp_attack_rifle_gl</string>
+		<string name="type">offhand</string>
+		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s><s>hwp_explosive</s></array>
+
+		<dict name="skill">
+			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="anim">attack</string>
+			<int name="anim-length">600</int>
+
+			<int name="cooldown">1500</int>
+			<float name="move-speed-mul">0.3</float>
+			<ivec2 name="move-speed">0 600</ivec2>
+			<float name="cast-speed-mul">1</float>
+			<ivec2 name="blocking">0 600</ivec2>
+			<int name="castpoint">150</int>
+			<ivec2 name="update-aim">0 150</ivec2>
+			<bool name="repeating">false</bool>
+			<int name="mana-cost">4</int>
+
+			<dict name="actions">
+				<array name="cast">
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_gl_shell.unit</string>
+						<int name="dist">5</int>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+					</dict>
+				</array>
+			</dict>
+
+			<array name="timeline">
+				<i>150</i><s>cast</s>
+			</array>
+		</dict>
+	</dict>
+	<dict>
+		<string name="name">.skills.attacks.twohanded.hwp_rifle_gl.name</string>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle_gl.desc?dmg=120%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>168 72 24 24</vec4></array>
+		<string name="id">hwp_attack_rifle_gl_epic</string>
+		<string name="type">offhand</string>
+		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s><s>hwp_explosive</s></array>
+
+		<dict name="skill">
+			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="anim">attack</string>
+			<int name="anim-length">600</int>
+
+			<int name="cooldown">1500</int>
+			<float name="move-speed-mul">0.3</float>
+			<ivec2 name="move-speed">0 600</ivec2>
+			<float name="cast-speed-mul">1</float>
+			<ivec2 name="blocking">0 600</ivec2>
+			<int name="castpoint">150</int>
+			<ivec2 name="update-aim">0 150</ivec2>
+			<bool name="repeating">false</bool>
+			<int name="mana-cost">4</int>
+
+			<dict name="actions">
+				<array name="cast">
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_gl_shell.unit</string>
+						<int name="dist">5</int>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+					</dict>
+				</array>
+			</dict>
+
+			<array name="timeline">
+				<i>150</i><s>cast</s>
+			</array>
+		</dict>
+	</dict>
+
+	<!--
+		Glock, main hand (left click). Alone (shield, tome, empty off hand): two accurate
+		rounds a cycle. With the off-hand Glock's marker: one round from each muzzle in turn,
+		0.9 damage each and a spread that blooms while held - less control, a bit less DPS.
+	-->
+	<dict>
+		<string name="name">.skills.attacks.mainhand.hwp_glock.name</string>
+		<string name="description">.skills.attacks.mainhand.hwp_glock.desc?dmg=100%&dual=90%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 48 24 24</vec4></array>
+		<string name="id">hwp_attack_glock</string>
+		<string name="type">mainhand</string>
+		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
+
+		<dict name="skill">
+			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="anim">attack</string>
+			<int name="anim-length">520</int>
 
 			<int name="cooldown">0</int>
 			<float name="move-speed-mul">0.6</float>
-			<ivec2 name="move-speed">0 350</ivec2>
+			<ivec2 name="move-speed">0 520</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 350</ivec2>
+			<ivec2 name="blocking">0 520</ivec2>
 			<int name="castpoint">60</int>
-			<ivec2 name="update-aim">0 60</ivec2>
+			<ivec2 name="update-aim">0 520</ivec2>
 			<bool name="repeating">true</bool>
-			<int name="mana-cost">1</int>
+			<int name="mana-cost">0</int>
+			%block HasRound
 
 			<dict name="actions">
-				<array name="cast">
+				<array name="solo">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>hasnt</s><s>players/hwp/firearms/buffs_firearms.sval:glock_off</s><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
 					<dict>
 						<string name="class">ShootProjectile</string>
-						<string name="projectile">players/hwp/firearms/projectiles/bullet_epic.unit</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round.unit</string>
 						<int name="dist">5</int>
+						<int name="spread">3</int>
 					</dict>
 					<dict>
 						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+						<string name="sound">event:/sfx/player/attacks/offhand/hand_crossbow_shot</string>
 					</dict>
+					%block Spend 1
+				</array>
+				<array name="left">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>has</s><s>players/hwp/firearms/buffs_firearms.sval:glock_off</s><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_dual.unit</string>
+						<int name="dist">5</int>
+						<vec2 name="offset">0 -2</vec2>
+						<bool name="rotate-offset">true</bool>
+						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/offhand/hand_crossbow_shot</string>
+					</dict>
+					%block Spend 1
+				</array>
+				<array name="right">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>has</s><s>players/hwp/firearms/buffs_firearms.sval:glock_off</s><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<int name="dist">5</int>
+						<vec2 name="offset">0 2</vec2>
+						<bool name="rotate-offset">true</bool>
+						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/offhand/hand_crossbow_shot</string>
+					</dict>
+					%block Spend 1
 				</array>
 			</dict>
 
 			<array name="timeline">
-				<i>60</i><s>cast</s>
+				<i>60</i><s>solo</s>
+				<i>60</i><s>left</s>
+				<i>320</i><s>solo</s>
+				<i>320</i><s>right</s>
 			</array>
 		</dict>
 	</dict>
 
+	<!--
+		Glock, off hand (right click). With the main-hand Glock's marker: both guns at once,
+		two rounds and a wide spread - the burst. Alone (any other main hand): one round.
+	-->
 	<dict>
-		<string name="name">.skills.attacks.twohanded.hwp_rifle2.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle2.desc?dmg=220%</string>
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 24 24 24</vec4></array>
-		<string name="id">hwp_attack_rifle_secondary</string>
+		<string name="name">.skills.attacks.offhand.hwp_glock.name</string>
+		<string name="description">.skills.attacks.offhand.hwp_glock.desc?dmg=90%</string>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 48 24 24</vec4></array>
+		<string name="id">hwp_attack_glock_off</string>
 		<string name="type">offhand</string>
 		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
 
 		<dict name="skill">
 			<string name="class">Skills::PlayerSkillDirectional</string>
-			<string name="anim">attack</string>
-			<int name="anim-length">650</int>
+			<string name="anim">offhand-handcrossbow</string>
+			<int name="anim-length">520</int>
 
-			<int name="cooldown">800</int>
-			<float name="move-speed-mul">0</float>
-			<ivec2 name="move-speed">0 650</ivec2>
+			<int name="cooldown">0</int>
+			<float name="move-speed-mul">0.4</float>
+			<ivec2 name="move-speed">0 520</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 650</ivec2>
-			<int name="castpoint">420</int>
-			<ivec2 name="update-aim">0 420</ivec2>
+			<ivec2 name="blocking">0 520</ivec2>
+			<int name="castpoint">100</int>
+			<ivec2 name="update-aim">0 100</ivec2>
 			<bool name="repeating">true</bool>
-			<int name="mana-cost">2</int>
+			<int name="mana-cost">0</int>
+			%block HasRound
 
 			<dict name="actions">
-				<array name="cast">
+				<array name="both">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>has</s><s>players/hwp/firearms/buffs_firearms.sval:glock_main</s><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>2</i>
+						</array>
+					</dict>
 					<dict>
 						<string name="class">ShootProjectile</string>
-						<string name="projectile">players/hwp/firearms/projectiles/bullet_aimed.unit</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_dual.unit</string>
 						<int name="dist">5</int>
+						<vec2 name="offset">0 -2</vec2>
+						<bool name="rotate-offset">true</bool>
+						<int name="spread">18</int>
+					</dict>
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<int name="dist">5</int>
+						<vec2 name="offset">0 2</vec2>
+						<bool name="rotate-offset">true</bool>
+						<int name="spread">18</int>
 					</dict>
 					<dict>
 						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+						<string name="sound">event:/sfx/player/attacks/offhand/hand_crossbow_shot</string>
 					</dict>
+					%block Spend 2
+				</array>
+				<array name="solo">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff</s><s>hasnt</s><s>players/hwp/firearms/buffs_firearms.sval:glock_main</s>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">SpawnEffect</string>
+						<string name="effect">effects/generic/attacks/hand_crossbow_quickshot.effect</string>
+						<bool name="attach-to-owner">true</bool>
+						<bool name="send-angle">true</bool>
+					</dict>
+					<dict>
+						<string name="class">ShootProjectile</string>
+						<string name="projectile">players/hwp/firearms/projectiles/glock_round_off.unit</string>
+						<int name="dist">5</int>
+						<int name="spread">4</int>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/player/attacks/offhand/hand_crossbow_shot</string>
+					</dict>
+					%block Spend 1
 				</array>
 			</dict>
 
 			<array name="timeline">
-				<i>420</i><s>cast</s>
-			</array>
-		</dict>
-	</dict>
-
-	<dict>
-		<string name="name">.skills.attacks.twohanded.hwp_rifle2.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle2_epic.desc?dmg=280%</string>
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>144 24 24 24</vec4></array>
-		<string name="id">hwp_attack_rifle_secondary_epic</string>
-		<string name="type">offhand</string>
-		<array name="tags"><s>weapon</s><s>ranged</s><s>hwp_firearm</s><s>physical</s></array>
-
-		<dict name="skill">
-			<string name="class">Skills::PlayerSkillDirectional</string>
-			<string name="anim">attack</string>
-			<int name="anim-length">650</int>
-
-			<int name="cooldown">800</int>
-			<float name="move-speed-mul">0</float>
-			<ivec2 name="move-speed">0 650</ivec2>
-			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 650</ivec2>
-			<int name="castpoint">420</int>
-			<ivec2 name="update-aim">0 420</ivec2>
-			<bool name="repeating">true</bool>
-			<int name="mana-cost">2</int>
-
-			<dict name="actions">
-				<array name="cast">
-					<dict>
-						<string name="class">ShootProjectile</string>
-						<string name="projectile">players/hwp/firearms/projectiles/bullet_aimed_epic.unit</string>
-						<int name="dist">5</int>
-					</dict>
-					<dict>
-						<string name="class">PlaySound</string>
-						<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
-					</dict>
-				</array>
-			</dict>
-
-			<array name="timeline">
-				<i>420</i><s>cast</s>
+				<i>100</i><s>both</s>
+				<i>100</i><s>solo</s>
 			</array>
 		</dict>
 	</dict>

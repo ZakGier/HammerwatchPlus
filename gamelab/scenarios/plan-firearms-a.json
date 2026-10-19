@@ -1,6 +1,6 @@
 {
  "name": "plan-firearms-a",
- "about": "firearms s3 and s4/s5 Sniper through the plan_firearms bot: the Frag Grenade lands where the cursor is (a dummy there hit, one beside it not) with damage numbers; at level 21 the Subclass Picker shows Sniper/Demolitions/Assault; each Sniper skill casts and costs its tooltip's mana; the Decoy pulls three brutes and is gone 8 s after the cast.",
+ "about": "Test plan through the plan_firearms bot: the Frag Grenade lands where aimed, the Subclass Picker offers the three specializations, and the Marksman: Snipe, Critical Aim's Focus, Piercing Bullet, Headshot.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -80,19 +80,18 @@
    "do": "bot",
    "bot": "plan_firearms",
    "kwargs": {
-    "sections": "firearms_sniper"
+    "sections": "firearms_marksman"
    },
-   "name": "sniper skills and decoy",
+   "name": "firearms marksman",
    "expect": {
-    "decoy_casts": true,
-    "decoy_cost": true,
-    "decoy_vanishes_8s": true,
-    "decoy_taunts": true,
-    "decoy_pulls": true,
-    "flashbang_casts": true,
-    "flashbang_cost": true,
     "snipe_casts": true,
     "snipe_cost": true,
+    "snipe_uses_rounds": true,
+    "focus_passive": true,
+    "focus_gains": true,
+    "focus_lost_on_miss": true,
+    "snipe_pierce_both": true,
+    "headshot_crits": true,
     "sniper_own_buttons": true
    }
   },

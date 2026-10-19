@@ -1089,3 +1089,144 @@ A /code-review xhigh on the work since 28b14c8 gave 15 findings, all fixed:
   "Missing, no set". Markham's Amulet/Mace/Wand, Decaying Hand and Pickled Eye are now
   flagged flat (52 HoH2 trinkets with flat values). The lang files now decode strictly
   (no U+FFFD patching), with identical output. 43 jsdom checks pass on the new build.
+
+## Firearms clip and guns (2026-10-18)
+
+Built the firearms clip, the reload rework, the rifle rework and the pistols
+(`mods/firearms/README.md`, design in `docs/design/firearms.md`). Facts found on the way:
+
+- **An item's `ModifyStack` never applies; a buff's does.** `PlayerRecord.RefreshModifiers`
+  runs `modList.ModifyStacks(player)` (PlayerRecord.as:1886) after buffs, stacks and skills
+  are in the list but before the equipment loop. A gun therefore grants a marker buff
+  (`Modifiers::Buff`, freq 250) that carries the `add-max`. Verified: the rifle clip reads
+  30/30 and the pistols 12, 24 dual (GameLab `plan-firearms-guns`, 20261018-181338).
+- **`ActorBuffStacked` keeps the def it was built with** (ActorBuff.as:466). The modified
+  def must exist before the first stack is made. The Reload skill carries a
+  `ModifyStack add-max 0 0` for that.
+- **Lose-effects at 0 stacks run at intensity 0, and `AddStacks.Apply` returns false at
+  intensity ≤ 0** (AddStacks.as:59). Before the fix, an empty clip never started its reload.
+  An effect-list dict `<vec2 name="intensity-set">1 1</vec2>` placed first fixes it
+  (verified, `plan-t14`).
+- **`conditionals` is an OR of groups; the tokens of one `conditional` array are ANDed**
+  (Conditional.as:770-795, `CheckConditionals` returns true on the first passing group).
+  A two-group "has marker" + "clip ge 1" gate fired whatever the marker said: 4 rounds a
+  cycle instead of 2. Flattened into one array, it measures 2.
+- **Dash restarts a stack timer.** A `TriggerEffect` with `trigger: dash` on the
+  Reloading buff adds a stack at max. With `add-reset` that restarts the 1.6 s timer.
+  Measured: refill 1.75 s without a dodge, 2.92 s with a dodge 0.9 s in (`plan-t14`).
+- **`dbg_cht_ignore_equipment_requirements` doesn't survive a level load.** The cvar
+  still reads 1, but the script global it sets (`g_dbg_ignore_equipment_requirements`,
+  EquippedItems.as:1) is back to false, so `equip` refused a shield. Set it after the level
+  loads, 0 then 1 so the callback runs (verified: set at scenario start, it refused;
+  set this way on the floor, it took).
+- **`equip <id> 1` gave GenerateItem null for `offhand_lantern_01`.** Pass the quality
+  by name (`common`), as the other checks do.
+- **GameLab latency:** one `gl` call takes about 0.3 s. Clip checks hold the trigger
+  briefly and poll; one-frame checks use `gl multi`.
+- **Flaky checks, not regressions:** one t14 read of a no-dodge reload took 3.61 s
+  (beside 1.75 s), so the check now compares medians of 3 trials. `plan-firearms-a/b`
+  failed once on the decoy pull, the jetpack landing (22 px off, beside a wall) and one
+  missed frag damage text. They had failed the same way before this work (13:09, 13:11,
+  13:48 runs) and passed on rerun (20261018-182344, -182615).
+- **Assumed, not measured:** the shot spread (only rounds were counted), how often the
+  "cant" voice plays when holding fire on an empty clip, and how the clip's HUD icon looks.
+- **Purple orbs are skill spheres** (Behaviors/SkillSphere.as, GUI/Menus/GiveSkillSphereMenu.as;
+  read from source, not run). A sphere offers 3 picks from the `modifier-skills` of learned
+  skills, each at its next level, and no two share a parent. A reroll costs Shadow Curse
+  `min(100, ScaleShadowCurse(12 + 7 × rerolls used))`. Across all 196 vanilla orbs the
+  levels are Uncommon or Rare, never Epic (counted from the class data by the planner seed
+  script). So a new orb only enters the pool once its parent skill is learned.
+- **The class planner** (https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3) now holds every
+  vanilla class's kit and orbs, read from `gamecode/datatables`: 198 orbs, 499 orb levels and
+  400 skill levels, each with its quality and `description-params` values. Each class also gets a draft
+  4th spec with 2 orbs, all at status "idea". Nine skill files no class lists are cut content
+  (see `docs/design/firearms.md`).
+- **How orb levels read** (PlayerClass.as LoadParams and LoadSkillDescriptionParams, from
+  source). A level with no `quality` takes the orb's own `quality` (default common), not the
+  level before it. A `description-params` entry is `[key, (formatting bool), label, v1, v2…]`.
+  Level L shows `v[min(L, n) - 1]` (Modifications.as AppendSkillDesc). Two entries can share
+  a key: the label list shows both, and the `%key%` in the text gets the last.
+
+## Firearms specializations (2026-10-19)
+
+Built the Marksman and Demolitionist specializations and the base kit's orbs from the
+planner's records (`mods/firearms/README.md`). The two base passives are left to the owner.
+Checks: `plan-firearms-a` 20261019-020024, `-b` 20261019-015752, `-orbs` 20261019-015546,
+`-guns` 20261019-020328, `plan-t14` 20261019-020430, `mod-firearms` 20261019-020613, all PASS.
+
+- **Textures must be power-of-two** (verified). A 216x24 icon atlas logged
+  `[ERR] Texture sizes (216x24) should be power of two`, and the game then hung after script
+  compile: no main menu, exit 1, no crash dump (run 20261019-010915). Padded to 256x128 and
+  256x32, it passed (20261019-011513). `tools/make_firearms_icons.py` pads every atlas.
+- **Skill tag bits are below 31** (verified, the module logs them): `hwp_firearm` and
+  `hwp_explosive` are bits 21 and 22 with the plan scenarios' mods, 18 and 19 with
+  `mod-firearms`'s. The bit depends on which mods are loaded.
+- **`castat` doesn't aim a skill with `update-aim`.** `PlayerSkillDirectional.Update`
+  re-reads the player's aim every frame up to the castpoint, so the shot leaves along the
+  idle aim. Run 20261019-013119: `castat` Snipe hit nothing; a held skill3 press hit the same
+  dummy (106). With the aim held by `gl input` (no button), `castat` still missed
+  (20261019-013510, cause not found). The bot presses the skill's button instead
+  (`aimed_cast`). The same applies to a press shorter than the castpoint: the rifle's 80 ms
+  castpoint against a 60 ms press sent the round the wrong way (Focus never rose).
+- **A projectile thrown along a direction lands 100 out** (IProjectile.as:49-57: GetTargetPos
+  is from + dir × 100, which GroundBouncing `hit-target` flies to). Explosive Reload's
+  magazine missed a dummy at 45 with its 48 radius; one at 100 is hit.
+- **A round that stops at its first hit stops on anything between.** The old Snipe pierced
+  6, the new one 0 without its orb. On one floor it hit nothing on a wall-free line, so the
+  bot's `clear_dir` now also rejects a line with a `Breakable` or actor within 12 of it
+  (gl `near`). The `shootproj` bisect (20261019-012906) showed the round itself was fine.
+- **Over-Reload bug, fixed.** A perfect is judged when the Reload cast starts, while the clip
+  is still empty, and the dry-clip clear removed the bonus on the next frame. Before: clip
+  30/30 after a logged perfect; after: 36/36 (`-orbs` runs 014544 and 015016).
+- **Shared unit regression, fixed.** Assault's Stun Grenade fired `grenade_stun.unit`, which
+  had become the Frag Stun orb's include and lost its damage. The Frag orb now has
+  `grenade_frag_stun.unit` and Assault's file is back as it was (`-b` PASS).
+- **Timing in checks:** a level 1 stun lasts 1 s from the landing, about 0.8 s after the throw.
+  Reading the dummy's buffs from about 1.5 s saw nothing; watching from 0.2 s sees stun and
+  slow.
+- **New verb** `gl orb <orbId> [times|down]`: the skill sphere's `SkillTempUp` /
+  `SkillTempDown` (Verbs_firearms.as). `SkillTempUp` ignores `blocked-by-skills`, so the bot
+  takes each grenade orb back down before the next one.
+- **Interpretations to confirm with the owner** (the planner left these open):
+  - The rocket costs 6 mana, no rounds.
+  - Quad means 4 missiles in quick succession at a fraction of the damage and radius.
+  - Over-Reload on a manual Reload (owner, 2026-10-19): see the follow-up below.
+  - Headshot keys on a global "next hit" flag set by the Snipe round.
+  - Elemental Shrapnel is a custom stat that every explosive reads, but not the magazine:
+    penetration scales with intensity, and the magazine's intensity is its round count.
+  - Ordinance Hoarder: cooldowns run 1/(1+x) faster. It banks a charge per full cooldown
+    while the skill is ready.
+  - Gas is ignited by fire.
+  - The Stun grenade stuns and slows (bosses immune to stun are still slowed).
+  - Overpacked's planner record repeats an uncommon level.
+  - Magic Missile reuses the ice and fire effects; there is no blue-fire asset.
+  - Dual pistols throw the two magazines one after the other (owner, 2026-10-19), half
+    the rounds each.
+  - The old doctrine skill files (flashbang, decoy, tube, jetpack) stay on disk, unlisted.
+- **Assumed, not measured:** how Focus and Hoarder charges look on the HUD, and how the
+  Over-Reload ring reads at a glance (only its log lines were checked).
+
+### Follow-up: manual Over-Reload, dual magazine throw (2026-10-19)
+The owner asked for Over-Reload on a manual Reload too, capped at what a perfect reload of an
+empty clip gives, and for dual pistols to throw their magazines one after the other.
+- **Manual Over-Reload.** A Reload cast that starts outside the automatic reload is itself the
+  timed reload: a 200 ms window in the second half of its castpoint (550 ms), on the same
+  ring. A second press inside it is perfect and jumps the cast to its castpoint
+  (`m_castingT = m_castpoint - 1`, so the cast lands the next frame). A press outside it, or
+  no second press, is not perfect and clears any bonus. The bonus buff replaces the one held,
+  so the clip max stays magazine + 6/9/12 (measured: 36/36 after two perfects in a row).
+- **A press during a cast never reaches the skill** (`PlayerTargetingHelper.as`: an active
+  skill returns before `Activate`). So the module reads the button itself:
+  `Player.m_targetHelper.GetSkillInput(skill).Down`, edge-detected, since `Pressed` lasts one
+  frame and gamelab-hands writes input from its own `UpdateFrame`. Verified: the bot's second
+  `gl input ... skill1` lands as "manual perfect at 462/550 ms".
+- **Fixed:** after Reload was pressed during the automatic reload, the ring reopened with a
+  new window until the cast landed (the reloading stack drops at the castpoint, not at the
+  cast's start). The window no longer opens while a Reload cast is under way.
+- **Dual magazines in turn.** The Reload timeline has a second entry, `650 cast2`, holding
+  a `HWPFirearmsThrowMag` with `second`. The cast throws the main hand's magazine and keeps
+  the other half of the rounds per owner unit for it; the two land 8° either side of the aim.
+  Measured gap: 99 ms (scene 26136 → 26235 ms).
+- Runs, all PASS: plan-firearms-orbs 20261019-091445 (new flags
+  `explosive_reload_dual_in_turn`, `over_reload_manual_perfect`, `over_reload_capped`,
+  `over_reload_plain_clears`), plan-t14 20261019-091715.

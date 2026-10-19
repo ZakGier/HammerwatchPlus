@@ -1,16 +1,25 @@
 %include "players/skills_cost.inc"
+<!--
+	Sniper Shot (Marksman): spends 10 rounds and mana for one heavy armor-piercing shot.
+	The damage is the main hand's plus the off hand's (bullet_snipe.unit, two PlayerDamage
+	that merge into one hit); a two-handed gun's damage sits in the main hand alone
+	(Modifiers.as SlotToRole), so a rifle counts once. Without Piercing Bullet the shot stops
+	at the first enemy (snipe-pierce 0; NewProjectile.as: penetration + 1 hits).
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.snipe.name</string>
 	<string name="type-name">.skills.type.spell</string>
 	<string name="description">.skills.hwp_firearms.snipe.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage.weapon</s><s>300%</s><s>350%</s><s>400%</s><s>450%</s><s>500%</s></array>
-		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>3</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage.weapon</s><s>200%</s><s>300%</s><s>400%</s><s>500%</s><s>600%</s></array>
+		<array><s>armor-pen</s><s>.skills.desc.params.armor_pen</s><s>25%</s><s>25%</s><s>40%</s><s>40%</s><s>60%</s></array>
+		<array><s>rounds</s><s>.skills.desc.params.hwp_rounds</s><s>10</s></array>
+		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>30</s><s>30</s><s>40</s><s>40</s><s>50</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>3s</s></array>
 	</array>
 
-	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 0 24 24</vec4></array>
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 0 24 24</vec4></array>
 
 	<string name="id">hwp_fs_snipe</string>
 	<string name="type">spell</string>
@@ -32,10 +41,17 @@
 		<ivec2 name="blocking">0 900</ivec2>
 		<ivec2 name="update-aim">0 650</ivec2>
 		<bool name="repeating">false</bool>
-		<int name="mana-cost">3</int>
-			<dict name="binds">
-				<float name="snipe-mul">3.0</float>
-			</dict>
+		<int name="mana-cost">30</int>
+		<array name="conditional">
+			<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>10</i>
+		</array>
+
+		<dict name="binds">
+			<float name="snipe-mul">2</float>
+			<float name="snipe-pen">0.25</float>
+			<ivec2 name="snipe-pierce">0 0</ivec2>
+		</dict>
+
 		<dict name="actions">
 			<array name="cast">
 				<dict>
@@ -46,6 +62,12 @@
 				<dict>
 					<string name="class">PlaySound</string>
 					<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+				</dict>
+				<dict>
+					<string name="class">AddStacks</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+					<int name="stacks">-10</int>
+					<bool name="target-self">true</bool>
 				</dict>
 			</array>
 		</dict>
@@ -58,31 +80,102 @@
 	<array name="upgrades">
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
-			<int name="mana-cost">3</int>
+			<int name="mana-cost">30</int>
 			<dict name="binds">
-				<float name="snipe-mul">3.5</float>
+				<float name="snipe-mul">3</float>
+				<float name="snipe-pen">0.25</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
-			<int name="mana-cost">3</int>
+			<int name="mana-cost">40</int>
 			<dict name="binds">
-				<float name="snipe-mul">4.0</float>
+				<float name="snipe-mul">4</float>
+				<float name="snipe-pen">0.4</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
-			<int name="mana-cost">3</int>
+			<int name="mana-cost">40</int>
 			<dict name="binds">
-				<float name="snipe-mul">4.5</float>
+				<float name="snipe-mul">5</float>
+				<float name="snipe-pen">0.4</float>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
-			<int name="mana-cost">3</int>
+			<int name="mana-cost">50</int>
 			<dict name="binds">
-				<float name="snipe-mul">5.0</float>
+				<float name="snipe-mul">6</float>
+				<float name="snipe-pen">0.6</float>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<!-- Headshot: the first enemy the shot hits takes a sure critical hit. The bullet's
+		     Projectile::HWPFirearmsShot marks it fresh until that first hit is done (hit
+		     effects, and so the crit roll, come before the modifiers' OnHit). -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.snipe_headshot.name</string>
+			<string name="description">.skills.hwp_firearms.snipe_headshot.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_snipe_headshot</string>
+			<string name="quality">rare</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<array name="modifiers">
+					<array>
+						<dict>
+							<string name="class">Modifiers::HWPFirearmsHeadshot</string>
+							<string name="skill-id">hwp_fs_snipe</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+		</dict>
+
+		<!-- Piercing Bullet: the shot goes through enemies, 15% less damage after each one
+		     (Projectile::Speed hit-intensity-mul, as the Ranger's arrows). -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.snipe_pierce.name</string>
+			<string name="description">.skills.hwp_firearms.snipe_pierce.desc</string>
+
+			<array name="description-params">
+				<array><s>pierce</s><s>.skills.desc.params.projectile.pierce</s><s>2</s><s>4</s><s>6</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_snipe_pierce</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<ivec2 name="snipe-pierce">2 2</ivec2>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<ivec2 name="snipe-pierce">4 4</ivec2>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<ivec2 name="snipe-pierce">6 6</ivec2>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

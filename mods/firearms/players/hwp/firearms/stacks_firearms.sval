@@ -1,0 +1,193 @@
+<loader>ActorBuffStackDef::LoadMultiple</loader>
+<!--
+	The clip: rounds left in the guns, counted down from full (Warlock essence in reverse).
+	max is 0 here; each gun's marker buff (buffs_firearms.sval) adds its magazine through
+	ModifyStack, since item modifiers are added after PlayerRecord.RefreshModifiers applies
+	stack modifiers (PlayerRecord.as:1886 vs the equipment loop after it) and buffs before.
+	A shot spends rounds (AddStacks -N in the attack); reaching 0 starts "reloading".
+-->
+<array>
+	<dict>
+		<string name="id">clip</string>
+		<string name="name">.stacks.hwp_firearms.clip.name</string>
+		<string name="description">.stacks.hwp_firearms.clip.desc</string>
+		<int name="max">0</int>
+		<bool name="extrapolate-intensity">true</bool>
+		<bool name="refresh-on-max">true</bool>
+
+		<array name="lose-effects">
+			<!-- at 0 stacks the stack's intensity is 0, and AddStacks skips intensity <= 0 (AddStacks.as:59) -->
+			<dict>
+				<vec2 name="intensity-set">1 1</vec2>
+			</dict>
+			<dict>
+				<string name="class">PlaySound</string>
+				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+			</dict>
+			<!-- an Over-Reload bonus lasts until the clip runs dry -->
+			<dict>
+				<string name="class">RemoveBuff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:perfect_reload_1</string>
+				<bool name="target-self">true</bool>
+			</dict>
+			<dict>
+				<string name="class">RemoveBuff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:perfect_reload_2</string>
+				<bool name="target-self">true</bool>
+			</dict>
+			<dict>
+				<string name="class">RemoveBuff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:perfect_reload_3</string>
+				<bool name="target-self">true</bool>
+			</dict>
+			<dict>
+				<string name="class">AddStacks</string>
+				<string name="buff">players/hwp/firearms/stacks_firearms.sval:reloading</string>
+				<int name="stacks">1</int>
+				<bool name="target-self">true</bool>
+			</dict>
+		</array>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>216 48 24 24</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+
+	<!--
+		The automatic reload: gained when the clip runs dry. When its timer ends it drops to 0
+		and its lose-effects refill the clip. A dodge while it runs adds a stack at max, which
+		with add-reset restarts the timer: the dodge interrupts the reload.
+	-->
+	<dict>
+		<string name="id">reloading</string>
+		<string name="name">.stacks.hwp_firearms.reloading.name</string>
+		<string name="description">.stacks.hwp_firearms.reloading.desc</string>
+		<int name="max">1</int>
+		<bool name="hide-hud-text">true</bool>
+		<bool name="refresh-on-max">true</bool>
+		<bool name="display-timer-radius">true</bool>
+
+		<dict name="timer">
+			<int name="time">1600</int>
+			<int name="add-stack">-1</int>
+			<bool name="gain-set">true</bool>
+			<bool name="gain-reset">true</bool>
+			<bool name="add-reset">true</bool>
+		</dict>
+
+		<array name="lose-effects">
+			<!-- at 0 stacks the stack's intensity is 0, and AddStacks skips intensity <= 0 (AddStacks.as:59) -->
+			<dict>
+				<vec2 name="intensity-set">1 1</vec2>
+			</dict>
+			<dict>
+				<string name="class">AddStacks</string>
+				<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+				<int name="stacks">999</int>
+				<bool name="target-self">true</bool>
+			</dict>
+			<dict>
+				<string name="class">PlaySound</string>
+				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+			</dict>
+		</array>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>192 72 24 24</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::TriggerEffect</string>
+					<string name="trigger">dash</string>
+					<float name="chance">1</float>
+					<int name="timeout">0</int>
+					<bool name="target-self">true</bool>
+					<array name="effects">
+						<!-- Dodge Reload Skip (fs_reload.sval) finishes the reload on a dodge instead -->
+						<dict>
+							<bool name="cond-target-self">true</bool>
+							<array name="conditional"><s>buff</s><s>hasnt</s><s>players/hwp/firearms/buffs_firearms.sval:dodge_skip</s></array>
+						</dict>
+						<dict>
+							<string name="class">AddStacks</string>
+							<string name="buff">players/hwp/firearms/stacks_firearms.sval:reloading</string>
+							<int name="stacks">1</int>
+							<bool name="target-self">true</bool>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+
+	<!--
+		Critical Aim (sniper_focus.sval): one stack per gun shot that hits, all lost on a shot
+		that hits nothing (Projectile::HWPFirearmsShot, FirearmsModule.as). max is 0 here; the
+		passive raises it. The crit chance and damage per stack are injected by the passive
+		(InjectModifiersIntoStack), as Ranger's Rhythm does; intensity is the stack count.
+	-->
+	<dict>
+		<string name="id">focus</string>
+		<string name="name">.stacks.hwp_firearms.focus.name</string>
+		<string name="description">.stacks.hwp_firearms.focus.desc</string>
+		<int name="max">0</int>
+		<bool name="extrapolate-intensity">true</bool>
+		<bool name="refresh-on-max">true</bool>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>144 48 24 24</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+
+	<!--
+		Ordinance Hoarder (demo_hoarder.sval): stored casts of the Frag Grenade and the Rocket
+		Launcher. max is 0 here; the passive raises it. The module script adds a charge each
+		cooldown the skill sits ready, and spends one to reset the cooldown after a cast.
+	-->
+	%defblock Charges ID X
+	<dict>
+		<string name="id">%%ID%%</string>
+		<string name="name">.stacks.hwp_firearms.%%ID%%.name</string>
+		<string name="description">.stacks.hwp_firearms.%%ID%%.desc</string>
+		<int name="max">0</int>
+		<bool name="refresh-on-max">true</bool>
+
+		<dict name="buff">
+			<bool name="debuff">false</bool>
+			<array name="hud">
+				<string>players/hwp/firearms/icons.png</string>
+				<int>100</int><vec4>%%X%% 48 24 24</vec4>
+			</array>
+			<array name="modifiers">
+				<dict>
+					<string name="class">Modifiers::DummyModifier</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	%endblock
+
+	%block Charges grenade_charges 168
+	%block Charges rocket_charges 192
+</array>

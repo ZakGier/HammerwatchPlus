@@ -1,0 +1,2 @@
+%define GAS
+%include "players/hwp/firearms/projectiles/grenade.inc"

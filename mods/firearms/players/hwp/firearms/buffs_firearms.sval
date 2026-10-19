@@ -1,0 +1,165 @@
+<svals>
+	<!--
+		Gun markers. Each gun item re-applies its marker every 250 ms while equipped
+		(Modifiers::Buff), so a marker lasts only a moment after the gun comes off. A marker
+		carries the gun's magazine (ModifyStack add-max on the clip; buffs are counted before
+		stack modifiers are applied, items after), and the Glock attacks read the other
+		hand's marker with a "buff has" conditional to switch to their paired behaviour.
+	-->
+	%defblock GunMarker NAME MAG
+	<dict name="%%NAME%%">
+		<bool name="debuff">false</bool>
+		<int name="duration">600</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::ModifyStack</string>
+				<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+				<ivec2 name="add-max">%%MAG%% %%MAG%%</ivec2>
+			</dict>
+		</array>
+	</dict>
+	%endblock
+
+	%block GunMarker rifle 30
+	%block GunMarker glock_main 12
+	%block GunMarker glock_off 12
+	<!--
+		Orb markers. An orb's Modifiers::Buff re-applies its marker while the orb is held, so
+		data elsewhere can branch on "buff has" and the module script can read the level.
+	-->
+	%defblock Marker NAME
+	<dict name="%%NAME%%">
+		<bool name="debuff">false</bool>
+		<int name="duration">600</int>
+		<bool name="ignore-buff-scaling">true</bool>
+	</dict>
+	%endblock
+
+	%block Marker dodge_skip
+	%block Marker over_reload_1
+	%block Marker over_reload_2
+	%block Marker over_reload_3
+
+	<!-- Over-Reload's perfect reload: extra rounds until the clip next runs dry or reloads -->
+	%defblock OverReload NAME MAG
+	<dict name="%%NAME%%">
+		<bool name="debuff">false</bool>
+		<int name="duration">120000</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::ModifyStack</string>
+				<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+				<ivec2 name="add-max">%%MAG%% %%MAG%%</ivec2>
+			</dict>
+		</array>
+	</dict>
+	%endblock
+
+	%block OverReload perfect_reload_1 6
+	%block OverReload perfect_reload_2 9
+	%block OverReload perfect_reload_3 12
+
+	<!--
+		Stun Grenade. Two buffs per level: the stun (tag stun) and a slow of the same length
+		(tag slow). A boss immune to stun still takes the slow, unless it is immune to slow too.
+	-->
+	%defblock Stun NAME DUR
+	<dict name="%%NAME%%">
+		<array name="tags"><string>debuff</string><string>stun</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">%%DUR%%</int>
+		<string name="icon">special/icons/stun.unit</string>
+		<float name="speed-mul">0</float>
+		<bool name="disarm">true</bool>
+		<bool name="silence">true</bool>
+		<string name="category">stun</string>
+		<int name="category-level">%%DUR%%</int>
+	</dict>
+	%endblock
+	%defblock StunSlow NAME DUR
+	<dict name="%%NAME%%">
+		<array name="tags"><string>debuff</string><string>slow</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">%%DUR%%</int>
+		<string name="icon">special/icons/slow.unit</string>
+		<float name="speed-mul">0.5</float>
+		<float name="attack-speed">0.5</float>
+		<float name="cast-speed">0.5</float>
+	</dict>
+	%endblock
+
+	%block Stun stun_1 1000
+	%block Stun stun_2 2000
+	%block Stun stun_3 3000
+	%block StunSlow stun_slow_1 1000
+	%block StunSlow stun_slow_2 2000
+	%block StunSlow stun_slow_3 3000
+
+	<!-- Blindness: Incendiary's while standing in the fire (re-applied every tick), Fat Boy's per level -->
+	%defblock Blind NAME DUR NUM
+	<dict name="%%NAME%%">
+		<array name="tags"><string>debuff</string><string>blindness</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">%%DUR%%</int>
+		<string name="icon">special/icons/blindness.unit</string>
+		<float name="miss-attack">%%NUM%%</float>
+		<bool name="ignore-buff-scaling">true</bool>
+	</dict>
+	%endblock
+
+	%block Blind burn_blind 700 0.3
+	%block Blind fatboy_blind_1 2000 0.4
+	%block Blind fatboy_blind_2 3000 0.4
+	%block Blind fatboy_blind_3 4000 0.4
+
+	<!--
+		Gas Grenade. The cloud keeps "gassed" on everyone inside. A gassed enemy that is burning
+		(a fire affliction pool, Conditional.as "affliction fire gt 0") blows up once: half the
+		frag damage at the grenade's level, then "gas_spent" keeps it from blowing up again
+		while it stays in the same cloud (a buff doesn't remove itself from its own tick). One gassed buff per grenade level, since a buff's
+		tick effects can't read the skill's binds.
+	-->
+	%defblock Gassed NAME DMG
+	<dict name="%%NAME%%">
+		<array name="tags"><string>debuff</string><string>hwp_gassed</string></array>
+		<bool name="debuff">true</bool>
+		<int name="duration">700</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<dict name="tick">
+			<int name="freq">250</int>
+			<array name="effects">
+				<dict>
+					<array name="conditional"><s>affliction</s><s>fire</s><s>gt</s><i>0</i><s>buff</s><s>hasnt</s><s>players/hwp/firearms/buffs_firearms.sval:gas_spent</s></array>
+				</dict>
+				<dict>
+					<string name="class">Damage</string>
+					<int name="fire">%%DMG%%</int>
+					<bool name="true-strike">true</bool>
+				</dict>
+				<dict>
+					<string name="class">SpawnEffect</string>
+					<string name="effect">effects/generic/explosions/fire_explosion_1.effect</string>
+				</dict>
+				<dict>
+					<string name="class">ApplyBuff</string>
+					<string name="buff">players/hwp/firearms/buffs_firearms.sval:gas_spent</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	%endblock
+
+	%block Gassed gassed_1 50
+	%block Gassed gassed_2 65
+	%block Gassed gassed_3 80
+	%block Gassed gassed_4 100
+	%block Gassed gassed_5 125
+
+	<dict name="gas_spent">
+		<bool name="debuff">true</bool>
+		<int name="duration">5000</int>
+		<bool name="ignore-buff-scaling">true</bool>
+	</dict>
+</svals>

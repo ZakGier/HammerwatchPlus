@@ -1,23 +1,23 @@
 <lang name="English" official="false">
 	<string name="menu.class.hwp_firearms">Firearms Specialist</string>
-	<string name="menu.class.hwp_firearms.description">A gunslinger from far-off lands. Mana is ammunition: every shot spends a round and reloading refills the magazine. Chooses between the Sniper, Demolitions and Assault doctrines.</string>
+	<string name="menu.class.hwp_firearms.description">A gunslinger from far-off lands. Every shot spends a round from the clip; an empty clip reloads by itself, and a dodge interrupts it. Mana powers gadgets. Specializes as a Marksman, a Demolitionist or in Assault.</string>
 	<string name="htitle.hwp_firearms.desc">Grants %num%% Critical Hit Chance, %num-per%% per level.</string>
 
-	<string name="skills.hwp_firearms.mastery_1.name">Sniper</string>
-	<string name="skills.hwp_firearms.mastery_2.name">Demolitions</string>
+	<string name="skills.hwp_firearms.mastery_1.name">Marksman</string>
+	<string name="skills.hwp_firearms.mastery_2.name">Demolitionist</string>
 	<string name="skills.hwp_firearms.mastery_3.name">Assault</string>
 
 	<string name="skills.hwp_firearms.reload.name">Reload</string>
-	<string name="skills.hwp_firearms.reload.desc">Slam a fresh magazine in, restoring %mana% of your maximum ammunition. Cannot be used while shooting.</string>
+	<string name="skills.hwp_firearms.reload.desc">Slam a fresh magazine in, filling the clip without waiting for it to run dry. Cannot be used while shooting.</string>
 	<string name="skills.hwp_firearms.frag.name">Frag Grenade</string>
-	<string name="skills.hwp_firearms.frag.desc">Lob a grenade at the target spot. It bursts for %damage% physical damage in a %range% radius.</string>
+	<string name="skills.hwp_firearms.frag.desc">Lob a grenade at the target spot. It bursts for %damage% physical damage with %armor-pen% armor penetration. Orbs change the grenade's type.</string>
 	<string name="skills.hwp_firearms.scavenger.name">Scavenger</string>
 	<string name="skills.hwp_firearms.scavenger.desc">Every kill has a %chance% chance to recover %mana% rounds of ammunition.</string>
 	<string name="skills.hwp_firearms.steady.name">Steady Hands</string>
 	<string name="skills.hwp_firearms.steady.desc">Weapon attacks deal %damage% more damage.</string>
 
 	<string name="skills.hwp_firearms.snipe.name">Snipe</string>
-	<string name="skills.hwp_firearms.snipe.desc">Take aim and fire a single high-velocity round that pierces enemies for %damage% of weapon damage.</string>
+	<string name="skills.hwp_firearms.snipe.desc">Take aim and fire a single high-velocity round for %damage% of weapon damage with %armor-pen% armor penetration. Uses %rounds% rounds.</string>
 	<string name="skills.hwp_firearms.flashbang.name">Flashbang</string>
 	<string name="skills.hwp_firearms.flashbang.desc">Throw a flashbang that blinds enemies for %duration% and briefly stuns them.</string>
 	<string name="skills.hwp_firearms.decoy.name">Decoy</string>
@@ -25,8 +25,8 @@
 
 	<string name="skills.hwp_firearms.tube.name">Grenade Launcher</string>
 	<string name="skills.hwp_firearms.tube.desc">Fire an explosive shell from the under-barrel launcher dealing %damage% of weapon damage in an area. Costs ammunition.</string>
-	<string name="skills.hwp_firearms.rpg.name">Rocket</string>
-	<string name="skills.hwp_firearms.rpg.desc">Fire a rocket that explodes for %damage% fire damage in a wide radius. Costs ammunition.</string>
+	<string name="skills.hwp_firearms.rpg.name">Rocket Launcher</string>
+	<string name="skills.hwp_firearms.rpg.desc">Fire a rocket that explodes for %damage% fire damage in a wide radius.</string>
 	<string name="skills.hwp_firearms.jetpack.name">Jetpack</string>
 	<string name="skills.hwp_firearms.jetpack.desc">Blast off to the target spot, scorching enemies where you land for %damage% fire damage.</string>
 
@@ -41,11 +41,92 @@
 	<string name="equipment.twohanded.hwp_rifle.2a">Field Rifle</string>
 	<string name="equipment.twohanded.hwp_rifle.3a">Marksman's Rifle</string>
 	<string name="skills.attacks.twohanded.hwp_rifle1.name">Shoot</string>
-	<string name="skills.attacks.twohanded.hwp_rifle1.desc">Fire a round for %dmg% weapon damage. Costs 1 ammunition.</string>
-	<string name="skills.attacks.twohanded.hwp_rifle1_epic.desc">Fire a round for %dmg% weapon damage. Costs 1 ammunition.</string>
-	<string name="skills.attacks.twohanded.hwp_rifle2.name">Aimed Shot</string>
-	<string name="skills.attacks.twohanded.hwp_rifle2.desc">A slow, careful shot for %dmg% weapon damage that pierces. Costs 2 ammunition.</string>
-	<string name="skills.attacks.twohanded.hwp_rifle2_epic.desc">A slow, careful shot for %dmg% weapon damage that pierces. Costs 2 ammunition.</string>
+	<string name="skills.attacks.twohanded.hwp_rifle1.desc">Fire a heavy round that pierces for %dmg% weapon damage. Uses 1 round.</string>
+	<string name="skills.attacks.twohanded.hwp_rifle1_epic.desc">Fire a heavy round that pierces deeper for %dmg% weapon damage. Uses 1 round.</string>
 
-	<string name="hwp.firearms.status">Firearms Specialist: class %cls%, rifle %rifle%, ammo %mana%/%max%</string>
+
+	<string name="stacks.hwp_firearms.clip.name">Clip</string>
+	<string name="stacks.hwp_firearms.clip.desc">Rounds left in your guns. Each shot uses one; when the clip runs dry you reload.</string>
+	<string name="stacks.hwp_firearms.reloading.name">Reloading</string>
+	<string name="stacks.hwp_firearms.reloading.desc">Reloading. The clip refills when this ends; dodging restarts it.</string>
+
+	<string name="skills.attacks.twohanded.hwp_rifle_gl.name">Grenade Launcher</string>
+	<string name="skills.attacks.twohanded.hwp_rifle_gl.desc">Fire an explosive shell from the under-barrel launcher for %dmg% weapon damage in an area. Costs mana, not rounds.</string>
+
+	<string name="equipment.mainhand.hwp_glock.1a">Service Pistol</string>
+	<string name="equipment.mainhand.hwp_glock.2a">Officer's Pistol</string>
+	<string name="equipment.mainhand.hwp_glock.3a">Duelist's Pistol</string>
+	<string name="equipment.offhand.hwp_glock.1a">Holdout Pistol</string>
+	<string name="equipment.offhand.hwp_glock.2a">Officer's Sidearm</string>
+	<string name="equipment.offhand.hwp_glock.3a">Duelist's Sidearm</string>
+	<string name="skills.attacks.mainhand.hwp_glock.name">Pistol Shots</string>
+	<string name="skills.attacks.mainhand.hwp_glock.desc">Fire accurate rounds for %dmg% weapon damage. With a pistol in each hand, fire from each in turn for %dual% damage, less accurately. Uses 1 round a shot.</string>
+	<string name="skills.attacks.offhand.hwp_glock.name">Pistol Burst</string>
+	<string name="skills.attacks.offhand.hwp_glock.desc">With a pistol in each hand, fire both at once with a wide spread, %dmg% weapon damage each, using 2 rounds. Otherwise, fire one round.</string>
+	<string name="hwp.firearms.status">Firearms Specialist: class %cls%, weapon %rifle%, clip %clip%/%clipmax%, mana %mana%/%max%</string>
+
+	<!-- Reload orbs -->
+	<string name="skills.hwp_firearms.reload_dodge.name">Dodge Reload Skip</string>
+	<string name="skills.hwp_firearms.reload_dodge.desc">Dodging while reloading finishes the reload at once.</string>
+	<string name="skills.hwp_firearms.reload_explosive.name">Explosive Reload</string>
+	<string name="skills.hwp_firearms.reload_explosive.desc">Reload throws the old magazine, which explodes for %damage% physical damage per round left in it. With a pistol in each hand, both magazines are thrown, one right after the other.</string>
+	<string name="skills.hwp_firearms.reload_over.name">Over-Reload</string>
+	<string name="skills.hwp_firearms.reload_over.desc">Every reload shows a ring with a gold mark. Hit Reload in the mark (%window%) for a perfect reload, which finishes at once: during the automatic reload, use Reload; during your own Reload, press it again. The clip then holds %rounds% more rounds, never more, until it next runs dry or a reload is not perfect.</string>
+
+	<!-- Frag Grenade orbs: each makes the grenade a different type -->
+	<string name="skills.hwp_firearms.frag_stun.name">Stun Grenade</string>
+	<string name="skills.hwp_firearms.frag_stun.desc">The grenade stuns and slows enemies in the blast for %duration%. Enemies that cannot be stunned are still slowed.</string>
+	<string name="skills.hwp_firearms.frag_fire.name">Incendiary Grenade</string>
+	<string name="skills.hwp_firearms.frag_fire.desc">The grenade leaves a fire for %duration% that burns and blinds enemies standing in it.</string>
+	<string name="skills.hwp_firearms.frag_gas.name">Gas Grenade</string>
+	<string name="skills.hwp_firearms.frag_gas.desc">The grenade leaves a poison cloud for %duration%. Fire ignites the gas.</string>
+
+	<!-- Marksman -->
+	<string name="skills.hwp_firearms.snipe_headshot.name">Headshot</string>
+	<string name="skills.hwp_firearms.snipe_headshot.desc">The first enemy a Snipe round hits takes a critical hit.</string>
+	<string name="skills.hwp_firearms.snipe_pierce.name">Piercing Bullet</string>
+	<string name="skills.hwp_firearms.snipe_pierce.desc">The Snipe round passes through %pierce% more enemies.</string>
+	<string name="skills.hwp_firearms.focus.name">Critical Aim</string>
+	<string name="skills.hwp_firearms.focus.desc">Every gun round that hits an enemy gives a Focus stack, %stacks-crit% critical hit chance and damage each, up to %stacks-max%. A round that hits nothing loses all Focus.</string>
+	<string name="skills.hwp_firearms.focus_boom.name">BOOM Headshot!</string>
+	<string name="skills.hwp_firearms.focus_boom.desc">%crit-chance% critical hit chance and %crit-damage% critical damage, and the same again for Snipe.</string>
+	<string name="skills.hwp_firearms.focus_exposure.name">Elemental Exposure</string>
+	<string name="skills.hwp_firearms.focus_exposure.desc">%crit-chance% chance to critically hit for each element (fire, ice, lightning, poison) afflicting the target.</string>
+	<string name="stacks.hwp_firearms.focus.name">Focus</string>
+	<string name="stacks.hwp_firearms.focus.desc">Critical hit chance and damage for every stack. Lost when a round misses.</string>
+
+	<!-- Demolitionist -->
+	<string name="skills.hwp_firearms.rpg_fatboy.name">Fat Boy</string>
+	<string name="skills.hwp_firearms.rpg_fatboy.desc">Fire a slower, heavier rocket that also deals %damage% of its damage as poison and blinds enemies for %duration%.</string>
+	<string name="skills.hwp_firearms.rpg_magic.name">Magic Missile</string>
+	<string name="skills.hwp_firearms.rpg_magic.desc">The rocket explodes in ice for %damage-ice% of its damage, then bursts into flame for %damage-fire% of it.</string>
+	<string name="skills.hwp_firearms.rpg_quad.name">Quad Missile Chambers</string>
+	<string name="skills.hwp_firearms.rpg_quad.desc">Fire four small missiles in quick succession, each dealing %damage% of the rocket's damage in %radius% of its radius.</string>
+	<string name="skills.hwp_firearms.hoarder.name">Ordinance Hoarder</string>
+	<string name="skills.hwp_firearms.hoarder.desc">The Frag Grenade and the Rocket Launcher recharge %cooldown% faster, and store %stacks-max% charges while ready: a stored charge is spent to use the skill again at once.</string>
+	<string name="skills.hwp_firearms.hoarder_overpacked.name">Overpacked Explosives</string>
+	<string name="skills.hwp_firearms.hoarder_overpacked.desc">Explosive skills deal %damage% damage.</string>
+	<string name="skills.hwp_firearms.hoarder_shrapnel.name">Elemental Shrapnel</string>
+	<string name="skills.hwp_firearms.hoarder_shrapnel.desc">Explosions gain %pen% fire, ice, lightning and poison penetration.</string>
+	<string name="stacks.hwp_firearms.grenade_charges.name">Grenade Charges</string>
+	<string name="stacks.hwp_firearms.grenade_charges.desc">Stored Frag Grenade uses.</string>
+	<string name="stacks.hwp_firearms.rocket_charges.name">Rocket Charges</string>
+	<string name="stacks.hwp_firearms.rocket_charges.desc">Stored Rocket Launcher uses.</string>
+
+	<!-- description param labels -->
+	<string name="skills.desc.params.hwp_dmg_per_round">Damage per Round:</string>
+	<string name="skills.desc.params.hwp_rounds">Rounds:</string>
+	<string name="skills.desc.params.hwp_window">Perfect Window:</string>
+	<string name="skills.desc.params.hwp_stun">Stun Duration:</string>
+	<string name="skills.desc.params.hwp_crit_per_stack">Crit per Stack:</string>
+	<string name="skills.desc.params.hwp_crit_per_element">Crit Chance per Element:</string>
+	<string name="skills.desc.params.hwp_blind">Blind Duration:</string>
+	<string name="skills.desc.params.hwp_poison_share">Poison Damage:</string>
+	<string name="skills.desc.params.hwp_ice_share">Ice Damage:</string>
+	<string name="skills.desc.params.hwp_fire_share">Fire Damage:</string>
+	<string name="skills.desc.params.hwp_per_missile">Damage per Missile:</string>
+	<string name="skills.desc.params.hwp_radius_share">Missile Radius:</string>
+	<string name="skills.desc.params.hwp_charge_rate">Recharge Speed:</string>
+	<string name="skills.desc.params.hwp_charges">Charges:</string>
+	<string name="skills.desc.params.hwp_explosive_dmg">Explosive Damage:</string>
 </lang>

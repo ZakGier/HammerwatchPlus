@@ -1,9 +1,9 @@
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
-		<int name="ttl">520</int>
-		<float name="speed">28</float>
-		<int name="penetration">4</int>
+		<int name="ttl">360</int>
+		<float name="speed">22</float>
+		<int name="penetration">1</int>
 		<bool name="bounce-on-collide">false</bool>
 
 		<array name="modifiers">
@@ -11,18 +11,22 @@
 				<string name="class">Projectile::Speed</string>
 				<float name="hit-intensity-mul">0.85</float>
 			</dict>
+			<!-- Critical Aim's focus (Combat.as Projectile::HWPFirearmsShot) -->
+			<dict>
+				<string name="class">Projectile::HWPFirearmsShot</string>
+			</dict>
 		</array>
 
 		<array name="hit-effects">
 			<dict>
 				<string name="class">PlayerDamage</string>
 				<bool name="off-hand">false</bool>
-				<float name="mul">2.8</float>
+				<float name="mul">1</float>
 				<bool name="shield-blockable">true</bool>
 			</dict>
 			<dict>
 				<string name="class">DamagePenetration</string>
-				<float name="armor">0.15</float>
+				<float name="armor">0.1</float>
 				<bool name="shield-blockable">true</bool>
 			</dict>
 			<dict>

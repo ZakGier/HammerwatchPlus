@@ -1,0 +1,300 @@
+# Firearms Specialist placeholder sprites, read by tools/make_firearms_icons.py.
+#
+# One sprite per "== name" header, then its rows: one character per pixel, "." is
+# transparent, every other letter is a palette colour (PALETTE in the tool). Rows may be
+# shorter than the widest one (padded with "."). The tool adds the 1 px dark outline and
+# the drop shadow itself, so draw only the object and its shading.
+#
+# Badges are the small symbols drawn in the bottom-right corner of an icon (bolt, flame,
+# plus...). Icons are put together from these in ICONS in the tool, so a variant (the stun
+# grenade, the magic missile) is a base sprite with a colour swap and a badge.
+#
+# For real art, draw the 24x24 icon in Aseprite / LibreSprite / Pixelorama and save it as
+# art/firearms/override/<icon name>.png: an override always wins over the sprite here.
+
+== mag
+.....YYYYY
+.....yyyyy
+....MMmmmd
+....Mmmmmd
+....Mmmmmd
+....Mmmmmd
+.....Mmmmmd
+.....Mmmmmd
+.....Mmmmmd
+......Mmmmmd
+......Mmmmmd
+......mmmmmd
+.......dddddd
+
+== grenade
+....MMm
+....Mmd..m
+.....d..m.m
+...ddddd..m
+..LOOOOOOo
+.LOkOOkOOko
+.LOOOOOOOOo
+LOkOOkOOkOOo
+LOOOOOOOOOOo
+LkOOkOOkOOko
+LOOOOOOOOOOo
+.OkOOkOOkOo
+.OOOOOOOOOo
+..oOOOOOOo
+....oooo
+
+== rocket
+..rr
+..rRrMMMMMMMRr
+FfmmmMMMMMMMRRRr
+FFmmmmmmmmmmRRRR
+FfmmmdddddddRRRr
+..rRrdddddddRr
+..rr
+
+== minirocket
+.rMMMRr
+FmmmmRRR
+.rdddRr
+
+== nuke
+....YYYYY
+..YYYYYYYYY.dd
+.YYWYYYYYYYYmd
+YYWYYYYYYYYYmM
+YYYYYYYYYYYYmM
+YYYYYYYYYYYYmd
+.yYYYYYYYYYydd
+..yyYYYYYyy
+....yyyyy
+
+== crosshair
+.....MMM
+...MM.R.MM
+..M...R...M
+.M....R....M
+.M....R....M
+M...........M
+MRRRR...RRRRM
+M...........M
+.M....R....M
+.M....R....M
+..M...R...M
+...MM.R.MM
+.....MMM
+
+== skull
+...wwwww
+.wwwwwwwww
+wwwwwwwwwww
+wwxxxwwxxxw
+wwxxxwwxxxw
+wwwwwxxwwww
+.wwwwxwwww
+..wwwwwww
+..wxwxwxw
+...wwwww
+
+== bullet
+yyYYYYYMMm
+yYYWYYYMMMm
+yYYYYYYMMMMm
+yYYYYYYmmmm
+yyyyyyymmm
+
+== pistol
+..dddddddddddd
+.dMMMMMMMMMMMd
+.dmmmmmmmmmmmd
+.ddddddddddddd
+.dmmmd.d
+.dmmmddd
+dmmmmd
+dmmmd
+dmmmd
+ddddd
+
+== rifle
+.........MMMm
+........dddddd
+nn....ddmmmmmdddddd
+BBnnnBdmmmmmmmmmmmmd
+BBBBBBdddmdddd
+bBB.......dd
+bb
+
+== crate
+bbbbbbbbbbbbbb
+bnnnnnnnnnnnnb
+bnBBBBBBBBBBnb
+bnBYYYYYYYYBnb
+bnBBBBBBBBBBnb
+bnBBBBBBBBBBnb
+bnnnnnnnnnnnnb
+bnBBBBBBBBBBnb
+bnBBBBBBBBBBnb
+bnnnnnnnnnnnnb
+bbbbbbbbbbbbbb
+
+== dynamite
+...F...F
+...f..F.f
+...x..x..x
+.rRRrRRrRRr
+.rRRrRRrRRr
+.rRRrRRrRRr
+.bBBBBBBBBb
+.rRRrRRrRRr
+.rRRrRRrRRr
+.rRRrRRrRRr
+.rrrrrrrrrr
+
+== shards
+......M
+..M...m...M
+...m..m..m
+....m.m.m
+.....dMd
+MmmmmMWMmmmmM
+.....dMd
+....m.m.m
+...m..m..m
+..M...m...M
+......M
+
+# ---- badges -------------------------------------------------------------
+
+== b_reload
+..CCCC
+.C....C
+C....CCC
+C.....C
+C
+C......C
+.C....C
+..CCCC
+
+== b_bolt
+...YY
+..YY
+.YY
+YYYYY
+..YY
+.YY
+YY
+
+== b_flame
+...F
+..FF
+..FfF
+.FffF.F
+.FfrfFF
+FfrrrfF
+FfrrrfF
+.FfffF
+
+== b_cloud
+...vvv
+..vGGGvv
+.vGGGGGGv
+vGGgGGGGv
+vGgggGGgv
+.vvvvvvv
+
+== b_plus
+..YYY
+..YyY
+YYYyYYY
+YyyyyyY
+YYYyYYY
+..YyY
+..YYY
+
+== b_boom
+....F
+.F..F..F
+..FfffF
+..fRRRf
+FFfRYRfFF
+..fRRRf
+..FfffF
+.F..F..F
+....F
+
+== b_snow
+....I
+.I..I..I
+..I.I.I
+...CCC
+IIICICIII
+...CCC
+..I.I.I
+.I..I..I
+....I
+
+== b_rad
+..YYYYY
+.YxYYYxY
+YxxYYYxxY
+YxxxYxxxY
+YYYYxYYYY
+YYYxxxYYY
+.YYxxxYY
+..YYYYY
+
+== b_elements
+fff.CCC
+fFf.CIC
+fff.CCC
+.......
+YYY.GGG
+YWY.GvG
+YYY.GGG
+
+== b_cross
+....R
+..RRRRR
+.R..R..R
+.R.....R
+RRR...RRR
+.R.....R
+.R..R..R
+..RRRRR
+....R
+
+== b_star
+...Y
+..YYY
+YYYYYYY
+.YYYYY
+..YYY
+.YY.YY
+YY...YY
+
+== b_arrow
+.....U
+.....UU
+UUUUUUUU
+UUUUUUUUU
+UUUUUUUU
+.....UU
+.....U
+
+== b_dash
+U..U
+.U..U
+..U..U
+...U..U
+..U..U
+.U..U
+U..U
+
+== b_grenade
+..mm
+..dd.m
+.OOOO
+OOkOOO
+OOOOkO
+OkOOOO
+.OOOO

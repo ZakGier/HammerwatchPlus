@@ -1,0 +1,75 @@
+{
+ "name": "plan-firearms-orbs",
+ "about": "Test plan through the plan_firearms bot: the base kit's orbs. Explosive Reload, Dodge Reload Skip, Over-Reload's perfect window (the bot presses inside the window the module logs), and the Frag Grenade's Stun, Incendiary and Gas types.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_base_orbs"
+   },
+   "name": "firearms base orbs",
+   "expect": {
+    "explosive_reload_hits": true,
+    "dodge_skip_finishes_reload": true,
+    "over_reload_perfect": true,
+    "over_reload_lost_when_dry": true,
+    "stun_grenade_stuns": true,
+    "incendiary_burns": true,
+    "gas_lingers": true,
+    "explosive_reload_dual_in_turn": true,
+    "over_reload_manual_perfect": true,
+    "over_reload_capped": true,
+    "over_reload_plain_clears": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

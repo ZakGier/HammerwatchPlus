@@ -1,0 +1,39 @@
+<!--
+	Incendiary Grenade's burning ground: the whole grenade radius burns for fire-ttl (4/6/8 s,
+	the orb's level) and every 0.5 s deals 10% of the frag damage as fire with the grenade's
+	fire penetration, and blinds whoever is in it (Wizard's Meteor burning ground, made wide).
+-->
+%include "players/hwp/firearms/projectiles/shrapnel.inc"
+<unit>
+	<behavior class="DangerAreaBehaviorP">
+		<int name="freq">500</int>
+		<string name="ttl-bind">fire-ttl</string>
+
+		<array name="effects">
+			<dict>
+				<string name="class">Damage</string>
+				<string name="fire-bind">grenade-tick</string>
+				<bool name="true-strike">true</bool>
+			</dict>
+			<dict>
+				<string name="class">DamagePenetration</string>
+				<string name="fire-bind">grenade-pen</string>
+				<bool name="true-strike">true</bool>
+			</dict>
+			%block Shrapnel true
+			<dict>
+				<string name="class">ApplyBuff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:burn_blind</string>
+			</dict>
+		</array>
+	</behavior>
+
+	<scenes>
+		<scene>
+			<collision static="false">
+				<circle radius="128" sensor="true" shoot-through="true" aim-through="true" />
+			</collision>
+			<effect src="effects/generic/areas/fire_area_ground_1.effect?radius=128" />
+		</scene>
+	</scenes>
+</unit>

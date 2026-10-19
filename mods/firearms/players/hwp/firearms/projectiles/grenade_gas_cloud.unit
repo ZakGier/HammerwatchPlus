@@ -1,0 +1,42 @@
+<!--
+	Gas Grenade's cloud (Rogue's toxic cloud, made as wide as the grenade): for gas-ttl
+	(3/4/5 s, the orb's level) every 0.5 s it deals 10% of the frag damage as poison with the
+	grenade's poison penetration, and keeps "gassed" on everyone inside. A gassed enemy that
+	catches fire blows up for half the frag damage (buffs_firearms.sval gassed_1..5).
+-->
+%include "players/hwp/firearms/projectiles/shrapnel.inc"
+<unit layer="1">
+	<behavior class="DangerAreaBehaviorP">
+		<int name="freq">500</int>
+		<string name="ttl-bind">gas-ttl</string>
+		<string name="sound-loop">event:/sfx/player/classes/rogue/toxic_cloud/toxic_cloud_loop</string>
+
+		<array name="effects">
+			<dict>
+				<string name="class">Damage</string>
+				<string name="poison-bind">grenade-tick</string>
+				<bool name="true-strike">true</bool>
+			</dict>
+			<dict>
+				<string name="class">DamagePenetration</string>
+				<string name="poison-bind">grenade-pen</string>
+				<bool name="true-strike">true</bool>
+			</dict>
+			%block Shrapnel true
+			<dict>
+				<string name="class">ApplyBuff</string>
+				<string name="buff-bind">gas-buff</string>
+			</dict>
+		</array>
+	</behavior>
+
+	<scenes>
+		<scene>
+			<collision static="false">
+				<circle radius="128" sensor="true" shoot-through="true" aim-through="true" />
+			</collision>
+			<effect src="players/rogue/effects/rog_toxic_cloud_start.effect?cg=0.4&cr=0.3&cb=0.1" />
+			<effect delay="150" src="players/rogue/effects/rog_toxic_cloud.effect?cg=0.4&cr=0.3&cb=0.1&poison=1&radius=128" />
+		</scene>
+	</scenes>
+</unit>

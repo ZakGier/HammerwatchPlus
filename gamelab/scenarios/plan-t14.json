@@ -1,6 +1,6 @@
 {
  "name": "plan-t14",
- "about": "Test plan through the plan_checks bot: firearms s3, a gunner's rounds cost mana (1 a shot, 2 aimed), nothing fires at 0, Reload refills, the aimed shot pierces.",
+ "about": "Test plan through the plan_checks bot: firearms clip. The rifle spawns with 30 rounds, a shot uses 1 round and no mana, the grenade launcher uses mana and no rounds, an empty clip starts Reloading and refills, a dodge restarts the reload, Reload refills.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -53,13 +53,17 @@
    "kwargs": {
     "sections": "firearms_ammo"
    },
-   "name": "firearms ammo",
+   "name": "firearms clip",
    "expect": {
-    "shot_costs_1": true,
-    "aimed_costs_2": true,
+    "spawn_clip_full": true,
+    "shot_costs_round": true,
+    "shot_no_mana": true,
+    "launcher_costs_mana": true,
+    "empty_starts_reload": true,
     "no_fire_empty": true,
-    "reload_refills": true,
-    "aimed_pierces": true
+    "auto_reload_refills": true,
+    "dodge_restarts_reload": true,
+    "reload_refills": true
    }
   },
   {

@@ -5,8 +5,8 @@
 		<string name="name">.equipment.twohanded.hwp_rifle.1a</string>
 
 		<array name="icon">
-			<string>items/icons_equipment.png</string>
-			<int>100</int><vec4>144 504 24 24</vec4>
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>0 0 24 24</vec4>
 		</array>
 
 		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
@@ -30,13 +30,18 @@
 
 		<string name="skill">hwp_attack_rifle</string>
 		<string name="skill-epic">hwp_attack_rifle_epic</string>
-		<string name="skill-secondary">hwp_attack_rifle_secondary</string>
-		<string name="skill-secondary-epic">hwp_attack_rifle_secondary_epic</string>
+		<string name="skill-secondary">hwp_attack_rifle_gl</string>
+		<string name="skill-secondary-epic">hwp_attack_rifle_gl_epic</string>
 
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
 				<ivec2 name="physical">48 58</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:rifle</string>
+				<int name="freq">250</int>
 			</dict>
 		</array>
 	</dict>
@@ -46,8 +51,8 @@
 		<string name="name">.equipment.twohanded.hwp_rifle.2a</string>
 
 		<array name="icon">
-			<string>items/icons_equipment.png</string>
-			<int>100</int><vec4>168 504 24 24</vec4>
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>24 0 24 24</vec4>
 		</array>
 
 		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
@@ -70,13 +75,18 @@
 
 		<string name="skill">hwp_attack_rifle</string>
 		<string name="skill-epic">hwp_attack_rifle_epic</string>
-		<string name="skill-secondary">hwp_attack_rifle_secondary</string>
-		<string name="skill-secondary-epic">hwp_attack_rifle_secondary_epic</string>
+		<string name="skill-secondary">hwp_attack_rifle_gl</string>
+		<string name="skill-secondary-epic">hwp_attack_rifle_gl_epic</string>
 
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
 				<ivec2 name="physical">72 86</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:rifle</string>
+				<int name="freq">250</int>
 			</dict>
 		</array>
 	</dict>
@@ -86,8 +96,8 @@
 		<string name="name">.equipment.twohanded.hwp_rifle.3a</string>
 
 		<array name="icon">
-			<string>items/icons_equipment.png</string>
-			<int>100</int><vec4>192 504 24 24</vec4>
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>48 0 24 24</vec4>
 		</array>
 
 		<string name="graphic">items/equipment/2h_crossbows.unit:ap1</string>
@@ -110,13 +120,269 @@
 
 		<string name="skill">hwp_attack_rifle</string>
 		<string name="skill-epic">hwp_attack_rifle_epic</string>
-		<string name="skill-secondary">hwp_attack_rifle_secondary</string>
-		<string name="skill-secondary-epic">hwp_attack_rifle_secondary_epic</string>
+		<string name="skill-secondary">hwp_attack_rifle_gl</string>
+		<string name="skill-secondary-epic">hwp_attack_rifle_gl_epic</string>
 
 		<array name="modifiers">
 			<dict>
 				<string name="class">Modifiers::DamageAdd</string>
 				<ivec2 name="physical">100 120</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:rifle</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_mh_01</string>
+		<string name="name">.equipment.mainhand.hwp_glock.1a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>72 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
+		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="anim-set">wand-1h</string>
+		<string name="color">metal_t1</string>
+		<string name="color-secondary">leather_t1</string>
+
+		<string name="slot">mainhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">1</int>
+		<int name="ilvl-max">20</int>
+		<ivec2 name="req-dex">8 18</ivec2>
+
+		<array name="tags">
+			<string>armory</string>
+			<string>mods_weapon_mainhand</string>
+			<string>mods_weapon_mainhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">30 36</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_main</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_oh_01</string>
+		<string name="name">.equipment.offhand.hwp_glock.1a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>144 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
+		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="color">metal_t1</string>
+		<string name="color-secondary">leather_t1</string>
+
+		<string name="slot">offhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">1</int>
+		<int name="ilvl-max">20</int>
+		<ivec2 name="req-dex">8 18</ivec2>
+
+		<array name="tags">
+			<string>armory</string>
+			<string>mods_weapon_offhand</string>
+			<string>mods_weapon_offhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock_off</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">30 36</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_off</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_mh_02</string>
+		<string name="name">.equipment.mainhand.hwp_glock.2a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>96 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
+		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="anim-set">wand-1h</string>
+		<string name="color">metal_t2</string>
+		<string name="color-secondary">leather_t2</string>
+
+		<string name="slot">mainhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">10</int>
+		<int name="ilvl-max">30</int>
+		<ivec2 name="req-dex">12 26</ivec2>
+
+		<array name="tags">
+			<string>mods_weapon_mainhand</string>
+			<string>mods_weapon_mainhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">45 54</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_main</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_oh_02</string>
+		<string name="name">.equipment.offhand.hwp_glock.2a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>168 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
+		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="color">metal_t2</string>
+		<string name="color-secondary">leather_t2</string>
+
+		<string name="slot">offhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">10</int>
+		<int name="ilvl-max">30</int>
+		<ivec2 name="req-dex">12 26</ivec2>
+
+		<array name="tags">
+			<string>mods_weapon_offhand</string>
+			<string>mods_weapon_offhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock_off</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">45 54</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_off</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_mh_03</string>
+		<string name="name">.equipment.mainhand.hwp_glock.3a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>120 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/wiz_wands.unit:ap1</string>
+		<string name="model">players/models/equipment/mh_firewand_t1_a.model</string>
+		<string name="anim-set">wand-1h</string>
+		<string name="color">metal_t3</string>
+		<string name="color-secondary">leather_t3</string>
+
+		<string name="slot">mainhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">20</int>
+		<int name="ilvl-max">40</int>
+		<ivec2 name="req-dex">16 34</ivec2>
+
+		<array name="tags">
+			<string>mods_weapon_mainhand</string>
+			<string>mods_weapon_mainhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">62 75</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_main</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+
+	<dict>
+		<string name="id">hwp_glock_oh_03</string>
+		<string name="name">.equipment.offhand.hwp_glock.3a</string>
+
+		<array name="icon">
+			<string>items/hwp/firearms_items.png</string>
+			<int>100</int><vec4>192 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/equipment/oh_crossbows.unit:ap1</string>
+		<string name="model">players/models/equipment/oh_handcrossbow_t3_a.model</string>
+		<string name="color">metal_t3</string>
+		<string name="color-secondary">leather_t3</string>
+
+		<string name="slot">offhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">20</int>
+		<int name="ilvl-max">40</int>
+		<ivec2 name="req-dex">16 34</ivec2>
+
+		<array name="tags">
+			<string>mods_weapon_offhand</string>
+			<string>mods_weapon_offhand_ranged</string>
+			<string>hwp_firearm</string>
+		</array>
+
+		<string name="skill">hwp_attack_glock_off</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::DamageAdd</string>
+				<ivec2 name="physical">62 75</ivec2>
+			</dict>
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/firearms/buffs_firearms.sval:glock_off</string>
+				<int name="freq">250</int>
 			</dict>
 		</array>
 	</dict>

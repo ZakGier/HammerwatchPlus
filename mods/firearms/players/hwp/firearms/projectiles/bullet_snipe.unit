@@ -1,15 +1,25 @@
+<!--
+	Sniper Shot (sniper_snipe.sval). Both hands' damage at snipe-mul, merged into one hit
+	(Damage.as TryMerge: same flags, no mod dict between). penetration-bind is Piercing
+	Bullet's (0 = the first enemy only); each enemy passed through takes 15% off the rest.
+	The shot modifier gives Headshot its first-hit crit and Critical Aim its focus.
+-->
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
 		<int name="ttl">600</int>
 		<float name="speed">32</float>
-		<int name="penetration">6</int>
+		<string name="penetration-bind">snipe-pierce</string>
 		<bool name="bounce-on-collide">false</bool>
 
 		<array name="modifiers">
 			<dict>
 				<string name="class">Projectile::Speed</string>
 				<float name="hit-intensity-mul">0.85</float>
+			</dict>
+			<dict>
+				<string name="class">Projectile::HWPFirearmsShot</string>
+				<bool name="headshot">true</bool>
 			</dict>
 		</array>
 
@@ -21,8 +31,14 @@
 				<bool name="shield-blockable">true</bool>
 			</dict>
 			<dict>
+				<string name="class">PlayerDamage</string>
+				<bool name="off-hand">true</bool>
+				<string name="mul-bind">snipe-mul</string>
+				<bool name="shield-blockable">true</bool>
+			</dict>
+			<dict>
 				<string name="class">DamagePenetration</string>
-				<float name="armor">0.15</float>
+				<string name="armor-bind">snipe-pen</string>
 				<bool name="shield-blockable">true</bool>
 			</dict>
 			<dict>

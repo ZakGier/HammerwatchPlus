@@ -1,12 +1,21 @@
 %include "players/skills_cost.inc"
+<!--
+	Frag Grenade: thrown at the cursor, physical damage with armor penetration in a radius of
+	128 (twice the Rogue's demolitions grenade, 64). Three mutually exclusive orbs turn it into
+	another grenade (grenade-type): each swaps the thrown unit (proj-unit) and the cooldown
+	(cooldown-bind, as Paladin's divine_pillars.sval), and keeps the level's damage and
+	penetration in its own element. Every explosion also carries Elemental Shrapnel's
+	elemental penetration (hwp-shrapnel, a custom stat: demo_hoarder.sval).
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.frag.name</string>
 	<string name="type-name">.skills.type.spell</string>
 	<string name="description">.skills.hwp_firearms.frag.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage</s><s>60</s><s>80</s><s>100</s><s>125</s><s>150</s></array>
-		<array><s>range</s><s>.skills.desc.params.range</s><s>56</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage</s><s>100</s><s>130</s><s>160</s><s>200</s><s>250</s></array>
+		<array><s>armor-pen</s><s>.skills.desc.params.armor_pen</s><s>20%</s><s>25%</s><s>25%</s><s>30%</s><s>35%</s></array>
+		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>20</s><s>25</s><s>25</s><s>30</s><s>30</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>4s</s></array>
 	</array>
 
@@ -14,7 +23,7 @@
 
 	<string name="id">hwp_fs_frag</string>
 	<string name="type">spell</string>
-	<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s></array>
+	<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
 	<int name="starting-level">1</int>
 
 	<dict name="skill">
@@ -24,7 +33,7 @@
 		<int name="anim-length">450</int>
 		<string name="snd">event:/sfx/player/attacks/offhand/throwing_knives_throw</string>
 
-		<int name="cooldown">4000</int>
+		<string name="cooldown-bind">cooldown</string>
 		<int name="castpoint">150</int>
 		<float name="cast-speed-mul">1</float>
 		<float name="move-speed-mul">0.5</float>
@@ -32,48 +41,195 @@
 		<bool name="blocking">false</bool>
 		<bool name="repeating">false</bool>
 
-		<int name="radius">48</int>
+		<int name="radius">128</int>
 		<int name="range">170</int>
 		<int name="range-min">16</int>
 		<bool name="raycast-to-target">false</bool>
-		<string name="projectile">players/hwp/firearms/projectiles/grenade_frag.unit</string>
+		<string name="projectile-bind">proj-unit</string>
 		<int name="dist">10</int>
 
-		<int name="mana-cost">0</int>
-			<dict name="binds">
-				<int name="proj-dmg">60</int>
-				<int name="area-radius">56</int>
-			</dict>
+		<int name="mana-cost">20</int>
+		<dict name="binds">
+			<int name="cooldown">4000</int>
+			<string name="proj-unit">players/hwp/firearms/projectiles/grenade_frag.unit</string>
+			<int name="area-radius">128</int>
+			<int name="grenade-dmg">100</int>
+			<float name="grenade-pen">0.2</float>
+			<int name="grenade-tick">10</int>
+			<string name="gas-buff">players/hwp/firearms/buffs_firearms.sval:gassed_1</string>
+		</dict>
 	</dict>
 
 	<array name="upgrades">
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
+			<int name="mana-cost">25</int>
 			<dict name="binds">
-				<int name="proj-dmg">80</int>
-				<int name="area-radius">56</int>
+				<int name="grenade-dmg">130</int>
+				<float name="grenade-pen">0.25</float>
+				<int name="grenade-tick">13</int>
+				<string name="gas-buff">players/hwp/firearms/buffs_firearms.sval:gassed_2</string>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
+			<int name="mana-cost">25</int>
 			<dict name="binds">
-				<int name="proj-dmg">100</int>
-				<int name="area-radius">60</int>
+				<int name="grenade-dmg">160</int>
+				<float name="grenade-pen">0.25</float>
+				<int name="grenade-tick">16</int>
+				<string name="gas-buff">players/hwp/firearms/buffs_firearms.sval:gassed_3</string>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
+			<int name="mana-cost">30</int>
 			<dict name="binds">
-				<int name="proj-dmg">125</int>
-				<int name="area-radius">60</int>
+				<int name="grenade-dmg">200</int>
+				<float name="grenade-pen">0.3</float>
+				<int name="grenade-tick">20</int>
+				<string name="gas-buff">players/hwp/firearms/buffs_firearms.sval:gassed_4</string>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
+			<int name="mana-cost">30</int>
 			<dict name="binds">
-				<int name="proj-dmg">150</int>
-				<int name="area-radius">64</int>
+				<int name="grenade-dmg">250</int>
+				<float name="grenade-pen">0.35</float>
+				<int name="grenade-tick">25</int>
+				<string name="gas-buff">players/hwp/firearms/buffs_firearms.sval:gassed_5</string>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.frag_stun.name</string>
+			<string name="description">.skills.hwp_firearms.frag_stun.desc</string>
+
+			<array name="description-params">
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.hwp_stun</s><s>1s</s><s>2s</s><s>3s</s></array>
+				<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>5s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 0 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>lightning</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_frag_stun</string>
+			<array name="blocked-by-skills"><s>hwp_fs_frag_fire</s><s>hwp_fs_frag_gas</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="cooldown">5000</int>
+					<string name="proj-unit">players/hwp/firearms/projectiles/grenade_frag_stun.unit</string>
+					<string name="stun-buff">players/hwp/firearms/buffs_firearms.sval:stun_1</string>
+					<string name="stun-slow">players/hwp/firearms/buffs_firearms.sval:stun_slow_1</string>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<string name="stun-buff">players/hwp/firearms/buffs_firearms.sval:stun_2</string>
+						<string name="stun-slow">players/hwp/firearms/buffs_firearms.sval:stun_slow_2</string>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<string name="stun-buff">players/hwp/firearms/buffs_firearms.sval:stun_3</string>
+						<string name="stun-slow">players/hwp/firearms/buffs_firearms.sval:stun_slow_3</string>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.frag_fire.name</string>
+			<string name="description">.skills.hwp_firearms.frag_fire.desc</string>
+
+			<array name="description-params">
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.duration</s><s>4s</s><s>6s</s><s>8s</s></array>
+				<array><s>tick-rate</s><b>t</b><s>.skills.desc.params.tick_rate</s><s>0.5s</s></array>
+				<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>10s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 0 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>fire</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_frag_fire</string>
+			<array name="blocked-by-skills"><s>hwp_fs_frag_stun</s><s>hwp_fs_frag_gas</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="cooldown">10000</int>
+					<string name="proj-unit">players/hwp/firearms/projectiles/grenade_incendiary.unit</string>
+					<int name="fire-ttl">4000</int>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<int name="fire-ttl">6000</int>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<int name="fire-ttl">8000</int>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.frag_gas.name</string>
+			<string name="description">.skills.hwp_firearms.frag_gas.desc</string>
+
+			<array name="description-params">
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.duration</s><s>3s</s><s>4s</s><s>5s</s></array>
+				<array><s>tick-rate</s><b>t</b><s>.skills.desc.params.tick_rate</s><s>0.5s</s></array>
+				<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>6s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 0 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>poison</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_frag_gas</string>
+			<array name="blocked-by-skills"><s>hwp_fs_frag_stun</s><s>hwp_fs_frag_fire</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="cooldown">6000</int>
+					<string name="proj-unit">players/hwp/firearms/projectiles/grenade_gas.unit</string>
+					<int name="gas-ttl">3000</int>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<int name="gas-ttl">4000</int>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<int name="gas-ttl">5000</int>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

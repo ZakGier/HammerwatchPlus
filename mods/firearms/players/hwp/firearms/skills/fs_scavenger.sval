@@ -9,7 +9,7 @@
 		<array><s>mana</s><s>.skills.desc.params.mana</s><s>3</s><s>3</s><s>4</s><s>4</s><s>5</s></array>
 	</array>
 
-	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 0 24 24</vec4></array>
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>216 0 24 24</vec4></array>
 
 	<string name="id">hwp_fs_scavenger</string>
 	<array name="tags"><s>passive</s></array>

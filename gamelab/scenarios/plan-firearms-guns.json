@@ -1,0 +1,73 @@
+{
+ "name": "plan-firearms-guns",
+ "about": "Test plan through the plan_checks bot: firearms guns. Magazines (pistol 12, dual 24, rifle 30), pistol and shield 2 rounds a cycle, dual pistols 2 a left-click cycle and 2 at once on right click (not on 1 round), an off-hand pistol with a sword 1. The shield and sword need STR a level-1 gunner lacks, so the bot turns equipment requirements off.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 600,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_checks",
+   "kwargs": {
+    "sections": "firearms_guns"
+   },
+   "name": "firearms guns",
+   "expect": {
+    "pistol_shield_mag_12": true,
+    "pistol_shield_two_rounds": true,
+    "dual_mag_24": true,
+    "dual_left_two_rounds": true,
+    "dual_right_two_at_once": true,
+    "dual_right_needs_two": true,
+    "offhand_pistol_mag_12": true,
+    "offhand_pistol_one_round": true,
+    "rifle_mag_30": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

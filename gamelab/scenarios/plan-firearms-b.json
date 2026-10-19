@@ -1,6 +1,6 @@
 {
  "name": "plan-firearms-b",
- "about": "firearms s4/s5 Demolitions and Assault through the plan_firearms bot: each doctrine skill casts and costs its tooltip's mana; the Jetpack lands at the cursor and its landing burst hurts a dummy beside it.",
+ "about": "Test plan through the plan_firearms bot: the Demolitionist (the Rocket Launcher, its Fat Boy, Magic Missile and Quad orbs, Ordinance Hoarder's charges) and Assault.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -51,24 +51,24 @@
    "do": "bot",
    "bot": "plan_firearms",
    "kwargs": {
-    "sections": "firearms_demo"
+    "sections": "firearms_demolitionist"
    },
-   "name": "demolitions skills and jetpack",
+   "name": "firearms demolitionist",
    "expect": {
-    "jetpack_casts": true,
-    "jetpack_lands_at_cursor": true,
-    "jetpack_fire_burst": true,
-    "jetpack_cost": true,
     "rpg_casts": true,
     "rpg_cost": true,
-    "tube_casts": true,
-    "tube_cost": true,
+    "fatboy_blinds": true,
+    "magic_missile_two_hits": true,
+    "quad_four_missiles": true,
+    "hoarder_passive": true,
+    "hoarder_banks_charge": true,
+    "hoarder_spends_charge": true,
     "demo_own_buttons": true
    }
   },
   {
    "do": "shot",
-   "name": "firearms-demo"
+   "name": "firearms-demolitionist"
   },
   {
    "do": "bot",

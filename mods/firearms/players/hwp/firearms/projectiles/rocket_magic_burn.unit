@@ -1,0 +1,40 @@
+<!--
+	Magic Missile's second blast: fire, a moment after the ice (rocket.inc MAGIC spawns it).
+	A bomb keeps the rocket's owner and skill (SpawnUnitBase passes the weapon info on), so
+	its binds are the Rocket Launcher's. The fire is magic-fire of the ice blast, which is
+	itself rocket-dmg at the orb's damage-mul (demo_rpg.sval). BombBehavior must be
+	netsynced (BombBehavior.as Initialize), so this unit is.
+-->
+<unit layer="100">
+	<behavior class="BombBehavior">
+		<int name="delay">400</int>
+		<string name="explode-sound">event:/sfx/player/classes/rogue/grenade/grenade_incendiary</string>
+
+		<array name="actions">
+			<dict>
+				<string name="class">Explode</string>
+				<string name="radius-bind">area-radius</string>
+				<int name="min-radius">12</int>
+				<float name="dist-scaling">1000</float>
+				<array name="effects">
+					<dict>
+						<string name="intensity-mul-bind">magic-fire</string>
+					</dict>
+					<dict>
+						<string name="class">Damage</string>
+						<string name="fire-bind">rocket-dmg</string>
+					</dict>
+				</array>
+			</dict>
+			<dict>
+				<string name="class">SpawnEffect</string>
+				<string name="effect">effects/generic/explosions/fire_explosion_2.effect</string>
+			</dict>
+		</array>
+	</behavior>
+
+	<scenes>
+		<scene>
+		</scene>
+	</scenes>
+</unit>

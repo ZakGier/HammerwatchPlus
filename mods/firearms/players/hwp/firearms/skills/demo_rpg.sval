@@ -1,20 +1,30 @@
 %include "players/skills_cost.inc"
+<!--
+	Rocket Launcher (Demolitionist): one fire missile that explodes in a wide radius. Three
+	mutually exclusive orbs (missile-type) swap the missile (proj-unit, rocket.inc):
+	- Fat Boy: slower, adds poison (an intensity-mul share of rocket-dmg) and blinds.
+	- Magic Missile: ice at the skill's damage-mul, then fire a moment later
+	  (rocket_magic_burn.unit) at magic-fire of that.
+	- Quad Missile Chambers: four small missiles in quick succession (the orb's timeline
+	  wins, being first in the level params), each at the orb's damage-mul and quad-radius.
+	Every missile carries Elemental Shrapnel's penetration (shrapnel.inc).
+-->
 <dict>
 	<string name="name">.skills.hwp_firearms.rpg.name</string>
 	<string name="type-name">.skills.type.spell</string>
 	<string name="description">.skills.hwp_firearms.rpg.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage.fire</s><s>160</s><s>200</s><s>240</s><s>290</s><s>340</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage.fire</s><s>150</s><s>180</s><s>210</s><s>250</s><s>300</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>6</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>8s</s></array>
 	</array>
 
-	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 24 24 24</vec4></array>
+	<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>168 0 24 24</vec4></array>
 
 	<string name="id">hwp_fs_rpg</string>
 	<string name="type">spell</string>
-	<array name="tags"><s>spell</s><s>fire</s><s>hwp_firearm</s></array>
+	<array name="tags"><s>spell</s><s>fire</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
 	<int name="starting-level">0</int>
 
 	<dict name="skill">
@@ -33,15 +43,20 @@
 		<ivec2 name="update-aim">0 300</ivec2>
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">6</int>
-			<dict name="binds">
-				<int name="rocket-dmg">160</int>
-				<int name="area-radius">80</int>
-			</dict>
+		<dict name="binds">
+			<string name="proj-unit">players/hwp/firearms/projectiles/rocket.unit</string>
+			<int name="rocket-dmg">150</int>
+			<int name="area-radius">80</int>
+			<string name="fatboy-blind">players/hwp/firearms/buffs_firearms.sval:fatboy_blind_1</string>
+			<float name="fatboy-poison">0.4</float>
+			<float name="magic-fire">0.25</float>
+			<int name="quad-radius">24</int>
+		</dict>
 		<dict name="actions">
 			<array name="cast">
 				<dict>
 					<string name="class">ShootProjectile</string>
-					<string name="projectile">players/hwp/firearms/projectiles/rocket.unit</string>
+					<string name="projectile-bind">proj-unit</string>
 					<int name="dist">10</int>
 				</dict>
 				<dict>
@@ -59,35 +74,196 @@
 	<array name="upgrades">
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
-			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="rocket-dmg">200</int>
+				<int name="rocket-dmg">180</int>
 				<int name="area-radius">80</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
-			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="rocket-dmg">240</int>
+				<int name="rocket-dmg">210</int>
 				<int name="area-radius">84</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
-			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="rocket-dmg">290</int>
+				<int name="rocket-dmg">250</int>
 				<int name="area-radius">84</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
-			<int name="mana-cost">6</int>
 			<dict name="binds">
-				<int name="rocket-dmg">340</int>
+				<int name="rocket-dmg">300</int>
 				<int name="area-radius">88</int>
 			</dict>
+		</dict>
+	</array>
+
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.rpg_fatboy.name</string>
+			<string name="description">.skills.hwp_firearms.rpg_fatboy.desc</string>
+
+			<array name="description-params">
+				<array><s>duration</s><b>t</b><s>.skills.desc.params.hwp_blind</s><s>2s</s><s>3s</s><s>4s</s></array>
+				<array><s>damage</s><s>.skills.desc.params.hwp_poison_share</s><s>40%</s><s>50%</s><s>60%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>168 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>fire</s><s>poison</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_rpg_fatboy</string>
+			<array name="blocked-by-skills"><s>hwp_fs_rpg_magic</s><s>hwp_fs_rpg_quad</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<string name="proj-unit">players/hwp/firearms/projectiles/rocket_fatboy.unit</string>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<string name="fatboy-blind">players/hwp/firearms/buffs_firearms.sval:fatboy_blind_2</string>
+						<float name="fatboy-poison">0.5</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<string name="fatboy-blind">players/hwp/firearms/buffs_firearms.sval:fatboy_blind_3</string>
+						<float name="fatboy-poison">0.6</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<!-- magic-fire is the fire's share of the ice blast: 20/30/40% of the missile over
+		     80/90/100% = 0.25/0.333/0.4 -->
+		<dict>
+			<string name="name">.skills.hwp_firearms.rpg_magic.name</string>
+			<string name="description">.skills.hwp_firearms.rpg_magic.desc</string>
+
+			<array name="description-params">
+				<array><s>damage-ice</s><s>.skills.desc.params.hwp_ice_share</s><s>80%</s><s>90%</s><s>100%</s></array>
+				<array><s>damage-fire</s><s>.skills.desc.params.hwp_fire_share</s><s>20%</s><s>30%</s><s>40%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>192 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>ice</s><s>fire</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_rpg_magic</string>
+			<array name="blocked-by-skills"><s>hwp_fs_rpg_fatboy</s><s>hwp_fs_rpg_quad</s></array>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<string name="proj-unit">players/hwp/firearms/projectiles/rocket_magic.unit</string>
+					<float name="magic-ice">0.8</float>
+					<float name="magic-fire">0.25</float>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<dict>
+							<string name="class">Modifiers::BaseSkillModifier</string>
+							<string name="skill-id">hwp_fs_rpg</string>
+							<string name="damage-mul-bind">magic-ice</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<float name="magic-ice">0.9</float>
+						<float name="magic-fire">0.3333</float>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="magic-ice">1</float>
+						<float name="magic-fire">0.4</float>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.rpg_quad.name</string>
+			<string name="description">.skills.hwp_firearms.rpg_quad.desc</string>
+
+			<array name="description-params">
+				<array><s>damage</s><s>.skills.desc.params.hwp_per_missile</s><s>30%</s><s>35%</s></array>
+				<array><s>radius</s><s>.skills.desc.params.hwp_radius_share</s><s>30%</s><s>35%</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>216 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>fire</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_rpg_quad</string>
+			<array name="blocked-by-skills"><s>hwp_fs_rpg_fatboy</s><s>hwp_fs_rpg_magic</s></array>
+			<string name="quality">uncommon</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<string name="proj-unit">players/hwp/firearms/projectiles/rocket_quad.unit</string>
+					<float name="quad-mul">0.3</float>
+					<int name="quad-radius">24</int>
+				</dict>
+				<!-- an orb's actions win over the skill's by key (PlayerSkill.as Initialize
+				     walks the level params backwards; the orb comes first) -->
+				<ivec2 name="update-aim">0 600</ivec2>
+				<dict name="actions">
+					<array name="cast">
+						<dict>
+							<string name="class">ShootProjectile</string>
+							<string name="projectile-bind">proj-unit</string>
+							<int name="dist">10</int>
+							<int name="spread">8</int>
+						</dict>
+						<dict>
+							<string name="class">PlaySound</string>
+							<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+						</dict>
+					</array>
+				</dict>
+				<array name="timeline">
+					<i>300</i><s>cast</s>
+					<i>400</i><s>cast</s>
+					<i>500</i><s>cast</s>
+					<i>600</i><s>cast</s>
+				</array>
+				<array name="modifiers">
+					<array>
+						<dict>
+							<string name="class">Modifiers::BaseSkillModifier</string>
+							<string name="skill-id">hwp_fs_rpg</string>
+							<string name="damage-mul-bind">quad-mul</string>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<float name="quad-mul">0.35</float>
+						<int name="quad-radius">28</int>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

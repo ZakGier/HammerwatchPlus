@@ -5,7 +5,6 @@
 	<string name="description">.skills.hwp_firearms.reload.desc</string>
 
 	<array name="description-params">
-		<array><s>mana</s><s>.skills.desc.params.restore.mana.max</s><s>50%</s><s>60%</s><s>70%</s><s>85%</s><s>100%</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>2s</s><s>1.8s</s><s>1.6s</s><s>1.4s</s><s>1.2s</s></array>
 	</array>
 
@@ -32,42 +31,73 @@
 		<ivec2 name="update-aim">0 550</ivec2>
 		<bool name="repeating">false</bool>
 		<int name="mana-cost">0</int>
-			<dict name="binds">
-				<float name="reload-frac">0.5</float>
-			</dict>
+
+		<dict name="binds">
+			<!-- Explosive Reload's damage per round left; 0 throws nothing -->
+			<int name="mag-dmg">0</int>
+		</dict>
+
+		<!-- The modified clip def must exist before the first clip stack is made (an
+		     ActorBuffStacked keeps the def it was built with, ActorBuff.as:466): a skill's
+		     modifiers are in place at the first RefreshModifiers, ahead of the gun markers.
+		     hwp-shrapnel is Elemental Shrapnel's penetration (demo_hoarder.sval), which every
+		     explosive reads as a bind: it has to exist, at 0, for every Firearms Specialist. -->
+		<array name="modifiers">
+			<array>
+				<dict>
+					<string name="class">Modifiers::ModifyStack</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+					<ivec2 name="add-max">0 0</ivec2>
+				</dict>
+				<dict>
+					<string name="class">Modifiers::CustomStat</string>
+					<string name="name">hwp-shrapnel</string>
+					<float name="add">0</float>
+				</dict>
+			</array>
+		</array>
+
 		<dict name="actions">
 			<array name="cast">
+				<!-- Explosive Reload: thrown before the refill, while the clip still holds what's left -->
 				<dict>
-					<string name="class">Explode</string>
-					<int name="radius">8</int>
-					<int name="min-radius">8</int>
-					<float name="dist-scaling">1000</float>
-					<bool name="hit-self">true</bool>
-					<bool name="hit-same-team">false</bool>
-					<bool name="hit-different-team">false</bool>
-					<array name="effects">
-						<dict>
-							<bool name="only-actors">true</bool>
-							<float name="self-dmg">1</float>
-							<float name="team-dmg">0</float>
-							<float name="enemy-dmg">0</float>
-						</dict>
-						<dict>
-							<string name="class">GivePercentageMana</string>
-							<string name="mana-bind">reload-frac</string>
-							<bool name="curr-mana">false</bool>
-						</dict>
-						<dict>
-							<string name="class">SpawnEffect</string>
-							<string name="effect">effects/generic/other/spawn_smoke_puff.effect</string>
-						</dict>
-					</array>
+					<string name="class">HWPFirearmsThrowMag</string>
+					<string name="projectile">players/hwp/firearms/projectiles/reload_mag.unit</string>
+					<string name="dmg-bind">mag-dmg</string>
+					<int name="dist">6</int>
+				</dict>
+				<dict>
+					<string name="class">AddStacks</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
+					<int name="stacks">999</int>
+					<bool name="target-self">true</bool>
+				</dict>
+				<dict>
+					<string name="class">AddStacks</string>
+					<string name="buff">players/hwp/firearms/stacks_firearms.sval:reloading</string>
+					<int name="stacks">-1</int>
+					<bool name="target-self">true</bool>
+				</dict>
+				<dict>
+					<string name="class">SpawnEffect</string>
+					<string name="effect">effects/generic/other/spawn_smoke_puff.effect</string>
+				</dict>
+			</array>
+			<!-- Explosive Reload with dual Glocks: the off hand's magazine, 100 ms after the first -->
+			<array name="cast2">
+				<dict>
+					<string name="class">HWPFirearmsThrowMag</string>
+					<string name="projectile">players/hwp/firearms/projectiles/reload_mag.unit</string>
+					<string name="dmg-bind">mag-dmg</string>
+					<int name="dist">6</int>
+					<bool name="second">true</bool>
 				</dict>
 			</array>
 		</dict>
 
 		<array name="timeline">
 			<i>550</i><s>cast</s>
+			<i>650</i><s>cast2</s>
 		</array>
 	</dict>
 
@@ -75,30 +105,160 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_2</int>
 			<int name="cooldown">1800</int>
-			<dict name="binds">
-				<float name="reload-frac">0.6</float>
-			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_3</int>
 			<int name="cooldown">1600</int>
-			<dict name="binds">
-				<float name="reload-frac">0.7</float>
-			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_4</int>
 			<int name="cooldown">1400</int>
-			<dict name="binds">
-				<float name="reload-frac">0.85</float>
-			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTLEVEL_5</int>
 			<int name="cooldown">1200</int>
-			<dict name="binds">
-				<float name="reload-frac">1.0</float>
+		</dict>
+	</array>
+
+	<!-- Each orb's modifiers take their own slot ([null] placeholders, as ran_rhythm.sval):
+	     the first entry that defines a slot wins (Modifiers.as LoadIModifiers). -->
+	<array name="modifier-skills">
+		<dict>
+			<string name="name">.skills.hwp_firearms.reload_dodge.name</string>
+			<string name="description">.skills.hwp_firearms.reload_dodge.desc</string>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_reload_dodge</string>
+			<string name="quality">rare</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<!-- the marker turns off the dodge restart on the reloading stack -->
+						<dict>
+							<string name="class">Modifiers::Buff</string>
+							<string name="buff">players/hwp/firearms/buffs_firearms.sval:dodge_skip</string>
+							<int name="freq">250</int>
+						</dict>
+						<dict>
+							<string name="class">Modifiers::TriggerEffect</string>
+							<string name="trigger">dash</string>
+							<float name="chance">1</float>
+							<int name="timeout">0</int>
+							<bool name="target-self">true</bool>
+							<array name="effects">
+								<dict>
+									<bool name="cond-target-self">true</bool>
+									<array name="conditional"><s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:reloading</s><s>ge</s><i>1</i></array>
+								</dict>
+								<dict>
+									<string name="class">AddStacks</string>
+									<string name="buff">players/hwp/firearms/stacks_firearms.sval:reloading</string>
+									<int name="stacks">-1</int>
+									<bool name="target-self">true</bool>
+								</dict>
+							</array>
+						</dict>
+					</array>
+				</array>
 			</dict>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.reload_explosive.name</string>
+			<string name="description">.skills.hwp_firearms.reload_explosive.desc</string>
+
+			<array name="description-params">
+				<array><s>damage</s><s>.skills.desc.params.hwp_dmg_per_round</s><s>5</s><s>8</s><s>12</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
+			<string name="id">hwp_fs_reload_explosive</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<dict name="skill">
+				<dict name="binds">
+					<int name="mag-dmg">5</int>
+				</dict>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<int name="mag-dmg">8</int>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<int name="mag-dmg">12</int>
+					</dict>
+				</dict>
+			</array>
+		</dict>
+
+		<dict>
+			<string name="name">.skills.hwp_firearms.reload_over.name</string>
+			<string name="description">.skills.hwp_firearms.reload_over.desc</string>
+
+			<array name="description-params">
+				<array><s>rounds</s><s>.skills.desc.params.hwp_rounds</s><s>+6</s><s>+9</s><s>+12</s></array>
+				<array><s>window</s><b>t</b><s>.skills.desc.params.hwp_window</s><s>0.2s</s></array>
+			</array>
+
+			<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 24 24 24</vec4></array>
+
+			<array name="tags"><s>spell</s><s>hwp_firearm</s></array>
+			<string name="id">hwp_fs_reload_over</string>
+			<string name="quality">common</string>
+			<int name="starting-level">0</int>
+
+			<!-- the marker tells the module script (Combat.as OverReloadState) the orb's level -->
+			<dict name="skill">
+				<dict name="binds">
+					<string name="over-marker">players/hwp/firearms/buffs_firearms.sval:over_reload_1</string>
+				</dict>
+				<array name="modifiers">
+					<array>
+						<null />
+					</array>
+					<array>
+						<null />
+					</array>
+					<array>
+						<dict>
+							<string name="class">Modifiers::Buff</string>
+							<string name="buff-bind">over-marker</string>
+							<int name="freq">250</int>
+						</dict>
+					</array>
+				</array>
+			</dict>
+
+			<array name="upgrades">
+				<dict>
+					<string name="quality">uncommon</string>
+					<dict name="binds">
+						<string name="over-marker">players/hwp/firearms/buffs_firearms.sval:over_reload_2</string>
+					</dict>
+				</dict>
+				<dict>
+					<string name="quality">rare</string>
+					<dict name="binds">
+						<string name="over-marker">players/hwp/firearms/buffs_firearms.sval:over_reload_3</string>
+					</dict>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

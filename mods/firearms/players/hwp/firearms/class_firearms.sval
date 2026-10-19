@@ -81,7 +81,7 @@
 		<string name="name">.skills.hwp_firearms.mastery_1.name</string>
 		<string name="description">subclass of hwp_firearms</string>
 
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 0 24 24</vec4></array>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>120 0 24 24</vec4></array>
 
 		<array name="skills">
 			<string>players/attacks/dash.sval</string>
@@ -90,8 +90,7 @@
 			<string>players/hwp/firearms/skills/fs_scavenger.sval</string>
 			<string>players/hwp/firearms/skills/fs_steady.sval</string>
 			<string>players/hwp/firearms/skills/sniper_snipe.sval</string>
-			<string>players/hwp/firearms/skills/sniper_flashbang.sval</string>
-			<string>players/hwp/firearms/skills/sniper_decoy.sval</string>
+			<string>players/hwp/firearms/skills/sniper_focus.sval</string>
 		</array>
 
 		%block SharedStats
@@ -103,7 +102,7 @@
 		<string name="name">.skills.hwp_firearms.mastery_2.name</string>
 		<string name="description">subclass of hwp_firearms</string>
 
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>24 24 24 24</vec4></array>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>168 0 24 24</vec4></array>
 
 		<array name="skills">
 			<string>players/attacks/dash.sval</string>
@@ -111,9 +110,8 @@
 			<string>players/hwp/firearms/skills/fs_frag.sval</string>
 			<string>players/hwp/firearms/skills/fs_scavenger.sval</string>
 			<string>players/hwp/firearms/skills/fs_steady.sval</string>
-			<string>players/hwp/firearms/skills/demo_tube.sval</string>
 			<string>players/hwp/firearms/skills/demo_rpg.sval</string>
-			<string>players/hwp/firearms/skills/demo_jetpack.sval</string>
+			<string>players/hwp/firearms/skills/demo_hoarder.sval</string>
 		</array>
 
 		%block SharedStats
@@ -125,7 +123,7 @@
 		<string name="name">.skills.hwp_firearms.mastery_3.name</string>
 		<string name="description">subclass of hwp_firearms</string>
 
-		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 24 24 24</vec4></array>
+		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>0 72 24 24</vec4></array>
 
 		<array name="skills">
 			<string>players/attacks/dash.sval</string>

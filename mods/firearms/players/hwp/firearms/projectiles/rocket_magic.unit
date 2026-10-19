@@ -1,0 +1,2 @@
+%define MAGIC
+%include "players/hwp/firearms/projectiles/rocket.inc"
