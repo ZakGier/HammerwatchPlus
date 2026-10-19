@@ -19,7 +19,6 @@ namespace HWP
 			"players/hwp/firearms/projectiles/glock_round_off.unit",
 			"players/hwp/firearms/projectiles/bullet_snipe.unit",
 			"players/hwp/firearms/projectiles/grenade_frag.unit",
-			"players/hwp/firearms/projectiles/grenade_stun.unit",
 			"players/hwp/firearms/projectiles/grenade_frag_stun.unit",
 			"players/hwp/firearms/projectiles/grenade_stun_flash.unit",
 			"players/hwp/firearms/projectiles/grenade_incendiary.unit",

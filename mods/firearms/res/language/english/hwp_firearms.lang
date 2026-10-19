@@ -24,8 +24,6 @@
 
 	<string name="skills.hwp_firearms.burst.name">Burst Fire</string>
 	<string name="skills.hwp_firearms.burst.desc">Fire a tight burst of %number% rounds. Costs ammunition.</string>
-	<string name="skills.hwp_firearms.stun.name">Stun Grenade</string>
-	<string name="skills.hwp_firearms.stun.desc">Throw a concussion grenade that deals %damage% physical damage and stuns enemies for %duration%.</string>
 	<string name="skills.hwp_firearms.adrenaline.name">Adrenaline</string>
 	<string name="skills.hwp_firearms.adrenaline.desc">You take {damage-taken} damage and every kill restores %mana% of your maximum ammunition.</string>
 

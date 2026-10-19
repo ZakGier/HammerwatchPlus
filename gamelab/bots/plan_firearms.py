@@ -55,7 +55,6 @@ SPECS = {
     "hwp_firearms_demolitions": [("hwp_fs_rpg", "demo_rpg.sval", "rpg", None),
                                  ("hwp_fs_hoarder", "demo_hoarder.sval", "hoarder", None)],
     "hwp_firearms_assault": [("hwp_fs_burst", "assault_burst.sval", "burst", None),
-                             ("hwp_fs_stun", "assault_stun.sval", "stun", (16, 170)),
                              ("hwp_fs_adrenaline", "assault_adrenaline.sval", "adrenaline", None)],
 }
 
@@ -853,7 +852,7 @@ class Checks(Base):
         self.to_town()
 
     def firearms_assault(self):
-        """firearms s4 for Assault (stun grenade, burst; adrenaline is passive)."""
+        """firearms s4 for Assault (burst; adrenaline is passive)."""
         self.new_char("LabAssault", "hwp_firearms_assault")
         if not self.enter_floor("assault"):
             return
@@ -862,19 +861,6 @@ class Checks(Base):
         if self.level("adrenaline", "hwp_fs_adrenaline"):
             e = self.entry(self.bar(), "hwp_fs_adrenaline")
             self.flag("adrenaline_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
-        if self.level("stun", "hwp_fs_stun"):
-            self.clear_dummies()
-            rng = (16, 170)
-            (sx, sy), held, c = self.cursor_on(d[0] * 100, d[1] * 100, rng)
-            du = self.dummy(sx, sy)
-            hp0 = self.hps([du])
-            self.top_up()
-            w = self.cast_watch("hwp_fs_stun", lambda: self.targeted("skill3", sx, sy, rng), secs=1.4)
-            time.sleep(0.3)
-            hp1 = self.hps([du])
-            self.flag("stun_casts", w["cd"] > 0 and hp1[du] < hp0[du] - 0.001,
-                      f"cooldown {w['cd']}, dummy at the cursor ({round(sx)},{round(sy)}, held {held}) hp {hp0[du]} -> {hp1[du]}")
-            self.cost_flag("stun", "hwp_fs_stun", "assault_stun.sval", w)
         if self.level("burst", "hwp_fs_burst"):
             self.direction_test("burst", "hwp_fs_burst", "assault_burst.sval", d, dist=60)
         self.buttons_flag("assault", d)

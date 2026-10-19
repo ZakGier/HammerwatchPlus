@@ -79,8 +79,6 @@
    "name": "assault skills",
    "expect": {
     "adrenaline_passive": true,
-    "stun_casts": true,
-    "stun_cost": true,
     "burst_casts": true,
     "burst_cost": true,
     "assault_own_buttons": true

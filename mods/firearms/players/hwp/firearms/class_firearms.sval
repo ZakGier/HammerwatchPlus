@@ -132,7 +132,6 @@
 			<string>players/hwp/firearms/skills/fs_scavenger.sval</string>
 			<string>players/hwp/firearms/skills/fs_steady.sval</string>
 			<string>players/hwp/firearms/skills/assault_burst.sval</string>
-			<string>players/hwp/firearms/skills/assault_stun.sval</string>
 			<string>players/hwp/firearms/skills/assault_adrenaline.sval</string>
 		</array>
 

@@ -1,6 +1,6 @@
 <!--
 	The thrown grenade, one file per type (grenade_frag, grenade_frag_stun, grenade_incendiary,
-	grenade_gas; Assault's Stun Grenade keeps its own grenade_stun.unit). The arc
+	grenade_gas). The arc
 	(GroundBouncing, bounces 0) destroys it where it lands: it explodes then, not at ttl.
 	Damage and penetration come from the Frag Grenade's binds (fs_frag.sval); the
 	elemental penetration from Elemental Shrapnel's custom stat (hwp-shrapnel, 0 without it).
