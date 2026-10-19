@@ -91,7 +91,8 @@ icons come from `tools/make_firearms_icons.py`. Over-Reload now works on a manua
 Rounds are now small tinted bullets fired on the attack's first frame, and the clip fills
 only in the village and on a run's first floor, carrying its count between floors; a
 trigger pull on an empty clip reloads (`mod-firearms-clip`). Assault's old Stun Grenade is gone (Burst and Adrenaline remain), and `hwp
-firearms sound` auditions firing sounds by ear. GameLab is pinned to build
+firearms sound` auditions firing sounds by ear; the guns, rockets and reload use the sounds
+picked that way (reload: unlock, then lever on, or lever off on a perfect). GameLab is pinned to build
 25932569 since 2026-10-19.
 A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while

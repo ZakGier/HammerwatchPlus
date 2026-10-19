@@ -1310,3 +1310,18 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   Adrenaline; the old stun grenade was still in the subclass list, a fourth active on the bar.
   plan-firearms-b 20261019-130113: Assault's actives are reload, frag and burst. Frag's Stun
   Grenade orb keeps the stun buffs and `grenade_stun_flash.unit`.
+- **No pitch control for a sound.** `SoundInstance` exposes Play, PlayTracked, Stop,
+  SetPosition, SetVolume, SetParameter, SetPaused, SetLooped and SetTimelinePosition, and
+  nothing else (`gamecode/assets/hwr2_api_strings.txt`), so a mod can't pitch a game sound down.
+  SetParameter only drives the parameters an event was authored with (assumed: none checked).
+- **Gun sounds are the user's picks** from the game's banks (heard on a web page of the
+  decoded samples): rifle and Burst `bandit_rogue_bomb_bounce`, pistols `grenade_bounce`,
+  grenade launcher `grenade_throw`, sniper `ballista_shoot_hit`, launcher `fire_ball_cast` (Quad:
+  `magic_missiles_cast` on each of its 4 timeline casts), rocket blasts `fire_ball_explode`,
+  Fat Boy `fire_blast`, round hits `item_metal_small_2`. All resolve (mod-firearms-sound
+  20261019-134648). Reload sounds are script (`Combat.as` ReloadSounds): `doors/unlock` when a
+  reload starts (the reloading stack or a Reload cast short of its castpoint), then
+  `buttons/lever_on` 250 ms before it ends, held back while an Over-Reload window is still to
+  come, or `buttons/lever_off` on a perfect reload and no lever on. Measured in
+  plan-firearms-orbs 20261019-134726: every reload logged an unlock and then one lever, off for
+  each of the 3 perfects, on for the misses and plain reloads, including Dodge Reload Skip.
