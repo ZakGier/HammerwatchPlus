@@ -22,7 +22,6 @@
 		<string name="class">Skills::PlayerSkillDirectional</string>
 		<string name="anim">attack</string>
 		<int name="anim-length">400</int>
-		<string name="snd">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 
 		<int name="cooldown">700</int>
 		<int name="castpoint">80</int>
@@ -47,7 +46,7 @@
 				</dict>
 				<dict>
 					<string name="class">PlaySound</string>
-					<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+					<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 				</dict>
 			</array>
 		</dict>

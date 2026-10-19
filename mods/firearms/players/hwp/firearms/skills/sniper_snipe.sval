@@ -31,7 +31,6 @@
 		<string name="class">Skills::PlayerSkillDirectional</string>
 		<string name="anim">attack</string>
 		<int name="anim-length">900</int>
-		<string name="snd">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 
 		<int name="cooldown">3000</int>
 		<int name="castpoint">650</int>
@@ -61,7 +60,7 @@
 				</dict>
 				<dict>
 					<string name="class">PlaySound</string>
-					<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
+					<string name="sound">event:/sfx/actors/misc/ballista/ballista_shoot_hit</string>
 				</dict>
 				<dict>
 					<string name="class">AddStacks</string>

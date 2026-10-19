@@ -212,7 +212,11 @@ namespace HWP
 				if (dir !is null && dir.m_castingT >= 0 && dir.m_castingT < dir.m_castpoint - 1)
 					dir.m_castingT = dir.m_castpoint - 1;
 				m_topUp = 2;
+				g_reloadSounds.Perfect(plr);
 			}
+
+			// the window is still to come: the lever waits, since a perfect reload replaces it
+			bool WindowPending() { return (m_active || m_manual) && m_elapsed < m_windowStart + OVER_WINDOW; }
 
 			bool ReloadDown(PlayerBase@ plr, Skills::Skill@ reload)
 			{
@@ -321,6 +325,97 @@ namespace HWP
 
 		OverReloadState g_overReload;
 
+		// Reload sounds, played at the player: the unlock as the mag comes out, the lever on
+		// 250 ms before the reload finishes, or the lever off at once on a perfect reload (and
+		// then no lever on). A reload is the reloading stack or a Reload cast short of its castpoint.
+		const int LEVER_LEAD = 250;
+		const array<string> RELOAD_SNDS = {
+			"event:/sfx/doodads/doors/unlock", "event:/sfx/doodads/buttons/lever_on",
+			"event:/sfx/doodads/buttons/lever_off" };
+		const uint SND_UNLOCK = 0;
+		const uint SND_LEVER_ON = 1;
+		const uint SND_LEVER_OFF = 2;
+
+		class ReloadSounds
+		{
+			array<SoundEvent@> m_snd = { null, null, null };
+			bool m_on;
+			bool m_lever;
+			int m_left;
+			int m_clipAtStart;
+			int m_checkFill;
+
+			void Play(PlayerBase@ plr, uint i)
+			{
+				if (m_snd[i] is null)
+					@m_snd[i] = Resources::GetSoundEvent(RELOAD_SNDS[i]);
+				if (m_snd[i] !is null)
+					PlaySound3D(m_snd[i], plr.m_unit.GetPosition());
+				HWP::Log("firearms", "reload sound: " + RELOAD_SNDS[i] + (m_snd[i] is null ? " (missing)" : ""));
+			}
+
+			int Clip(PlayerBase@ plr)
+			{
+				auto st = FindStack(plr, ActorBuffStackDef::Get(CLIP));
+				return st is null ? 0 : st.m_stacks;
+			}
+
+			void Perfect(PlayerBase@ plr)
+			{
+				Play(plr, SND_LEVER_OFF);
+				m_lever = true;
+			}
+
+			void Update(PlayerBase@ plr)
+			{
+				auto st = FindStack(plr, ActorBuffStackDef::Get(RELOADING));
+				auto reload = FindSkill(plr, RELOAD_ID);
+				auto dir = cast<Skills::PlayerSkillDirectional>(reload);
+				bool castOn = dir !is null && Casting(reload) && dir.m_castingT < dir.m_castpoint;
+				bool autoOn = st !is null && st.m_stacks > 0;
+				bool on = castOn || autoOn;
+				int left = castOn ? dir.m_castpoint - dir.m_castingT : (autoOn ? st.m_timerTickC : 0);
+
+				if (on && !m_on)
+				{
+					Play(plr, SND_UNLOCK);
+					m_lever = false;
+					m_clipAtStart = Clip(plr);
+					m_checkFill = 0;
+				}
+				else if (on && left > m_left + 50)
+					m_lever = false;   // the reload started over (a dodge)
+
+				if (on && !m_lever && left <= LEVER_LEAD && !g_overReload.WindowPending())
+				{
+					Play(plr, SND_LEVER_ON);
+					m_lever = true;
+				}
+
+				// ended early with the lever still to come (Dodge Reload Skip): the lever once the
+				// clip has filled, which may land a frame or two after the stack drops
+				if (!on && m_on && !m_lever)
+					m_checkFill = 3;
+				if (m_checkFill > 0)
+				{
+					if (on)
+						m_checkFill = 0;
+					else if (Clip(plr) > m_clipAtStart)
+					{
+						Play(plr, SND_LEVER_ON);
+						m_lever = true;
+						m_checkFill = 0;
+					}
+					else
+						m_checkFill--;
+				}
+				m_on = on;
+				m_left = left;
+			}
+		}
+
+		ReloadSounds g_reloadSounds;
+
 		void UpdateCombat(int ms)
 		{
 			auto plr = cast<PlayerBase>(GetLocalPlayer());
@@ -329,6 +424,7 @@ namespace HWP
 			for (uint i = 0; i < g_hoarded.length(); i++)
 				g_hoarded[i].Update(plr, ms);
 			g_overReload.Update(plr, ms);
+			g_reloadSounds.Update(plr);
 		}
 
 		void RenderCombat(int idt, SpriteBatch& sb)

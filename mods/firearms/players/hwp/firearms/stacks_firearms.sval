@@ -20,10 +20,6 @@
 			<dict>
 				<vec2 name="intensity-set">1 1</vec2>
 			</dict>
-			<dict>
-				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
-			</dict>
 			<!-- an Over-Reload bonus lasts until the clip runs dry -->
 			<dict>
 				<string name="class">RemoveBuff</string>
@@ -94,10 +90,6 @@
 				<string name="buff">players/hwp/firearms/stacks_firearms.sval:clip</string>
 				<int name="stacks">999</int>
 				<bool name="target-self">true</bool>
-			</dict>
-			<dict>
-				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 			</dict>
 		</array>
 

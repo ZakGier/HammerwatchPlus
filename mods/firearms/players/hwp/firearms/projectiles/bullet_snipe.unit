@@ -48,7 +48,7 @@
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_quick_shot_hit</string>
+				<string name="sound">event:/sfx/items/item_metal_small_2</string>
 			</dict>
 		</array>
 

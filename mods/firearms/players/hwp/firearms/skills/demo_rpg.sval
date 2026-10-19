@@ -32,7 +32,6 @@
 		<string name="class">Skills::PlayerSkillDirectional</string>
 		<string name="anim">attack</string>
 		<int name="anim-length">700</int>
-		<string name="snd">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 
 		<int name="cooldown">8000</int>
 		<int name="castpoint">300</int>
@@ -61,7 +60,7 @@
 				</dict>
 				<dict>
 					<string name="class">PlaySound</string>
-					<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+					<string name="sound">event:/sfx/player/classes/wizard/fire_ball/fire_ball_cast</string>
 				</dict>
 			</array>
 		</dict>
@@ -234,7 +233,7 @@
 						</dict>
 						<dict>
 							<string name="class">PlaySound</string>
-							<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+							<string name="sound">event:/sfx/player/classes/wizard/magic_missiles/magic_missiles_cast</string>
 						</dict>
 					</array>
 				</dict>

@@ -56,7 +56,7 @@
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/classes/rogue/grenade/grenade_explode</string>
+				<string name="sound">event:/sfx/player/attacks/twohanded/fire_blast</string>
 			</dict>
 %endif
 %if MAGIC
@@ -71,7 +71,7 @@
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+				<string name="sound">event:/sfx/player/classes/wizard/fire_ball/fire_ball_explode</string>
 			</dict>
 %endif
 %if ROCKET
@@ -81,7 +81,7 @@
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+				<string name="sound">event:/sfx/player/classes/wizard/fire_ball/fire_ball_explode</string>
 			</dict>
 %endif
 %if QUAD
@@ -91,7 +91,7 @@
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
-				<string name="sound">event:/sfx/player/attacks/twohanded/crossbow_explosive_shot_explode</string>
+				<string name="sound">event:/sfx/player/classes/wizard/fire_ball/fire_ball_explode</string>
 			</dict>
 %endif
 %endblock

@@ -1,6 +1,6 @@
 {
  "name": "mod-firearms-sound",
- "about": "hwp firearms sound (the firing-sound audition cheat): every candidate event resolves, and a pick plays as a burst. Lab mode is muted, so this proves the events exist, not how they sound.",
+ "about": "hwp firearms sound (the firing-sound audition cheat): every candidate event resolves, and a pick plays as a burst; so does each event the guns, rockets and reload now use. Lab mode is muted, so this proves the events exist, not how they sound.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -23,6 +23,30 @@
   {"do": "log_has", "pattern": "audition 1: event:/sfx/player/attacks/offhand/hand_crossbow_shot\\s", "timeout": 10},
   {"do": "console", "line": "hwp firearms sound prev"},
   {"do": "log_has", "pattern": "audition 28: ", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/classes/rogue/grenade/grenade_bounce 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/classes/rogue/grenade/grenade_bounce\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/actors/misc/ballista/ballista_shoot_hit 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/actors/misc/ballista/ballista_shoot_hit\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/classes/wizard/fire_ball/fire_ball_cast 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/classes/wizard/fire_ball/fire_ball_cast\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/classes/wizard/magic_missiles/magic_missiles_cast 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/classes/wizard/magic_missiles/magic_missiles_cast\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/classes/wizard/fire_ball/fire_ball_explode 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/classes/wizard/fire_ball/fire_ball_explode\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/attacks/twohanded/fire_blast 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/attacks/twohanded/fire_blast\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/items/item_metal_small_2 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/items/item_metal_small_2\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/player/classes/rogue/grenade/grenade_throw 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/player/classes/rogue/grenade/grenade_throw\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/doodads/doors/unlock 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/doodads/doors/unlock\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/doodads/buttons/lever_on 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/doodads/buttons/lever_on\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound event:/sfx/doodads/buttons/lever_off 1"},
+  {"do": "log_has", "pattern": "audition event:/sfx/doodads/buttons/lever_off\\s", "timeout": 10},
   {"do": "log_clean"}
  ]
 }

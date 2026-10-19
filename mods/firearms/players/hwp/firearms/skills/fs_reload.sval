@@ -20,7 +20,6 @@
 		<string name="class">Skills::PlayerSkillDirectional</string>
 		<string name="anim">cast</string>
 		<int name="anim-length">700</int>
-		<string name="snd">event:/sfx/player/attacks/twohanded/crossbow_quick_shot</string>
 
 		<int name="cooldown">2000</int>
 		<int name="castpoint">550</int>
