@@ -188,6 +188,11 @@ namespace HWP
 			// "empty" (cheat): the clip at 0 with no reload running, as after going down a
 			// floor with every round spent. The count is set, not spent, so the clip's
 			// lose-effects (the automatic reload) don't run: for trying the empty trigger.
+			if (args.length() > 0 && args[0] == "sound")
+			{
+				CmdSound(args);
+				return;
+			}
 			if (args.length() > 0 && args[0] == "empty")
 			{
 				if (!HWP::Cheats::On())
@@ -240,7 +245,7 @@ namespace Modules
 		HWPFirearmsModule()
 		{
 			super("hwp-firearms");
-			HWP::Commands::Register("firearms", "[empty]  Firearms Specialist status; empty (cheat) empties the clip without reloading", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
+			HWP::Commands::Register("firearms", "[empty|sound [n|next|prev|again|list] [shots]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
 			HWP::Firearms::SelfCheck(false);
 		}
 

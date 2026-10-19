@@ -1,0 +1,28 @@
+{
+ "name": "mod-firearms-sound",
+ "about": "hwp firearms sound (the firing-sound audition cheat): every candidate event resolves, and a pick plays as a burst. Lab mode is muted, so this proves the events exist, not how they sound.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 180,
+ "steps": [
+  {"do": "console", "line": "e_cheats 1"},
+  {"do": "gl", "verb": "char", "args": ["hwp_firearms", "Sound"]},
+  {"do": "wait_phase", "phase": "town", "timeout": 60},
+  {"do": "sleep", "seconds": 2},
+  {"do": "console", "line": "hwp firearms sound list"},
+  {"do": "log_has", "pattern": "firearms\\] sound 28: ", "timeout": 10},
+  {"do": "log_lacks", "pattern": "not found\\)"},
+  {"do": "console", "line": "hwp firearms sound 6"},
+  {"do": "log_has", "pattern": "audition 6: event:/sfx/player/attacks/offhand/throw_knife\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound next"},
+  {"do": "log_has", "pattern": "audition 7: ", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound 1"},
+  {"do": "log_has", "pattern": "audition 1: event:/sfx/player/attacks/offhand/hand_crossbow_shot\\s", "timeout": 10},
+  {"do": "console", "line": "hwp firearms sound prev"},
+  {"do": "log_has", "pattern": "audition 28: ", "timeout": 10},
+  {"do": "log_clean"}
+ ]
+}
