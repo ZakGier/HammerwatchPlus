@@ -1299,3 +1299,14 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
 - Instant shots: `PlayerSkillDirectional` fires timeline events at 0 ms on the first update
   (`PlayerSkillDirectional.as:88-97`); every gun's castpoint and first timeline entry are 0.
 - Reload's mana cost is 0 in data and measured: `mana 60/60` before and after a Reload cast.
+- **Sound events: names in the data aren't proof they exist.** Seven of 28 candidate firing
+  sounds named in the game's own files did not resolve (`Resources::GetSoundEvent` returned
+  null), every one an uppercase `event:/SFX/...` path (e.g. `SFX/Character/Classes/rogue/flashbang`,
+  `SFX/UI/UI_Click`); the lowercase `event:/sfx/...` ones did (mod-firearms-sound
+  20261019-125628, then all 28 after the swap in 20261019-125819). A mod can't add a sound
+  (no FMOD banks in the unpack), so `hwp firearms sound` (cheat) plays the candidates as a
+  three-shot burst in watch mode for picking by ear; lab mode is muted.
+- **Assault's Stun Grenade removed.** The reworked Assault is Double Barrel Burst plus
+  Adrenaline; the old stun grenade was still in the subclass list, a fourth active on the bar.
+  plan-firearms-b 20261019-130113: Assault's actives are reload, frag and burst. Frag's Stun
+  Grenade orb keeps the stun buffs and `grenade_stun_flash.unit`.
