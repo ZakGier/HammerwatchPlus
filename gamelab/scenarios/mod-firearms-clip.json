@@ -1,0 +1,290 @@
+{
+ "name": "mod-firearms-clip",
+ "about": "The clip: full when a new character spawns in the village and on a run's first floor; the count carried to the next floor (no refill); hwp firearms empty leaves it at 0 with no reload, and pulling the trigger then starts the reload; Reload costs no mana.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Clip"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "log_has",
+   "name": "town spawn: full clip",
+   "pattern": "\\[HWP:firearms\\] clip filled 30/30 \\(had 0, level town\\)",
+   "timeout": 10
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "town_full",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2000",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2.5
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "town_shot",
+   "timeout": 5
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms empty"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "town_empty",
+   "timeout": 5
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "name": "an emptied clip stays empty (no reload by itself)",
+   "pattern": "clip (?P<clip>\\d+)/30, mana",
+   "save_as": "town_empty_wait",
+   "timeout": 1
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "300",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "log_has",
+   "name": "trigger on an empty clip starts the reload",
+   "pattern": "\\[HWP:firearms\\] trigger on an empty clip: reloading",
+   "timeout": 5
+  },
+  {
+   "do": "sleep",
+   "seconds": 2.5
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "town_reloaded",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_reload",
+    "1",
+    "0",
+    "nocd"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "after_reload_cast",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "dark_citadel",
+    "0"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "log_has",
+   "name": "first floor of a run: full clip",
+   "pattern": "\\[HWP:firearms\\] clip filled 30/30 \\(had \\d+, level 1\\)",
+   "timeout": 10
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "2500",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "floor1_shot",
+   "timeout": 5
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "log_capture",
+   "name": "floor 2: clip kept",
+   "pattern": "\\[HWP:firearms\\] clip kept (?P<clip>\\d+)/30 \\(had (?P<had>\\d+), level 2\\)",
+   "save_as": "floor2",
+   "timeout": 10
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.5
+  },
+  {
+   "do": "log_capture",
+   "pattern": "Firearms Specialist: class hwp_firearms, weapon [^,]+, clip (?P<clip>\\d+)/(?P<max>\\d+), mana (?P<mana>\\d+)/(?P<mmax>\\d+)",
+   "save_as": "floor2_status",
+   "timeout": 5
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

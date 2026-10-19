@@ -41,8 +41,8 @@
 			<ivec2 name="move-speed">0 560</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 560</ivec2>
-			<int name="castpoint">80</int>
-			<ivec2 name="update-aim">0 80</ivec2>
+			<int name="castpoint">0</int>
+			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">true</bool>
 			<int name="mana-cost">0</int>
 			%block HasRound
@@ -64,7 +64,7 @@
 			</dict>
 
 			<array name="timeline">
-				<i>80</i><s>cast</s>
+				<i>0</i><s>cast</s>
 			</array>
 		</dict>
 	</dict>
@@ -86,8 +86,8 @@
 			<ivec2 name="move-speed">0 560</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 560</ivec2>
-			<int name="castpoint">80</int>
-			<ivec2 name="update-aim">0 80</ivec2>
+			<int name="castpoint">0</int>
+			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">true</bool>
 			<int name="mana-cost">0</int>
 			%block HasRound
@@ -109,7 +109,7 @@
 			</dict>
 
 			<array name="timeline">
-				<i>80</i><s>cast</s>
+				<i>0</i><s>cast</s>
 			</array>
 		</dict>
 	</dict>
@@ -131,8 +131,8 @@
 			<ivec2 name="move-speed">0 600</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 600</ivec2>
-			<int name="castpoint">150</int>
-			<ivec2 name="update-aim">0 150</ivec2>
+			<int name="castpoint">0</int>
+			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">false</bool>
 			<int name="mana-cost">4</int>
 
@@ -151,7 +151,7 @@
 			</dict>
 
 			<array name="timeline">
-				<i>150</i><s>cast</s>
+				<i>0</i><s>cast</s>
 			</array>
 		</dict>
 	</dict>
@@ -173,8 +173,8 @@
 			<ivec2 name="move-speed">0 600</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 600</ivec2>
-			<int name="castpoint">150</int>
-			<ivec2 name="update-aim">0 150</ivec2>
+			<int name="castpoint">0</int>
+			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">false</bool>
 			<int name="mana-cost">4</int>
 
@@ -193,7 +193,7 @@
 			</dict>
 
 			<array name="timeline">
-				<i>150</i><s>cast</s>
+				<i>0</i><s>cast</s>
 			</array>
 		</dict>
 	</dict>
@@ -221,7 +221,7 @@
 			<ivec2 name="move-speed">0 520</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 520</ivec2>
-			<int name="castpoint">60</int>
+			<int name="castpoint">0</int>
 			<ivec2 name="update-aim">0 520</ivec2>
 			<bool name="repeating">true</bool>
 			<int name="mana-cost">0</int>
@@ -292,10 +292,10 @@
 			</dict>
 
 			<array name="timeline">
-				<i>60</i><s>solo</s>
-				<i>60</i><s>left</s>
-				<i>320</i><s>solo</s>
-				<i>320</i><s>right</s>
+				<i>0</i><s>solo</s>
+				<i>0</i><s>left</s>
+				<i>260</i><s>solo</s>
+				<i>260</i><s>right</s>
 			</array>
 		</dict>
 	</dict>
@@ -322,8 +322,8 @@
 			<ivec2 name="move-speed">0 520</ivec2>
 			<float name="cast-speed-mul">1</float>
 			<ivec2 name="blocking">0 520</ivec2>
-			<int name="castpoint">100</int>
-			<ivec2 name="update-aim">0 100</ivec2>
+			<int name="castpoint">0</int>
+			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">true</bool>
 			<int name="mana-cost">0</int>
 			%block HasRound
@@ -386,8 +386,8 @@
 			</dict>
 
 			<array name="timeline">
-				<i>100</i><s>both</s>
-				<i>100</i><s>solo</s>
+				<i>0</i><s>both</s>
+				<i>0</i><s>solo</s>
 			</array>
 		</dict>
 	</dict>

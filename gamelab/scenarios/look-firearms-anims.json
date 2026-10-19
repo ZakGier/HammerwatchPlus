@@ -1,0 +1,350 @@
+{
+ "name": "look-firearms-anims",
+ "about": "Measurement only (timescale 0.1): frames of the gun attack animations and rounds, the rifle, then the main-hand and off-hand Glocks, to judge the pose and the bullet sprite by eye. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Look"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "gl",
+   "verb": "skills",
+   "save_as": "skills0"
+  },
+  {
+   "do": "gl",
+   "verb": "castat",
+   "args": [
+    "hwp_fs_reload",
+    "1",
+    "0",
+    "nocd"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "hwp firearms"
+  },
+  {
+   "do": "gl",
+   "verb": "state",
+   "save_as": "state1"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "rifle_00"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_01"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_02"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_03"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_04"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_05"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_06"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_07"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_08"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_09"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_10"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_11"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_12"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_13"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_14"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_15"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_16"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_17"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "main"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "glock_00"
+  },
+  {
+   "do": "shot",
+   "name": "glock_01"
+  },
+  {
+   "do": "shot",
+   "name": "glock_02"
+  },
+  {
+   "do": "shot",
+   "name": "glock_03"
+  },
+  {
+   "do": "shot",
+   "name": "glock_04"
+  },
+  {
+   "do": "shot",
+   "name": "glock_05"
+  },
+  {
+   "do": "shot",
+   "name": "glock_06"
+  },
+  {
+   "do": "shot",
+   "name": "glock_07"
+  },
+  {
+   "do": "shot",
+   "name": "glock_08"
+  },
+  {
+   "do": "shot",
+   "name": "glock_09"
+  },
+  {
+   "do": "shot",
+   "name": "glock_10"
+  },
+  {
+   "do": "shot",
+   "name": "glock_11"
+  },
+  {
+   "do": "shot",
+   "name": "glock_12"
+  },
+  {
+   "do": "shot",
+   "name": "glock_13"
+  },
+  {
+   "do": "shot",
+   "name": "glock_14"
+  },
+  {
+   "do": "shot",
+   "name": "glock_15"
+  },
+  {
+   "do": "shot",
+   "name": "glock_16"
+  },
+  {
+   "do": "shot",
+   "name": "glock_17"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "900",
+    "0",
+    "0",
+    "1",
+    "0",
+    "off"
+   ]
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_00"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_01"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_02"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_03"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_04"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_05"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_06"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_07"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_08"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_09"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_10"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_11"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_12"
+  },
+  {
+   "do": "shot",
+   "name": "glockoff_13"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

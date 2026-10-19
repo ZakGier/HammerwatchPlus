@@ -35,10 +35,23 @@ namespace HWP
 
 		bool g_checked = false;
 
-		// Set when the local Firearms Specialist spawns; the clip is filled once the gun's
-		// marker buff has given it a size (the item re-applies it on its first update).
+		// Set when a new local player unit shows up (any spawn path: a new character in town,
+		// a level load, a respawn). Once the gun's marker buff has given the clip a size (the
+		// item re-applies it on its first update) the clip is set: full in the village and on
+		// the first spawn of a run's first floor, else the rounds it held when the last unit
+		// went (g_lastClip), so going down a floor reloads nothing. The GameModeSpawnPlayer
+		// hook missed the town spawn of a new character (look-firearms-anims 20261019-123319:
+		// clip 0/30), so the player is watched instead: the PlayerBase and the record's class,
+		// not the unit id (a new character's unit in town took the old one's id,
+		// mod-firearms-clip 20261019-123825). g_filledFor is reset in Start, and g_levelStart
+		// marks the first player of a level.
 		bool g_fillPending = false;
+		bool g_fillFull = false;
 		int g_fillWaited = 0;
+		PlayerBase@ g_filledFor;
+		string g_filledClass;
+		int g_lastClip = 0;
+		bool g_levelStart = true;
 		const int FILL_TIMEOUT = 3000;
 
 		bool IsFirearms(PlayerRecord@ rec)
@@ -56,25 +69,62 @@ namespace HWP
 
 		void UpdateFill(int ms)
 		{
-			if (!g_fillPending)
-				return;
 			auto plr = GetLocalPlayer();
 			auto def = ActorBuffStackDef::Get(CLIP);
 			if (plr is null || def is null)
 				return;
+			auto rec = GetLocalPlayerRecord();
+			string cls = (rec is null || rec.playerClass is null) ? "" : rec.playerClass.m_id;
+			if (plr !is g_filledFor || cls != g_filledClass)
+			{
+				@g_filledFor = plr;
+				g_filledClass = cls;
+				g_fillPending = IsFirearms(rec);
+				g_fillFull = g_inTown || (g_levelStart && MissionManager::GetCurrentLevelNum() == 1);
+				g_levelStart = false;
+				g_fillWaited = 0;
+			}
+			if (!g_fillPending)
+			{
+				g_lastClip = plr.GetStacks(def);
+				return;
+			}
 			g_fillWaited += ms;
 			int mx = ClipMax(plr, def);
 			if (mx > 0)
 			{
 				g_fillPending = false;
-				plr.AddStacks(plr, def, mx);
-				HWP::Log("firearms", "clip filled " + plr.GetStacks(def) + "/" + mx + " after " + g_fillWaited + " ms");
+				int had = plr.GetStacks(def);
+				int want = g_fillFull ? mx : min(g_lastClip, mx);
+				if (want > had)
+					plr.AddStacks(plr, def, want - had);
+				g_lastClip = plr.GetStacks(def);
+				HWP::Log("firearms", (g_fillFull ? "clip filled " : "clip kept ") + g_lastClip + "/" + mx
+					+ " (had " + had + ", level " + (g_inTown ? "town" : "" + MissionManager::GetCurrentLevelNum()) + ") after " + g_fillWaited + " ms");
 			}
 			else if (g_fillWaited >= FILL_TIMEOUT)
 			{
 				g_fillPending = false;
 				HWP::Log("firearms", "no gun gave the clip a size within " + FILL_TIMEOUT + " ms; clip left empty");
 			}
+		}
+
+		// Pulling the trigger on an empty clip starts the reload. The clip's lose-effects only
+		// start it when the last round is spent, so a clip that is empty some other way (a gun
+		// swapped in, a fill that timed out) would otherwise stay empty until Reload is cast.
+		void UpdateEmptyTrigger(GameInput& input)
+		{
+			if (!input.MainHandAttack.Down && !input.OffHandAttack.Down)
+				return;
+			auto plr = GetLocalPlayer();
+			auto clip = ActorBuffStackDef::Get(CLIP);
+			auto reloading = ActorBuffStackDef::Get(RELOADING);
+			if (plr is null || clip is null || reloading is null || !IsFirearms(GetLocalPlayerRecord()))
+				return;
+			if (ClipMax(plr, clip) <= 0 || plr.GetStacks(clip) > 0 || plr.GetStacks(reloading) > 0)
+				return;
+			plr.AddStacks(plr, reloading, 1);
+			HWP::Log("firearms", "trigger on an empty clip: reloading");
 		}
 
 		// Logged at boot (module constructor, for dev_check) and once per
@@ -135,6 +185,24 @@ namespace HWP
 
 		void CmdStatus(array<string>@ args)
 		{
+			// "empty" (cheat): the clip at 0 with no reload running, as after going down a
+			// floor with every round spent. The count is set, not spent, so the clip's
+			// lose-effects (the automatic reload) don't run: for trying the empty trigger.
+			if (args.length() > 0 && args[0] == "empty")
+			{
+				if (!HWP::Cheats::On())
+					return;
+				auto st = FindStack(GetLocalPlayer(), ActorBuffStackDef::Get(CLIP));
+				if (st is null)
+				{
+					HWP::Commands::Reply("no clip");
+					return;
+				}
+				st.m_stacks = 0;
+				g_lastClip = 0;
+				HWP::Commands::Reply("clip emptied, no reload");
+				return;
+			}
 			auto rec = GetLocalPlayerRecord();
 			if (rec is null || rec.playerClass is null)
 			{
@@ -165,18 +233,6 @@ namespace HWP
 	}
 }
 
-namespace HWPFirearms
-{
-	[Hook]
-	void GameModeSpawnPlayer(AGameplayGameMode@ gm, PlayerRecord@ rec)
-	{
-		if (rec is null || !rec.local || !HWP::Firearms::IsFirearms(rec))
-			return;
-		HWP::Firearms::g_fillPending = true;
-		HWP::Firearms::g_fillWaited = 0;
-	}
-}
-
 namespace Modules
 {
 	class HWPFirearmsModule : Module, HWP::ModuleStart
@@ -184,7 +240,7 @@ namespace Modules
 		HWPFirearmsModule()
 		{
 			super("hwp-firearms");
-			HWP::Commands::Register("firearms", " Firearms Specialist status", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
+			HWP::Commands::Register("firearms", "[empty]  Firearms Specialist status; empty (cheat) empties the clip without reloading", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
 			HWP::Firearms::SelfCheck(false);
 		}
 
@@ -192,6 +248,9 @@ namespace Modules
 		{
 			HWP::Firearms::g_checked = false;
 			HWP::Firearms::SelfCheck(true);
+			@HWP::Firearms::g_filledFor = null;
+			HWP::Firearms::g_filledClass = "";
+			HWP::Firearms::g_levelStart = true;
 			HWP::Firearms::g_headshot = false;
 			HWP::Firearms::g_overReload = HWP::Firearms::OverReloadState();
 			for (uint i = 0; i < HWP::Firearms::g_hoarded.length(); i++)
@@ -207,6 +266,7 @@ namespace Modules
 			if (paused)
 				return;
 			HWP::Firearms::UpdateFill(ms);
+			HWP::Firearms::UpdateEmptyTrigger(gameInput);
 			HWP::Firearms::UpdateCombat(ms);
 		}
 
