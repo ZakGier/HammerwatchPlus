@@ -88,6 +88,10 @@ Its Marksman and Demolitionist specializations and the base kit's orbs followed 
 checked by `plan-firearms-a`, `-b` and `-orbs` through a new `gl orb` verb. Placeholder
 icons come from `tools/make_firearms_icons.py`. Over-Reload now works on a manual Reload too
 (a second press on the mark), and dual pistols throw their magazines one after the other.
+Rounds are now small tinted bullets fired on the attack's first frame, and the clip fills
+only in the village and on a run's first floor, carrying its count between floors; a
+trigger pull on an empty clip reloads (`mod-firearms-clip`). GameLab is pinned to build
+25932569 since 2026-10-19.
 A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines

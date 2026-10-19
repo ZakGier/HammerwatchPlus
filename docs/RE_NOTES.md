@@ -1265,3 +1265,37 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   scan that was removed).
 - Runs, all PASS: mod-firearms 20261019-101106, plan-firearms-a 20261019-101525, -b
   20261019-102052, -orbs 20261019-102349, -guns 20261019-102615, plan-t14 20261019-102717.
+
+## Re-pin to 25932569; firearms bullets and the clip across floors (2026-10-19)
+
+- **Steam updated HoH2 to build 25932569.** Re-pinned at the owner's request
+  (`tools/pin_build.py --reason`), `bootstrap.py --force`, then `bootstrap.py --record` to
+  rewrite `gamelab/manifest.json` (the verify step fails on every changed tree until then),
+  `env_link.py`. Doctor green; smoke null-payload 20261019-121048 and mod-firearms
+  20261019-121105 PASS on the new build. Verified: `GameModeSpawnPlayer` unchanged
+  (`AGameplayGameMode.as:1079`).
+- **A texture that isn't a power of two hangs the boot.** A 6x6 `bullet.png` logged
+  `Texture sizes (6x6) should be power of two` and the game never reached the main menu
+  (look-firearms-anims 20261019-122919, `main menu never loaded`). 8x8 boots.
+- **Effect params named `r`/`g`/`b` don't work as sprite colors.** `color-r="r"` rendered the
+  slug cyan (red 0, look-firearms-anims 20261019-124336); renamed `colr`/`colg`/`colb`, brass
+  as intended (20261019-124614). `tr`/`tg`/`tb` worked for the trail. A projectile passes
+  params to its effect through the behavior's `effect-params` dict.
+- **Player buff stacks carry across floors.** Going from floor 1 to 2 of `dark_citadel`
+  (`hwp finishlevel`) the new player unit already held the clip's 25 stacks
+  (mod-firearms-clip 20261019-124230: `clip kept 25/30 (had 25, level 2)`). So the old
+  fill-on-every-spawn was a free reload per floor. The module now fills only in the village
+  and on the first spawn of a run's first floor (`MissionManager::GetCurrentLevelNum() == 1`,
+  `g_inTown`), else keeps the count.
+- **The spawn hook missed a new character's town spawn.** After `gl char hwp_firearms` in
+  town no fill was logged and the clip read 0/30 (look-firearms-anims 20261019-123319). A
+  unit-id watch also missed it (the new unit took the old id, mod-firearms-clip
+  20261019-123825); watching the `PlayerBase` handle plus the record's class id catches it
+  (20261019-124230: `clip filled 30/30 (had 0, level town)`). Assumed, not measured: at the
+  new unit's first frame the record still names the old class.
+- **A failed `log_has`/`log_lacks` step doesn't stop a scenario**, and both scan the whole
+  pass log, so `log_lacks` after an earlier legitimate match fails. A watch run's long
+  `sleep` doesn't notice the game closing; stop the runner and `gamelab reset`.
+- Instant shots: `PlayerSkillDirectional` fires timeline events at 0 ms on the first update
+  (`PlayerSkillDirectional.as:88-97`); every gun's castpoint and first timeline entry are 0.
+- Reload's mana cost is 0 in data and measured: `mana 60/60` before and after a Reload cast.
