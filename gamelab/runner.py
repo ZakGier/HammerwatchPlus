@@ -133,8 +133,13 @@ class Run:
                 game.note("menu_probe", reply=self.menu)
             # main menu -> Singleplayer / Continue. A posted Enter can be lost in watch mode
             # (20261017-195821 and -200812: no "Starting session" ever followed it while the
-            # human was using other windows), so it is confirmed in the log and re-sent
-            for attempt in range(3):
+            # human was using other windows), so it is confirmed in the log and re-sent. With the
+            # whole mod stack the menu takes Enter only after ~23 s (demo-firearms
+            # 20261019-145828 and -150050: three tries by 18 s, all lost), so it keeps trying for 60 s
+            give_up = time.time() + 60
+            for attempt in range(30):
+                if time.time() > give_up:
+                    break
                 game.key("enter")
                 end, started = time.time() + 5, False
                 while not started and time.time() < end:
