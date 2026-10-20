@@ -1823,9 +1823,8 @@ are above). Measured on build 25932569 unless marked assumed.
   plan-fishing-a 20261020-022944, mod-fishing-spots 20261020-032728, mod-fishing
   20261020-030948, mod-droptrade 20261020-030906, plan-gear-a 20261020-023920.
 - **Not measurable solo, assumed from the code:** the joint hand-over and the Mm-hmm! sound on
-  other machines (one game, muted); per-machine run spots in co-op; whether the Ember Kush
-  flicker is gone (the fix gives each sprite its own ulayer; the flicker was not reproduced in a
-  shot).
+  other machines (one game, muted); per-machine run spots in co-op. (The Ember Kush
+  flicker was listed here too; it is verified now, see "Ember Kush flicker, measured" below.)
 
 ## Review fixes: keys in co-op, forced puzzle rooms' limits (2026-10-20)
 
@@ -2088,3 +2087,16 @@ another Reload press starts it again as usual. Then the second `/code-review hig
   slug without shrapnel penetration, a client logging a false key rate limit, icon_art
   reloading its atlas per icon, and a failed bench save hiding the bench error: 0f25738 (mod-firearms-gl-slug 20261020-121546,
   mod-puzzle-rooms-forced 121622, mod-keys-pool 121711, bench-smoke 115652).
+
+## Ember Kush flicker, measured (2026-10-20)
+
+- `look-ember-kush` spawns five wild Ember Kush plots beside the player in town and takes 12
+  frames in a row (the comparison is a scratchpad script over the shots, around four of the
+  plots; the fifth is under the pet).
+- **Before the fix** (the unit from 1a41acc^, put back for one run, then restored):
+  20261020-125520. Each plot changed 20-100 pixels between most frame pairs. In the frames the
+  plants drop behind the planter box: the three plant sprites and the box share one depth, so
+  their draw order changes from frame to frame.
+- **With the fix** (a `ulayer` per plant sprite, 1a41acc): 20261020-125428. 0 changed pixels
+  in every plot across all 11 frame pairs, while the frames themselves differed by
+  7,000-14,000 pixels (foliage sway). All three plants are drawn in every frame.

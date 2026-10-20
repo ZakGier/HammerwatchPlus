@@ -1,0 +1,133 @@
+{
+ "name": "look-ember-kush",
+ "about": "Wild Ember Kush plots beside the player, 12 frames in a row: the plant's pixels must not change between frames (the flicker of its three overlapping sprites, fixed in 1a41acc with a ulayer each). Compare the frames offline, around the plots.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "farming"
+ ],
+ "timeout": 120,
+ "steps": [
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/hwp/wild/ember_kush.unit",
+    -40,
+    -40
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/hwp/wild/ember_kush.unit",
+    0,
+    -40
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/hwp/wild/ember_kush.unit",
+    40,
+    -40
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/hwp/wild/ember_kush.unit",
+    -40,
+    40
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "doodads/hwp/wild/ember_kush.unit",
+    40,
+    40
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "kush00",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush01",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush02",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush03",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush04",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush05",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush06",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush07",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush08",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush09",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush10",
+   "settle": false
+  },
+  {
+   "do": "shot",
+   "name": "kush11",
+   "settle": false
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}
