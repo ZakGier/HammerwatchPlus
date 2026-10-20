@@ -32,6 +32,7 @@ namespace GameLab
 		int m_t = 0;
 		int m_radius;
 		bool m_off;
+		bool m_offOnly;
 		bool m_skills;
 		uint m_frames = 0;
 		array<UnitPtr> m_dummies;
@@ -224,7 +225,8 @@ namespace GameLab
 				array<string> buttons;
 				if (!Charging())
 				{
-					buttons.insertLast("main");
+					if (!m_offOnly)
+						buttons.insertLast("main");
 					if (m_off)
 						buttons.insertLast("off");
 				}
@@ -313,17 +315,18 @@ namespace GameLab
 		g_benchHits.set(key, n + 1);
 	}
 
-	// bench <tag> <ms> [radius] [off] [noskills]: hold the main attack (and the off hand with
-	// "off") at the centre of the target dummies within radius (default 400) of the player and
-	// cast every active spell whenever it may (Toggle once, TargetAOE at the centre (Firearms Deploy Turret beside the player), Channeling
-	// for up to 3 s at a time, DirectionCharge after its charge time), for ms of gameplay frames.
+	// bench <tag> <ms> [radius] [off|offonly] [noskills]: hold the main attack (and the off hand
+	// with "off", only the off hand with "offonly") at the centre of the target dummies within
+	// radius (default 400) of the player and cast every active spell whenever it may (Toggle
+	// once, TargetAOE at the centre (Firearms Deploy Turret beside the player), Channeling for
+	// up to 3 s at a time, DirectionCharge after its charge time), for ms of gameplay frames.
 	// One {"ev":"bench"} event at the end: the dummies' hp lost (every source: hits, DoT,
 	// summons), the direct hits by weapon (PlayerDamagedActor), casts per skill and the mana left.
 	void VerbBench(const string &in id, array<string>@ args)
 	{
 		if (args.length() < 2)
 		{
-			Fail(id, "usage: bench <tag> <ms> [radius] [off] [noskills]");
+			Fail(id, "usage: bench <tag> <ms> [radius] [off|offonly] [noskills]");
 			return;
 		}
 		if (QueuedTasks::g_instance is null)
@@ -335,9 +338,10 @@ namespace GameLab
 		task.m_tag = args[0];
 		task.m_msLeft = int(parseInt(args[1]));
 		task.m_radius = 400;
-		if (args.length() > 2 && args[2] != "off" && args[2] != "noskills")
+		if (args.length() > 2 && args[2] != "off" && args[2] != "offonly" && args[2] != "noskills")
 			task.m_radius = int(parseInt(args[2]));
-		task.m_off = args.find("off") >= 0;
+		task.m_offOnly = args.find("offonly") >= 0;
+		task.m_off = task.m_offOnly || args.find("off") >= 0;
 		task.m_skills = args.find("noskills") < 0;
 		QueuedTasks::Queue(task);
 		Emit(Reply(id, true).Str("tag", task.m_tag).Int("ms", task.m_msLeft));
@@ -638,7 +642,7 @@ namespace Modules
 		GameLabBenchModule()
 		{
 			super("gamelab-bench");
-			GameLab::RegisterVerb("bench", "<tag> <ms> [radius] [off] [noskills]", GameLab::Verb(GameLab::VerbBench));
+			GameLab::RegisterVerb("bench", "<tag> <ms> [radius] [off|offonly] [noskills]", GameLab::Verb(GameLab::VerbBench));
 			GameLab::RegisterVerb("kit", "<ilvl> <quality> [slot,slot]", GameLab::Verb(GameLab::VerbKit));
 			GameLab::RegisterVerb("benchstats", "", GameLab::Verb(GameLab::VerbBenchStats));
 		}

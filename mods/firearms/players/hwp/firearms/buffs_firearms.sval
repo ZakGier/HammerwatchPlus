@@ -95,6 +95,8 @@
 	%block Stun stun_1 1000
 	%block Stun stun_2 2000
 	%block Stun stun_3 3000
+	<!-- the grenade launcher's point-blank slug (rifle_gl_shell.unit, Launcher.as HWPFirearmsArm) -->
+	%block Stun stun_gl 500
 	%block StunSlow stun_slow_1 1000
 	%block StunSlow stun_slow_2 2000
 	%block StunSlow stun_slow_3 3000

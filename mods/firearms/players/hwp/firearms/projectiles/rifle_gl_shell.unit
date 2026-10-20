@@ -1,4 +1,10 @@
 %include "players/hwp/firearms/projectiles/shrapnel.inc"
+<!--
+	The rifle's grenade launcher shell (attacks_firearms.sval hwp_attack_rifle_gl*): a 1.2x weapon
+	damage blast. It arms after 40 px of flight (Launcher.as Projectile::HWPFirearmsArm): an enemy
+	it hits before that takes the slug-effects instead, 0.6x and a 0.5 s stun, with no blast.
+	A wall sets it off either way.
+-->
 <unit netsync="none">
 	<behavior class="NewProjectile">
 		<string name="anim">default</string>
@@ -6,6 +12,33 @@
 		<int name="ttl">450</int>
 		<int name="penetration">0</int>
 		<bool name="bounce-on-collide">false</bool>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Projectile::HWPFirearmsArm</string>
+				<float name="arm-dist">40</float>
+				<array name="slug-effects">
+					<dict>
+						<string name="class">PlayerDamage</string>
+						<bool name="off-hand">false</bool>
+						<float name="mul">0.6</float>
+						<bool name="shield-blockable">true</bool>
+					</dict>
+					<dict>
+						<string name="class">ApplyBuff</string>
+						<string name="buff">players/hwp/firearms/buffs_firearms.sval:stun_gl</string>
+					</dict>
+					<dict>
+						<string name="class">SpawnEffect</string>
+						<string name="effect">effects/generic/impacts/pierce_impact_1.effect</string>
+					</dict>
+					<dict>
+						<string name="class">PlaySound</string>
+						<string name="sound">event:/sfx/items/item_metal_small_2</string>
+					</dict>
+				</array>
+			</dict>
+		</array>
 
 		<array name="hit-effects">
 			<dict>

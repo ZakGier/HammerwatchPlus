@@ -80,7 +80,7 @@
 	<string name="stacks.hwp_firearms.reloading.desc">Reloading. The clip refills when this ends; dodging restarts it.</string>
 
 	<string name="skills.attacks.twohanded.hwp_rifle_gl.name">Grenade Launcher</string>
-	<string name="skills.attacks.twohanded.hwp_rifle_gl.desc">Fire an explosive shell from the under-barrel launcher for %dmg% weapon damage in an area. Costs mana, not rounds.</string>
+	<string name="skills.attacks.twohanded.hwp_rifle_gl.desc">Fire an explosive shell from the under-barrel launcher for %dmg% weapon damage in an area. Point-blank it has no time to arm: it hits the first enemy as a slug for half damage and stuns it for 0.5 seconds. Costs mana, not rounds.</string>
 
 	<string name="equipment.mainhand.hwp_glock.1a">Service Pistol</string>
 	<string name="equipment.mainhand.hwp_glock.2a">Officer's Pistol</string>

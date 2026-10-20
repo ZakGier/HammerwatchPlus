@@ -25,7 +25,9 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   two-handed, 30 rounds, a three-round burst (rounds at 0/100/200 ms of an
   800 ms cycle, 52 % each; epic 65 %), no piercing.
   The secondary is an under-barrel grenade launcher: 4 mana, 1.5 s cooldown,
-  no rounds. Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
+  no rounds. Its shell arms after 40 px of flight (`Launcher.as`
+  `HWPFirearmsArm`): point-blank it hits the first enemy as a slug for half
+  damage and a 0.5 s stun, with no blast; a wall sets it off either way. Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
   rifle sits in the armory pool. A new character starts with one Service
   Pistol (`hwp_glock_mh_01`) in the main hand. Every weapon type is allowed.
 - **Pistols:** `hwp_glock_mh_01/02/03`, one item for either hand, 10 rounds each.

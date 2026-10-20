@@ -1955,3 +1955,21 @@ Left as is: Engineer late in a run (0.73-0.91 single) and Demolitions' single ta
 (0.66-0.74; its pack number is 1.1). Both sit inside the vanilla spread. Bench limits: the dummies
 neither move nor fight back, each bench is 15 s from full mana and cooldowns, and the off-hand bench
 holds the off hand all the time (so a grenade launcher spends mana a player would keep for a skill).
+
+## Grenade launcher point-blank: a slug, not a blast (2026-10-20)
+
+The user's call for the rifle's under-barrel launcher at close range: "It should still hit the
+first enemy it contacts and deal half damage as a slug that stuns them for .5 seconds". The shell
+(rifle_gl_shell.unit) now carries `Projectile::HWPFirearmsArm` (scripts/HWP/Firearms/Launcher.as).
+Until the shell has flown arm-dist (40 px; it leaves 22 px in front of the player), the modifier
+swaps the projectile's hit effects for its slug-effects: PlayerDamage 0.6x and the 0.5 s stun
+stun_gl (buffs_firearms.sval). After that it puts the 1.2x blast back. NewProjectile raycasts a
+move before it runs the modifiers' Update (NewProjectile.as:1464-1485), so a hit on the frame that
+crosses 40 px is still the slug. A wall uses the collide effects (NewProjectile.as:1157-1160), which
+stay the blast, so a point-blank wall shot still explodes.
+
+The new `offonly` flag makes the bench verb hold the off hand alone. With both buttons held for a
+short bench, the rifle burst's blocking keeps the launcher from firing.
+mod-firearms-gl-slug 20261020-112608 (gamelab/bots/gl_slug_check.py, three shots each): 28 damage
+and a stun on a dummy 30 px away, against 57 and no stun at 100 px, one hit each time. A target
+dummy's buff reads with an empty `m_name` in `actorbuffs`, so the check reads the tags.
