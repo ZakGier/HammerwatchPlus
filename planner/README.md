@@ -43,5 +43,7 @@ A record with no `cls` belongs to the Firearms Specialist.
 ## Icons
 
 `web/icons.png` and `web/icons.json` are the skill and orb icons, cut from the game's
-atlases (vanilla and Firearms) and the local HoH1 art. `tools/icon_art/planner_icons.py`
-rebuilds the vanilla and Firearms part from `planner/data` (it needs `gamecode/`).
+atlases (vanilla, Firearms, and the HoH1 classes' committed placeholders) by
+`tools/icon_art/planner_icons.py`, which needs `gamecode/`. With the HoH1 art imported
+(`python -m gamelab doctor --fix`), it also writes the git-ignored `web/icons.local.png`,
+which the server sends instead.
