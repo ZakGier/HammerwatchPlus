@@ -113,6 +113,11 @@ A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines
 (`docs/RE_NOTES.md`).
+An ability or the weapon swap now cuts a Firearms reload, and Reload starts it again;
+a save from before Frag and the doctrine skills started at rank 1 that is past the new max is
+pulled back to it (`plan-firearms-reload-cut`). A second code review's fixes cover the joint hand-over,
+the turret's shot rate, puzzle rooms, the key pool and the bench. The class planner now
+shows the three ported HoH1 classes and the Priest's and Paladin's HoH1 masteries.
 The HoH1-to-HoH2 trinket comparison (missing, modified, new and flat-value trinkets,
 grouped by HoH2 set, with shared verdicts) is a private web app outside the repo; its link
 is in `docs/RE_NOTES.md`.

@@ -1973,3 +1973,106 @@ short bench, the rifle burst's blocking keeps the launcher from firing.
 mod-firearms-gl-slug 20261020-112608 (gamelab/bots/gl_slug_check.py, three shots each): 28 damage
 and a stun on a dummy 30 px away, against 57 and no stun at 100 px, one hit each time. A target
 dummy's buff reads with an empty `m_name` in `actorbuffs`, so the check reads the tags.
+
+## Abilities cut a reload; saved ranks after the rank-1 start; review round 2 (2026-10-20)
+
+User asks: an ability stops a reload, and so does the weapon swap (X). An empty clip or
+another Reload press starts it again as usual. Then the second `/code-review high`
+(83c04fe..a4fd756) findings in my files.
+
+- **An ability cuts a Reload cast (verified, plan-firearms-reload-cut 20261020-113916).**
+  - `HWPFirearmsReload.IsBlocking` is false now. With it true (its `blocking` 0..2100), no
+    other skill could start during the cast.
+  - A skill thrown from its keys then cancels the Reload itself. PlayerTargetingHelper
+    activates it, then `CancelOther` Deactivates every other active skill
+    (PlayerTargetingHelper.as:291-293, 423-447; from source). It's the same path a dodge
+    takes. In the run, the clip stayed at 20/30 2.4 s after a Reload that a Frag cut, and
+    a second Reload filled it.
+  - A cast that skips the helper is caught by `HWP::Firearms::Interrupting` (Combat.as).
+    That covers `castat`, an AI-style cast, and the weapon swap's `swapping` buff. It runs
+    each frame in OverReloadState.Update: a Reload cast short of its castpoint is
+    Deactivated, and the log says "reload: an ability at X/Y ms cancels it".
+  - The guns still wait for a Reload cast: `HWPFirearmsGun.CanActivate` refuses while
+    it runs. A trigger held through it fired nothing (20 -> 20 -> 30/30).
+- **The automatic reload is held, then starts over (verified, same run).**
+  - While an ability or the swap channel runs, the Reloading stack's timer is put back to
+    full each frame and the bar is hidden.
+  - When it ends, the reload runs from the start: "holds the automatic reload at its
+    start" and then "starts over".
+  - Measured: a Frag cast 0.6 s into the reload, and the clip refilled 2.8 s after
+    emptying (1.6 s without it). With the swap channel up the clip was still 0 at 1.9 s,
+    and refilled about 1.0 s after the cancel (the 0.3 s of channel, then the reload).
+- **Saved ranks after the rank-1 start (finding 2, from source; the run is cited in the
+  third-round notes below).**
+  - Since 499f1d7, Frag and the eight doctrine skills have `starting-level` 1. A save keeps
+    a picked rank relative to it: `PlayerRecord.GetSkillLevel` adds `m_startingLevel`
+    (PlayerRecord.as:1336-1352).
+  - Points are counted from the starting level too (`GetSkillPointsSpentOnSkills`,
+    PlayerRecord.as:1355-1377). So an older save with N picked loads exactly as a new
+    character that picked N: the free rank on top, at the same cost when a skill's costs are
+    even.
+  - Only a save at the old max goes over: `SkillUp` stops at
+    `m_startingLevel + saved == m_levelParams.length()` (PlayerRecord.as:1584).
+  - A first version took a rank off every unmarked character once. That also took a paid
+    rank from characters made after 499f1d7 (third review). It is now `ClampStartRanks`
+    (FirearmsModule.as): each level start pulls a saved rank past the max back to it and
+    touches nothing else.
+  - `hwp firearms startranks [run|set id n]` shows saved/loaded/max. `run` and `set` are
+    cheats; `set` writes a rank past the max, as an old save at max is.
+  - Remote players' records get the change through `PlayerSyncSkillLevel` (assumed; one
+    player in the lab).
+- **Turret rate (finding 9).** The logged shot interval used to add a hard-coded 200 ms.
+  It now reads the length of the turret's attack scene (`GetUnitScene(...).Length()`, as
+  DashStrike.as does), so it can't drift from `turret_attack.effect`. Run: plan-firearms-b 20261020-113527 logs "a shot every 600 ms", as before.
+- **Joint hand-over (finding 1; co-op, not measurable with one player).**
+  - Before, a second take overwrote the first one pending on the host. The holder lets go
+    before the host checks the give, so the refused give destroyed the joint.
+  - Now the first take wins, and a pending take expires after 5 s.
+  - A give whose take was replaced goes back to its holder instead of vanishing.
+  - Compiles and passes plan-farming-a 20261020-114231. The relay itself needs two players.
+- **Findings sent to the peer** (3 Available's stale flag, 4 UsePrefab variations, 5 a
+  client's POOL_ADD, 6 bench.py losing rows, 7 verbs.md, 8 KitRng, 10 BENCH_TURRET):
+  0f25738.
+- **The HoH1 classes in the class planner**
+  (https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3). It now lists the Thief, Gladiator and
+  Witch Hunter, read-only and marked "HoH1 port". Each has its base kit, three
+  masteries and a note on how the HoH1 kit was split. The Priest's Smiter and the Paladin's
+  Holy Storm show as a 4th, ported spec. The records come from the game's own parse of the
+  mod's svals (export-classes-svals 20261020-114205), the icons from the local HoH1 art
+  (`hoh1art/`). The ported skills have no orbs: none of the mod's skill svals has
+  `modifier-skills`.
+- **"Costs {mana-cost} mana." removed from 8 HoH1 skill descriptions** (hwp_classes.lang).
+  The tooltip fills the description from its `description-params` by name
+  (`AppendSkillDesc`, Modifications.as:1027-1080), which the lang writes as `%key%`. No
+  vanilla or HoH1 string uses `{...}`. Vanilla skills show mana as the "Mana Cost" param
+  line, which all 8 have. So the braces most likely showed raw (assumed; not seen in a
+  frame), and the sentence repeated the param line anyway. mod-classes 20261020-121429
+  passes with the change.
+
+## Third code review (a4fd756..HEAD plus the working tree, 2026-10-20)
+
+- **Start ranks (mine).** The once-per-character migration also took a paid rank from
+  characters made after 499f1d7, and the mark could not tell them apart. It is now the max
+  clamp described above (`ClampStartRanks`). plan-firearms-reload-cut 20261020-120412: a
+  new character (Frag saved 0, loaded 1, max saved 4) and a picked Frag (1/2) are kept
+  through a level start; a save written past the max (5/6) is pulled back to 4/5 and logged;
+  a second pass changes nothing.
+- **Joint hand-over (mine).** The pending takes outlived their level, and a new level's
+  clock could reach an old timestamp and refuse a take. `ClearJoints` (each level start)
+  now empties them. plan-farming-a 20261020-121019 passes (the relay itself needs two
+  players).
+- **Turret rate (mine).** When the attack scene doesn't resolve, the log says "unknown"
+  instead of a rate short by the scene. plan-firearms-b 20261020-121820 (600 ms, as before).
+  Its turret_shoots check missed once (20261020-120630): open_dirs gave a diagonal, and the
+  brute took no damage in 3 s, as in the earlier out-of-sight cases. The rerun passed.
+- **export-classes-svals (mine)** wrote into this session's temp folder. It now writes to
+  `gamelab/results/export-classes-svals/`, and `runner.py` resolves a relative `sval`
+  dest against the repo. export-classes-svals 20261020-121442.
+- **Not changed (mine):** `Interrupting` and `ReloadCasting` walk the player's skills
+  (about ten) once a frame and on each gun CanActivate, as vanilla's `CancelOther` does
+  (PlayerTargetingHelper.as:423-447). A cached handle would go stale when `LoadSkills`
+  rebuilds `m_skills`.
+- **The peer's:** ForcePlace using up a room whose variation has no spot, the launcher
+  slug without shrapnel penetration, a client logging a false key rate limit, icon_art
+  reloading its atlas per icon, and a failed bench save hiding the bench error: 0f25738 (mod-firearms-gl-slug 20261020-121546,
+  mod-puzzle-rooms-forced 121622, mod-keys-pool 121711, bench-smoke 115652).
