@@ -1,9 +1,9 @@
-<!-- Onion (ready, vanilla crop sprite) (purely visual, spawned locally by HWP::Farming::RefreshVisuals). -->
+<!-- Onion (ready; mods/farming/doodads/hwp/crops.png) (purely visual, spawned locally by HWP::Farming::RefreshVisuals). -->
 <unit slot="doodad" netsync="none">
 	<scenes default="plant">
 		<scene name="plant">
-			<sprite origin="6 10" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
-				<frame>18 32 12 12</frame>
+			<sprite origin="7 17" texture="doodads/hwp/crops.png" material="system/default.mats:proj-prop">
+				<frame>0 0 15 19</frame>
 			</sprite>
 		</scene>
 	</scenes>

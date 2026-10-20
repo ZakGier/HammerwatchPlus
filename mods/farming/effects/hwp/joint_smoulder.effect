@@ -1,0 +1,21 @@
+<!-- A held joint's thin wisp (buffs_joint.sval smoulder fx): a few tiny puffs drifting up from the off hand. -->
+<effect looping="true" layer="1">
+	<particle_spawner
+		layer="1"
+		spawn-rate="5"
+		length="1000"
+		looping="true"
+		ttl="rpick(900,1600)"
+		pos="6; -9; 0"
+		color-mul="0.85;0.85;0.85;0.45"
+		force-damping="0.5"
+		rot-speed="rpick(-0.5,0.5)"
+		angle="rpick(-pi,pi)"
+		>
+		<behaviors>
+			<spread_range radius="rpick(0,1)"/>
+			<force_dir dir="rpick(-0.02,0.02); rpick(-0.05,-0.03); 0"/>
+		</behaviors>
+		<particle src="effects/subeffects/particles_grayscale.unit:smoke_2_tiny-grow"/>
+	</particle_spawner>
+</effect>

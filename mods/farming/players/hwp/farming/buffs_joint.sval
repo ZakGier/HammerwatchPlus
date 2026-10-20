@@ -1,0 +1,13 @@
+<svals>
+	<!--
+		A held joint re-applies this every 250 ms (its Modifiers::Buff, tweak/hwp/
+		equipment_joints.sval), so it lasts a moment after the joint leaves the hand. Its fx
+		is the thin wisp of smoke from the lit end.
+	-->
+	<dict name="smoulder">
+		<bool name="debuff">false</bool>
+		<int name="duration">600</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<string name="fx">effects/hwp/joint_smoulder.effect</string>
+	</dict>
+</svals>

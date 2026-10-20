@@ -38,13 +38,13 @@
 			<sprite origin="16 10" texture="doodads/hwp/farm.png" material="system/default.mats:floor">
 				<frame>0 0 32 20</frame>
 			</sprite>
-			<sprite origin="15 9" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
+			<sprite origin="15 9" ulayer="1" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
 				<frame>42 36 13 11</frame>
 			</sprite>
-			<sprite origin="-3 8" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
+			<sprite origin="-3 8" ulayer="2" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
 				<frame>42 36 13 11</frame>
 			</sprite>
-			<sprite origin="6 5" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
+			<sprite origin="6 5" ulayer="3" texture="doodads/terrain/crops.png" material="system/default.mats:proj-prop">
 				<frame>42 36 13 11</frame>
 			</sprite>
 		</scene>

@@ -30,9 +30,9 @@ watered.
   neighbouring rows too); ready -> harvest. A
   growing plot with an empty can only shows a red "Watering can is empty"
   toast (no window). One that cannot be watered for another reason (already
-  watered, no can) opens the plot window instead, with the reason, so herbs can be
-  smoked when no plot is empty. In the soil-patch layout the plot unit you
-  touch decides the plot, not the nearest patch centre.
+  watered, no can) opens the plot window instead, with the reason. In the
+  soil-patch layout the plot unit you touch decides the plot, not the nearest
+  patch centre.
 - **Farmer.** The vanilla farmer (`npc_misc_farmer_man.unit`, overridden;
   `.orig` kept) stands between the two fields instead of walking through them
   and runs a shop (rows are just the name and price). You start without a
@@ -59,16 +59,19 @@ watered.
   goes next to the pet feeding bowl. `hwp farm well` moves it to you (saved as
   `farm.well_x/y`, which then wins; `hwp farm well reset` clears it). It refills the can.
 - **Seeds and growth.** Food crops (cabbage, carrot, onion, potato, wheat)
-  need 2 growth, Holy Herb strains (Lucky Leaf, Ember Kush, Saint's Sage,
-  Gambler's Gold) 4. A completed run (succeeded or failed: the host's mission state
+  need 2 growth, Holy Herb strains (Lucky Leaf, Ember Kush, Saint's Sage) 4.
+  (Gambler's Gold is gone: its seeds and herbs in an older save become Lucky
+  Leaf when the character loads, `MigrateGone`.) A completed run (succeeded or failed: the host's mission state
   as the town loads its character, in the `PlayerRecordLoad` hook) adds 1 growth, 2
   if the plot was watered since the last run: food takes 2 runs (1 watered), herbs 4 (2 watered).
-  Your seeds show in the materials tab's Supplies section (one cell per
-  seed, `gui/hwp_seeds.png`), with a tooltip of growth time and yield.
+  Your seeds and what you harvested show in the materials tab's **Plants &
+  Herbs** section (core `HWP::Materials`, 8 cells across): a cell per seed
+  (`gui/hwp_seeds.png`, tooltip: growth time and yield) and a cell per
+  harvested crop or herb (`gui/hwp_harvest.png`, `HWPHarvestMaterial`).
   The herb plants and buff icons are drawn as cannabis in each strain's colour.
-  Harvest yields 2-8 food or 1-2 herbs as wares (`HWP::Market`, sold at the
-  Gambler or with `hwp sell`), plus a 25 % chance of a seed back (5 % of the
-  time two).
+  A harvest yields one per plant drawn on the plot (`CropSpots`: what you see
+  is what you get) as wares (`HWP::Market`, sold at the Gambler or with
+  `hwp sell`), plus a 25 % chance of a seed back (5 % of the time two).
 - **Network.** The host owns the plot state (seed, growth, watered) in its
   own TownRecord (`farm.plots`, `farm.runs`, `farm.pending`) and broadcasts
   every change (`farm.sync`); clients pull it when they load (`farm.pull`).
@@ -82,15 +85,27 @@ watered.
   (`farm.can`, `farm.water`, `farm.seed.<id>` in the player's HWP data).
 - **Gear grid.** The watering can shows in the character screen's 3x3 gear
   grid (bottom right, core `hwp-gear-can` slot) in its tier's colour
-  (`doodads/hwp/farm.png`): dimmed without a can; the tooltip shows its name,
+  (`doodads/hwp/farm.png`): empty without a can (new characters start without one); the tooltip shows its name,
   water and area.
 - **Run counting.** A gameplay load outside town sets pending, the next town
   load counts the run. Saves from before watering ("at" = planted on run N)
   convert to growth on load.
-- **Herbs.** Smoke one from an empty plot's window or `hwp smoke <strain>`:
-  it sets the `hwp_herb` mission buff (`tweak/hwp/buffs_herbs.sval`), which
-  lasts exactly one run like tavern food. Lucky Leaf also makes the Gambler
-  redraw a losing dealer card once (25 %).
+- **Herbs and joints** (`Joint.as`). Click a harvested herb under Plants &
+  Herbs: "Roll J?" -> "Huzzah!" rolls it into a joint (`hwp joint roll
+  <herb>` does the same), an off-hand item in your bag
+  (`tweak/hwp/equipment_joints.sval`, `hwp_joint_<strain>_<5..1>`: the puffs
+  left, each stage with its own icon and model). Held, it smoulders (a thin
+  wisp). Right click (its off-hand skill) is a puff: the tip glows cherry red,
+  the smoker gets the strain's `hwp_herb` mission buff
+  (`tweak/hwp/buffs_herbs.sval`) for 10 floors counting boss floors
+  (`KEY_HERB_FLOORS`, counted down per level by `KeepHerb`; a puff in town
+  gives the next 10), and the joint burns down a stage; the fifth puff uses it
+  up. In a run room or a town building each puff leaves a haze that thins over
+  a minute; puffs stack. A player with a free off hand next to you takes your
+  joint with the interact key, no questions asked (host relays it,
+  `farm.joint_*`). Lucky Leaf also makes the Gambler redraw a losing dealer
+  card once (25 %). Harvesting a plot never smokes or rolls anything.
+  `hwp joint` lists what you hold, rolled, puffed and the hazes.
 - Visuals, local on every machine: a sprout right after planting, a bigger
   sprout once it grew, the vanilla crop sprite (or a herb sprite) when ready,
   repeated on every spot of the groove; dark wet soil under watered plots.
@@ -98,9 +113,9 @@ watered.
   never a boss room) the host places one ripe plot (`doodads/hwp/wild/<seed>.unit`,
   made by `tools/make_wild_plots.py`) a little way from a random pot, crate or
   chest: 85 % a food crop, 15 % a Holy Herb. The unit is netsynced, but every
-  player harvests it once for themselves (`HWPWildPlot`, local yield): the
-  crop's usual yield and **twice** the farm's seed odds (50 % one seed back,
-  10 % two). Nothing can be planted on it; after your harvest it disappears
+  player harvests it once for themselves (`HWPWildPlot`, local yield): one
+  per plant drawn (3, `WILD_PLANTS`) and **twice** the farm's seed odds (50 %
+  one seed back, 10 % two). Nothing can be planted on it; after your harvest it disappears
   for you. It has a crop icon on the minimap.
 - `farm.*` settings are host-synced. `farm.debug` enables `hwp farm grow`
   (counts a run) and `hwp farm wild [seed]` (a wild plot beside you; `hwp
@@ -108,7 +123,7 @@ watered.
 
 ## Test checklist
 
-1. `python -m gamelab run mod-farming --mode lab`: `[HWP:farming] self-check done: 9 seeds, 4 herb buffs`, no
+1. `python -m gamelab run mod-farming --mode lab`: `[HWP:farming] self-check done: 8 seeds, 3 herb buffs`, no
    script issues.
 2. Town: the onion, wheat, cabbage and potato crops are gone, the log says
    `fields: 8 onion grooves, 9 wheat grooves, 8 cabbage grooves, 8 potato
@@ -124,18 +139,20 @@ watered.
    and water one: "Watered 2 rows", one charge. Upgrade any building: the
    log says `the town was rebuilt`, the fields are still empty and the
    plots keep their crops. `farm.debug 1`, `hwp farm grow` -> the crop is ready
-   (2 growth); interact -> harvested 2-4 cabbages, sometimes +1/+2 seeds.
+   (2 growth); interact -> harvested as many cabbages as the groove shows, sometimes +1/+2 seeds.
 5. Well just under the bottom left corner of the field beside the farmhouse
    refills the can; without a can it says so.
    `hwp farm well` moves it.
 6. Real cycle: plant without watering, run a mission, return -> half grown
    (bigger sprout); run again -> ready.
-7. Herbs: plant Lucky Leaf, grow, harvest, smoke from an empty plot's
-   window; the buff shows in the loadout screen and is gone after the next
-   run.
+7. Herbs: plant Lucky Leaf, grow, harvest; the herb shows under Plants &
+   Herbs. Click it -> "Roll J?" -> "Huzzah!": a Lucky Leaf Joint (5/5) in the
+   bag. Equip it in the off hand (a wisp of smoke), right click five times:
+   the tip glows, 4/5 .. 1/5, then it is gone; the buff shows in the loadout
+   screen for 10 floors. Inside a building the puffs leave a haze.
 8. 2-player lobby: both see the same plots, sprouts and wet soil; the client
    plants, waters (its own can) and harvests (yield on the client); two
    players planting the same groove at once leaves one with the seed back.
-9. Character screen: the can slot (bottom right of the gear grid) is dimmed
+9. Character screen: the can slot (bottom right of the gear grid) is empty
    before you buy a can; afterwards its tooltip shows the tier and water,
    and watering a crop lowers the count.

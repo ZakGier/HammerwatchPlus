@@ -1,0 +1,68 @@
+<loader>Equipment::BaseItem::LoadMultiple</loader>
+<!--
+	Joints (scripts/HWP/Farming/Joint.as): a Holy Herb rolled into an off-hand item. An item
+	saves only its base item, quality, level and mods, so the puffs left are the base item:
+	hwp_joint_<strain>_<n>, n = 5..1, each with its own icon (items/hwp/joint.png, 24 px a
+	stage) and held model (players/models/equipment/hwp_joint_<n>.model). Holding one re-applies
+	the smoulder buff (a thin wisp, players/hwp/farming/buffs_joint.sval); right click is the
+	off-hand skill hwp_joint_puff (attacks_joint.sval). Never dropped by the game (spawn-chance 0 and a never-set conditional).
+-->
+<array>
+%defblock Joint STRAIN N X
+	<dict>
+		<string name="id">hwp_joint_%%STRAIN%%_%%N%%</string>
+		<string name="name">.hwp.farming.joint.%%STRAIN%%.%%N%%</string>
+
+		<array name="icon">
+			<string>items/hwp/joint.png</string>
+			<int>100</int><vec4>%%X%% 0 24 24</vec4>
+		</array>
+
+		<string name="graphic">items/hwp/joint_drops.unit:joint_%%N%%</string>
+		<string name="model">players/models/equipment/hwp_joint_%%N%%.model</string>
+
+		<string name="slot">offhand</string>
+		<string name="quality">common</string>
+		<int name="ilvl">1</int>
+		<int name="ilvl-max">999</int>
+		<float name="spawn-chance">0</float>
+		<!-- never set: a 0 spawn chance alone still lets the generator pick a joint when it is the
+		     only candidate (EquipmentGenerator.as:216-227); VerifyItem skips it on this (:367) -->
+		<array name="conditionals">
+			<a><s>flag</s><s>is</s><s>hwp_joint_never_drops</s></a>
+		</array>
+
+		<array name="tags">
+			<string>hwp_joint</string>
+		</array>
+
+		<string name="skill">hwp_joint_puff</string>
+
+		<array name="modifiers">
+			<dict>
+				<string name="class">Modifiers::Buff</string>
+				<string name="buff">players/hwp/farming/buffs_joint.sval:smoulder</string>
+				<int name="freq">250</int>
+			</dict>
+		</array>
+	</dict>
+%endblock
+
+	%block Joint lucky_leaf 5 0
+	%block Joint lucky_leaf 4 24
+	%block Joint lucky_leaf 3 48
+	%block Joint lucky_leaf 2 72
+	%block Joint lucky_leaf 1 96
+
+	%block Joint ember_kush 5 0
+	%block Joint ember_kush 4 24
+	%block Joint ember_kush 3 48
+	%block Joint ember_kush 2 72
+	%block Joint ember_kush 1 96
+
+	%block Joint saints_sage 5 0
+	%block Joint saints_sage 4 24
+	%block Joint saints_sage 3 48
+	%block Joint saints_sage 2 72
+	%block Joint saints_sage 1 96
+</array>

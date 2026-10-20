@@ -19,7 +19,8 @@
 // on more neighbouring rows of a field at once) and seeds; the farm well
 // refills the can. Can, water and
 // seeds are per character (HWP::SaveData::Local).
-// Herbs can be smoked (one "hwp_herb" mission buff, lasts the next run).
+// Herbs are rolled into joints (Joint.as): a puff sets the strain's "hwp_herb"
+// mission buff for the next HERB_FLOORS floors.
 // Runs: on a floor that is not a boss room, the host places one ripe wild
 // plot (farm.run_chance %, default 35) beside a pot, crate or chest. It is
 // netsynced, but every player harvests it once for themselves (local yield,
@@ -59,7 +60,12 @@ namespace HWP
 		const string KEY_WATER = "farm.water"; // per character: water charges in the can
 		const string KEY_CAN_V = "farm.can_v"; // per character: CAN_* table version of KEY_CAN
 		const string KEY_SEED = "farm.seed.";  // per character: seeds owned, + seed id
-		const string KEY_HERB = "farm.herb";   // per character: the strain smoked in town, until its run is under way
+		const string KEY_HERB = "farm.herb";   // per character: the strain last puffed, while its floors last
+		const string KEY_HERB_FLOORS = "farm.herb_floors"; // floors it still lasts after this one
+		const int HERB_FLOORS = 10;            // a puff lasts this many floors, boss floors included
+		// Gambler's Gold is gone: its seeds, wares and plots become Lucky Leaf
+		const string GONE_SEED = "gamblers_gold";
+		const string GONE_TO = "lucky_leaf";
 		const string HERB_SLOT = "hwp_herb";   // SetMissionBuff slot id
 		const int MAX_PLOTS = 48;
 		const int SPACING = 40;
@@ -85,21 +91,21 @@ namespace HWP
 			int price;     // at the farmer, per seed
 			bool herb;
 			int grow;      // growth to be ready: 1 per run, 2 per watered run
-			int yieldMin;
-			int yieldMax;
 			int sell;      // ware price per unit
-			Seed(const string &in id_, int price_, bool herb_, int grow_, int ymin, int ymax, int sell_)
+			Seed(const string &in id_, int price_, bool herb_, int grow_, int sell_)
 			{
-				id = id_; price = price_; herb = herb_; grow = grow_; yieldMin = ymin; yieldMax = ymax; sell = sell_;
+				id = id_; price = price_; herb = herb_; grow = grow_; sell = sell_;
 			}
 			string Name() { return Resources::GetString(".hwp.farming.seed." + id); }
 			int Runs(bool watered) { return watered ? (grow + 1) / 2 : grow; }
 		}
 		array<Seed@> g_seeds;
 
-		void AddSeed(const string &in id, int price, bool herb, int grow, int ymin, int ymax, int sell)
+		// A harvest yields one per plant drawn on the plot (CropSpots), so what you see is
+		// what you get.
+		void AddSeed(const string &in id, int price, bool herb, int grow, int sell)
 		{
-			g_seeds.insertLast(Seed(id, price, herb, grow, ymin, ymax, sell));
+			g_seeds.insertLast(Seed(id, price, herb, grow, sell));
 			HWP::Market::Register(id, ".hwp.farming.seed." + id, sell, herb ? "herb" : "crop");
 		}
 
@@ -107,15 +113,14 @@ namespace HWP
 		{
 			if (g_seeds.length() > 0)
 				return;
-			AddSeed("cabbage", 20, false, 2, 2, 4, 15);
-			AddSeed("carrot", 20, false, 2, 3, 5, 10);
-			AddSeed("onion", 25, false, 2, 2, 4, 15);
-			AddSeed("potato", 30, false, 2, 3, 6, 12);
-			AddSeed("wheat", 15, false, 2, 4, 8, 6);
-			AddSeed("lucky_leaf", 150, true, 4, 1, 2, 120);
-			AddSeed("ember_kush", 200, true, 4, 1, 2, 160);
-			AddSeed("saints_sage", 200, true, 4, 1, 2, 160);
-			AddSeed("gamblers_gold", 250, true, 4, 1, 2, 200);
+			AddSeed("cabbage", 20, false, 2, 15);
+			AddSeed("carrot", 20, false, 2, 10);
+			AddSeed("onion", 25, false, 2, 15);
+			AddSeed("potato", 30, false, 2, 12);
+			AddSeed("wheat", 15, false, 2, 6);
+			AddSeed("lucky_leaf", 150, true, 4, 120);
+			AddSeed("ember_kush", 200, true, 4, 160);
+			AddSeed("saints_sage", 200, true, 4, 160);
 		}
 
 		Seed@ GetSeed(const string &in id)
@@ -483,12 +488,28 @@ namespace HWP
 			return i;
 		}
 
+		// where a plot's plants stand: a groove's vanilla crop spots, or three on a patch
+		// (the wild plots' layout, tools/make_wild_plots.py SPOTS)
 		array<vec3> Spots(int i)
 		{
 			if (UseFields() && i >= 0 && i < int(g_grooves.length()))
 				return g_grooves[i].spots;
-			array<vec3> one = { PlotPos(i) + vec3(0, -2, 0) };
-			return one;
+			vec3 p = PlotPos(i) + vec3(0, -2, 0);
+			array<vec3> three = { p + vec3(-9, 0, 0), p + vec3(9, 1, 0), p + vec3(0, 4, 0) };
+			return three;
+		}
+
+		// the plants a plot grows, drawn and harvested alike: every spot for food, every
+		// other spot for a herb
+		array<vec3> CropSpots(int i, Seed@ seed)
+		{
+			auto spots = Spots(i);
+			if (seed is null || !seed.herb || spots.length() < 2)
+				return spots;
+			array<vec3> some;
+			for (uint k = 0; k < spots.length(); k += 2)
+				some.insertLast(spots[k]);
+			return some;
 		}
 
 		// the farm well: farm.well_x/y when set; else just under the bottom left
@@ -585,6 +606,8 @@ namespace HWP
 				for (uint i = 0; i < plots.length() && i < uint(MAX_PLOTS); i++)
 				{
 					g_plotSeed[i] = HWP::SV::Str(plots[i], "seed");
+					if (g_plotSeed[i] == GONE_SEED)
+						g_plotSeed[i] = GONE_TO;
 					if (HWP::SV::Field(plots[i], "g") !is null)
 						g_plotGrowth[i] = HWP::SV::Int(plots[i], "g", 0);
 					else if (!g_plotSeed[i].isEmpty()) // saved before watering: "at" was the run it was planted
@@ -826,7 +849,7 @@ namespace HWP
 					continue;
 				string path = IsReady(i) ? CROP_UNIT_PREFIX + s.id + ".unit"
 					: (g_plotGrowth[i] > 0 ? SPROUT2_UNIT : SPROUT_UNIT);
-				auto spots = Spots(i);
+				auto spots = CropSpots(i, s);
 				for (uint k = 0; k < spots.length(); k++)
 				{
 					if (g_plotWet[i])
@@ -947,7 +970,7 @@ namespace HWP
 			auto seed = GetSeed(g_plotSeed[plot]);
 			if (seed is null)
 				return;
-			int n = seed.yieldMin + randi(seed.yieldMax - seed.yieldMin + 1);
+			int n = CropSpots(plot, seed).length();
 			int roll = randi(100);
 			int seeds = roll < 5 ? 2 : (roll < 25 ? 1 : 0);
 			g_plotSeed[plot] = "";
@@ -1096,48 +1119,114 @@ namespace HWP
 			return "";
 		}
 
-		bool Smoke(const string &in herbId)
+		void RemoveHerbBuff(PlayerRecord@ rec)
 		{
-			auto rec = GetLocalPlayerRecord();
-			auto seed = GetSeed(herbId);
-			if (rec is null || seed is null || !seed.herb)
-				return false;
-			if (HWP::Market::Count(rec, herbId) <= 0)
-			{
-				g_lastMessage = Resources::GetString(".hwp.farming.no_herb", { { "name", seed.Name() } });
-				return false;
-			}
+			uint slot = HashString(HERB_SLOT);
+			for (int i = int(rec.missionBuffs.length()) - 1; i >= 0; i--)
+				if (rec.missionBuffs[i].m_id == slot)
+					rec.missionBuffs.removeAt(i);
+			rec.RefreshModifiers();
+		}
+
+		// A puff: the strain's buff, for this floor and the next HERB_FLOORS - 1 (in town:
+		// the next HERB_FLOORS). Every floor load counts one down (KeepHerb).
+		bool ApplyHerb(PlayerRecord@ rec, const string &in herbId)
+		{
 			auto buff = MissionBuff::Get(HashString("hwp_herb_" + herbId));
-			if (buff is null)
+			if (rec is null || buff is null)
 			{
 				HWP::LogError("farming", "mission buff hwp_herb_" + herbId + " missing (tweak/hwp/buffs_herbs.sval)");
 				return false;
 			}
-			HWP::Market::Take(rec, herbId, 1);
+			int floors = g_inTown ? HERB_FLOORS : HERB_FLOORS - 1;
 			rec.SetMissionBuff(HashString(HERB_SLOT), buff);
-			HWP::SaveData::Player(rec).SetString(KEY_HERB, herbId);
-			g_lastMessage = Resources::GetString(".hwp.farming.smoked", { { "name", buff.m_name }, { "desc", buff.m_description } });
-			HWP::Commands::Reply(g_lastMessage);
-			g_version++;
+			auto bag = HWP::SaveData::Player(rec);
+			bag.SetString(KEY_HERB, herbId);
+			bag.SetInt(KEY_HERB_FLOORS, floors);
+			g_floorCounted = true;
+			string text = Resources::GetString(".hwp.farming.smoked", { { "name", buff.m_name }, { "desc", buff.m_description },
+				{ "floors", HERB_FLOORS } });
+			Say(text);
+			HWP::Commands::Reply(text);
 			return true;
 		}
 
-		// The loadout menu empties the mission buffs as it opens (ResetForNewMission,
-		// GUI/MissionLoadoutMenu.as:207), and the herb smoked in town went with them:
-		// in town it is put back; once its run is under way the note goes, so the
-		// run end (MissionEndMenu's ResetForNewMission) ends it after one run
+		string HerbStatus()
+		{
+			auto rec = GetLocalPlayerRecord();
+			if (rec is null)
+				return "herb: none";
+			auto bag = HWP::SaveData::Player(rec);
+			string active = ActiveHerbName(rec);
+			if (!bag.Has(KEY_HERB))
+				return "herb: none" + (active.isEmpty() ? "" : " (buff " + active + ")");
+			return "herb: " + bag.GetString(KEY_HERB) + ", " + bag.GetInt(KEY_HERB_FLOORS, 0) + " floor(s) after this one, buff "
+				+ (active.isEmpty() ? "off" : active);
+		}
+
+		// Gambler's Gold seeds and wares become Lucky Leaf (its plots: ApplyState)
+		void MigrateGone(PlayerRecord@ rec)
+		{
+			auto bag = HWP::SaveData::Player(rec);
+			int seeds = bag.GetInt(KEY_SEED + GONE_SEED, 0);
+			int wares = HWP::Market::StoredCount(rec, GONE_SEED);
+			if (seeds > 0)
+				bag.SetInt(KEY_SEED + GONE_TO, bag.GetInt(KEY_SEED + GONE_TO, 0) + seeds);
+			if (bag.Has(KEY_SEED + GONE_SEED))
+				bag.Remove(KEY_SEED + GONE_SEED);
+			if (wares > 0)
+			{
+				HWP::Market::Add(rec, GONE_TO, wares);
+				HWP::Market::SetCount(rec, GONE_SEED, 0);
+			}
+			if (bag.GetString(KEY_HERB) == GONE_SEED)
+			{
+				bag.Remove(KEY_HERB);
+				bag.Remove(KEY_HERB_FLOORS);
+				RemoveHerbBuff(rec);
+			}
+			if (seeds > 0 || wares > 0)
+				HWP::Log("farming", "Gambler's Gold is gone: " + seeds + " seed(s) and " + wares + " ware(s) are Lucky Leaf now");
+		}
+
+		bool g_migrated = false;
+		bool g_floorCounted = false;
+
+		// The herb lasts HERB_FLOORS floors: every floor load (a run level, boss floors too)
+		// counts one down, and the one after the last takes it off. Mission buffs are emptied
+		// by the loadout menu as it opens and by the run's end (ResetForNewMission,
+		// GUI/MissionLoadoutMenu.as:207), so while floors are left it is put back.
 		void KeepHerb()
 		{
 			auto rec = GetLocalPlayerRecord();
 			if (rec is null)
 				return;
+			if (!g_migrated)
+			{
+				g_migrated = true;
+				MigrateGone(rec);
+			}
 			auto bag = HWP::SaveData::Player(rec);
 			if (!bag.Has(KEY_HERB))
 				return;
-			if (!g_inTown)
+			if (!bag.Has(KEY_HERB_FLOORS)) // smoked before floors were counted: a full count
+				bag.SetInt(KEY_HERB_FLOORS, HERB_FLOORS);
+			if (!g_inTown && !g_floorCounted)
 			{
-				bag.Remove(KEY_HERB);
-				return;
+				g_floorCounted = true;
+				int left = bag.GetInt(KEY_HERB_FLOORS, 0);
+				if (left <= 0)
+				{
+					string was = bag.GetString(KEY_HERB);
+					bag.Remove(KEY_HERB);
+					bag.Remove(KEY_HERB_FLOORS);
+					RemoveHerbBuff(rec);
+					HWP::Log("farming", "the " + was + " buff wore off");
+					Say(Resources::GetString(".hwp.farming.herb_off"));
+					return;
+				}
+				bag.SetInt(KEY_HERB_FLOORS, left - 1);
+				HWP::Log("farming", "herb floor counted: " + (left - 1) + " left after this one");
 			}
 			if (!ActiveHerbName(rec).isEmpty())
 				return;
@@ -1145,10 +1234,11 @@ namespace HWP
 			if (buff is null)
 			{
 				bag.Remove(KEY_HERB);
+				bag.Remove(KEY_HERB_FLOORS);
 				return;
 			}
 			rec.SetMissionBuff(HashString(HERB_SLOT), buff);
-			HWP::Log("farming", "the loadout cleared the mission buffs: " + buff.m_name + " put back");
+			HWP::Log("farming", "mission buffs were emptied: " + buff.m_name + " put back");
 		}
 
 		// ---- spawning (local, every machine) + run counting (host) -------------
@@ -1260,6 +1350,7 @@ namespace HWP
 			g_grooves.removeRange(0, g_grooves.length());
 			g_hiddenCrops.removeRange(0, g_hiddenCrops.length());
 			g_wellUnit = UnitPtr();
+			g_floorCounted = false;
 			g_lastMessage = "";
 			g_picked.removeRange(0, g_picked.length());
 			if (!Network::IsServer())
@@ -1388,6 +1479,8 @@ namespace HWP
 		}
 
 		// local: the player harvests a wild plot for themselves
+		const int WILD_PLANTS = 3;
+
 		void HarvestWild(UnitPtr u, const string &in seedId)
 		{
 			auto seed = GetSeed(seedId);
@@ -1395,7 +1488,7 @@ namespace HWP
 			if (seed is null || rec is null || !u.IsValid() || Picked(u))
 				return;
 			g_picked.insertLast(u.GetId());
-			int n = seed.yieldMin + randi(seed.yieldMax - seed.yieldMin + 1);
+			int n = WILD_PLANTS; // as drawn (tools/make_wild_plots.py)
 			int roll = randi(100);
 			int seeds = roll < 10 ? 2 : (roll < 50 ? 1 : 0); // twice the farm's 5 % / 25 %
 			HWP::Market::Add(rec, seed.id, n);
@@ -1579,6 +1672,8 @@ namespace HWP
 				{ "state", g_enabled ? "on" : "off" }, { "plots", PlotCount() }, { "where", UseFields() ? "fields" : "patches" },
 				{ "x", int(p.x) }, { "y", int(p.y) }, { "runs", g_runs }, { "list", list } }));
 			HWP::Commands::Reply(CanText() + ". " + SeedsText());
+			auto slot = HWP::Gear::Get("hwp-gear-can");
+			HWP::Commands::Reply("can slot: " + (slot is null ? "none" : slot.Icon() is null ? "empty" : "drawn"));
 			auto wares = HWP::Market::Summary(rec, "crop");
 			auto herbs = HWP::Market::Summary(rec, "herb");
 			if (!herbs.isEmpty())
@@ -1587,21 +1682,26 @@ namespace HWP
 				: Resources::GetString(".hwp.farming.wares", { { "list", wares } }));
 		}
 
-		void CmdSmoke(array<string>@ args)
+		// hwp joint [roll <herb>]: status, or roll one as the materials tab does
+		void CmdJoint(array<string>@ args)
 		{
-			if (args.length() < 1 || GetSeed(args[0]) is null || !GetSeed(args[0]).herb)
+			if (args.length() >= 1 && args[0] == "roll")
 			{
-				HWP::Commands::Reply(Resources::GetString(".hwp.farming.unknown_herb", { { "list", SeedList(true) } }));
-				return;
+				if (args.length() < 2 || GetSeed(args[1]) is null || !GetSeed(args[1]).herb)
+				{
+					HWP::Commands::Reply(Resources::GetString(".hwp.farming.unknown_herb", { { "list", SeedList(true) } }));
+					return;
+				}
+				if (!RollJoint(args[1]))
+					HWP::Commands::Reply(g_lastMessage);
 			}
-			if (!Smoke(args[0]))
-				HWP::Commands::Reply(g_lastMessage);
+			HWP::Commands::Reply(JointStatus());
 		}
 	}
 }
 
 // The watering can corner of the character menu's gear grid (core hwp-gear-slot
-// widget hwp-gear-can): its size and water, dimmed while you have none.
+// widget hwp-gear-can): its size and water, empty while you have none.
 // a seed's count in the materials tab's Supplies section (core Materials.as);
 // gui/hwp_seeds.png has a 13x13 packet per seed, in DefineSeeds order
 class HWPSeedMaterial : HWP::Materials::Material
@@ -1630,11 +1730,60 @@ class HWPSeedMaterial : HWP::Materials::Material
 	{
 		auto seed = GetSeed();
 		string text = Resources::GetString(seed.herb ? ".hwp.farming.seed_text_herb" : ".hwp.farming.seed_text", {
-			{ "name", seed.Name() }, { "runs", seed.Runs(false) }, { "wet", seed.Runs(true) },
-			{ "min", seed.yieldMin }, { "max", seed.yieldMax } });
+			{ "name", seed.Name() }, { "runs", seed.Runs(false) }, { "wet", seed.Runs(true) } });
 		if (seed.herb)
 			text += "\n" + Resources::GetString(".hwp.farming.herb." + seed.id + ".desc");
 		return text;
+	}
+}
+
+// a crop's or herb's harvest in the materials tab's Plants & Herbs section (wares,
+// HWP::Market); gui/hwp_harvest.png has a 16x16 icon per seed, in DefineSeeds order.
+// Clicking a herb asks "Roll J?" and "Huzzah!" rolls a joint (Joint.as RollJoint).
+class HWPHarvestMaterial : HWP::Materials::Material
+{
+	int m_index;
+	HWPHarvestMaterial(int index) { m_index = index; }
+
+	HWP::Farming::Seed@ GetSeed() { return HWP::Farming::g_seeds[m_index]; }
+
+	ScriptSprite@ Icon() override
+	{
+		return ScriptSprite(Resources::GetTexture2D("gui/hwp_harvest.png"), vec4(m_index * 16, 0, 16, 16));
+	}
+
+	int Count() override
+	{
+		return HWP::Market::Count(GetLocalPlayerRecord(), GetSeed().id);
+	}
+
+	string Title() override
+	{
+		return GetSeed().Name();
+	}
+
+	string Text() override
+	{
+		auto seed = GetSeed();
+		string text = Resources::GetString(".hwp.farming.harvest_text", { { "price", seed.sell } });
+		if (seed.herb)
+			text += "\n" + Resources::GetString(".hwp.farming.herb." + seed.id + ".desc") + "\n"
+				+ Resources::GetString(".hwp.farming.joint.click");
+		return text;
+	}
+
+	void Click() override
+	{
+		auto seed = GetSeed();
+		if (!seed.herb)
+			return;
+		if (Count() <= 0)
+		{
+			HWP::Farming::Say(Resources::GetString(".hwp.farming.no_herb", { { "name", seed.Name() } }));
+			return;
+		}
+		g_gameMode.ShowDialog("hwproll", Resources::GetString(".hwp.farming.joint.roll_q", { { "name", seed.Name() } }),
+			Resources::GetString(".hwp.farming.joint.huzzah"), Resources::GetString(".menu.no"), HWPRollJointHost(seed.id));
 	}
 }
 
@@ -1642,10 +1791,10 @@ class HWPFarmCanSlot : HWP::Gear::Slot
 {
 	ScriptSprite@ Icon() override
 	{
+		if (HWP::Farming::CanTier() <= 0)
+			return null; // an empty slot
 		return ScriptSprite(Resources::GetTexture2D("doodads/hwp/farm.png"), HWP::Farming::CAN_ICON[HWP::Farming::CanTier()]);
 	}
-
-	bool Dim() override { return HWP::Farming::CanTier() <= 0; }
 
 	string Title() override
 	{
@@ -1808,7 +1957,7 @@ class HWPFarmerShop : AShopContent
 	void Load(SValue@ sval) override { }
 }
 
-// The plot window (plant one of your seeds, smoke herbs) and the farmer's
+// The plot window (plant one of your seeds) and the farmer's
 // shop (watering can, seeds) share gui/hwp_farm.gui.
 class HWPFarmMenu : AWindowObject
 {
@@ -1825,7 +1974,7 @@ class HWPFarmMenu : AWindowObject
 	TextWidget@ m_headerTemplate;
 
 	array<Widget@> m_rows;
-	array<string> m_rowActions; // "plant:<seed>", "smoke:<seed>", "can", "buy:<seed>"
+	array<string> m_rowActions; // "plant:<seed>", "can", "buy:<seed>"
 
 	HWPFarmMenu(GUIBuilder@ b, int index, bool shop = false)
 	{
@@ -1926,24 +2075,6 @@ class HWPFarmMenu : AWindowObject
 					{ "name", seed.Name() }, { "runs", HWP::Farming::RunsLeft(m_index) } }));
 		}
 
-		// herbs in the bag can be smoked from any plot
-		bool header = false;
-		for (uint i = 0; i < HWP::Farming::g_seeds.length(); i++)
-		{
-			auto s = HWP::Farming::g_seeds[i];
-			if (!s.herb)
-				continue;
-			int n = HWP::Market::Count(rec, s.id);
-			if (n <= 0)
-				continue;
-			if (!header)
-			{
-				AddHeader(Resources::GetString(".hwp.farming.herbs"));
-				header = true;
-			}
-			AddRow(Resources::GetString(".hwp.farming.smoke", { { "name", s.Name() }, { "n", n } }), "smoke:" + s.id);
-		}
-
 		auto active = HWP::Farming::ActiveHerbName(rec);
 		m_active.SetText(HWP::Farming::CanText() + ". " + (active.isEmpty() ? Resources::GetString(".hwp.farming.active_none")
 			: Resources::GetString(".hwp.farming.active", { { "name", active } })));
@@ -2009,8 +2140,6 @@ class HWPFarmMenu : AWindowObject
 					m_manager.CloseWindow(this);
 				}
 			}
-			else if (action.findFirst("smoke:") == 0)
-				HWP::Farming::Smoke(action.substr(6));
 			HWP::Farming::g_version++;
 			return;
 		}
@@ -2032,7 +2161,10 @@ namespace Modules
 			HWP::Farming::DefineSeeds();
 			HWP::Gear::Register("hwp-gear-can", HWPFarmCanSlot());
 			for (uint i = 0; i < HWP::Farming::g_seeds.length(); i++)
+			{
 				HWP::Materials::Register("hwp-mat-seed-" + HWP::Farming::g_seeds[i].id, HWPSeedMaterial(i));
+				HWP::Materials::Register("hwp-mat-crop-" + HWP::Farming::g_seeds[i].id, HWPHarvestMaterial(i));
+			}
 			HWP::Settings::Sync("farm.");
 			HWP::Farming::RefreshSettings();
 			HWP::Net::OnRequest(HWP::Farming::PLANT, HWP::Net::RequestHandler(HWP::Farming::OnPlant));
@@ -2046,12 +2178,17 @@ namespace Modules
 			HWP::Net::OnEvent(HWP::Farming::REFUSED, HWP::Net::EventHandler(HWP::Farming::OnRefused));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::Farming::OnSettingChanged));
 			HWP::Commands::Register("farm", " farm status; host: 'here' moves the plots off the fields to you, 'fields' puts them back, 'well' moves the well to you ('well reset' puts it back by the field), 'grow' counts a run, 'wild [seed]' places a wild plot (debug)", HWP::Commands::Handler(HWP::Farming::CmdFarm));
-			HWP::Commands::Register("smoke", " <herb> smoke a Holy Herb strain for a buff on your next run", HWP::Commands::Handler(HWP::Farming::CmdSmoke));
+			HWP::Commands::Register("joint", " [roll <herb>] joints: what you hold and puffed; 'roll' rolls one from a herb (as clicking it under Plants & Herbs does)", HWP::Commands::Handler(HWP::Farming::CmdJoint));
+			HWP::Net::OnRequest(HWP::Farming::JOINT_TAKE, HWP::Net::RequestHandler(HWP::Farming::OnJointTake));
+			HWP::Net::OnRequest(HWP::Farming::JOINT_GIVE, HWP::Net::RequestHandler(HWP::Farming::OnJointGive));
+			HWP::Net::OnEvent(HWP::Farming::JOINT_HAND, HWP::Net::EventHandler(HWP::Farming::OnJointHand));
+			HWP::Net::OnEvent(HWP::Farming::JOINT_GET, HWP::Net::EventHandler(HWP::Farming::OnJointGet));
 			HWP::Farming::SelfCheck();
 		}
 
 		void Start(StartMode sMode)
 		{
+			HWP::Farming::ClearJoints();
 			HWP::Farming::RefreshSettings();
 			HWP::Farming::OnGameplayLoad();
 			m_spawnDone = false;
@@ -2063,6 +2200,11 @@ namespace Modules
 			if (HWP::Farming::g_waitMs > 0)
 				HWP::Farming::g_waitMs -= ms;
 			HWP::Farming::KeepHerb();
+			if (!paused)
+			{
+				HWP::Farming::UpdateJoints(ms);
+				HWP::Farming::PollTake(gameInput);
+			}
 			if (m_spawnDone)
 			{
 				// a building upgrade rebuilds the town: fields, plots and well again

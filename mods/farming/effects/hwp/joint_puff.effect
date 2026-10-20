@@ -1,0 +1,42 @@
+<!-- A puff (attacks_joint.sval): a big cloud rolling up and out from the off hand, and a glow at the lit end. -->
+<effect looping="false" layer="1">
+	<light pos="6 -9">
+		<sprite texture="system/default_L.png">
+			<frame time="100">0 0 128 128</frame>
+		</sprite>
+		<length value="1200" />
+		<looping value="false" />
+		<cast-shadows value="false" />
+		<shadow-cast-pos-x value="0" />
+		<shadow-cast-pos-y value="0" />
+		<shadow-cast-pos-jitter value="0 0 0 0" />
+		<size value="18*sin(t*pi)" />
+		<color-r value="0.5" />
+		<color-g value="0.08" />
+		<color-b value="0.02" />
+		<color-a value="0" />
+	</light>
+
+	<particle_spawner
+		layer="1"
+		spawn-rate="70"
+		length="900"
+		looping="false"
+		ttl="rpick(1200,2400)"
+		pos="6; -9; 0"
+		color-mul="0.9;0.9;0.88;0.75"
+		force-damping="rpick(0.5,1.5)"
+		rot-speed="rpick(-1,1)"
+		rot-damping="1"
+		angle="rpick(-pi,pi)"
+		>
+		<behaviors>
+			<spread_range radius="rpick(0,5)"/>
+			<force_dir dir="rpick(-0.08,0.08); rpick(-0.12,-0.04); 0"/>
+			<force_toward pos="0; 0; 0" mul="-rpick(0.005,0.015)"/>
+		</behaviors>
+		<particle src="effects/subeffects/particles_grayscale.unit:smoke_2_small-grow"/>
+		<particle src="effects/subeffects/particles_grayscale.unit:smoke_2_medium-grow"/>
+		<particle src="effects/subeffects/particles_grayscale.unit:smoke_2_large-grow"/>
+	</particle_spawner>
+</effect>

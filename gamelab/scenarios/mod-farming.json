@@ -10,7 +10,7 @@
  "steps": [
   {
    "do": "log_has",
-   "pattern": "\\[HWP:farming\\] self-check done: 9 seeds, 4 herb buffs",
+   "pattern": "\\[HWP:farming\\] self-check done: 8 seeds, 3 herb buffs",
    "timeout": 20
   },
   {

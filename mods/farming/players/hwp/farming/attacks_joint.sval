@@ -1,0 +1,51 @@
+<loader order="-2">Item::ItemSkillDef::LoadMultiple</loader>
+<!--
+	A joint's right click (the off-hand skill of every hwp_joint_* item). At the cast point
+	HWPJointPuff (scripts/HWP/Farming/Joint.as) lights the tip, leaves a haze indoors and, on
+	the smoker's machine, gives the strain's buff and burns the joint down a stage. Timeline
+	actions reach the other players too, so everyone sees the cloud and the red tip.
+	The cooldown outlasts the red tip (Joint.as LIT_MS), so one puff burns one stage.
+-->
+<array>
+	<dict>
+		<string name="name">.hwp.farming.joint.puff</string>
+		<string name="description">.hwp.farming.joint.puff.desc</string>
+		<array name="icon"><s>items/hwp/joint.png</s><i>100</i><vec4>0 0 24 24</vec4></array>
+		<string name="id">hwp_joint_puff</string>
+		<string name="type">offhand</string>
+		<array name="tags"><s>hwp_joint</s></array>
+
+		<dict name="skill">
+			<string name="class">Skills::PlayerSkillDirectional</string>
+			<string name="anim">offhand-tome</string>
+			<int name="anim-length">700</int>
+
+			<int name="cooldown">1700</int>
+			<float name="move-speed-mul">0.5</float>
+			<ivec2 name="move-speed">0 700</ivec2>
+			<float name="cast-speed-mul">1</float>
+			<ivec2 name="blocking">0 700</ivec2>
+			<int name="castpoint">250</int>
+			<ivec2 name="update-aim">0 1</ivec2>
+			<bool name="repeating">false</bool>
+			<int name="mana-cost">0</int>
+
+			<dict name="actions">
+				<array name="cast">
+					<dict>
+						<string name="class">HWPJointPuff</string>
+					</dict>
+					<dict>
+						<string name="class">SpawnEffect</string>
+						<string name="effect">effects/hwp/joint_puff.effect</string>
+						<bool name="attach-to-owner">true</bool>
+					</dict>
+				</array>
+			</dict>
+
+			<array name="timeline">
+				<i>250</i><s>cast</s>
+			</array>
+		</dict>
+	</dict>
+</array>

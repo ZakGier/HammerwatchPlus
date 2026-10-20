@@ -1,0 +1,39 @@
+<!-- HammerwatchPlus farming: a joint lying on the ground (scene = puffs left), its inventory icon. -->
+<unit slot="item">
+	<behavior class="Pickup">
+		<bool name="global">true</bool>
+		<bool name="secure">true</bool>
+	</behavior>
+	<scenes>
+		<scene name="joint_5">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="12 12" texture="items/hwp/joint.png" material="items/items.mats:item">
+				<frame>0 0 24 24</frame>
+			</sprite>
+		</scene>
+		<scene name="joint_4">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="12 12" texture="items/hwp/joint.png" material="items/items.mats:item">
+				<frame>24 0 24 24</frame>
+			</sprite>
+		</scene>
+		<scene name="joint_3">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="12 12" texture="items/hwp/joint.png" material="items/items.mats:item">
+				<frame>48 0 24 24</frame>
+			</sprite>
+		</scene>
+		<scene name="joint_2">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="12 12" texture="items/hwp/joint.png" material="items/items.mats:item">
+				<frame>72 0 24 24</frame>
+			</sprite>
+		</scene>
+		<scene name="joint_1">
+			<data name="sound"><s>event:/sfx/items/item_wood</s></data>
+			<sprite origin="12 12" texture="items/hwp/joint.png" material="items/items.mats:item">
+				<frame>96 0 24 24</frame>
+			</sprite>
+		</scene>
+	</scenes>
+</unit>

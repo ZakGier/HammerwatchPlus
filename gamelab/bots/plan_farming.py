@@ -8,8 +8,9 @@ Verbs_farming `tooltip` verb (the slot's own ShowTooltip, what hovering does).
 Sections, in this order:
   plan-farming-a: fa_char (LabFarmer), can_slot_before (s8, leaves the character screen open
   for a shot), farm_town, fields (s1), farmer_buy (s2), groove_plant (s2), can_slot_after (s8),
-  lucky_leaf (s7: plant, grow, harvest, smoke from a plot window), herb_loadout (s7: the
-  mission board's loadout, the run, the run after);
+  lucky_leaf (s7: plant, grow, harvest as many as drawn), joint (s7: roll one from the
+  Plants & Herbs cell, hold it, five puffs), herb_loadout (s7: the mission board's loadout,
+  the run, the floors left after it);
   plan-farming-b: wild_char (LabForager), wild_floor (s11, leaves the player on the plot for a
   shot), wild_use, wild_yield, wild_boss;
   plan-farming-c: wild_char, wild_rate (s11: floors with a plot at the default chance)."""
@@ -25,15 +26,19 @@ FARMER = "npc_misc_farmer_man"
 # the order the town builder offers them; each plot needs a built neighbour (BuildingPlot.IsBuildable)
 BUILDINGS = ["guild_hall", "tavern", "chapel", "blacksmith", "general_store", "magic_shop", "training_grounds",
              "apothecary", "trading_post", "library", "tailor", "hunters_cabin", "enchanter", "architect", "pyre"]
-# yieldMin, yieldMax per seed (FarmingModule.as DefineSeeds)
-YIELD = {"cabbage": (2, 4), "carrot": (3, 5), "onion": (2, 4), "potato": (3, 6), "wheat": (4, 8),
-         "lucky_leaf": (1, 2), "ember_kush": (1, 2), "saints_sage": (1, 2), "gamblers_gold": (1, 2)}
+# the seeds (FarmingModule.as DefineSeeds); a wild plot yields its WILD_PLANTS (3)
+YIELD = {k: (3, 3) for k in ("cabbage", "carrot", "onion", "potato", "wheat", "lucky_leaf", "ember_kush", "saints_sage")}
 HERB_SLOT = hash_string("hwp_herb")
 LUCKY_BUFF = hash_string("hwp_herb_lucky_leaf")
 REPO = Path(__file__).resolve().parents[2]
 # the wild plot units' minimap sprite (tools/make_wild_plots.py): the crop icon of core's map icons
 WILD_ICON = 'texture="gui/hwp/map_icons.png" frame="24 0 9 11"'
 WILD_LINE = r"\[HWP:farming\] (wild (\w+) plot at (-?\d+),(-?\d+)|no spot for a wild plot on this floor)"
+
+
+def plain(s):
+    """A game string without its colour codes (\\cRRGGBB, \\d)."""
+    return re.sub(r"\\c[0-9a-fA-F]{6}|\\d", "", s or "")
 
 
 def dist(a, b):
@@ -220,9 +225,11 @@ class Checks(Base):
 
     def can_slot_before(self):
         """s8: before any can the slot (core hwp-gear-can, nav-pos 2 2: the gear grid's bottom
-        right) is dimmed (HWPFarmCanSlot.Dim: CanTier <= 0, the same test as its tooltip text)
-        and says so. The character screen stays open for the shot."""
+        right) is empty, no icon (HWPFarmCanSlot.Icon: null while CanTier <= 0, the same test as
+        its tooltip text), and says so. The character screen stays open for the shot."""
         _, _, can = self.farm_status()
+        st = self.hwp("farm", 0.5, until="can slot: ")
+        self.flag("s8_slot_empty", "can slot: empty" in st, st.strip()[-40:])
         t = self.tooltip()
         texts = t.get("texts") or []
         self.flag("s8_slot_shown", t.get("ok") and "HWPGearSlotWidget" in t.get("widget", "") and t.get("visible"),
@@ -414,8 +421,8 @@ class Checks(Base):
                   f"{said}; tooltip {b}")
 
     def lucky_leaf(self):
-        """s7: a Lucky Leaf seed (150 g), planted on a wheat row, grown, harvested, smoked from
-        an empty plot's window."""
+        """s7: a Lucky Leaf seed (150 g), planted on a wheat row, grown, harvested: one herb a
+        plant drawn on the plot (CropSpots)."""
         self.set_gold(5000)
         self.shop()
         g0 = self.gold()
@@ -449,6 +456,7 @@ class Checks(Base):
                 break
             self.hwp("farm grow", 0.5, until="runs counted")
             planted, _, _ = self.farm_status()
+        drawn, _ = self.units("crops/lucky_leaf")
         # a ready plot harvests on use (HWPFarmPlot.Interact: RequestHarvest, no window); a
         # window means the use hit another plot
         mark = len(self.g.read_log())
@@ -462,28 +470,55 @@ class Checks(Base):
             got = re.findall(r"harvested (\d+)x lucky_leaf \(\+(\d+) seeds\)", self.g.read_log()[mark:])
             if got:
                 break
-        self.flag("s7_harvested", bool(got) and 1 <= int(got[-1][0]) <= 2,
-                  f"{planted!r}; plot {plot}; {got}; windows instead {missed}")
-        # smoke it from an empty plot's window (the herb rows come after the plant rows)
-        empty = order.index(gr["h"][-1])
-        w, _ = self.use_plot(gr["h"][-1], f"Farm Plot {empty + 1}")
-        rows = self.row_ids()
-        active0 = self.top_widget("active").get("text", "")
-        if rows:
-            self.gl("press", f"row-{rows[-1]}")
-            time.sleep(0.6)
-        active1 = self.top_widget("active").get("text", "")
-        msg = self.top_widget("message").get("text", "")
+        self.flag("s7_harvested", bool(got) and int(got[-1][0]) == len(drawn) > 0,
+                  f"{planted!r}; plot {plot}; {got}; {len(drawn)} plants drawn; windows instead {missed}")
+
+    def joint_status(self):
+        """hwp joint: (held "strain n/5" or "none", rolled, puffs, hazes, the herb line)."""
+        st = plain(self.hwp("joint", 0.4, until="joint: held"))
+        m = re.findall(r"joint: held (.*?), rolled (\d+), puffs (\d+), hazes (\d+).*?; (herb: .*)", st)
+        return m[-1] if m else ("?", "-1", "-1", "-1", "")
+
+    def joint(self):
+        """s7: click the Lucky Leaf cell under Plants & Herbs, "Roll J?" -> Huzzah! (the
+        dialog's yes), a 5/5 joint in the bag. Held in the off hand, each right click puffs:
+        the strain's buff for 10 floors, one stage burnt; the fifth puff smokes it down."""
         self.close_windows()
-        buff, n = self.herb_buff()
-        self.flag("s7_smoked", w == "HWPFarmMenu" and "Active herb: Lucky Leaf" in active1 and "smoke a Lucky Leaf" in msg and buff,
-                  f"{w}, rows {rows}; {active0!r} -> {active1!r}; {msg!r}; buff {buff} ({n} mission buffs)")
+        cell = self.gl("menu", "character", "material-inventory", "hwp-mat-crop-lucky_leaf")
+        n0 = cell.get("count")
+        self.gl("menu", "character", "material-inventory", "hwp-mat-crop-lucky_leaf", "!press")
+        time.sleep(0.8)
+        dlg = self.gl("state").get("window") or ""
+        self.gl("func", "yes")
+        time.sleep(0.6)
+        held, rolled, _, _, _ = self.joint_status()
+        bag = [it.get("id") for it in self.gl("bagitems").get("bag", [])]
+        n1 = self.gl("menu", "character", "material-inventory", "hwp-mat-crop-lucky_leaf").get("count")
+        self.close_windows()
+        self.flag("s7_joint_rolled", rolled == "1" and "hwp_joint_lucky_leaf_5" in bag,
+                  f"dialog {dlg!r}, count {n0} -> {n1}, rolled {rolled}, bag {bag}")
+        # from the bag, as a click on it does (joints are never generated: their conditional)
+        eq = self.gl("wield", "hwp_joint_lucky_leaf_5")
+        time.sleep(0.5)
+        held, _, _, _, _ = self.joint_status()
+        self.flag("s7_joint_held", held == "lucky_leaf 5/5", f"{held}; {json.dumps(eq)[:160]}")
+        stages = []
+        for _ in range(5):
+            self.gl("input", 300, 0, 0, 1, 0, "off")
+            time.sleep(2.4)  # cooldown 1700, the tip burns LIT_MS (1500) before the stage drops
+            held, _, puffs, hazes, herb = self.joint_status()
+            stages.append(held)
+        buff, _ = self.herb_buff()
+        self.flag("s7_joint_puffs", stages == ["lucky_leaf 4/5", "lucky_leaf 3/5", "lucky_leaf 2/5", "lucky_leaf 1/5", "none"]
+                  and puffs == "5" and buff and "lucky_leaf, 10 floor" in herb,
+                  f"{stages}, puffs {puffs}, hazes {hazes} (outdoors: none), {herb!r}, buff {buff}")
 
     def herb_loadout(self):
         """s7: the mission board's loadout (vanilla mission_start: SetMission + the loadout
         menu); the farming loadout segment lists the herb (HWPHerbLoadout). Its
         constructor empties the mission buffs (ResetForNewMission, GUI/MissionLoadoutMenu.as:207):
-        the farming fix puts the herb back. Then the run has it; after the run it is gone."""
+        the farming fix puts the herb back. Then the run has it; after the run it is still on,
+        with one floor fewer left (10 floors, bosses count)."""
         self.close_windows()
         mark = len(self.g.read_log())
         self.g.console("mission_start bandit_keep")
@@ -506,8 +541,10 @@ class Checks(Base):
         home = self.to_town()
         time.sleep(2)
         after, n = self.herb_buff()
+        herb = self.joint_status()[4]
         self.close_windows()
-        self.flag("s7_herb_gone_after_run", home and not after, f"town {home}, buff {after} ({n} mission buffs)")
+        self.flag("s7_herb_counts_floors", home and after and "lucky_leaf, 9 floor" in herb,
+                  f"town {home}, buff {after} ({n} mission buffs), {herb!r}")
 
     # --- plan-farming-b / -c
     def wild_char(self):
