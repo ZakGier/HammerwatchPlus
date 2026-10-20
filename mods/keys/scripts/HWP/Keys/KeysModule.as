@@ -1,13 +1,25 @@
 // Keys and ace chests: HoH1-style locked chests (HWPChest.as), key drops from
-// enemies, the exit guard's key shop (GeneralMerchant.as), a key counter in
-// the HUD and the ace chest's legendary payout.
+// enemies, the exit guard's key shop (GeneralMerchant.as), key counts in the
+// bottom HUD and the ace chest's legendary payout.
 //
-//   keys.drop   client -> host   { x, y, tier }   spawn a key pickup here
+//   keys.drop        client -> host   { x, y, tier, elite, boss }   a kill that may drop a key
+//   keys.pool_add    client -> host   { tier, n }    a key found (the imp's offer)
+//   keys.pool_spend  client -> host   { tier }       a chest opened with a party key
+//   keys.pool_get    client -> host   {}             send me the pool
+//   keys.pool        host -> all      { bronze, silver, gold, ace }
 //
-// Drop rolls happen on the killer's machine (the PlayerKilledActor hook only
-// fires for the local Player) and the host spawns the pickup; keys themselves
-// are a vanilla PlayerRecord field (GetKeys, saved by the game), changed only
-// through HWP::Keys::AddKeys / SetKeys (vanilla AddKeys corrupts the count).
+// Keys found in a run go into one party pool that the host owns: everyone
+// sees the same counts and any player can open a chest with them. The pool is
+// emptied when a new run starts. Keys bought from the General Merchant are the
+// buyer's own (a vanilla PlayerRecord field, GetKeys, saved by the game,
+// changed only through HWP::Keys::AddKeys / SetKeys: vanilla AddKeys corrupts
+// the count); a chest takes a party key first.
+//
+// Drops follow a per-floor budget: for each tier, a share of the floor's
+// locked chests (fewer than they need), minus the party keys already held.
+// The killer's machine sends elite kills and a few normal ones as candidates
+// (PlayerKilledActor only fires for the local Player) and the host drops keys
+// from them while the floor's budget lasts.
 // All keys.* settings are host-authoritative (HWP::Settings::Sync).
 namespace HWP
 {
@@ -85,11 +97,18 @@ namespace HWP
 		bool g_enabled = true;
 		bool g_debug = false;
 		float g_lockChance = 1.0f;
-		float g_dropMult = 2.5f;
+		float g_budgetShare = 0.5f;     // share of a floor's locked chests that get a key (solo)
+		float g_budgetPerPlayer = 0.1f; // added per extra player
+		float g_normalTry = 0.04f;      // share of normal kills sent as drop candidates
+		float g_accept = 0.4f;          // host: chance a candidate drops a key while the budget lasts
 		float g_aceChance = 0.15f;
 		float g_legendaryChance = 0.5f;
 
 		int g_chestsLocked = 0;     // this level, for hwp keys
+		array<int> g_lockedTier(4, 0);     // this level's locked chests per tier (HWPChest.Decide)
+		array<int> g_droppedTier(4, 0);    // host: budget keys dropped this level per tier
+		array<int> g_floorStartPool(4, 0); // host: party keys held when the level started
+		array<int> g_pool(4, 0);           // the party pool (host: the truth; clients: its copy)
 		int g_bossKeyLevel = -1;    // level index whose boss already rolled its key (killer side)
 		int g_hostBossLevel = -1;   // host: level index of the boss drops below
 		int g_hostBossMask = 0;     // host: 1 = the boss key for g_hostBossLevel dropped
@@ -112,7 +131,10 @@ namespace HWP
 			g_enabled = HWP::Settings::GetBool("keys.enabled", true);
 			g_debug = HWP::Settings::GetBool("keys.debug", false);
 			g_lockChance = clamp(HWP::Settings::GetFloat("keys.lock_chance", 1.0f), 0.0f, 1.0f);
-			g_dropMult = clamp(HWP::Settings::GetFloat("keys.drop_mult", 2.5f), 0.0f, 50.0f);
+			g_budgetShare = clamp(HWP::Settings::GetFloat("keys.budget_share", 0.5f), 0.0f, 1.0f);
+			g_budgetPerPlayer = clamp(HWP::Settings::GetFloat("keys.budget_per_player", 0.1f), 0.0f, 1.0f);
+			g_normalTry = clamp(HWP::Settings::GetFloat("keys.normal_try", 0.04f), 0.0f, 1.0f);
+			g_accept = clamp(HWP::Settings::GetFloat("keys.accept", 0.4f), 0.0f, 1.0f);
 			g_aceChance = clamp(HWP::Settings::GetFloat("keys.ace_chance", 0.15f), 0.0f, 1.0f);
 			g_legendaryChance = clamp(HWP::Settings::GetFloat("keys.legendary_chance", 0.5f), 0.0f, 1.0f);
 		}
@@ -255,21 +277,25 @@ namespace HWP
 			return (actor.Tags & ApplyTag(0, g_actorTags.GetTag(tag))) != 0;
 		}
 
-		void RequestDrop(vec2 pos, int tier, bool boss = false)
+		// tier 0: a budget candidate (the host picks the tier); with boss, the boss key's tier
+		void RequestDrop(vec2 pos, int tier, bool elite, bool boss)
 		{
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushFloat("x", pos.x);
 			b.PushFloat("y", pos.y);
 			b.PushInteger("tier", tier);
+			b.PushInteger("elite", elite ? 1 : 0);
 			b.PushInteger("boss", boss ? 1 : 0);
 			b.PopDictionary();
 			HWP::Net::Request(DROP, b.Build());
 		}
 
-		// Local killer rolls; normal / elite / boss tables. The first boss-tagged
-		// kill on a level has a keys.boss_chance (20%) roll for a BossTier() key;
-		// later boss-tagged units of the same encounter roll as elites.
+		// Local killer: the first boss-tagged kill on a level has a
+		// keys.boss_chance (20%) roll for a BossTier() key, outside the budget;
+		// later boss-tagged units of the same encounter count as elites. Elite
+		// kills and keys.normal_try of the normal ones go to the host as
+		// candidates for the floor's budget (OnDropRequest).
 		void OnKill(Player@ player, Actor@ killed)
 		{
 			if (!g_enabled || g_inTown || player is null || killed is null)
@@ -288,30 +314,218 @@ namespace HWP
 				{
 					g_bossKeyLevel = level;
 					if (randf() < clamp(HWP::Settings::GetFloat("keys.boss_chance", 0.2f), 0.0f, 1.0f))
-						RequestDrop(pos, BossTier(), true);
+						RequestDrop(pos, BossTier(), false, true);
 					return;
 				}
 				elite = true;
 			}
+			if (elite || randf() < g_normalTry)
+				RequestDrop(pos, 0, elite, false);
+		}
 
-			// keys.drop_mult scales the base rates below (every chest wants a key)
-			float r = randf() / max(g_dropMult, 0.0001f);
+		// ---- the floor's key budget (host) ---------------------------------------
+
+		int PartySize()
+		{
+			int n = 0;
+			for (uint i = 0; i < g_players.length(); i++)
+				if (g_players[i] !is null && g_players[i].peer != 255)
+					n++;
+			return max(1, n);
+		}
+
+		// Keys this floor may still drop of a tier: the floor's locked chests of
+		// that tier times the party's share, its fraction rounded up or down by a
+		// hash roll, minus the party keys of that tier held when the floor
+		// started and the ones dropped since. Recomputed per call, so chests
+		// that lock after the level starts still count.
+		int BudgetTotal(int tier)
+		{
+			float share = clamp(g_budgetShare + g_budgetPerPlayer * (PartySize() - 1), 0.0f, 0.95f);
+			float want = g_lockedTier[tier - 1] * share;
+			int budget = int(floor(want));
+			string seed = MissionManager::g_module is null ? "" : ("" + MissionManager::g_module.m_missionRewardSeed + ":" + CurrentLevel());
+			if (float(HashString("keys.budget:" + seed + ":" + tier) % 10000) / 10000.0f < want - budget)
+				budget++;
+			return max(0, budget - g_floorStartPool[tier - 1]);
+		}
+
+		int BudgetLeft(int tier)
+		{
+			return max(0, BudgetTotal(tier) - g_droppedTier[tier - 1]);
+		}
+
+		// A tier with budget left, weighted by what is left; elites take the
+		// highest such tier. 0 = the budget is spent.
+		int PickBudgetTier(bool elite)
+		{
+			array<int> left(4, 0);
+			int total = 0;
+			for (int t = 1; t <= 4; t++)
+			{
+				left[t - 1] = BudgetLeft(t);
+				total += left[t - 1];
+			}
+			if (total == 0)
+				return 0;
 			if (elite)
 			{
-				if (r < 0.03f)
-					RequestDrop(pos, 3);
-				else if (r < 0.08f)
-					RequestDrop(pos, 2);
-				else if (r < 0.16f)
-					RequestDrop(pos, 1);
+				for (int t = 4; t >= 1; t--)
+					if (left[t - 1] > 0)
+						return t;
+			}
+			int r = randi(total);
+			for (int t = 1; t <= 4; t++)
+			{
+				r -= left[t - 1];
+				if (r < 0)
+					return t;
+			}
+			return 0;
+		}
+
+		// ---- the party pool ------------------------------------------------------
+
+		const string POOL = "keys.pool";
+		const string POOL_ADD = "keys.pool_add";
+		const string POOL_SPEND = "keys.pool_spend";
+		const string POOL_GET = "keys.pool_get";
+		const string BAG_POOL = "keys.pool";
+		const string BAG_POOL_RUN = "keys.pool_run";
+
+		int PoolCount(int tier) { return ValidTier(tier) ? g_pool[tier - 1] : 0; }
+
+		// party keys plus the local player's own (bought) keys
+		int UsableKeys(PlayerRecord@ rec, int tier)
+		{
+			return PoolCount(tier) + (rec is null ? 0 : rec.GetKeys(TIERS[tier - 1]));
+		}
+
+		// which run the pool belongs to: a new reward seed is a new run
+		string RunId()
+		{
+			if (MissionManager::g_module is null)
+				return "";
+			return "" + MissionManager::g_module.m_missionRewardSeed;
+		}
+
+		SValue@ PoolData()
+		{
+			SValueBuilder b;
+			b.PushDictionary();
+			for (uint t = 0; t < 4; t++)
+				b.PushInteger(TIERS[t], g_pool[t]);
+			b.PopDictionary();
+			return b.Build();
+		}
+
+		// host: keep the pool on the host's own record (it outlives the level)
+		// and tell everyone
+		void PoolChanged()
+		{
+			if (!Network::IsServer())
+				return;
+			auto rec = GetLocalPlayerRecord();
+			if (rec !is null)
+			{
+				auto bag = HWP::SaveData::Player(rec);
+				bag.SetString(BAG_POOL, g_pool[0] + "," + g_pool[1] + "," + g_pool[2] + "," + g_pool[3]);
+				bag.SetString(BAG_POOL_RUN, RunId());
+			}
+			HWP::Net::Broadcast(POOL, PoolData());
+		}
+
+		// host, level start: the run's pool, or an empty one in town and when a
+		// new run started
+		void PoolLevelStart()
+		{
+			for (uint t = 0; t < 4; t++)
+				g_pool[t] = 0;
+			auto rec = GetLocalPlayerRecord();
+			if (!g_inTown && rec !is null)
+			{
+				auto bag = HWP::SaveData::Player(rec);
+				if (bag.GetString(BAG_POOL_RUN, "") == RunId())
+				{
+					auto parts = bag.GetString(BAG_POOL, "").split(",");
+					for (uint t = 0; t < 4 && t < parts.length(); t++)
+						g_pool[t] = max(0, min(999, parseInt(parts[t])));
+				}
+			}
+			for (uint t = 0; t < 4; t++)
+			{
+				g_floorStartPool[t] = g_pool[t];
+				g_droppedTier[t] = 0;
+			}
+			PoolChanged();
+		}
+
+		void PoolAdd(int tier, int n)
+		{
+			if (!ValidTier(tier) || n <= 0)
+				return;
+			if (!Network::IsServer())
+			{
+				SValueBuilder b;
+				b.PushDictionary();
+				b.PushInteger("tier", tier);
+				b.PushInteger("n", n);
+				b.PopDictionary();
+				HWP::Net::Request(POOL_ADD, b.Build());
 				return;
 			}
-			if (r < 0.001f)
-				RequestDrop(pos, 3);
-			else if (r < 0.0035f)
-				RequestDrop(pos, 2);
-			else if (r < 0.0095f)
-				RequestDrop(pos, 1);
+			g_pool[tier - 1] = min(999, g_pool[tier - 1] + n);
+			PoolChanged();
+		}
+
+		// host: take one party key; false when the pool has none of that tier
+		bool PoolTake(int tier)
+		{
+			if (!Network::IsServer() || PoolCount(tier) <= 0)
+				return false;
+			g_pool[tier - 1]--;
+			PoolChanged();
+			return true;
+		}
+
+		void OnPoolEvent(SValue@ data)
+		{
+			for (uint t = 0; t < 4; t++)
+				g_pool[t] = max(0, HWP::SV::Int(data, TIERS[t], 0));
+			RefreshHUD();
+		}
+
+		void OnPoolAddRequest(uint8 peer, SValue@ data)
+		{
+			if (!Network::IsServer() || !g_enabled || RateLimited(peer))
+				return;
+			PoolAdd(HWP::SV::Int(data, "tier", 0), min(5, HWP::SV::Int(data, "n", 1)));
+		}
+
+		void OnPoolSpendRequest(uint8 peer, SValue@ data)
+		{
+			if (Network::IsServer())
+				PoolTake(HWP::SV::Int(data, "tier", 0));
+		}
+
+		void OnPoolGetRequest(uint8 peer, SValue@ data)
+		{
+			if (Network::IsServer())
+				HWP::Net::Send(peer, POOL, PoolData());
+		}
+
+		// A key picked up or given in a run goes to the pool (only the host
+		// adds: a secure pickup is applied there), in town to the record.
+		void GiveFoundKey(PlayerRecord@ rec, int tier, int n)
+		{
+			if (g_inTown)
+			{
+				if (rec !is null && rec.local)
+					AddKeys(rec, TIERS[tier - 1], n);
+				return;
+			}
+			if (Network::IsServer())
+				PoolAdd(tier, n);
 		}
 
 		// host: a flood guard, not a fairness rule - honest play stays far
@@ -343,7 +557,8 @@ namespace HWP
 			if (!Network::IsServer() || !g_enabled)
 				return;
 			int tier = HWP::SV::Int(data, "tier", 0);
-			if (!ValidTier(tier))
+			bool boss = HWP::SV::Int(data, "boss", 0) != 0;
+			if (boss ? !ValidTier(tier) : tier != 0)
 				return;
 			if (RateLimited(peer))
 			{
@@ -352,7 +567,7 @@ namespace HWP
 			}
 			// the boss drops are once per level for the whole lobby, whoever
 			// landed the killing blow (every killer's machine asks)
-			if (HWP::SV::Int(data, "boss", 0) != 0)
+			if (boss)
 			{
 				int level = CurrentLevel();
 				if (g_hostBossLevel != level)
@@ -363,6 +578,15 @@ namespace HWP
 				if (g_hostBossMask != 0)
 					return;
 				g_hostBossMask = 1;
+			}
+			else
+			{
+				if (randf() >= g_accept)
+					return;
+				tier = PickBudgetTier(HWP::SV::Int(data, "elite", 0) != 0);
+				if (tier == 0)
+					return;
+				g_droppedTier[tier - 1]++;
 			}
 			SpawnKey(vec2(HWP::SV::Float(data, "x"), HWP::SV::Float(data, "y")), tier);
 		}
@@ -469,7 +693,20 @@ namespace HWP
 			auto rec = GetLocalPlayerRecord();
 			if (rec is null)
 				return;
-			HWP::Commands::Reply(Counts(rec, ".hwp.keys.status") + "; locked chests this level: " + g_chestsLocked);
+			string info = Counts(rec, ".hwp.keys.status") + "; party pool";
+			for (int t = 1; t <= 4; t++)
+				info += " " + TIERS[t - 1] + " " + PoolCount(t);
+			info += "; locked chests this level: " + g_chestsLocked;
+			for (int t = 1; t <= 4; t++)
+				info += " " + TIERS[t - 1] + " " + g_lockedTier[t - 1];
+			if (Network::IsServer())
+			{
+				info += "; budget (left/total)";
+				for (int t = 1; t <= 4; t++)
+					info += " " + TIERS[t - 1] + " " + BudgetLeft(t) + "/" + BudgetTotal(t);
+				info += ", party " + PartySize();
+			}
+			HWP::Commands::Reply(info);
 		}
 
 		// debug: hwp keygive <tier> [n]  and  hwp keydrop <tier>
@@ -509,20 +746,30 @@ namespace HWP
 			auto rec = GetLocalPlayerRecord();
 			if (tier == 0 || rec is null || rec.actor is null)
 				return;
-			RequestDrop(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier);
+			if (Network::IsServer())
+				SpawnKey(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier);
+			else
+				RequestDrop(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier, false, true);
 		}
 	}
 }
 
+// Key counts left of the bottom bar: one key icon per tier you can use (party
+// pool + your own), with its count.
 class HWPKeysHUD : HUDComponent
 {
-	TextWidget@ m_text;
+	array<Widget@> m_slots;
+	array<TextWidget@> m_counts;
 	int m_acc = 0;
 
 	HWPKeysHUD(GUIBuilder@ b)
 	{
 		super(b, "gui/hwp_keys.gui");
-		@m_text = cast<TextWidget>(m_widget.GetWidgetById("text"));
+		for (uint t = 0; t < HWP::Keys::TIERS.length(); t++)
+		{
+			m_slots.insertLast(m_widget.GetWidgetById("slot-" + HWP::Keys::TIERS[t]));
+			m_counts.insertLast(cast<TextWidget>(m_widget.GetWidgetById("count-" + HWP::Keys::TIERS[t])));
+		}
 		m_visible = false;
 	}
 
@@ -533,10 +780,24 @@ class HWPKeysHUD : HUDComponent
 			m_visible = false;
 			return;
 		}
-		int total = record.GetKeys("bronze") + record.GetKeys("silver") + record.GetKeys("gold") + record.GetKeys("ace");
-		m_visible = total > 0;
-		if (m_visible)
-			m_text.SetText(HWP::Keys::Counts(record, ".hwp.keys.hud"));
+		// shown tiers pack to the right, against the bar
+		int shown = 0;
+		for (int t = int(m_slots.length()); t >= 1; t--)
+		{
+			auto slot = m_slots[t - 1];
+			auto count = m_counts[t - 1];
+			if (slot is null || count is null)
+				continue;
+			int n = HWP::Keys::UsableKeys(record, t);
+			slot.m_visible = n > 0;
+			if (n <= 0)
+				continue;
+			count.SetText("" + n);
+			slot.m_offset = vec2(-shown * 30, 0);
+			slot.Invalidate();
+			shown++;
+		}
+		m_visible = shown > 0;
 	}
 
 	void Update(int dt, PlayerRecord@ record) override
@@ -578,10 +839,16 @@ namespace Modules
 			// per level, before the scene's chests count themselves (they lock
 			// while the level loads, ahead of ModuleStart::Start)
 			HWP::Keys::g_chestsLocked = 0;
+			for (uint t = 0; t < 4; t++)
+				HWP::Keys::g_lockedTier[t] = 0;
 			HWP::Settings::Sync("keys.");
 			HWP::Keys::RefreshSettings();
 			HWP::Net::OnRequest(HWP::Keys::DROP, HWP::Net::RequestHandler(HWP::Keys::OnDropRequest));
 			HWP::Net::OnRequest(HWP::Keys::COUNT, HWP::Net::RequestHandler(HWP::Keys::OnCountRequest));
+			HWP::Net::OnRequest(HWP::Keys::POOL_ADD, HWP::Net::RequestHandler(HWP::Keys::OnPoolAddRequest));
+			HWP::Net::OnRequest(HWP::Keys::POOL_SPEND, HWP::Net::RequestHandler(HWP::Keys::OnPoolSpendRequest));
+			HWP::Net::OnRequest(HWP::Keys::POOL_GET, HWP::Net::RequestHandler(HWP::Keys::OnPoolGetRequest));
+			HWP::Net::OnEvent(HWP::Keys::POOL, HWP::Net::EventHandler(HWP::Keys::OnPoolEvent));
 			HWP::Commands::Register("keys", " show your keys and the chest lock settings", HWP::Commands::Handler(HWP::Keys::CmdKeys));
 			HWP::Commands::Register("keygive", "<tier> [n]  (debug) give yourself keys", HWP::Commands::Handler(HWP::Keys::CmdKeyGive));
 			HWP::Commands::Register("keydrop", "<tier>  (debug) drop a key at your feet", HWP::Commands::Handler(HWP::Keys::CmdKeyDrop));
@@ -600,6 +867,10 @@ namespace Modules
 			HWP::Keys::g_dropTime.removeRange(0, HWP::Keys::g_dropTime.length());
 			HWP::Keys::SelfCheck();
 			HWP::Keys::TrinketsLevelStart();
+			if (Network::IsServer())
+				HWP::Keys::PoolLevelStart();
+			else
+				HWP::Net::Request(HWP::Keys::POOL_GET);
 		}
 
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
@@ -619,9 +890,8 @@ namespace Modules
 }
 
 // One of the imp's random offers (WorldScript/Imp.as reflects over every
-// ImpEffect): a key of the floor's tier. Imp::Use runs on the user's own
-// machine, so the key goes straight into the local record; the count reaches
-// the host with the next keys.count poll.
+// ImpEffect): a key of the floor's tier for the party pool. Imp::Use runs on
+// the user's own machine; a client asks the host to add it (keys.pool_add).
 class HWPImpKeyEffect : ImpEffect
 {
 	bool IsAllowed(Player@ plr, float diffLvl)
@@ -633,7 +903,7 @@ class HWPImpKeyEffect : ImpEffect
 	{
 		int tier = HWP::Keys::FloorTier();
 		string key = HWP::Keys::TIERS[tier - 1];
-		HWP::Keys::AddKeys(plr.m_record, key, 1);
+		HWP::Keys::PoolAdd(tier, 1);
 		string name = Resources::GetString(".item.key." + key);
 		LootLog::PresentPickup(plr.m_record, name, 1);
 		HWP::Keys::RefreshHUD();

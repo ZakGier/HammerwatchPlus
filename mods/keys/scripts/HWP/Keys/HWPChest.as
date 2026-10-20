@@ -102,6 +102,7 @@ class HWPChest : Chest
 			m_unit.SetMultiplyColor(vec4(1.0f, 0.45f, 0.45f, 1.0f));
 		SpawnLock(pos);
 		HWP::Keys::g_chestsLocked++;
+		HWP::Keys::g_lockedTier[m_tier - 1]++;
 	}
 
 	void SpawnLock(vec3 pos)
@@ -120,7 +121,7 @@ class HWPChest : Chest
 		if (m_key.isEmpty() || !m_unit.IsValid() || m_unit.IsDestroyed())
 			return null;
 		auto rec = GetLocalPlayerRecord();
-		if (rec is null || rec.GetKeys(m_key) > 0)
+		if (rec is null || HWP::Keys::UsableKeys(rec, m_tier) > 0)
 			return null;
 		if (m_lockTooltip is null)
 		{
@@ -131,29 +132,31 @@ class HWPChest : Chest
 		return m_lockTooltip;
 	}
 
-	// Keys live in each player's own PlayerRecord and are never networked, so
-	// the host's copy of a remote player (PlayerHusk) always reports 0 keys.
+	// A party key (the pool, HWP::Keys::g_pool, the same on every machine)
+	// opens any locked chest; so does the player's own bought key. Own keys
+	// live in each player's PlayerRecord and are never networked, so the
+	// host's copy of a remote player (PlayerHusk) always reports 0 of them.
 	// Clients report their counts (keys.count, HWP::Keys::SendKeyCounts) and
 	// the host checks a husk against those; a client standing at a locked
 	// chest re-sends its counts the moment they differ so the host is never
 	// behind.
 	bool CanUse(PlayerBase@ player) override
 	{
+		if (!m_unit.IsValid() || m_unit.IsDestroyed())
+			return false;
+		if (m_key.isEmpty())
+			return true;
+		if (HWP::Keys::PoolCount(m_tier) > 0)
+			return true;
+		if (player.m_record is null)
+			return false;
 		auto husk = cast<PlayerHusk>(player);
 		if (husk !is null)
-		{
-			if (!m_unit.IsValid() || m_unit.IsDestroyed())
-				return false;
-			if (m_key.isEmpty())
-				return true;
-			if (husk.m_record is null)
-				return false;
 			return HWP::Keys::HostKeyCount(husk.m_record.peer, m_key) > 0;
-		}
 		// CanUse is polled every frame (HUD + use prompt): only send when the
 		// counts differ from what the host already has
-		bool ok = Chest::CanUse(player);
-		if (ok && !m_key.isEmpty() && !Network::IsServer())
+		bool ok = player.m_record.GetKeys(m_key) > 0;
+		if (ok && !Network::IsServer())
 			HWP::Keys::SendKeyCounts(false);
 		return ok;
 	}
@@ -173,13 +176,30 @@ class HWPChest : Chest
 		if (m_tier > 0)
 			HWP::Keys::OnUnlocked(player, m_tier);
 
-		// Chest::Use spends the key with vanilla AddKeys, which corrupts the count:
-		// the count from before is put back minus one
+		// A party key goes first: the host takes it from the pool (the opener's
+		// client asks it to), and every machine decides the same way from its
+		// copy of the pool. Else the opener's own key is spent. Chest::Use
+		// spends one with vanilla AddKeys, which corrupts the count: the count
+		// from before is put back, minus one when it was the opener's own key.
+		bool party = !m_key.isEmpty() && HWP::Keys::PoolCount(m_tier) > 0;
+		if (party)
+		{
+			if (Network::IsServer())
+				HWP::Keys::PoolTake(m_tier);
+			else if (player.m_record.local)
+			{
+				SValueBuilder b;
+				b.PushDictionary();
+				b.PushInteger("tier", m_tier);
+				b.PopDictionary();
+				HWP::Net::Request(HWP::Keys::POOL_SPEND, b.Build());
+			}
+		}
 		int before = m_key.isEmpty() ? 0 : player.m_record.GetKeys(m_key);
 		Chest::Use(player);
 		if (!m_key.isEmpty() && player.m_record.local)
 		{
-			HWP::Keys::SetKeys(player.m_record, m_key, before - 1);
+			HWP::Keys::SetKeys(player.m_record, m_key, party ? before : before - 1);
 			HWP::Keys::RefreshHUD();
 		}
 	}

@@ -1,0 +1,208 @@
+{
+ "name": "mod-keys-pool",
+ "about": "Keys in a run: found keys go to the party pool, the host reports the floor's budget from its locked chests, a budget-capped drop pass (cull mine with keys.accept 1), a spawned bronze chest opened with the party key while own keys stay, and the bottom HUD key icons (shots hud, hud_after).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "keys"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.debug 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "log_has",
+   "pattern": "party pool bronze 0 silver 0 gold 0 ace 0; locked chests this level: \\d+",
+   "timeout": 8,
+   "name": "pool starts empty, chests counted per tier"
+  },
+  {
+   "do": "log_has",
+   "pattern": "budget \\(left/total\\)",
+   "timeout": 5,
+   "name": "host reports the floor budget"
+  },
+  {
+   "do": "console",
+   "line": "hwp set keys.accept 1"
+  },
+  {
+   "do": "gl",
+   "verb": "cull",
+   "args": [
+    "mine"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 4
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "items/chests/chest_bronze_trinket.unit",
+    "40",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp keydrop bronze"
+  },
+  {
+   "do": "log_has",
+   "pattern": "dropped a bronze key",
+   "timeout": 8,
+   "name": "keydrop"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "200",
+    "key_bronze"
+   ],
+   "save_as": "keynear",
+   "expect": {
+    "units.0.name": "items/hwp/keys/key_bronze.unit"
+   },
+   "name": "dropped key on the ground"
+  },
+  {
+   "do": "pilot",
+   "call": "use",
+   "args": [
+    "{$keynear.units.0.unit}"
+   ],
+   "timeout": 15
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Keys: bronze 0, silver 0, gold 0, ace 0.*party pool bronze 1 ",
+   "timeout": 5,
+   "name": "picked-up key went to the party pool, not the record"
+  },
+  {
+   "do": "console",
+   "line": "hwp keygive gold 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "hud"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "300",
+    "chest_bronze"
+   ],
+   "save_as": "chest"
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "chest_bronze_trinket"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "unlocked a bronze chest",
+   "timeout": 8,
+   "name": "chest opened"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp keys"
+  },
+  {
+   "do": "log_has",
+   "pattern": "Keys: bronze 0, silver 0, gold 2, ace 0.*party pool bronze 0 ",
+   "timeout": 5,
+   "name": "the chest took the party key, own keys untouched"
+  },
+  {
+   "do": "shot",
+   "name": "hud_after"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

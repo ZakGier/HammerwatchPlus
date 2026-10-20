@@ -1657,3 +1657,21 @@ Status: measured where a run is cited; the rest says which run checks it.
   (HWR2GameMode.as:260), what PickCharacterWindow's new-character button calls (:261). The new
   gamelab-hands verb `charcreate` calls it. look-class-list 20261020-002117 frame `classlist`
   shows the Firearms Specialist selected among the vanilla figures, the same size as theirs.
+
+## Party key pool and floor key budget (2026-10-20)
+
+- **Found keys go into one party pool on the host** (`HWP::Keys::g_pool`), kept in the host
+  record's bag (`keys.pool`, plus `keys.pool_run` = `m_missionRewardSeed`, so a new run or
+  town clears it) and broadcast as the `keys.pool` event. Clients ask for it at level start
+  (`keys.pool_get`) and ask the host to spend one (`keys.pool_spend`) when they open a chest
+  with it. Bought keys stay on the buyer's record, as in vanilla.
+- **The budget is per floor and per tier:** `floor(locked × share)` plus the fraction rounded by
+  a hash roll, minus the party keys of that tier held when the floor started, where share =
+  `keys.budget_share` 0.5 + `keys.budget_per_player` 0.1 × (players − 1), at most 0.95. The
+  floor's locked chests are counted as `HWPChest` locks them (`g_lockedTier`).
+- **mod-keys-pool 20261020-003440 (bandit_keep floor 1, solo):** 3 locked bronze chests, budget
+  bronze 2. With `keys.accept 1`, culling the floor dropped exactly 2 bronze keys, then no more
+  (budget 0/2). A key from `hwp keydrop` went into the pool (record bronze 0, pool bronze 1),
+  and opening a bronze chest took the pool key and left the 2 bought gold keys alone. Shots
+  `hud` and `hud_after` show the key icons left of the skill bar (bronze 1 and gold 2, then
+  gold 2).

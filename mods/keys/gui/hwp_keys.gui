@@ -1,9 +1,30 @@
 <gui>
+	<sprites>
+		<sprite name="hwp-key-bronze" texture="items/special/base.png"><frame>0 0 16 16</frame></sprite>
+		<sprite name="hwp-key-silver" texture="items/special/base.png"><frame>16 0 16 16</frame></sprite>
+		<sprite name="hwp-key-gold" texture="items/special/base.png"><frame>32 0 16 16</frame></sprite>
+		<sprite name="hwp-key-ace" texture="items/special/base.png"><frame>112 16 16 16</frame></sprite>
+	</sprites>
 	<doc>
-		<group id="root" anchor="1 0" offset="-6 44">
-			<rect id="bg" width="150" height="12" anchor="1 0" color="#00000060">
-				<text id="text" text="" color="#d0d0d0" font="text" align="right" anchor="1 0.5" offset="-3 0" width="144" />
-			</rect>
+		<!-- left of the bottom bar (player_info.gui: 248 wide with two skills, 279 with three);
+		     KeysModule.as packs the shown slots against its right edge -->
+		<group id="root" anchor="0.5 1" offset="-206 -6" width="120" height="18">
+			<group id="slot-bronze" anchor="1 0.5" width="28" height="18" visible="false">
+				<sprite anchor="0 0.5" offset="0 0" src="hwp-key-bronze" />
+				<text id="count-bronze" text="" color="#e8c8a0" font="text" align="left" anchor="0 0.5" offset="16 1" width="12" />
+			</group>
+			<group id="slot-silver" anchor="1 0.5" width="28" height="18" visible="false">
+				<sprite anchor="0 0.5" offset="0 0" src="hwp-key-silver" />
+				<text id="count-silver" text="" color="#e0e4ee" font="text" align="left" anchor="0 0.5" offset="16 1" width="12" />
+			</group>
+			<group id="slot-gold" anchor="1 0.5" width="28" height="18" visible="false">
+				<sprite anchor="0 0.5" offset="0 0" src="hwp-key-gold" />
+				<text id="count-gold" text="" color="#ffe080" font="text" align="left" anchor="0 0.5" offset="16 1" width="12" />
+			</group>
+			<group id="slot-ace" anchor="1 0.5" width="28" height="18" visible="false">
+				<sprite anchor="0 0.5" offset="0 0" src="hwp-key-ace" />
+				<text id="count-ace" text="" color="#ff9080" font="text" align="left" anchor="0 0.5" offset="16 1" width="12" />
+			</group>
 		</group>
 	</doc>
 </gui>
