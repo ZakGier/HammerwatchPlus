@@ -31,7 +31,10 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   The secondary is an under-barrel grenade launcher: 4 mana, 1.5 s cooldown,
   no rounds. Its shell arms after 40 px of flight (`Launcher.as`
   `HWPFirearmsArm`): point-blank it hits the first enemy as a slug for half
-  damage and a 0.5 s stun, with no blast; a wall sets it off either way. Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
+  damage and a 0.5 s stun, with no blast; a wall sets it off either way. On the
+  skill bar the off-hand slot shows the launcher close-up of the rifle's tier,
+  unmirrored, in place of the mirrored rifle (`LauncherHUD.as`; the inventory
+  keeps the rifle's icon). Dex-gated, crossbow anim set, tag `hwp_firearm`. The t1
   rifle sits in the armory pool. A new character starts with one Service
   Pistol (`hwp_glock_mh_01`) in the main hand. Every weapon type is allowed.
 - **Pistols:** `hwp_glock_mh_01/02/03`, one item for either hand, 10 rounds each.
@@ -131,7 +134,7 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   - Icons are built by `tools/make_firearms_icons.py` into
     `players/hwp/firearms/icons.png` (skills, orbs, attacks) and
     `items/hwp/firearms_items.png`. The items atlas has the guns in row 0 and
-    the launcher close-ups `rifle_gl_0N`, meant for the off-hand slot, in
+    the launcher close-ups `rifle_gl_0N`, the skill bar's off-hand slot, in
     row 1. Hand-drawn art in `art/firearms/override/` wins over the
     `art/firearms/sprites.txt` placeholders; a preview of both sheets goes in
     `art/firearms/preview.png`. To hand-draw one, save a 24x24 PNG

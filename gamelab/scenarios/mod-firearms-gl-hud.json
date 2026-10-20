@@ -1,0 +1,157 @@
+{
+ "name": "mod-firearms-gl-hud",
+ "about": "The rifle's off-hand slot on the skill bar shows the grenade launcher close-up of the rifle's tier (items/hwp/firearms_items.png row 1), unmirrored, instead of the rifle mirrored (LauncherHUD.as); the inventory keeps the rifle's own icon.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 120,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Launcher"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] self-check done",
+   "timeout": 20
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_rifle_01",
+    "1",
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] launcher close-up on the off-hand slot: tier 1",
+   "timeout": 5
+  },
+  {
+   "do": "shot",
+   "name": "hud_t1"
+  },
+  {
+   "do": "gl",
+   "verb": "levelup",
+   "args": [
+    "24"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "assign",
+   "args": [
+    "dex",
+    "all"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_rifle_02",
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] launcher close-up on the off-hand slot: tier 2",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "skills",
+   "save_as": "rifle"
+  },
+  {
+   "do": "shot",
+   "name": "hud_rifle"
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_rifle_03",
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:firearms\\] launcher close-up on the off-hand slot: tier 3",
+   "timeout": 5
+  },
+  {
+   "do": "shot",
+   "name": "hud_epic"
+  },
+  {
+   "do": "gl",
+   "verb": "menu",
+   "args": [
+    "character",
+    "equipment-inventory"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "shot",
+   "name": "inventory"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 0.8
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}
