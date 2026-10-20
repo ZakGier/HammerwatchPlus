@@ -276,7 +276,8 @@ class Checks(Base):
     # --- Assault: Critical Focus, EpiPen
     def orbs_assault(self):
         """Critical Focus (level 3) rolls 1.5% crit per adrenaline stack; EpiPen (level 2)
-        gives 15 stacks on a dodge with none, and nothing on a dodge with some."""
+        gives 15 stacks on a dodge with none, and nothing on a dodge with some; its fuse hiss
+        stops at 2 s (faded out from 1 s; the lab is muted, so only the logged stop is seen)."""
         self.new_char("LabOrbAssault", "hwp_firearms_assault")
         if not self.enter_floor("orbs_assault"):
             return
@@ -300,6 +301,7 @@ class Checks(Base):
         self.gl("input", 120, -d[0], -d[1], -d[0], -d[1], "dash")
         m1 = self.wait_log(r"adrenaline: epipen, (\d+) stacks", pos, 2.0)
         s1 = self.stacks("adrenaline")
+        hiss = self.wait_log(r"adrenaline: epipen hiss faded out at (\d+) ms", pos, 3.0)
         time.sleep(1.5)  # the dodge's cooldown
         pos = self.log_pos()
         self.gl("input", 120, d[0], d[1], d[0], d[1], "dash")
@@ -307,6 +309,8 @@ class Checks(Base):
         s2 = self.stacks("adrenaline")
         self.flag("epipen_on_dodge", ok and m1 is not None and s1 >= 1 and m2 is None and s2 == s1,
                   f"orb level {olv}: dodge at 0 stacks: {m1 and m1.group(0)}, {s1} stacks; dodge with {s1}: {m2 and m2.group(0)}, {s2}")
+        self.flag("epipen_hiss_fades", hiss is not None and 2000 <= int(hiss.group(1)) < 2200,
+                  f"the fuse hiss: {hiss and hiss.group(0)} (stopped at 2 s, faded from 1 s)")
         self.orb_off("hwp_fs_adrenaline_epipen")
         self.clear_dummies()
         self.to_town()

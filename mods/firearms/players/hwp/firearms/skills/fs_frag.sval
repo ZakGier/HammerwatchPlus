@@ -33,7 +33,7 @@
 		<string name="class">Skills::ShootProjectileTarget</string>
 		<string name="anim">attack</string>
 		<int name="anim-length">450</int>
-		<string name="snd">event:/sfx/player/attacks/offhand/throwing_knives_throw</string>
+		<string name="snd">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_throw_bomb</string>
 
 		<string name="cooldown-bind">cooldown</string>
 		<int name="castpoint">150</int>

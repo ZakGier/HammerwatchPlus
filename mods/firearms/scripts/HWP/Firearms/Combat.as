@@ -469,6 +469,44 @@ namespace HWP
 		const string ADRENALINE = "players/hwp/firearms/stacks_firearms.sval:adrenaline";
 		int g_adrenalineHeal = 0;
 
+		// EpiPen's hiss: the grenade fuse, full for 1 s, faded to nothing over the next, then
+		// stopped (the fuse runs 3.9 s). It follows the player (UpdateCombat).
+		const string EPIPEN_SND = "event:/sfx/player/classes/rogue/grenade/grenade_fuse";
+		const int EPIPEN_FADE_FROM = 1000;
+		const int EPIPEN_FADE_TO = 2000;
+		SoundInstance@ g_epipenSnd;
+		int g_epipenMs = 0;
+
+		void StartEpipenSound(PlayerBase@ plr)
+		{
+			if (g_epipenSnd !is null)
+				g_epipenSnd.Stop();
+			auto snd = Resources::GetSoundEvent(EPIPEN_SND);
+			@g_epipenSnd = snd !is null ? snd.PlayTracked(plr.m_unit.GetPosition()) : null;
+			g_epipenMs = 0;
+			if (g_epipenSnd is null)
+				return;
+			g_epipenSnd.SetPaused(false);  // as main.as PlaySound3D(snd, unit) does
+			g_epipenSnd.SetVolume(1.0f);
+		}
+
+		void UpdateEpipenSound(PlayerBase@ plr, int ms)
+		{
+			if (g_epipenSnd is null)
+				return;
+			g_epipenMs += ms;
+			if (g_epipenMs >= EPIPEN_FADE_TO)
+			{
+				g_epipenSnd.Stop();
+				@g_epipenSnd = null;
+				HWP::Log("firearms", "adrenaline: epipen hiss faded out at " + g_epipenMs + " ms");
+				return;
+			}
+			g_epipenSnd.SetPosition(plr.m_unit.GetPosition());
+			if (g_epipenMs > EPIPEN_FADE_FROM)
+				g_epipenSnd.SetVolume(1.0f - float(g_epipenMs - EPIPEN_FADE_FROM) / float(EPIPEN_FADE_TO - EPIPEN_FADE_FROM));
+		}
+
 		// The raised gun: after a rifle or pistol shot the shot's upper-body animation is
 		// played again on the skill layer (1) from its start and frozen there (speed FROZEN,
 		// AnimationLoopType::Hold; PlayerBase.SetUnitScene's call otherwise). The wand shot's
@@ -570,6 +608,7 @@ namespace HWP
 			auto plr = cast<PlayerBase>(GetLocalPlayer());
 			if (plr is null || !IsFirearms(GetLocalPlayerRecord()))
 				return;
+			UpdateEpipenSound(plr, ms);
 			if (g_headshotEnd)
 			{
 				g_headshot = false;
@@ -767,7 +806,7 @@ namespace Modifiers
 // - heal (the hurt trigger): spend every stack for heal of max health each. The trigger runs
 //   before the damage, so the heal waits a frame (g_adrenalineHeal, UpdateCombat).
 // - epipen (EpiPen's dash trigger): with no stacks, gain epipen stacks, with a yellow glow
-//   (epipen_glow) and a hiss (the bandit rogue's smoke bomb).
+//   (epipen_glow) and the grenade fuse's hiss, faded out from 1 s to 2 s (StartEpipenSound).
 class HWPFirearmsAdrenaline : IEffect
 {
 	float m_heal;
@@ -802,7 +841,7 @@ class HWPFirearmsAdrenaline : IEffect
 			auto glow = LoadActorBuff(HWP::Firearms::BUFFS + "epipen_glow");
 			if (glow !is null)
 				plr.ApplyBuff(ActorBuff(plr, glow, 1.0f, false));
-			PlaySound3D(Resources::GetSoundEvent("event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_smoke"), plr.m_unit.GetPosition());
+			HWP::Firearms::StartEpipenSound(plr);
 			HWP::Log("firearms", "adrenaline: epipen, " + plr.GetStacks(def) + " stacks");
 			return true;
 		}

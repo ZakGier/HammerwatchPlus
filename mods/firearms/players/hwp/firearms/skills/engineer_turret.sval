@@ -63,6 +63,10 @@
 					<string name="effect">effects/generic/other/spawn_smoke_puff.effect</string>
 				</dict>
 				<dict>
+					<string name="class">PlaySound</string>
+					<string name="sound">event:/sfx/ui/build</string>
+				</dict>
+				<dict>
 					<string name="class">SpawnUnit</string>
 					<string name="unit">players/hwp/firearms/units/turret.unit</string>
 				</dict>

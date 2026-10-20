@@ -106,7 +106,8 @@
    "name": "orbs assault",
    "expect": {
     "critical_focus_per_stack": true,
-    "epipen_on_dodge": true
+    "epipen_on_dodge": true,
+    "epipen_hiss_fades": true
    }
   },
   {

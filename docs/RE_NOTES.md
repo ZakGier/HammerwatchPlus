@@ -1325,6 +1325,13 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   come, or `buttons/lever_off` on a perfect reload and no lever on. Measured in
   plan-firearms-orbs 20261019-134726: every reload logged an unlock and then one lever, off for
   each of the 3 perfects, on for the misses and plain reloads, including Dodge Reload Skip.
+- **More picks (2026-10-19, from the sound page):** EpiPen plays `rogue/grenade/grenade_fuse`,
+  full for 1 s, faded to 0 by 2 s and stopped (`Combat.as` StartEpipenSound; the fuse runs 3.9 s);
+  the Frag Grenade throws with `bandit_rogue_throw_bomb` (its old `throwing_knives_throw` is not
+  in the bank's event list, so it was likely silent: assumed, from the list, not heard); placing
+  a turret plays `ui/build`. Unverified in game. Still Claude's picks, not the user's: the
+  grenade, Explosive Reload and shell blasts, the incendiary fire, the frag bounce, the gas loop,
+  the turret's shot (the rifle's sound).
 
 ## Firearms Engineer, Assault checks, the pistol arm (2026-10-19)
 
