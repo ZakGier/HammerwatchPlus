@@ -1,0 +1,25 @@
+<!-- ballista_heavy_attack_shadow.effect at 20 ms a frame (200 ms, not 1188): the turret skill's cast lasts its attack
+     scene and its cooldown starts after it (CompositeActorSkill.as:514-541), so this is the
+     part of each shot's cycle that engineer_turret.sval's turret-rate binds leave out -->
+<effect layer="-6" looping="false" material="system/default.mats:default-noxray">
+	<param name="angle" default="0" />
+	<param name="baseangle" default="0" />
+	<param name="xcoord" default="0" />
+
+	<sprite origin="32 32" looping="false" texture="players/shared/units/ballista_heavy_attack.png" material="system/default.mats:shadow"
+		angle="angle-(baseangle*pi/180)"
+		pos-x="8"
+		pos-y="-16"
+	>
+		<frame time="20" x="xcoord" y="0" w="64" h="64" />
+		<frame time="20" x="xcoord" y="64" w="64" h="64" />
+		<frame time="20" x="xcoord" y="128" w="64" h="64" />
+		<frame time="20" x="xcoord" y="192" w="64" h="64" />
+		<frame time="20" x="xcoord" y="256" w="64" h="64" />
+		<frame time="20" x="xcoord" y="320" w="64" h="64" />
+		<frame time="20" x="xcoord" y="384" w="64" h="64" />
+		<frame time="20" x="xcoord" y="448" w="64" h="64" />
+		<frame time="20" x="xcoord" y="512" w="64" h="64" />
+		<frame time="20" x="xcoord" y="576" w="64" h="64" />
+	</sprite>	
+</effect>

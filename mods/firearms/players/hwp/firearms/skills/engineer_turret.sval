@@ -2,7 +2,9 @@
 <!--
 	Deploy Turret (Engineer): place a turret (units/turret.unit, Turret.as) at the target
 	spot, up to range away and in sight, as Sorcerer's flame_step targets. It shoots the
-	nearest enemy in 200 px every turret-rate ms (0.6 .. 0.2 s) for 0.6x weapon damage,
+	nearest enemy in 200 px every 0.6 .. 0.2 s for 0.6x weapon damage: turret-rate is the
+	cooldown after its 200 ms attack scene (units/turret_attack.effect), which the cooldown
+	waits for (CompositeActorSkill.as:514-541),
 	can be targeted and hit by enemies, and wears down over 30 s.
 	turret-hp is its base HP (assumed: the planner gives none); Reinforced Turret's
 	turret-hp-pct adds that share of your max HP. One turret at a time (the game's summon
@@ -53,7 +55,7 @@
 		<dict name="binds">
 			<int name="turret-hp">100</int>
 			<float name="turret-hp-pct">0</float>
-			<ivec2 name="turret-rate">600 600</ivec2>
+			<ivec2 name="turret-rate">400 400</ivec2>
 		</dict>
 
 		<dict name="actions">
@@ -83,28 +85,28 @@
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
 			<int name="mana-cost">50</int>
 			<dict name="binds">
-				<ivec2 name="turret-rate">500 500</ivec2>
+				<ivec2 name="turret-rate">300 300</ivec2>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
 			<int name="mana-cost">50</int>
 			<dict name="binds">
-				<ivec2 name="turret-rate">400 400</ivec2>
+				<ivec2 name="turret-rate">200 200</ivec2>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
 			<int name="mana-cost">50</int>
 			<dict name="binds">
-				<ivec2 name="turret-rate">300 300</ivec2>
+				<ivec2 name="turret-rate">100 100</ivec2>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
 			<int name="mana-cost">50</int>
 			<dict name="binds">
-				<ivec2 name="turret-rate">200 200</ivec2>
+				<ivec2 name="turret-rate">1 1</ivec2>
 			</dict>
 		</dict>
 	</array>

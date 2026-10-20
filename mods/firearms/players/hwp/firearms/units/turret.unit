@@ -2,7 +2,8 @@
 	Deploy Turret's turret (engineer_turret.sval): the game's Heavy Ballista
 	(players/shared/units/ballista_heavy.unit) made a target: mortal, targetable and with
 	health. Its HP (turret-hp), Reinforced Turret's share of its owner's max HP
-	(turret-hp-pct) and its fire rate (turret-rate) are the skill's binds; the script
+	(turret-hp-pct) and its fire rate (turret-rate, the cooldown after each 200 ms attack
+	scene: turret_attack.effect) are the skill's binds; the script
 	(Turret.as HWPFirearmsTurret) drains it over decay ms and runs My Turret!.
 	It fires rifle rounds at 0.6x weapon damage (turret_round.unit), elemental ones while
 	Elemental Belt-Feed is on (Elemental.as HWPFirearmsGunShot).
@@ -120,43 +121,43 @@
 		</scene>
 		<scene name="attack-0">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=0&xcoord=0"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=0&xcoord=0" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=0&xcoord=0"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=0&xcoord=0" layer="-6"/>
 		</scene>
 		<scene name="attack-1">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=45&xcoord=64"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=45&xcoord=64" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=45&xcoord=64"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=45&xcoord=64" layer="-6"/>
 		</scene>
 		<scene name="attack-2">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=90&xcoord=128"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=90&xcoord=128" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=90&xcoord=128"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=90&xcoord=128" layer="-6"/>
 		</scene>
 		<scene name="attack-3">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=135&xcoord=192"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=135&xcoord=192" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=135&xcoord=192"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=135&xcoord=192" layer="-6"/>
 		</scene>
 		<scene name="attack-4">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=180&xcoord=256"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=180&xcoord=256" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=180&xcoord=256"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=180&xcoord=256" layer="-6"/>
 		</scene>
 		<scene name="attack-5">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=225&xcoord=320"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=225&xcoord=320" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=225&xcoord=320"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=225&xcoord=320" layer="-6"/>
 		</scene>
 		<scene name="attack-6">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=270&xcoord=384"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=270&xcoord=384" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=270&xcoord=384"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=270&xcoord=384" layer="-6"/>
 		</scene>
 		<scene name="attack-7">
 			<scene src="shared" />
-			<effect src="players/shared/units/ballista_heavy_attack.effect?baseangle=315&xcoord=448"/>
-			<effect src="players/shared/units/ballista_heavy_attack_shadow.effect?baseangle=315&xcoord=448" layer="-6"/>
+			<effect src="players/hwp/firearms/units/turret_attack.effect?baseangle=315&xcoord=448"/>
+			<effect src="players/hwp/firearms/units/turret_attack_shadow.effect?baseangle=315&xcoord=448" layer="-6"/>
 		</scene>
 	</scenes>
 </unit>
