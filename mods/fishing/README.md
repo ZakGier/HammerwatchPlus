@@ -1,7 +1,7 @@
 # fishing
 
 Fishing along the town's coast, a pirate who sells bait, rods and fish traps,
-fishing spots at the potion wells of run floors (always one in a boss room),
+fishing spots in the water of run floors' potion wells (always one in a boss room),
 and fish that sell for the Gambler's bet tokens or fight as swords.
 
 - **Coast spots.** Six `doodads/hwp/fishing_spot.unit` along the town's west
@@ -47,13 +47,17 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   counted (`fishing.run_ms`, flushed every 5 s); back in town every 10 minutes
   of it gives each trap a 50 % chance of +1 fish, up to 3 per trap. Walk up
   to a trap to empty it into your bag. `hwp fishing traps` lists them.
-- **Rods.** Per character (`fishing.rod` in your HWP save data): Driftwood (free),
-  Sturdy (400 g), Sea (1200 g), Captain's (3000 g). Each tier widens the catch
+- **Rods.** Per character (`fishing.rod` in your HWP save data). A new
+  character has none: the slot is empty and Cast says to buy one. The pirate
+  sells Driftwood (100 g), Sturdy (400 g), Sea (1200 g) and Captain's (3000 g),
+  in that order. A character saved before rods were sold (it fished, ran or
+  levelled before its first look, `fishing.rod_v`) keeps a free Driftwood.
+  Each tier past Driftwood widens the catch
   zone by 20 %, slows the marker by 10 % and raises the odds of rare and epic
   fish. The rod shows in the character screen's gear grid (core
   `hwp-gear-rod` slot) with its bonuses and your bait, in its tier's colour
   (`gui/hwp/rods.png`: grey driftwood, brown sturdy, teal sea, gold and red
-  captain's).
+  captain's). Debug: `hwp fishing rod <tier>`.
 - **The pirate fisherman** (`doodads/hwp/pirate_fisher.unit`, interact class
   `HWPPirateShop`) sits on the half-buried boat next to the trading post's
   "Trade materials" NPC and talks like a pirate. He sells worms (5 for 50 g,
@@ -61,17 +65,25 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   rod. The bait decides the coast's star range: worms 1-2, shrimp 2-3, squid
   3-4 (`BAIT_MIN_TIER`/`BAIT_MAX_TIER`); the rod's bonuses roll within it.
   Each kind is a cell in the materials tab's Supplies section with a tooltip.
-  From trading post tier 3 the wreck becomes a whole boat and he stands on the
-  beach beside it, where the wreck was (tiers 4-5: the same spot). His spot is
-  taken from the material trader's position; a building upgrade rebuilds the
+  At trading post tier 3 (its last) the wreck becomes a whole boat and he stands
+  in it (`ON_BOAT_X/Y`, 2 px below the boat's origin in that tier's prefab: the hull is
+  drawn sorted by that origin and would hide him any higher up). His
+  spot is taken from the material trader's position; a building upgrade rebuilds the
   town and removes him, so the coast is placed again within a second.
   `hwp set fishing.pirate_x/y` put him anywhere. He has an anchor merchant
   icon on the map (`gui/hwp/map_pirate.png`).
 - **Run spots.** On `fishing.run_chance` % of floors (default 30) the host
-  places `fishing_hole_well.unit` beside one of the floor's potion-refill
-  wells (levels have no reachable open water). A boss room always gets one:
-  at its well, or a fishing bucket (`fishing_bucket.unit`) beside the host
-  when it has none. No bait is needed. Each player gets `fishing.run_casts`
+  places `fishing_hole_well.unit` on one of the floor's potion-refill wells,
+  with its fish swimming in the well's water (levels have no reachable open
+  water). Only a well with room to stand beside it is used. The unit has one
+  scene per well kind (`WELL_KIND`: well, dark halls, barrel, crypt, fountain).
+  While the well can still refill potions, using it refills first
+  (`HWPFishingHoleNPC` usable priority 1). Its water stays in the spot once the
+  well is drained. A boss room always gets one: at its well, or a fishing bucket
+  (`fishing_bucket.unit`, a small fish in the bucket) beside the host when it
+  has none. Once a player has used all their casts on the floor, the spot shows
+  no fish and its map icon greys out, as a used well's does. Each machine does
+  this for its own player, `WatchHoles`. No bait is needed. Each player gets `fishing.run_casts`
   (3) casts per floor: casting asks the host (`fishing.cast` with the rod
   tier), who counts the cast, rolls the tier within the floor's star range and
   answers `fishing.bite` or `fishing.denied`. Reeling in sends
@@ -81,7 +93,8 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
   (`gui/hwp/map_icons.png` from core, made by `tools/make_map_icons.py`).
 - `fishing.*` settings are host-synced; `fishing.coast 0` removes the coast
   spots and the pirate. `hwp fishing buy bait|bait20|shrimp|squid|rod|trap` buys from the
-  console. With `fishing.debug 1`: `hwp fishing hole` (host), `hwp fishing
+  console. With `fishing.debug 1`: `hwp fishing hole` (host), `hwp fishing wells`
+  (host, in a run: every well kind with a spot in it, plus a bucket), `hwp fishing
   catch [tier]`, `hwp fishing bait <worm|shrimp|squid> [n]`, `hwp fishing traps <minutes>` (fill
   the traps as if back from a run that long).
 
@@ -107,10 +120,14 @@ and fish that sell for the Gambler's bet tokens or fight as swords.
    rod's name, bonuses and bait in its tooltip.
 7. 2-player lobby: both see their own spots and pirate; a catch is announced
    to the other player.
-8. Run: a fishing spot by a well on some floors (fish icon on the map);
+8. Run: a fishing spot in a well's water on some floors (fish icon on the map);
    catch 3 times -> loot and a fish of the floor's item level, the 4th cast is
    refused. First-half floors give 1-star fish only, boss rooms 3-star only
-   (at the well or a bucket). A client gets the refusal as a chat line.
+   (at the well or a bucket). A client gets the refusal as a chat line. Once
+   the casts are used up, the spot has no fish and its map icon is greyed.
+   `hwp fishing wells`: a fish sits in each kind of well's water and in the
+   bucket. `mod-fishing-spots` measures this, and the pirate on the wreck at
+   trading post tier 1 and in the boat at tier 3.
 9. Traps: buy 1-3 at the pirate (prices rise, 4th refused); after a run of
    20+ minutes some traps show a fish; walk up to one: its fish go to the bag.
    `fishing.debug 1`, `hwp fishing traps 60` fills them without a run.

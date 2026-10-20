@@ -1,7 +1,15 @@
-<!-- In-run fishing spot at a potion-refill well (HWP::Fishing places it beside the level's well;
-     levels without water fish there). Interact class HWPFishingSpot (fishing minigame). -->
+<!-- In-run fishing spot in a potion-refill well's water (HWP::Fishing::SetupRun puts it on the
+     level's well, WELL_DY px south of the well's origin so it draws over it). Interact class
+     HWPFishingSpot (the fishing minigame); behavior HWPFishingHoleNPC, which lets the well's own
+     refill come first while it can be used. One scene per well kind (FishingModule.as WELL_KIND),
+     each with its fish in that well's water and a sensor reaching past the well's collision to
+     where the angler stands; "<kind>_dry" adds the well's water back once the well was used
+     (its "off" scene drains it), and "empty" (this player has no casts left on the floor) has
+     no fish and a faded map icon, the way vanilla shows a used well. The fish are
+     small orange koi (doodads/hwp/fish_small.png, tools/make_small_fish.py): the vanilla blue
+     pond fish vanish in a well's blue water, and these fit a bucket or a narrow basin. -->
 <unit slot="doodad">
-	<behavior class="CompositeActorBehaviorNPC">
+	<behavior class="HWPFishingHoleNPC">
 		<int name="hp">100000</int>
 		<bool name="targetable">false</bool>
 		<int name="experience-reward">0</int>
@@ -18,7 +26,7 @@
 		<dict name="interact">
 			<string name="class">HWPFishingSpot</string>
 			<bool name="in-run">true</bool>
-			<int name="break-distance">50</int>
+			<int name="break-distance">70</int>
 			<array name="icon"><s>items/tradeware/base.png</s><i>100</i><vec4>64 0 16 16</vec4></array>
 		</dict>
 		<dict name="movement">
@@ -27,19 +35,87 @@
 		<array name="skills" />
 	</behavior>
 
-	<scenes default="spot">
-		<scene name="spot">
+	<scenes default="well" well="well" well_dry="well_dry" dark="dark" dark_dry="dark_dry" barrel="barrel" crypt="crypt" fountain="fountain" empty="empty">
+		<scene name="well">
 			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
 			<collision>
-				<rect>-4 -2 8 4</rect>
-				<rect sensor="true">-24 -20 48 40</rect>
+				<rect sensor="true">-30 -30 60 54</rect>
 			</collision>
-			<sprite origin="8 14" texture="items/tradeware/base.png" material="items/items.mats:item">
-				<frame>64 0 16 16</frame>
+			<sprite origin="6 9" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
 			</sprite>
-			<sprite origin="26 21" ulayer="2" texture="doodads/terrain/fish.png" material="doodads/terrain/terrain.mats:fish">
-				<frame time="150">0 0 19 20</frame> <frame time="150">19 0 19 20</frame> <frame time="150">38 0 19 20</frame> <frame time="150">57 0 19 20</frame> <frame time="150">76 0 19 20</frame> <frame time="150">0 20 19 20</frame> <frame time="150">19 20 19 20</frame> <frame time="150">38 20 19 20</frame> <frame time="150">57 20 19 20</frame> <frame time="150">76 20 19 20</frame>
+		</scene>
+		<scene name="well_dry">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-30 -30 60 54</rect>
+			</collision>
+			<sprite origin="12 17" ulayer="2" texture="doodads/wells/well_default.png" material="doodads/ledges/ledges.mats:clear_ledge">
+				<frame time="250">23 36 23 20</frame>
 			</sprite>
+			<sprite origin="6 9" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="dark">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-36 -38 72 72</rect>
+			</collision>
+			<sprite origin="14 15" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+			<sprite origin="-2 8" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="dark_dry">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-36 -38 72 72</rect>
+			</collision>
+			<sprite origin="17 25" ulayer="2" texture="doodads/wells/well_dark_halls.png" material="doodads/ledges/ledges.mats:clear_ledge">
+				<frame time="250">44 0 34 33</frame>
+			</sprite>
+			<sprite origin="14 15" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+			<sprite origin="-2 8" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="barrel">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-22 -14 44 34</rect>
+			</collision>
+			<sprite origin="6 6" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="crypt">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-52 -42 104 84</rect>
+			</collision>
+			<sprite origin="18 15" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="fountain">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
+			<collision>
+				<rect sensor="true">-46 -46 92 92</rect>
+			</collision>
+			<sprite origin="28 -2" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="empty">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" faded="true" />
+			<collision>
+				<rect sensor="true">-30 -30 60 54</rect>
+			</collision>
 		</scene>
 	</scenes>
 </unit>

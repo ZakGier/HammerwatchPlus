@@ -1,0 +1,84 @@
+{
+ "name": "mod-fishing-spots",
+ "about": "The pirate sits on the trading post's wreck at tier 1 and stands in its rowing boat at tier 3, the building's last (pirate_placed_tN: where FishingModule.as puts him; pirate_reachable_tN: walked up to from the beach, his shop opens; shots pirate-tier-N). Fishing spots in the water: a run spot sits in its potion-refill well's water (spot_in_well, spot_on_the_well, the scene of its well kind), the angler walks up and uses it from the free ground beside it (spot_walk_use), and it grays out (no fish, a faded map icon) once this player's casts are spent (spot_grays_when_fished_out, one cast with fishing.run_casts 1). Shots: coast-2, coast-5 (the town coast spots), run-spot, wells-1/wells-2 (every well kind and the boss bucket, `hwp fishing wells`), run-spot-empty.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "pirate_boat"
+   },
+   "name": "pirate in the boat",
+   "expect": {
+    "pirate_placed_t1": true,
+    "pirate_reachable_t1": true,
+    "pirate_placed_t3": true,
+    "pirate_reachable_t3": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
+    "sections": "spots"
+   },
+   "name": "spots in the water",
+   "expect": {
+    "spot_in_well": true,
+    "spot_on_the_well": true,
+    "spot_scene_kind": true,
+    "spot_walk_use": true,
+    "spot_wells_spawned": true,
+    "spot_grays_when_fished_out": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

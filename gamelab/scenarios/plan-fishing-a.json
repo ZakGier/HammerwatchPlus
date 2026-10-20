@@ -93,10 +93,28 @@
    "do": "bot",
    "bot": "plan_fishing",
    "kwargs": {
+    "sections": "eat_fish"
+   },
+   "name": "eat fish",
+   "expect": {
+    "eat_hint": true,
+    "eat_town_heals": true,
+    "eat_run_heals": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_fishing",
+   "kwargs": {
     "sections": "rod_slot"
    },
    "name": "rod slot",
    "expect": {
+    "rod_slot_empty": true,
+    "rod_none_new_char": true,
+    "rod_tip_none": true,
+    "cast_needs_rod": true,
+    "rod_slot_drawn": true,
     "rod_slot_bottom_left": true,
     "rod_tip_name": true,
     "rod_tip_bait": true,

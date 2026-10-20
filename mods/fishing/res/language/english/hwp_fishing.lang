@@ -17,6 +17,9 @@
 	<string name="hwp.fishing.casts_left">Casts left here: %n%</string>
 	<string name="hwp.fishing.status">Fishing: %state%. %spots% coast spots, the pirate at %x%,%y%. %rod%. Run holes in %chance% percent of runs, %casts% casts each. Catch: %catch%</string>
 	<string name="hwp.fishing.debug_off">That needs fishing.debug on ('hole' is host only).</string>
+	<string name="hwp.fishing.eat">Eat</string>
+	<string name="hwp.fishing.ate">You eat the %fish%: +%n% health.</string>
+	<string name="hwp.fishing.no_rod">You have no rod! The pirate on the old boat sells one.</string>
 	<string name="hwp.fishing.no_bait">No %bait% left! Pick another bait, or buy more from the pirate on the old boat.</string>
 	<string name="hwp.fishing.bait_left">%bait%: %n%  -  %rod%</string>
 	<string name="hwp.fishing.bait_button">%bait% (%stars% star)</string>
@@ -30,11 +33,13 @@
 	<string name="hwp.fishing.bait.on_hook">On your hook: the fishing window's bait button picks another.</string>
 	<string name="hwp.fishing.bag_full">Your bag is full; the %fish% flops at your feet.</string>
 	<string name="hwp.fishing.announce">%name% caught: %fish%!</string>
+	<string name="hwp.fishing.rod.0">No rod</string>
 	<string name="hwp.fishing.rod.1">Driftwood Rod</string>
 	<string name="hwp.fishing.rod.2">Sturdy Rod</string>
 	<string name="hwp.fishing.rod.3">Sea Rod</string>
 	<string name="hwp.fishing.rod.4">Captain's Rod</string>
 	<string name="hwp.fishing.rod_text">%rod% (tier %tier%): catch zone +%zone%%, reel speed -%speed%%, better odds.</string>
+	<string name="hwp.fishing.rod_text_none">No fishing rod. The pirate on the old boat sells a Driftwood Rod.</string>
 	<string name="hwp.fishing.rod_text_base">%rod%: a plain stick and string. The pirate sells better rods.</string>
 	<string name="hwp.fishing.rod_bait">Bait: %list%</string>
 	<string name="hwp.fishing.pirate.title">Pirate Fisherman</string>

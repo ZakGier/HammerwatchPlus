@@ -8,13 +8,16 @@ Sections:
   name, quality by stars, the town item levels, wielded as a sword (the longsword attack),
   the equipped fish's tooltip (stars, ilvl) on the character screen (fishing s5).
 - fish_hit: a wielded fish's swing on a Bandit Keep floor takes a dummy's HP (fishing s5).
+- eat_fish: the bag's Eat hint and `hwp fishing eat`: 100 health a star, the fish used up,
+  in town and on a run.
 - fish_enchant: an uncommon fish at an enchanter (shop level set, as the town's prefab
   does): Upgrade, then Enchant and a new modifier; the worked fish is no ware any more and
   Sell leaves it in the bag while fresh 1/2/3-star fish sell; Enchant on a fresh (unworked)
   uncommon / rare fish, which is caught with its quality's modifiers (fishing s6).
 - gambler_sell: fish of 1/2/3 stars, crops and a worked fish at the Gambler: the Sell
   caption, gold for crops, tokens for fish, the token line, the worked fish kept (gambler s7).
-- rod_slot: the character screen's rod slot and its tooltip, before and after a rod (fishing s13).
+- rod_slot: a new character has no rod (an empty slot, and Cast at a coast spot refuses);
+  the character screen's rod slot and its tooltip, before and after a rod (fishing s13).
 - traps_run: three traps, a run at g_timescale 16 until 20+ game minutes, back to town: the
   rolls, the full-trap units and icon, walking up to one (fishing s9).
 - run_spot: a floor's fishing spot beside a well (run_chance 100): no bait, three casts
@@ -48,6 +51,10 @@ BAR_WIDTH, MARKER_WIDTH, BITE_WINDOW = 240, 3, 2500
 ROD_NAMES = {1: "Driftwood Rod", 2: "Sturdy Rod", 3: "Sea Rod", 4: "Captain's Rod"}
 TRAP_FULL = "doodads/hwp/fish_trap_full.unit"
 TRAP_TO_SPOT = (44, -40)                    # a trap sits at its coast spot + (TRAP_DX, TRAP_DY) = (-44, 40)
+# FishingModule.as SetupRun: the well's kind and position, then the free ground beside it
+RUN_SPOT = r"\[HWP:fishing\] run spot in a well \((\w+)\) at (-?\d+),(-?\d+), the angler's side (-?\d+),(-?\d+)"
+# the coast spots (FishingModule.as COAST_X/Y): the sea is to the west
+COAST = ((-1180, -184), (-1308, 56), (-1436, 272), (-1476, 424), (-1388, 680), (-1372, 960))
 WELLS = ("well_default", "well_dark_halls", "barrel_refill", "crypt_refill", "fountain")
 
 
@@ -74,11 +81,14 @@ def fish_tier(item):
 
 class Checks(Base):
     # --- plumbing
-    def fresh(self, name):
+    def fresh(self, name, rod=1):
+        """A new character; it starts without a rod, so this gives one (debug) unless rod=0."""
         r = self.gl("char", "paladin", name)
         self.wait_phase("town", 60)
         time.sleep(2)
         self.hwp("set fishing.debug 1")
+        if rod:
+            self.hwp(f"fishing rod {rod}", 0.4, until="rod: ")
         return r.get("ok")
 
     def bag(self):
@@ -173,12 +183,15 @@ class Checks(Base):
         ev = self.g.wait_gl(lambda o: o.get("ev") == "sweepclick" and o.get("id") == cid, timeout_ms / 1000 + 8)
         return ev or {"result": "noevent"}
 
-    def open_spot(self, unit_filter):
-        """Walk to the nearest unit matching unit_filter and use it (the fishing window)."""
+    def open_spot(self, unit_filter, timeout=60):
+        """Walk to the nearest unit matching unit_filter and use it (the fishing window).
+        In a run the open window pauses the game, and the pilot with it, so its use
+        intent only ends once the window closes: there a short timeout with the
+        window open means it got there and used it."""
         us = self.gl("near", 8000, unit_filter).get("units") or []
         if not us:
             return None, f"no {unit_filter}"
-        r = self.p.use(us[0]["unit"], timeout=60)
+        r = self.p.use(us[0]["unit"], timeout=timeout)
         time.sleep(0.8)
         how = f"{r.result}: {r.reason}"
         if "FishingMenu" not in self.window():
@@ -298,6 +311,55 @@ class Checks(Base):
         hp1 = after.get(u["unit"], {}).get("hp", 0.0 if u["unit"] not in after else hp0)
         self.flag("fish_hits", hp0 is not None and hp1 is not None and hp1 < hp0,
                   f"dummy hp {hp0} -> {hp1} at {round(n)} px, main hand {main}")
+        self.to_town()
+
+    def hp(self):
+        p = self.gl("state").get("player", {})
+        return p.get("hp", -1), p.get("hpMax", -1)
+
+    def eat_fish(self):
+        """Eat a fish: the bag's [E] Eat hint on a fish (clicked through gl navbar) and
+        `hwp fishing eat` give 100 health a star and use the fish up, in town and on a run."""
+        self.fresh("LabEater")
+        self.catch(1)
+        self.gl("menu", "character")
+        time.sleep(0.5)
+        h = self.gl("hover", "equipment-inventory", 0)
+        nav = h.get("nav") or []
+        self.flag("eat_hint", any("Eat" in t for t in nav), f"{h.get('item')}: {nav}")
+        n0 = len(self.fish())
+        self.gl("hurt", 0.2)
+        hp0, mx = self.hp()
+        idx = next((i for i, t in enumerate(nav) if "Eat" in t), -1)
+        r = self.gl("navbar", "click", idx) if idx >= 0 else {}
+        time.sleep(0.5)
+        hp1, _ = self.hp()
+        n1 = len(self.fish())
+        self.flag("eat_town_heals", n1 == n0 - 1 and hp1 - hp0 >= 95,
+                  f"fish {n0} -> {n1}, hp {hp0} -> {hp1}/{mx}, click {r.get('handler')}")
+        self.close_windows()
+        self.catch(3)   # 2 stars
+        self.catch(4)   # 3 stars
+        if not self.start_floor(0):
+            self.flag("eat_run_heals", False, "no mission")
+            return
+        self.hwp("god")
+        self.gl("kill", 6000, "tag:enemy")
+        time.sleep(1)
+        gains = []
+        for _ in range(2):
+            self.gl("hurt", 0.05)
+            a, mx = self.hp()
+            # "until" is plain text; a reply that never matched would send the command again
+            said = plain(self.hwp("fishing eat", 0.5, until="[HWP] You eat"))
+            b, _ = self.hp()
+            m = re.findall(r"\+(\d+) health", said)
+            gains.append((b - a, int(m[-1]) if m else 0, mx - a))
+        self.notes.append(f"eat on a run (hp gained, said, room): {gains}")
+        # 2 and 3 stars, either order (the bag's order); the gain is capped by max health
+        said = sorted(g[1] for g in gains)
+        healed = all(abs(g[0] - min(g[1], g[2])) <= 15 for g in gains)
+        self.flag("eat_run_heals", said == [200, 300] and healed and len(self.fish()) == 0, f"{gains}, max {mx}")
         self.to_town()
 
     # --- fishing s6
@@ -488,8 +550,29 @@ class Checks(Base):
 
     # --- fishing s13
     def rod_slot(self):
-        self.fresh("LabRod")
+        self.fresh("LabRod", rod=0)
         self.hwp("fishing bait worm 7", 0.4, until="[HWP]")
+        # a new character has no rod: an empty slot (no icon) and no cast at a coast spot
+        st = self.hwp("fishing", 0.4, until="rod slot: ")
+        self.flag("rod_slot_empty", "rod slot: empty" in st, st.strip()[-60:])
+        self.flag("rod_none_new_char", "No fishing rod" in st, st.strip()[-200:])
+        self.gl("menu", "character")
+        time.sleep(0.5)
+        texts0, _ = self.tooltip("hwp-gear-rod")
+        self.flag("rod_tip_none", bool(texts0) and "No fishing rod" in " ".join(texts0), f"{texts0}")
+        self.close_windows()
+        # a coast spot's Cast says you need a rod and uses no bait
+        _, how = self.open_spot("doodads/hwp/fishing_spot.unit")
+        self.gl("press", "cast-btn")
+        time.sleep(0.4)
+        log0 = plain(self.widget("log").get("text", ""))
+        worms = self.hwp("fishing", 0.4, until="rod slot: ")
+        self.flag("cast_needs_rod", "no rod" in log0 and "Worms 7" in worms, f"{log0!r} ({how})")
+        self.close_windows()
+        self.hwp("material gold 300000")
+        self.hwp("fishing buy rod", 0.5, until="[HWP]")
+        st = self.hwp("fishing", 0.4, until="rod slot: ")
+        self.flag("rod_slot_drawn", "rod slot: drawn" in st and ROD_NAMES[1] in st, st.strip()[-200:])
         self.gl("menu", "character")
         time.sleep(0.5)
         sibs = {n["id"]: n for n in self.gl("wchildren", "^hwp-gear-rod", 1).get("nodes", [])}
@@ -507,7 +590,6 @@ class Checks(Base):
         body = " ".join(texts[1:])
         self.flag("rod_tip_bait", "Bait: Worms 7" in body and "Shrimp 0" in body and "Glow Squid 0" in body, body)
         self.close_windows()
-        self.hwp("material gold 300000")
         self.hwp("fishing buy rod", 0.5, until="[HWP]")
         self.gl("menu", "character")
         time.sleep(0.5)
@@ -693,11 +775,11 @@ class Checks(Base):
             if not self.start_floor(fl):
                 continue
             end = time.time() + 10
-            while time.time() < end and "run spot by a well" not in self.g.read_log()[mark:]:
+            while time.time() < end and "run spot in a well" not in self.g.read_log()[mark:]:
                 time.sleep(0.5)
-            m = re.findall(r"\[HWP:fishing\] run spot by a well at (-?\d+),(-?\d+)", self.g.read_log()[mark:])
+            m = re.findall(RUN_SPOT, self.g.read_log()[mark:])
             if m:
-                spot, floor = (int(m[-1][0]), int(m[-1][1])), fl
+                spot, floor = (int(m[-1][1]), int(m[-1][2])), fl
                 break
             self.notes.append(f"run_spot: floor {fl} placed no spot")
             self.to_town()
@@ -754,11 +836,148 @@ class Checks(Base):
         self.hwp("set fishing.bite_max 3000")
         self.to_town()
 
+    # --- fishing spots in the water: a run spot sits in its well's water (every
+    # well kind and the boss bucket: shots), the angler walks up to it and uses it,
+    # and it grays out (no fish, a faded map icon) once this player's casts are
+    # spent; the town coast spots (shots)
+    def spots(self):
+        self.fresh("LabSpots")
+        for i in (1, 4):
+            x, y = COAST[i]
+            self.gl("teleport", x + 40, y)
+            time.sleep(1.2)
+            self.g.shot(f"coast-{i + 1}")
+        self.hwp("set fishing.run_chance 100")
+        self.hwp("set fishing.debug 1")
+        self.hwp("set fishing.run_casts 1")
+        self.hwp("set fishing.bite_min 300")
+        self.hwp("set fishing.bite_max 600")
+        found = None
+        for fl in (1, 3):
+            mark = len(self.g.read_log())
+            if not self.start_floor(fl):
+                continue
+            end = time.time() + 10
+            while time.time() < end and "run spot in a well" not in self.g.read_log()[mark:]:
+                time.sleep(0.5)
+            m = re.findall(RUN_SPOT, self.g.read_log()[mark:])
+            if m:
+                found = m[-1]
+                break
+            self.notes.append(f"spots: floor {fl} placed no spot")
+            self.to_town()
+        self.flag("spot_in_well", found is not None, f"{found}")
+        if found is None:
+            return
+        kind, wx, wy, ax, ay = found[0], int(found[1]), int(found[2]), int(found[3]), int(found[4])
+        self.hwp("god")
+        self.gl("kill", 6000, "tag:enemy")
+        spot = (self.gl("near", 8000, "fishing_hole_well").get("units") or [{}])[0]
+        dx, dy = spot.get("x", 1e9) - wx, spot.get("y", 1e9) - wy
+        self.flag("spot_on_the_well", abs(dx) <= 1 and 0 <= dy <= 22,
+                  f"{kind} well at {wx},{wy}; spot at {spot.get('x')},{spot.get('y')}")
+        mark = len(self.g.read_log())
+        time.sleep(1.0)
+        scenes = re.findall(r"\[HWP:fishing\] run spot at (-?\d+),(-?\d+): (\w+)", self.g.read_log())
+        self.flag("spot_scene_kind", bool(scenes) and scenes[-1][2] in (kind, kind + "_dry"), f"scenes {scenes[-3:]}, kind {kind}")
+        # stand on the angler's side for the shot, then walk up to it and use it
+        self.gl("teleport", ax, ay)
+        time.sleep(1.2)
+        self.g.shot("run-spot")
+        self.gl("teleport", self.start[0], self.start[1])
+        time.sleep(0.5)
+        u, how = self.open_spot("fishing_hole_well", timeout=20)
+        self.flag("spot_walk_use", "then gl use" not in how and "FishingMenu" in self.window(), how)
+        # every well kind and the bucket, for the shots (before the cast spends ours)
+        if "FishingMenu" in self.window():
+            self.gl("press", "close-btn")
+            time.sleep(0.5)
+        pl = self.gl("state").get("player", {})
+        px, py = pl.get("x", 0.0), pl.get("y", 0.0)
+        r = self.hwp("fishing wells", 0.8, until="fishing:")
+        self.flag("spot_wells_spawned", "wells and a bucket" in r, plain(r)[-200:])
+        time.sleep(1.0)
+        for i, cx in enumerate((80 + 96 * 1.5, 80 + 96 * 4.5)):
+            self.gl("teleport", px + cx, py + 40)
+            time.sleep(1.2)
+            self.g.shot(f"wells-{i + 1}")
+        self.gl("teleport", px, py)
+        time.sleep(0.5)
+        # one cast (fishing.run_casts 1) fishes it out for this player
+        mark = len(self.g.read_log())
+        u, how = self.open_spot("fishing_hole_well", timeout=20)
+        ev = self.reel(1) if "FishingMenu" in self.window() else {}
+        self.gl("press", "close-btn")
+        time.sleep(1.5)
+        log = self.g.read_log()[mark:]
+        empty = re.findall(r"\[HWP:fishing\] run spot at (-?\d+),(-?\d+): empty \(fished out", log)
+        n = len(self.gl("near", 8000, "fishing_hole_well").get("units") or []) + len(self.gl("near", 8000, "fishing_bucket").get("units") or [])
+        self.flag("spot_grays_when_fished_out", len(empty) == n and n >= 2,
+                  f"{len(empty)} of {n} spots grayed; reel {ev.get('result')}; {how}")
+        self.gl("teleport", ax, ay)
+        time.sleep(1.2)
+        self.g.shot("run-spot-empty")
+        self.hwp("set fishing.run_casts 3")
+        self.hwp("set fishing.run_chance 30")
+        self.hwp("set fishing.debug 0")
+        self.hwp("set fishing.bite_min 800")
+        self.hwp("set fishing.bite_max 3000")
+        self.to_town()
+
+    # --- the pirate sits on the trading post's wreck (tiers 1-2) and stands in its
+    # rowing boat at tier 3, the building's last (FishingModule.as ON_WRECK/ON_BOAT):
+    # logged where PiratePos put him, a shot of him there, then the player walks
+    # up to him from the beach and his shop opens
+    def pirate_boat(self):
+        where = {1: (314, -114), 3: (272, -122)}
+        built = (self.gl("buildings").get("buildings") or {}).get("trading_post")
+        if built is None:
+            self.gl("build", "trading_post")
+            time.sleep(3)
+        # where the unbuilt plot's pirate stood: the beach by the wreck, a start to walk from
+        old = re.findall(r"pirate at (-?\d+),(-?\d+) \(trading post tier [012]\)", self.g.read_log())
+        beach = (int(old[-1][0]), int(old[-1][1])) if old else None
+        for tier in (1, 3):
+            var = (self.gl("buildings").get("buildings") or {}).get("trading_post", -1)
+            b = self.gl("buildup", "trading_post", tier - 1 - var) if var < tier - 1 else {"variation": var}
+            time.sleep(3)
+            mark = len(self.g.read_log())
+            self.gl("townrefresh")
+            pat = r"\[HWP:fishing\] coast: .*pirate at (-?\d+),(-?\d+) \(trading post tier (\d)\)"
+            end, m = time.time() + 15, []
+            while time.time() < end and not m:
+                time.sleep(0.5)
+                m = re.findall(pat, self.g.read_log()[mark:])
+            pos = (int(m[-1][0]), int(m[-1][1])) if m else None
+            got_tier = int(m[-1][2]) if m else None
+            # the plot's real origin comes from the trader; PLOT -1536,256 in the lab town
+            want = (-1536 + where[tier][0], 256 + where[tier][1])
+            self.flag(f"pirate_placed_t{tier}", got_tier == tier and pos is not None
+                      and abs(pos[0] - want[0]) <= 2 and abs(pos[1] - want[1]) <= 2,
+                      f"logged {pos} tier {got_tier}, want {want}; buildup {b}")
+            us = self.gl("near", 8000, "pirate_fisher").get("units") or []
+            how = "no pirate"
+            if us:
+                if beach is not None:
+                    self.gl("teleport", beach[0], beach[1] + 40)
+                    time.sleep(1.2)
+                # his shop window pauses the game (and the pilot) until it closes: a
+                # timeout with the window open means he was reached and used. From 40 px
+                # south of the wreck the path goes round the cliff: 46 s (024404)
+                r = self.p.use(us[0]["unit"], timeout=60)
+                time.sleep(1.0)
+                how = f"{r.result}: {r.reason}, window {self.window()!r}"
+            self.flag(f"pirate_reachable_t{tier}", "Pirate" in self.window(), how)
+            self.close_windows()
+            # him beside the player who walked up; the camera has caught up by now
+            time.sleep(1.5)
+            self.g.shot(f"pirate-tier-{tier}")
+
     # --- fishing s11
     def run_stars(self):
         self.fresh("LabStars")
         self.hwp("material gold 300000")
-        for _ in range(3):
+        for _ in range(3):  # fresh() gave the Driftwood
             self.hwp("fishing buy rod", 0.5, until="[HWP]")
         rod = 4 if ROD_NAMES[4] in self.hwp("fishing", 0.4, until="[HWP]") else 1
         self.hwp("set fishing.run_casts 30")

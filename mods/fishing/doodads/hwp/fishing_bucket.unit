@@ -1,7 +1,9 @@
 <!-- In-run fishing bucket for boss rooms without a potion-refill well: the bucket of the vanilla
-     refill barrel (doodads/wells/barrel_refill.png) with a fish in it. Only 3-star fish bite here. -->
+     refill barrel (doodads/wells/barrel_refill.png) with a small fish (doodads/hwp/fish_small.png)
+     swimming in its opening. Only 3-star fish bite here. Behavior and scenes as
+     fishing_hole_well.unit: "empty" once this player has no casts left on the floor. -->
 <unit slot="doodad">
-	<behavior class="CompositeActorBehaviorNPC">
+	<behavior class="HWPFishingHoleNPC">
 		<int name="hp">100000</int>
 		<bool name="targetable">false</bool>
 		<int name="experience-reward">0</int>
@@ -27,8 +29,8 @@
 		<array name="skills" />
 	</behavior>
 
-	<scenes default="spot">
-		<scene name="spot">
+	<scenes default="bucket" bucket="bucket" empty="empty">
+		<scene name="bucket">
 			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" />
 			<collision>
 				<rect>-7 -3 14 6</rect>
@@ -40,8 +42,21 @@
 			<sprite origin="8 16" texture="doodads/wells/barrel_refill.png" material="system/default.mats:default">
 				<frame>57 13 16 19</frame>
 			</sprite>
-			<sprite origin="12 29" ulayer="2" texture="doodads/terrain/fish.png" material="doodads/terrain/terrain.mats:fish">
-				<frame time="150">0 0 19 20</frame> <frame time="150">19 0 19 20</frame> <frame time="150">38 0 19 20</frame> <frame time="150">57 0 19 20</frame> <frame time="150">76 0 19 20</frame> <frame time="150">0 20 19 20</frame> <frame time="150">19 20 19 20</frame> <frame time="150">38 20 19 20</frame> <frame time="150">57 20 19 20</frame> <frame time="150">76 20 19 20</frame>
+			<sprite origin="6 14" ulayer="3" texture="doodads/hwp/fish_small.png" material="doodads/terrain/terrain.mats:fish">
+				<frame time="150">0 0 12 10</frame> <frame time="150">12 0 12 10</frame> <frame time="150">24 0 12 10</frame> <frame time="150">36 0 12 10</frame> <frame time="150">48 0 12 10</frame> <frame time="150">0 10 12 10</frame> <frame time="150">12 10 12 10</frame> <frame time="150">24 10 12 10</frame> <frame time="150">36 10 12 10</frame> <frame time="150">48 10 12 10</frame>
+			</sprite>
+		</scene>
+		<scene name="empty">
+			<minimap_sprite origin="6 4" layer="400" texture="gui/hwp/map_icons.png" frame="0 0 12 9" faded="true" />
+			<collision>
+				<rect>-7 -3 14 6</rect>
+				<rect sensor="true">-24 -20 48 40</rect>
+			</collision>
+			<sprite origin="-6 12" texture="items/tradeware/base.png" material="items/items.mats:item">
+				<frame>64 0 16 16</frame>
+			</sprite>
+			<sprite origin="8 16" texture="doodads/wells/barrel_refill.png" material="system/default.mats:default">
+				<frame>57 13 16 19</frame>
 			</sprite>
 		</scene>
 	</scenes>
