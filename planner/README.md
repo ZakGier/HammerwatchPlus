@@ -8,10 +8,12 @@ other class.
 
 ## Open it
 
-Double-click `planner.cmd` in the repo root, or from the repo root run:
+- **Windows:** double-click `planner.cmd` in the repo root.
+- **Linux / macOS:** run `./planner.sh` from the repo root.
+- **Anywhere:** from the repo root run:
 
 ```
-python -m planner                 # opens http://127.0.0.1:8737/ in your browser
+python -m planner                 # opens http://127.0.0.1:8737/ in your browser (python3 on Linux)
 python -m planner --port 9000     # another port (0 picks a free one)
 python -m planner --no-browser
 ```
@@ -30,10 +32,11 @@ without a reload.
 | Collection | Holds |
 |---|---|
 | `classes` | each class: stats, gear, base kit, specs and their orbs (read-only game data); the class notes field |
-| `doctrines` | specializations you design: the Firearms doctrines and each class's 4th (`spec4: true`) |
+| `doctrines` | specializations you design: the Firearms doctrines and each class's 4th (`spec4: true`; `owner` is who is designing it) |
 | `skills` | skills in those specializations |
 | `mods` | new orbs, on a new skill or on a vanilla one (`skill` is its id) |
-| `weapons`, `stacks`, `attributes`, `reference` | Firearms only: arsenal, clip and reload, gun attributes, budget targets |
+| `weapons`, `stacks`, `attributes` | Firearms only: arsenal, clip and reload, gun attributes |
+| `reference` | `vanilla`: the Firearms budget targets; `spec4-brief`: the brief shown on a class whose 4th spec has an owner |
 
 A record with no `cls` belongs to the Firearms Specialist.
 

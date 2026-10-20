@@ -1,0 +1,9 @@
+{
+  "paragraphs": [
+    "Make a 4th spec for your class: 1 active skill and 1 passive skill. Then give each skill 2 orb mods, each with 1 to 3 levels.",
+    "Don't worry about mana costs or damage/healing numbers, we'll tweak those later.",
+    "It should still feel like the class, but be something new that plays differently from the other 3 specs. Check out the class's 4 base skills first, since your spec builds off of those.",
+    "When you're done, push your changes to the repo and I'll take care of getting it built and tested in game."
+  ],
+  "title": "Your job: make the 4th spec"
+}

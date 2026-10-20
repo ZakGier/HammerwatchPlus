@@ -1,4 +1,7 @@
 * text=auto eol=lf
+# cmd.exe reads batch files with LF endings unreliably
+*.cmd text eol=crlf
+*.bat text eol=crlf
 *.png binary
 *.bin binary
 *.tif binary

@@ -60,6 +60,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .btn.danger{color:var(--warn)}
 .btn.small{padding:2px 8px;font-size:12px}
 .ro .needs-write{display:none!important}
+.brief{background:var(--panel);border:2px solid var(--accent);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.brief h2{margin:0 0 6px;font-size:16px}
+.brief p{margin:6px 0 0}
+.owner{font-weight:650;color:var(--accent);margin-top:-4px}
 .notice{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--muted);margin-bottom:14px;font-size:13px}
 .grid{display:grid;gap:14px}
 .cols-4{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
@@ -185,7 +189,7 @@ const FIREARMS = "hwp_firearms";
 // Field schemas drive both the cards and the edit dialog.
 const SCHEMA = {
   doctrines: {label:"Specialization", fields:[
-    ["name","text","Name"],["status","status","Status"],["order","number","Order"],
+    ["name","text","Name"],["status","status","Status"],["order","number","Order"],["owner","text","Assigned to"],
     ["blurb","textarea","Fantasy / role"],["notes","textarea","Notes"]]},
   skills: {label:"Skill", fields:[
     ["name","text","Name"],["status","status","Status"],
@@ -409,6 +413,7 @@ function doctrineSection(d, isNew){
   const a = sk.filter(s=>s.kind!=="passive").length, p = sk.length - a;
   return h("section",{class:"doctrine"+(isNew?" new":"")},
     h("h2",null, h("span",{class:"grow clickable", onclick:()=>openEditor("doctrines",d._id)}, (isNew ? "4th: " : "")+(d.name||d._id)), statusChip(d.status)),
+    d.owner ? h("div",{class:"owner"}, d.owner+"'s spec") : null,
     d.blurb ? h("p",{class:"blurb"}, d.blurb) : null,
     h("div",{class:"row mono"}, h("span",{class:"grow"}, a+" active · "+p+" passive"), addBtn("skill","skills",{group:d._id})),
     sk.length ? sk.map(skillCard) : h("div",{class:"empty"},"No skills yet"),
@@ -432,9 +437,16 @@ function cutSkills(v, c){
     c.cutNote ? h("p",{class:"vdesc"}, c.cutNote) : null,
     h("ul",{class:"levels",style:"grid-template-columns:1fr"}, c.cut.map(x => h("li",{style:"display:block"}, h("strong",null, x.name || x.file), " ", h("span",{class:"mono"}, x.file), x.desc ? " · "+x.desc : "")))));
 }
+// The brief for whoever designs a class's 4th spec (reference/spec4-brief.json), shown once one is assigned.
+function brief(v){
+  const b = state.data.reference.get("spec4-brief");
+  if (!b || !mine("doctrines").some(d => d.spec4 && d.owner)) return;
+  v.append(h("div",{class:"brief"}, h("h2",null, b.title), (b.paragraphs||[]).map(t => h("p",null,t))));
+}
 function viewVanilla(v){
   const c = classDoc();
   const st = c.stats || {};
+  brief(v);
   v.append(h("div",{class:"card",style:"margin-bottom:14px"},
     h("div",{class:"row"}, h("span",{class:"title grow"}, c.name), chip("van", c.port ? c.port+" class, ported" : "vanilla class"),
       h("button",{class:"btn small", onclick:()=>openEditor("classes", c._id)}, state.canWrite ? "Notes" : "Details")),
@@ -640,7 +652,7 @@ function viewOverview(v){
       return h("tr",{class:"clickable", onclick:()=>{ state.cls = c._id; state.tab = "class"; try{localStorage.setItem("fp.cls",c._id); localStorage.setItem("fp.tab","class");}catch{} render(); scrollTo(0,0); }},
         h("td",null,h("strong",null,c.name||c._id)),
         h("td",{class:"mono"}, isF ? "new class: "+docs.filter(d=>d._id!=="base").length+" doctrines" : (c.specs||[]).map(s=>s.name).join(", ")),
-        h("td",null, isF ? "—" : spec ? h("span",null, spec.name||spec._id, " ", statusChip(spec.status)) : h("span",{class:"mono"},"not started")),
+        h("td",null, isF ? "—" : spec ? h("span",null, spec.name||spec._id, " ", statusChip(spec.status), spec.owner ? " · "+spec.owner : "") : h("span",{class:"mono"},"not started")),
         h("td",null, cell("active")), h("td",null, cell("passive")),
         h("td",null, ms.length+" orb"+(ms.length===1?"":"s")));
     })))));
