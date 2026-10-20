@@ -2166,3 +2166,19 @@ another Reload press starts it again as usual. Then the second `/code-review hig
   HoH2 dash (`players/paladin/skills/charge.sval`), ours a leap. `mods/classes/README.md` had
   said the HoH1 Priest had "Holy Beam" (it is Holy Light) and that HoH2 ships the HoH1
   Paladin's Charge (only the unused Zealous Charge); corrected.
+
+## The Priest's and Paladin's "HoH1" specs removed (2026-10-20)
+
+- At the owner's request, after the trace above: `mods/classes/players/hwp/hoh1specs/` (the
+  Smiter and Holy Storm subclasses and their 6 skills), their lang strings, the
+  `hwp_pal_shield_of_faith` buff and the module's mastery self-check are gone. So are the
+  `plan-classesb-b` scenario (test step classes.s6) with its bot sections, and
+  `look-hoh1specs`.
+- Class planner: the ported spec is off the Priest and Paladin records; their placeholder
+  4th spec (`priest-spec4`, `paladin-spec4`, no owner yet) is now the 4th slot. The icon sheet
+  was regenerated (362 icons, none missing).
+- Saves: `PlayerRecord.Load` sets the class from `PlayerClass::Get` and returns false when it
+  is null (PlayerRecord.as:958, 1308), so a character on a removed subclass fails to load
+  rather than crashing (from source; not run). No release shipped these subclasses.
+- Runs: mod-classes 20261020-153330 PASS (`self-check done: 3/3 classes`), mod-all
+  20261020-153342 PASS.

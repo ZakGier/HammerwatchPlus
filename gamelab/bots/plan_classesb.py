@@ -1,13 +1,11 @@
-"""Test-plan checks for the classes mod's masteries (plan steps classes.s5 and classes.s6).
+"""Test-plan checks for the classes mod's masteries (plan step classes.s5).
 
 classes.s5: at level 20 (hwp levelup 20) each HoH1 class (Thief, Gladiator, Witch Hunter) has
 three specs at the Subclass Picker, and the self-buff skills (Slice and Dice, Cloak of Shadows,
 Shield Wall, Immolation) show their buff with a HUD icon for the listed time.
-classes.s6: the Priest and the Paladin get a 4th spec, Smiter (Smite, Divine Hammer, Last
-Rites) and Holy Storm (Holy Storm, Shield of Faith, Zealous Charge), and the skills cast.
 
-Sections: thief_specs, gladiator_specs, witchhunter_specs (s5), priest_smiter,
-paladin_holystorm (s6). Each makes its own fresh character with `gl char`.
+Sections: thief_specs, gladiator_specs, witchhunter_specs. Each makes its own fresh
+character with `gl char`.
 
 The picker is the town's npc_subclass_picker (Town/SubclassPickShopContent.as): its
 `class-curr` TextWidget names the shown subclass, OnFunc "nextclass" steps it. Skills are
@@ -322,127 +320,6 @@ class Checks(Base):
         # pyre is the only base active at level 1 (ward starts at 0): Immolation on Skill2
         self.buff_test("immolation", "hwp_witch_hunter_immolation", ".skills.hwp_witch_hunter.immolation.name",
                        8000, "skill2", 12)
-        self.to_town()
-
-    # --- classes.s6
-    def specs_s6(self, key, cls, spec_id, spec_name, skills):
-        """Character, level 20, a 4th spec at the picker, the spec taken, its 3 skills learned."""
-        r, pl, lv = self.new_char(cls, "Lab" + key.capitalize())
-        self.flag(f"{key}_char", r.get("ok") and pl.get("class") == cls, f"{r} class {pl.get('class')}")
-        shown = self.picker(4)
-        self.flag(f"{key}_four_specs", len(shown) == 4 and spec_name in shown, f"picker {shown}")
-        self.labels_flag(key, [spec_id])
-        sc = self.gl("subclass", spec_id)
-        self.hwp("skillpoints 30")
-        lv = {s: self.gl("skill", s, 1).get("level", 0) for s in skills}
-        self.flag(f"{key}_spec_learned", sc.get("class") == spec_id and all(v >= 1 for v in lv.values()),
-                  f"{sc.get('class')} {lv}")
-        return sc.get("class") == spec_id
-
-    def damage_cast(self, tag, skill_id, fallback_button, cost, dist, cooldown, hold=500):
-        """A fresh dummy `dist` along the aim and the press in one frame (gl multi: a dummy
-        walks and steers in the ~0.3 s a gl command takes). Hit: the dummy lost HP or died
-        (gone from `near`); a hit is also proof of the cast. A spawn a wall pushed away gets the
-        next direction, after the skill's cooldown. The press is held `hold` ms: past the cast
-        point, so the aim stays the emulated one (it falls back to the real mouse after)."""
-        button = self.button_for(tag, skill_id, fallback_button)
-        presses, spent, hit, seen = 0, 0.0, False, []
-        for aim in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            self.gl("kill", 600, "bandit_brute")
-            time.sleep(0.4)
-            m0 = self.mana_exact()
-            self.gl("multi", "spawn", DUMMY, aim[0] * dist, aim[1] * dist, "+",
-                    "input", hold, 0, 0, aim[0], aim[1], button)
-            time.sleep(hold / 1000 + 0.7)  # cast point, projectiles in flight
-            started = self.started(skill_id)
-            paid = self.spent_enough(m0, cost)
-            now = self.dummies()
-            struck = not now or any(u.get("dead") or u.get("hp", 1) < 0.999 for u in now)
-            seen.append((aim, self.skill_cd(skill_id), round(m0 - self.mana_exact(), 1),
-                         [(round(u.get("hp", 1), 3), u.get("dead")) for u in now]))
-            if started or paid or struck:
-                presses, spent = presses or 1, max(spent, round(m0 - self.mana_exact(), 1))
-            if struck:
-                hit = True
-                break
-            time.sleep(cooldown / 1000 + 0.2)
-        if not presses:
-            # never cast from the one-frame press: the plain press loop (and a targeting confirm)
-            self.fresh_dummy(dist)
-            presses, spent = self.cast(skill_id, button, cost)
-        self.flag(f"{tag}_cast", presses > 0, f"{skill_id} on {button}: {presses} press(es), mana -{spent}")
-        self.flag(f"{tag}_hits", hit, f"dummy at {dist}: (aim, cooldown left, mana spent, dummies hp/dead) {seen}")
-
-    def hp(self):
-        pl = self.gl("state").get("player", {})
-        return pl.get("hp", 0), pl.get("hpMax", 0)
-
-    def priest_smiter(self):
-        skills = ["hwp_priest_hoh1_smite", "hwp_priest_hoh1_divine_hammer", "hwp_priest_hoh1_last_rites"]
-        if not self.specs_s6("priest", "priest", "hwp_priest_hoh1", "Smiter", skills):
-            return
-        if not self.enter_floor("priest"):
-            return
-        # inner light is the base active (consecrated ground starts at 0, divine protection is
-        # passive): Smite on Skill2, Divine Hammer on Skill3
-        self.damage_cast("smite", "hwp_priest_hoh1_smite", "skill2", 10, 28, 1500)
-        # 40, not 60: the right-hand whirling axe curves off a straight line as it flies
-        self.damage_cast("hammer", "hwp_priest_hoh1_divine_hammer", "skill3", 12, 40, 4000)
-        # Last Rites: every kill heals 8 (level 1) in 80 around you. Hurt, time the regen alone,
-        # then a credited kill (gl kill ... me runs PlayerKilledActor: Kill trigger) and compare
-        self.gl("kill", 600, "bandit_brute")
-        before = self.fresh_dummy(40)
-        h = self.gl("hurt", 0.5)
-        if "hp" not in h:
-            self.flag("last_rites_heals", False, f"no hurt verb: {h}")
-        else:
-            time.sleep(0.3)
-            a0 = self.hp()[0]
-            t0 = time.time()
-            time.sleep(1.0)
-            a1 = self.hp()[0]
-            regen = (a1 - a0) / max(0.1, time.time() - t0)
-            self.gl("hurt", 0.5)
-            time.sleep(0.2)
-            b0 = self.hp()[0]
-            t1 = time.time()
-            k = self.gl("kill", 300, "bandit_brute", "me")
-            time.sleep(0.6)
-            b1, mx = self.hp()
-            gain = b1 - b0 - regen * (time.time() - t1)
-            self.flag("last_rites_heals", bool(before) and k.get("killed", 0) >= 1 and gain >= 5,
-                      f"kill {k.get('killed')}: hp {b0} -> {b1}/{mx}, regen alone {regen:.1f}/s, kill heal ~{gain:.1f} (8 listed)")
-            self.gl("hurt", 1)
-        self.to_town()
-
-    def paladin_holystorm(self):
-        skills = ["hwp_paladin_hoh1_holy_storm", "hwp_paladin_hoh1_shield_of_faith", "hwp_paladin_hoh1_zealous_charge"]
-        if not self.specs_s6("paladin", "paladin", "hwp_paladin_hoh1", "Holy Storm", skills):
-            return
-        if not self.enter_floor("paladin"):
-            return
-        # blessed strikes is the base active (lay on hands starts at 0): Holy Storm on Skill2,
-        # Shield of Faith on Skill3, Zealous Charge on core's extra key hwp_skill4 (vanilla: Skill3 too)
-        self.damage_cast("holy_storm", "hwp_paladin_hoh1_holy_storm", "skill2", 20, 40, 8000)
-        self.gl("kill", 600, "bandit_brute")
-        self.buff_test("sof", "hwp_paladin_hoh1_shield_of_faith", ".skills.hwp_paladin_hoh1.shield_of_faith.name",
-                       6000, "skill3", 15)
-        # its own key (skills verb); on a shared Skill3 only Shield of Faith's cooldown would let it through
-        button = self.button_for("charge", "hwp_paladin_hoh1_zealous_charge", "skill3")
-        before = self.fresh_dummy(90)
-        pl0 = self.gl("state").get("player", {})
-        m0 = self.mana_exact()
-        presses, spent = self.cast("hwp_paladin_hoh1_zealous_charge", button, 12)
-        time.sleep(0.6)  # the 450 ms leap
-        pl1 = self.gl("state").get("player", {})
-        moved = ((pl1.get("x", 0) - pl0.get("x", 0)) ** 2 + (pl1.get("y", 0) - pl0.get("y", 0)) ** 2) ** 0.5
-        # the leap itself is the proof it cast; the button flag (charge_own_button) is separate
-        self.flag("charge_cast", presses > 0 or moved >= 20 or self.spent_enough(m0, 12),
-                  f"on {button}: {presses} press(es), mana -{spent}, moved {moved:.0f} px")
-        self.flag("charge_leaps", moved >= 20, f"moved {moved:.0f} px")
-        # the leap's target is TargetAOE's CalcMouseTargetPos (the real cursor, PlayerTargetingHelper.as:262)
-        # unless the input is a gamepad's; the emulated aim doesn't move it, so no hit is required
-        self.notes.append(f"charge dummy hit {bool(before) and self.dummy_hit(before)}")
         self.to_town()
 
 

@@ -65,7 +65,7 @@ trick the Firearms Reload uses for `GivePercentageMana`).
 
 Morning decisions: all numbers, real icons/portraits (portrait pieces
 reuse rogue / paladin / ranger), whether the Gladiator should be two-handed,
-HoH1-style Priest/Paladin alternate specs (not built), and which skills
+and which skills
 should be spells vs passives.
 
 ## Test checklist
@@ -84,31 +84,11 @@ should be spells vs passives.
    skills show the buff icon on the HUD for the listed duration.
 7. Co-op: a client sees the host's pyre, hounds and knives and vice versa.
 
-## HoH1-style Priest and Paladin masteries
+## Removed: the Priest and Paladin "HoH1" masteries (2026-10-20)
 
-`players/hwp/hoh1specs/class_hoh1_specs.sval` adds a 4th subclass to the
-vanilla Priest and Paladin (the trainer and character creation list
-subclasses by parent, any count). Stats are copies of the parents' blocks.
-
-- **Priest: Smiter** (`hwp_priest_hoh1`): Smite (short holy thrust, 60-150
-  physical), Divine Hammer (returning blade projectile, reuses the warrior
-  whirling axe unit), Last Rites (passive: every kill heals you and allies
-  in 80-120 range for 8-25).
-- **Paladin: Holy Storm** (`hwp_paladin_hoh1`): Holy Storm (ring of 6-10
-  returning blades, 20-55 each), Shield of Faith (6 s self-buff
-  `hwp_pal_shield_of_faith`: +50 % armor and resistances, 10-15 thorns),
-  Zealous Charge (leap to the target, 50-140 physical + minor stun).
-
-Icons are vanilla `players/icons_skills.png` frames (placeholders).
-
-Where they come from (checked against the HoH1 data, `gamecode/sdk/hoh1/players/priest`
-and `paladin`): they are HoH1-flavoured, not ports. Only **Smite** is a HoH1 Priest skill
-(there the primary attack: a short-range hit for 8-18 hybrid damage); here it is an active
-with HoH2 numbers. **Divine Hammer** is named after a HoH1 chapel upgrade (the primary attack
-throws a hammer, 25 physical; `tweak/shops/chapel.sval`), here an active on the warrior's
-whirling axe. **Last Rites**, **Holy Storm** and **Shield of Faith** are new. **Zealous
-Charge** shares its name with an unused HoH2 skill (`players/paladin/skills/charge.sval`, a
-charged dash) but is a separate leap. Not carried over: the HoH1 Priest's Holy Light, Aura of
-Purification and Remedy, and the HoH1 Paladin's Sword, Charge, Whirlwind, Shield, Stunning
-Blows and Flames of Devotion. HoH2's Priest already has Celestial Orbs, Consecrated Ground and
-Divine Protection, and its Paladin Lay on Hands. Pictures: `look-hoh1specs`.
+A 4th subclass for the vanilla Priest (Smiter: Smite, Divine Hammer, Last Rites) and
+Paladin (Holy Storm: Holy Storm, Shield of Faith, Zealous Charge) used to live in
+`players/hwp/hoh1specs/`. They were removed at the owner's request: only Smite was a real
+HoH1 Priest skill, the rest were new (`docs/RE_NOTES.md`, 2026-10-20). Their 4th specs are
+designed in the class planner instead. A character that took one no longer loads
+(`PlayerRecord.Load` finds no class); no release ever shipped them.

@@ -102,36 +102,6 @@
   },
   {
    "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/divine_hammer.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/holy_storm.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/last_rites.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/shield_of_faith.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/smite.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/skills/zealous_charge.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
    "file": "players/hwp/thief/skills/backstab.sval",
    "dest": "gamelab/results/export-classes-svals"
   },
@@ -258,11 +228,6 @@
   {
    "do": "sval",
    "file": "players/hwp/gladiator/class_gladiator.sval",
-   "dest": "gamelab/results/export-classes-svals"
-  },
-  {
-   "do": "sval",
-   "file": "players/hwp/hoh1specs/class_hoh1_specs.sval",
    "dest": "gamelab/results/export-classes-svals"
   },
   {

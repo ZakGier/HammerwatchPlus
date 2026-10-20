@@ -53,20 +53,4 @@
 			</dict>
 		</array>
 	</dict>
-	<dict name="hwp_pal_shield_of_faith">
-		<string name="name">.skills.hwp_paladin_hoh1.shield_of_faith.name</string>
-		<string name="description">.skills.hwp_paladin_hoh1.shield_of_faith.buff.desc</string>
-		<array name="hud"><s>items/icons_consumables.png</s><i>100</i><vec4>241 281 14 14</vec4></array>
-		<array name="tags"><string>buff</string></array>
-		<bool name="debuff">false</bool>
-		<int name="duration">6000</int>
-		<float name="armor-mul">1.5</float>
-		<float name="resistance-mul">1.5</float>
-		<array name="modifiers">
-			<dict>
-				<string name="class">Modifiers::Thorns</string>
-				<ivec2 name="physical">10 15</ivec2>
-			</dict>
-		</array>
-	</dict>
 </svals>
