@@ -234,7 +234,7 @@ class Bench:
         return row
 
 
-def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000):
+def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None):
     b = Bench(p, cls, ms)
     g = b.g
     g.console("e_cheats 1")
@@ -264,6 +264,8 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000):
                 b.gl("subclass", spec)
             skills = b.spend_skills(spec)
             for build, weapons in cfg["builds"].items():
+                if builds and build not in builds:
+                    continue
                 for stage, orbs, trinkets in stages:
                     row = b.checkpoint(level, spec, build, weapons, quality, tier, stage, orbs, trinkets)
                     row["skills"] = skills
@@ -271,6 +273,12 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000):
         if level >= 10:
             b.gl("subclass", cls)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"{cls}.json").write_text(json.dumps(b.rows, indent=1), encoding="utf-8")
+    rows = b.rows
+    out = OUT / f"{cls}.json"
+    if builds and out.exists():
+        # a partial bench replaces only its own builds' rows
+        keep = [r for r in json.loads(out.read_text(encoding="utf-8")) if r.get("build") not in builds]
+        rows = keep + b.rows
+    out.write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return {"rows": [{k: r[k] for k in ("spec", "build", "level", "stage", "single", "pack", "off")} for r in b.rows],
             "count": len(b.rows)}

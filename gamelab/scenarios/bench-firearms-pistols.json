@@ -1,0 +1,27 @@
+{
+ "name": "bench-firearms-pistols",
+ "about": "Measurement (balance): bench-firearms for the dual-pistol build only; its rows replace the pistols rows in gamelab/results/bench/hwp_firearms.json.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 3000,
+ "steps": [
+  {
+   "do": "bot",
+   "bot": "bench",
+   "save_as": "bench",
+   "kwargs": {
+    "cls": "hwp_firearms",
+    "builds": [
+     "pistols"
+    ]
+   },
+   "expect": {}
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}
