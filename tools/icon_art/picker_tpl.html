@@ -41,7 +41,7 @@ h2 { font-family: var(--display); font-weight: 400; font-size: 16px; margin: 28p
 .opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px }
 .opt { appearance: none; background: var(--bg); border: 2px solid var(--line); border-radius: 5px; padding: 6px 4px 4px; cursor: pointer;
   display: grid; justify-items: center; gap: 4px; color: var(--muted); font: 600 11px var(--body); letter-spacing: .06em }
-.opt img { width: 96px; max-width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block }
+.opt img { width: 96px; max-width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; margin: 0 auto }
 .opt:hover { border-color: var(--muted) }
 .opt:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px }
 .opt[aria-pressed="true"] { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, var(--bg)); color: var(--fg) }
@@ -68,7 +68,7 @@ h2 { font-family: var(--display); font-weight: 400; font-size: 16px; margin: 28p
 </div></header>
 
 <main class="wrap">
-  <p class="intro">Each skill has three new takes in the vanilla skill-icon style (A: the gear up close, B: the moment it happens, C: an abstract mark) and the icon it uses now. Tap one per skill; <b>Now</b> keeps the current icon. Add a note if a take is close but needs a change. Picks save for everyone who opens this page, and Claude reads them back to build the atlases.</p>
+  <p class="intro">Each skill has three new takes in the vanilla skill-icon style (A: the gear up close, B: the moment it happens, C: an abstract mark) and the icon it uses now. Tap one per skill; <b>Now</b> keeps the current icon (in a round-2 group, Now is your round-1 pick). Add a note if a take is close but needs a change. Picks save for everyone who opens this page, and Claude reads them back to build the atlases.</p>
   <div id="groups"></div>
 </main>
 
@@ -122,6 +122,8 @@ function card(it) {
     const src = it.imgs[k];
     if (src) {
       const im = document.createElement("img");
+      // a 14x14 stack icon shows at the same zoom as the 24s, so it reads as small as it is
+      im.addEventListener("load", () => { if (im.naturalWidth && im.naturalWidth < 24) im.style.width = im.naturalWidth * 4 + "px"; });
       im.src = src; im.alt = `${it.name}, ${k === "now" ? "current icon" : "take " + label}`;
       b.append(im);
       b.setAttribute("aria-pressed", p.choice === (k === "now" ? "keep" : k) ? "true" : "false");

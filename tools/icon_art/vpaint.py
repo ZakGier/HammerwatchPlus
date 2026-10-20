@@ -171,8 +171,10 @@ def moved(f, dx, dy):
 
 # ---------------------------------------------------------------- canvas
 class Icon:
-    def __init__(self):
-        self.im = Image.new("RGB", (N, N), BLACK)
+    def __init__(self, n=None):
+        """n: the side in pixels, 24 for a skill icon (N), 14 for a buff-bar stack icon."""
+        self.n = n or N
+        self.im = Image.new("RGB", (self.n, self.n), BLACK)
         self.p = self.im.load()
 
     # ---- ground
@@ -184,13 +186,13 @@ class Icon:
         a = math.radians(angle)
         ux, uy = math.cos(a), math.sin(a)
         ph = [h2(seed, k, 3) * 6.28 for k in range(3)]
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 across = -uy * (x + 0.5) + ux * (y + 0.5)
                 v = 0.5 + band * (0.5 * math.sin(across * 0.42 + ph[0]) + 0.3 * math.sin(across * 0.9 + ph[1]) + 0.2 * math.sin(across * 0.21 + ph[2])) / 1.0 * 0.5
-                d = math.hypot(x + 0.5 - light[0], y + 0.5 - light[1]) / 22
+                d = math.hypot(x + 0.5 - light[0], y + 0.5 - light[1]) / (22 * self.n / N)
                 v += 0.35 - d * 0.6
-                e = math.hypot(x - 11.5, y - 11.5) / 16.5
+                e = math.hypot(x - (self.n - 1) / 2, y - (self.n - 1) / 2) / (16.5 * self.n / N)
                 v -= e ** 4 * 0.6
                 v += grain(x, y, seed) * 0.35
                 t = max(0, min(4, round(v * 4))) / 4
@@ -199,8 +201,8 @@ class Icon:
 
     def rays(self, cx, cy, rmp, n=9, seed=2, lo=0, hi=2, width=0.5):
         """Radial bands behind the subject (for blasts, flashes)."""
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 a = math.atan2(y + 0.5 - cy, x + 0.5 - cx)
                 s = math.sin(a * n + h2(seed, 1) * 6) * 0.5 + 0.5
                 if s > 1 - width:
@@ -215,8 +217,8 @@ class Icon:
 
     # ---- generic per-pixel painter
     def paint(self, sdf, fn, aa=False):
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 d = sdf(x + 0.5, y + 0.5)
                 if d <= 0:
                     c = fn(x, y, d)
@@ -235,7 +237,7 @@ class Icon:
         n = len(rmp)
         base = (n - 1) * 0.5 if base is None else base
         spread = (n - 1) * 0.42 if spread is None else spread
-        pts = [(x, y) for y in range(N) for x in range(N) if sdf(x + 0.5, y + 0.5) <= 0]
+        pts = [(x, y) for y in range(self.n) for x in range(self.n) if sdf(x + 0.5, y + 0.5) <= 0]
         if not pts:
             return self
         lx, ly = light
@@ -262,15 +264,15 @@ class Icon:
             self.p[x, y] = pick(rmp, t)
         if spec:
             for (x, y) in spec:
-                if 0 <= x < N and 0 <= y < N:
+                if 0 <= x < self.n and 0 <= y < self.n:
                     self.p[x, y] = rmp[-1]
         return self
 
     def glow(self, cx, cy, r, color, strength=1.0, steps=4, seed=5):
         """Additive soft light, posterised with grain like vanilla's halo pixels."""
         c = hexc(color) if isinstance(color, str) else color
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 d = math.hypot(x + 0.5 - cx, y + 0.5 - cy) / r
                 if d < 1:
                     k = (1 - d) ** 1.5 * strength + grain(x, y, seed) * 0.25
@@ -285,8 +287,8 @@ class Icon:
         little past its edge."""
         n = len(rmp)
         hot = n - 1 if hot is None else hot
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 d = sdf(x + 0.5, y + 0.5)
                 if d < 1.2:
                     if d < 0:
@@ -316,7 +318,7 @@ class Icon:
     def px(self, pts, c):
         c = hexc(c) if isinstance(c, str) else c
         for x, y in pts:
-            if 0 <= x < N and 0 <= y < N:
+            if 0 <= x < self.n and 0 <= y < self.n:
                 self.p[x, y] = c
         return self
 
@@ -325,15 +327,15 @@ class Icon:
         if arm:
             armc = armc or mix(self.p[x, y], c, 0.6)
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                o = self.p[x + dx, y + dy] if 0 <= x + dx < N and 0 <= y + dy < N else None
+                o = self.p[x + dx, y + dy] if 0 <= x + dx < self.n and 0 <= y + dy < self.n else None
                 if o is not None:
                     self.p[x + dx, y + dy] = mix(o, c, 0.55)
         return self
 
     def shade(self, sdf, k=0.45):
         """Darken a region (cast shadows, occlusion)."""
-        for y in range(N):
-            for x in range(N):
+        for y in range(self.n):
+            for x in range(self.n):
                 if sdf(x + 0.5, y + 0.5) <= 0:
                     o = self.p[x, y]
                     self.p[x, y] = tuple(int(v * k) for v in o)
@@ -342,8 +344,8 @@ class Icon:
     def done(self):
         im = self.im.convert("RGBA")
         p = im.load()
-        for i in range(N):
-            for (x, y) in ((i, 0), (i, N - 1), (0, i), (N - 1, i)):
+        for i in range(self.n):
+            for (x, y) in ((i, 0), (i, self.n - 1), (0, i), (self.n - 1, i)):
                 r, g, b, _ = p[x, y]
                 p[x, y] = (int(r * 0.8), int(g * 0.8), int(b * 0.8), 255)
         return im
@@ -360,6 +362,8 @@ def sheet(rows, path, z=5, label=118):
         y = r * (N * z + 8)
         d.text((4, y + N * z // 2 - 6), name, fill=(230, 230, 230, 255))
         for k, im in enumerate(ims):
-            out.alpha_composite(im.resize((N * z, N * z), Image.Resampling.NEAREST), (label + k * cw, y))
+            # a smaller icon (a 14x14 stack) shows at its own size against the 24s
+            iz = im.resize((im.width * z, im.height * z), Image.Resampling.NEAREST)
+            out.alpha_composite(iz, (label + k * cw, y))
             d.text((label + k * cw + 3, y + 2), "ABCD"[k] if k < 3 else "now", fill=(255, 255, 255, 255))
     out.save(path)

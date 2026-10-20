@@ -19,8 +19,8 @@ def pineapple(ic, cx, cy, rx, ry, rmp=OLIVE, seed=0, lever=True):
     ic.solid(body, rmp, seed=seed, noise=0.35)
     # segment grooves: darker lines on a grid, each segment's upper-left pixel lit
     gx, gy = rx * 2 / 4.2, ry * 2 / 5.2
-    for y in range(N):
-        for x in range(N):
+    for y in range(ic.n):
+        for x in range(ic.n):
             if body(x + 0.5, y + 0.5) < -0.6:
                 u, v = (x + 0.5 - cx + rx) / gx, (y + 0.5 - cy + ry) / gy
                 if (u % 1) < 1 / gx * 1.05 or (v % 1) < 1 / gy * 1.05:

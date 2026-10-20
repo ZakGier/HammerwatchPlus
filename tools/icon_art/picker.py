@@ -1,7 +1,8 @@
-"""Builds the icon picker page: python picker.py -> out/picker.html
-The Firearms group is every icon of fa.py, fa2.py and fa3.py (out/firearms/<id>_<a|b|c>.png,
-from render.py all) with the current icon; each vanilla class's group comes from
-out/orbs/<cls>.json (orb_groups.py) and rorb.py's images."""
+"""Builds the icon picker page: python picker.py [r1] -> out/picker.html
+The Firearms group is round 2 (fa_r2.py's out/firearms_r2/<id>_<a|b|c|now>.png, "now" being
+the round-1 pick, with the round-1 note on the card); with r1, round 1 instead (fa.py, fa2.py
+and fa3.py's out/firearms/, from render.py all, beside the current icon). Each vanilla
+class's group comes from out/orbs/<cls>.json (orb_groups.py) and rorb.py's images."""
 import base64, io, json, sys
 from pathlib import Path
 from PIL import Image
@@ -57,6 +58,26 @@ def firearms_group():
     return {"id": "firearms", "title": "Firearms Specialist", "items": items}
 
 
+R1 = {"a": "A", "b": "B", "c": "C", "keep": "the icon it had", "": "none"}
+
+
+def firearms_r2_group():
+    """Round 2: ids firearms2.<name>, so the round-1 picks (firearms.<name>) stay as they are."""
+    import fa_r2
+    d = HERE / "out" / "firearms_r2"
+    r1 = json.loads((HERE / "out" / "picks_r1.json").read_text(encoding="utf-8"))
+    items = []
+    for n in sorted(fa_r2.FA_R2):
+        imgs = {k: uri(Image.open(d / f"{n}_{k}.png")) for k in ("a", "b", "c", "now")}
+        choice, note = r1.get(n, ["", ""])
+        desc = f"Round 1: you picked {R1[choice]}" + (f'; "{note}"' if note else "") + "."
+        if n.endswith("_hud"):
+            desc += " A 14x14 buff-bar icon, shown at its size."
+        items.append({"id": "firearms2." + n, "name": FIREARMS_DESC.get(n, n.replace("_", " ")), "key": n,
+                      "desc": desc, "imgs": imgs})
+    return {"id": "firearms2", "title": "Firearms Specialist, round 2", "items": items}
+
+
 def extra_groups():
     """Vanilla orb groups written by orb_groups.py as out/orbs/<cls>.json (if present)."""
     groups = []
@@ -71,7 +92,7 @@ def extra_groups():
 
 
 def main():
-    groups = [firearms_group()] + extra_groups()
+    groups = [firearms_group() if "r1" in sys.argv[1:] else firearms_r2_group()] + extra_groups()
     tpl = (HERE / "picker_tpl.html").read_text(encoding="utf-8")
     html = tpl.replace("/*DATA*/null", json.dumps(groups, separators=(",", ":")))
     (DEST / "picker.html").write_text(html, encoding="utf-8")
