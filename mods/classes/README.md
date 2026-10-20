@@ -99,7 +99,16 @@ subclasses by parent, any count). Stats are copies of the parents' blocks.
   `hwp_pal_shield_of_faith`: +50 % armor and resistances, 10-15 thorns),
   Zealous Charge (leap to the target, 50-140 physical + minor stun).
 
-Icons are vanilla `players/icons_skills.png` frames (placeholders). The
-HoH1 Priest also had Holy Beam / Celestial Orbs and the Paladin Lay on
-Hands / Charge; HoH2 already ships those, so the masteries fill in what
-is missing rather than duplicating.
+Icons are vanilla `players/icons_skills.png` frames (placeholders).
+
+Where they come from (checked against the HoH1 data, `gamecode/sdk/hoh1/players/priest`
+and `paladin`): they are HoH1-flavoured, not ports. Only **Smite** is a HoH1 Priest skill
+(there the primary attack: a short-range hit for 8-18 hybrid damage); here it is an active
+with HoH2 numbers. **Divine Hammer** is named after a HoH1 chapel upgrade (the primary attack
+throws a hammer, 25 physical; `tweak/shops/chapel.sval`), here an active on the warrior's
+whirling axe. **Last Rites**, **Holy Storm** and **Shield of Faith** are new. **Zealous
+Charge** shares its name with an unused HoH2 skill (`players/paladin/skills/charge.sval`, a
+charged dash) but is a separate leap. Not carried over: the HoH1 Priest's Holy Light, Aura of
+Purification and Remedy, and the HoH1 Paladin's Sword, Charge, Whirlwind, Shield, Stunning
+Blows and Flames of Devotion. HoH2's Priest already has Celestial Orbs, Consecrated Ground and
+Divine Protection, and its Paladin Lay on Hands. Pictures: `look-hoh1specs`.

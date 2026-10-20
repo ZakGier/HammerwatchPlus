@@ -2150,3 +2150,19 @@ another Reload press starts it again as usual. Then the second `/code-review hig
 - Firearms checks' latest runs, all PASS: plan-t14 20261020-030347, plan-firearms-a
   20261020-110341, -b 20261020-121820, -orbs 20261020-113012, -guns 20261020-113307,
   -reload-cut 20261020-120412, -arm 20261019-183638.
+
+## The Priest's and Paladin's "HoH1" specs, pictured and traced (2026-10-20)
+
+- **Pictures:** new `look-hoh1specs` scenario (`gamelab/bots/look_hoh1specs.py`, look only):
+  the Subclass Picker on Smiter and Holy Storm, then each skill at rank 5 cast at target
+  dummies on a cleared Bandit Keep floor at timescale 0.25. look-hoh1specs 20261020-152149 PASS,
+  37 shots. Seen: Smite's thrust and holy impact, Divine Hammer thrown and curving back,
+  Holy Storm's ring of blades out and back, Zealous Charge's leap, and a kill healing a hurt
+  Priest (Last Rites). Shield of Faith shows only a faint ground ring on cast.
+- **Origin, checked against the HoH1 data** (`gamecode/sdk/hoh1/players/{priest,paladin}`,
+  `language/english.lang`): only Smite is a HoH1 Priest skill (the class's primary attack
+  there). Divine Hammer is a HoH1 chapel upgrade's name (`tweak/shops/chapel.sval`); Last Rites,
+  Holy Storm and Shield of Faith exist nowhere in HoH1; Zealous Charge is the name of an unused
+  HoH2 dash (`players/paladin/skills/charge.sval`), ours a leap. `mods/classes/README.md` had
+  said the HoH1 Priest had "Holy Beam" (it is Holy Light) and that HoH2 ships the HoH1
+  Paladin's Charge (only the unused Zealous Charge); corrected.
