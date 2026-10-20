@@ -1262,10 +1262,13 @@ class HWPFirearmsGun : Skills::PlayerSkillDirectional
 	// A gun alone in the hands can run a shorter cycle: "hwp-solo-length" replaces anim-length
 	// while the owner lacks the "hwp-solo-unless" marker buff (the lone Glock: one round every
 	// 300 ms, not two a 600 ms cycle, which read as a two-round burst). The timeline entries
-	// past the short cycle then never fire.
+	// past the short cycle then never fire. "hwp-solo-blocking" likewise replaces the end of
+	// the blocking window, which for the pair covers the second round.
 	int m_fullLen;
 	int m_soloLen;
 	string m_soloUnless;
+	int m_fullBlocking;
+	int m_soloBlocking;
 
 	HWPFirearmsGun(UnitPtr unit, SValue& params)
 	{
@@ -1273,12 +1276,19 @@ class HWPFirearmsGun : Skills::PlayerSkillDirectional
 		m_fullLen = m_animLen;
 		m_soloLen = GetParamInt(unit, params, "hwp-solo-length", false, -1);
 		m_soloUnless = GetParamString(unit, params, "hwp-solo-unless", false, "");
+		m_fullBlocking = m_blocking.y;
+		m_soloBlocking = GetParamInt(unit, params, "hwp-solo-blocking", false, -1);
 	}
 
 	void NetActivate(vec2 target, float intensity) override
 	{
 		if (m_soloLen > 0)
-			m_animLen = HWP::Firearms::HasBuff(m_owner, m_soloUnless) ? m_fullLen : m_soloLen;
+		{
+			bool paired = HWP::Firearms::HasBuff(m_owner, m_soloUnless);
+			m_animLen = paired ? m_fullLen : m_soloLen;
+			if (m_soloBlocking >= 0)
+				m_blocking.y = paired ? m_fullBlocking : m_soloBlocking;
+		}
 		Skills::PlayerSkillDirectional::NetActivate(target, intensity);
 		if (m_carry >= 0)
 			m_castingT = m_carry;
