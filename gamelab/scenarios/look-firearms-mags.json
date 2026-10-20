@@ -1,0 +1,405 @@
+{
+ "name": "look-firearms-mags",
+ "about": "Look only (timescale 0.1 around the throw): Explosive Reload's thrown magazines, the curved rifle mag, then the two smaller pistol mags with dual Glocks (mags.png, mag_rifle/mag_pistol.effect), and no load errors for them. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 360,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Mags"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "hwp levelup 20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "subclass",
+   "args": [
+    "hwp_firearms_demolitions"
+   ]
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 40"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_reload",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "orb",
+   "args": [
+    "hwp_fs_reload_explosive",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "idle_00"
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "999"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "-3"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "30000",
+    "0",
+    "0",
+    "1",
+    "0.15",
+    "skill1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "rifle_00"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_01"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_02"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_03"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_04"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_05"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_06"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_07"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_08"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_09"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_10"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_11"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_12"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_13"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_14"
+  },
+  {
+   "do": "shot",
+   "name": "rifle_15"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "50",
+    "0",
+    "0",
+    "1",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "dbg_cht_ignore_equipment_requirements 1"
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_mh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "equip",
+   "args": [
+    "hwp_glock_oh_01",
+    "1",
+    "1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "999"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "givestacks",
+   "args": [
+    "players/hwp/firearms/stacks_firearms.sval:clip",
+    "-3"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "30000",
+    "0",
+    "0",
+    "1",
+    "0.15",
+    "skill1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1.5
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "0.1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "pistol_00"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_01"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_02"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_03"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_04"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_05"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_06"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_07"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_08"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_09"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_10"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_11"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_12"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_13"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_14"
+  },
+  {
+   "do": "shot",
+   "name": "pistol_15"
+  },
+  {
+   "do": "gl",
+   "verb": "input",
+   "args": [
+    "50",
+    "0",
+    "0",
+    "1",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "timescale",
+   "args": [
+    "1"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "(?i)(error|warn|fail|could not|missing|not found).*(mags\\.png|mag_(rifle|pistol)\\.effect|reload_mag)"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

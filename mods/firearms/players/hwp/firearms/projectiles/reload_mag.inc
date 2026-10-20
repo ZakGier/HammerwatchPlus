@@ -1,5 +1,8 @@
 <!--
-	Explosive Reload's thrown magazine (fs_reload.sval, HWPFirearmsThrowMag). It is thrown
+	Explosive Reload's thrown magazine (fs_reload.sval, HWPFirearmsThrowMag), one file per
+	gun: reload_mag_rifle.unit, and reload_mag_pistol.unit (%define PISTOL), the smaller mag
+	thrown by a Glock in either hand. Only the look differs (mags.png,
+	tools/make_mag_art.py); the blast is the same. It is thrown
 	with the rounds left as its intensity, so the blast deals mag-dmg per round
 	(Damage.as: damage times intensity). Thrown along the aim it lands 100 out, the point
 	GroundBouncing hit-target flies to for a direction (IProjectile.as GetTargetPos). It
@@ -58,7 +61,13 @@
 			<collision static="false">
 				<circle radius="4" projectile="true" />
 			</collision>
-			<effect src="effects/generic/other/bomb.effect" />
+%if PISTOL
+			<scene src="special/shadow.unit:5" />
+			<effect src="./mag_pistol.effect" />
+%else
+			<scene src="special/shadow.unit:7" />
+			<effect src="./mag_rifle.effect" />
+%endif
 		</scene>
 	</scenes>
 </unit>

@@ -65,7 +65,8 @@
 				<!-- Explosive Reload: thrown before the refill, while the clip still holds what's left -->
 				<dict>
 					<string name="class">HWPFirearmsThrowMag</string>
-					<string name="projectile">players/hwp/firearms/projectiles/reload_mag.unit</string>
+					<string name="projectile">players/hwp/firearms/projectiles/reload_mag_rifle.unit</string>
+					<string name="pistol-projectile">players/hwp/firearms/projectiles/reload_mag_pistol.unit</string>
 					<string name="dmg-bind">mag-dmg</string>
 					<int name="dist">6</int>
 				</dict>
@@ -86,7 +87,8 @@
 			<array name="cast2">
 				<dict>
 					<string name="class">HWPFirearmsThrowMag</string>
-					<string name="projectile">players/hwp/firearms/projectiles/reload_mag.unit</string>
+					<string name="projectile">players/hwp/firearms/projectiles/reload_mag_rifle.unit</string>
+					<string name="pistol-projectile">players/hwp/firearms/projectiles/reload_mag_pistol.unit</string>
 					<string name="dmg-bind">mag-dmg</string>
 					<int name="dist">6</int>
 					<bool name="second">true</bool>

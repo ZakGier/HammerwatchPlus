@@ -856,7 +856,9 @@ class HWPFirearmsAdrenaline : IEffect
 }
 
 // Explosive Reload: throws the magazine before the refill, as a projectile whose intensity
-// is the rounds that were left (reload_mag.unit: dmg per round). Dual Glocks throw the two
+// is the rounds that were left (reload_mag.inc: dmg per round). A Glock in either hand
+// throws the smaller pistol magazine ("pistol-projectile"), the rifle its own ("projectile");
+// the pick reads the owner's gun markers, so every peer draws the same one. Dual Glocks throw the two
 // magazines one after the other: the cast throws the main hand's half of the rounds and
 // keeps the off hand's for the "second" throw, a later timeline entry (fs_reload.sval).
 // Does nothing without the orb (dmg 0) or with an empty clip.
@@ -874,12 +876,34 @@ class HWPFirearmsThrowMag : ShootProjectile
 {
 	int m_dmg;
 	bool m_second;
+	UnitProducer@ m_pistolProjectile;
+	bool m_pistol;
 
 	HWPFirearmsThrowMag(UnitPtr unit, SValue& params)
 	{
 		super(unit, params);
 		m_dmg = GetParamInt(unit, params, "dmg", false, 0);  // mag-dmg is an int bind
 		m_second = GetParamBool(unit, params, "second", false, false);
+		@m_pistolProjectile = Resources::GetUnitProducer(GetParamString(unit, params, "pistol-projectile", false, ""));
+	}
+
+	void PickMag(Actor@ owner)
+	{
+		m_pistol = m_pistolProjectile !is null
+			&& (HWP::Firearms::HasBuff(owner, "glock_main") || HWP::Firearms::HasBuff(owner, "glock_off"));
+	}
+
+	UnitPtr ProduceProjectile(vec2 shootPos, int id = 0) override
+	{
+		if (m_pistol)
+			return m_pistolProjectile.Produce(g_scene, xyz(shootPos), id);
+		return ShootProjectile::ProduceProjectile(shootPos, id);
+	}
+
+	bool NetDoAction(SValue@ param, Actor@ owner, vec2 pos, vec2 dir) override
+	{
+		PickMag(owner);
+		return ShootProjectile::NetDoAction(param, owner, pos, dir);
 	}
 
 	bool Skip(SValueBuilder@ builder)
@@ -898,6 +922,7 @@ class HWPFirearmsThrowMag : ShootProjectile
 		string key = "" + owner.m_unit.GetId();
 		m_projectiles = 1;
 		m_spread = 0;
+		PickMag(owner);
 
 		if (m_second)
 		{
