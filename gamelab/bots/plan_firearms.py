@@ -309,6 +309,11 @@ class Checks(Base):
                   f"tooltip {tip} x cost mul {mul}, sval {data}, GetCost {live}")
 
     def level(self, tag, sid):
+        """the skill at rank 1: the doctrine skills and Frag start there (starting-level 1, as
+        vanilla's), so only one still at 0 is raised"""
+        r = self.gl("skill", sid, 0)
+        if r.get("level", 0) >= 1:
+            return True
         r = self.gl("skill", sid, 1)
         time.sleep(0.6)  # SkillUp reloads the skills (LoadSkills)
         ok = r.get("level", 0) >= 1
@@ -366,21 +371,25 @@ class Checks(Base):
         self.notes.append(f"no clear line {dist} out from {round(px)},{round(py)}: last rayhit {r}")
         return pref, r
 
-    def direction_test(self, tag, sid, sval, d, dist=80):
+    def direction_test(self, tag, sid, sval, d, dist=80, charges=None):
         """A Direction skill (snipe, rpg, burst) fired at a dummy `dist` along d: it casts
-        (its cooldown starts, the dummy loses HP) and costs the tooltip's mana."""
+        (its cooldown starts, the dummy loses HP) and costs the tooltip's mana. With
+        `charges` (a stack Ordinance Hoarder banks), a cast that spent a charge instead of
+        starting the cooldown counts too: Hoarder starts at rank 1 and banks while it waits."""
         self.clear_dummies()
         d, ray = self.clear_dir(d, dist)
         du = self.dummy(d[0] * dist, d[1] * dist)
         self.top_up()
         hp0 = self.hps([du])
+        ch0 = self.stacks(charges) if charges else 0
         w = self.cast_watch(sid, lambda: self.gl("input", hold(sval), 0, 0, d[0], d[1], "skill3"))
         time.sleep(0.3)
         hp1 = self.hps([du])
+        ch1 = self.stacks(charges) if charges else 0
         hit = hp1[du] < hp0[du] - 0.001
-        self.flag(f"{tag}_casts", w["cd"] > 0 and hit,
+        self.flag(f"{tag}_casts", (w["cd"] > 0 or ch1 < ch0) and hit,
                   f"aim {d} (line clear: wall {ray.get('wall')}, tile {ray.get('tile')}), cooldown {w['cd']}, "
-                  f"dummy hp {hp0[du]} -> {hp1[du]}, also cooled {w['others']}")
+                  f"charges {ch0} -> {ch1}, dummy hp {hp0[du]} -> {hp1[du]}, also cooled {w['others']}")
         self.cost_flag(tag, sid, sval, w)
         return w
 
@@ -657,7 +666,7 @@ class Checks(Base):
         d = self.open_dirs(130)[0]
         if not self.level("rpg", "hwp_fs_rpg"):
             return
-        self.direction_test("rpg", "hwp_fs_rpg", "demo_rpg.sval", d)
+        self.direction_test("rpg", "hwp_fs_rpg", "demo_rpg.sval", d, charges="rocket_charges")
 
         def fire(orb, watch=1.4):
             ok, lvl = self.orb(orb)
@@ -678,6 +687,11 @@ class Checks(Base):
         if self.level("hoarder", "hwp_fs_hoarder"):
             e = self.entry(self.bar(), "hwp_fs_hoarder")
             self.flag("hoarder_passive", e.get("mode") == 0 and not e.get("button"), f"{e}")
+            # spend what it banked during the casts above, so the watch starts from none
+            if self.stacks("rocket_charges") >= 1:
+                self.top_up()
+                self.aimed_cast("hwp_fs_rpg", d, 420)
+                time.sleep(1.6)  # the charge goes once the cast ends (HoardedSkill: !Casting)
             self.ready("hwp_fs_rpg")
             # level 1: a charge per 8 s x 0.9091 = 7.27 s ready, max 1
             seen, t0 = [], time.time()

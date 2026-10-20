@@ -26,7 +26,7 @@
 	<string name="id">hwp_fs_frag</string>
 	<string name="type">spell</string>
 	<array name="tags"><s>spell</s><s>physical</s><s>hwp_firearm</s><s>hwp_explosive</s></array>
-	<int name="starting-level">0</int>
+	<int name="starting-level">1</int>
 
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTLEVEL_1</int>

@@ -22,7 +22,7 @@
 
 	<string name="id">hwp_fs_adrenaline</string>
 	<array name="tags"><s>passive</s></array>
-	<int name="starting-level">0</int>
+	<int name="starting-level">1</int>
 
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTMASTERYLEVEL_1</int>
