@@ -219,6 +219,34 @@ namespace HWP
 				HWP::Commands::Reply("shots: " + t.length() + " rounds, gaps " + gaps);
 				return;
 			}
+			// "elements [reset]": the local player's gun shots since the last reset, by roll
+			if (args.length() > 0 && args[0] == "elements")
+			{
+				auto r = HWP::Firearms::g_eleRolls;
+				// "elements roll <n>": RollElement n times on the local player's stats, the roll
+				// every gun shot makes (HWPFirearmsGunShot.DoAction), to measure its weights
+				if (args.length() > 2 && args[1] == "roll")
+				{
+					auto plr = cast<PlayerBase>(GetLocalPlayer());
+					int n = min(100000, max(0, int(parseInt(args[2]))));
+					array<int> c = { 0, 0, 0, 0, 0 };
+					float chance = HWP::Firearms::CustomStat(plr, "hwp-ele-chance");
+					for (int i = 0; i < n; i++)
+						c[HWP::Firearms::RollElement(plr, chance) + 1]++;
+					HWP::Commands::Reply("elements rolled " + n + " at chance " + formatFloat(chance, "", 0, 3) + ": plain " + c[0]
+						+ " fire " + c[1] + " ice " + c[2] + " lightning " + c[3] + " poison " + c[4]);
+					return;
+				}
+				if (args.length() > 1 && args[1] == "reset")
+				{
+					for (uint i = 0; i < r.length(); i++)
+						HWP::Firearms::g_eleRolls[i] = 0;
+					HWP::Commands::Reply("elements: reset");
+					return;
+				}
+				HWP::Commands::Reply("elements: plain " + r[0] + " fire " + r[1] + " ice " + r[2] + " lightning " + r[3] + " poison " + r[4]);
+				return;
+			}
 			// "empty" (cheat): the clip at 0 with no reload running, as after going down a
 			// floor with every round spent. The count is set, not spent, so the clip's
 			// lose-effects (the automatic reload) don't run: for trying the empty trigger.
@@ -274,7 +302,7 @@ namespace Modules
 		HWPFirearmsModule()
 		{
 			super("hwp-firearms");
-			HWP::Commands::Register("firearms", "[empty|sound [n|next|prev|again|list] [shots]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
+			HWP::Commands::Register("firearms", "[empty|shots|elements [reset|roll n]|sound [n|next|prev|again|list]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
 			HWP::Firearms::SelfCheck(false);
 			HWP::Bag::OnEquip(HWP::Bag::EquipPrepare(HWP::Firearms::PistolEquip));
 		}

@@ -203,6 +203,95 @@ namespace GameLab
 		Emit(Reply(id, done == times).Str("orb", args[0]).Int("changed", done).Int("level", level));
 	}
 
+	const int CRITPROBE_MAX = 20000;
+
+	// critprobe <rolls> <radius> <filter> [skillId]: read-only. What a hit on the nearest live
+	// actor matching filter would roll, as PlayerBase.DamageDealt does (PlayerBase.as:855-900):
+	// modifiers.Crit(player, actor, skill) > 0 counted over rolls calls (the dynamic crits:
+	// HWPFirearmsStackCrit, Exposure, Headshot), modifiers.DamageMul(player, actor), the
+	// static crit stats (currStats MainHand/OffHand/Spell CritChance and CritDamage), the
+	// skill's m_modCritChance/m_modCritDamage/m_modDamageMul (SkillCrit, BaseSkillModifier),
+	// and every custom stat. Rolls are capped at CRITPROBE_MAX.
+	void VerbCritProbe(const string &in id, array<string>@ args)
+	{
+		auto plr = cast<Player>(GetLocalPlayer());
+		if (plr is null || args.length() < 3)
+		{
+			Fail(id, plr is null ? "no spawned local player" : "usage: critprobe <rolls> <radius> <filter> [skillId]");
+			return;
+		}
+		int rolls = min(CRITPROBE_MAX, max(0, int(parseInt(args[0]))));
+		float radius = parseFloat(args[1]);
+		vec2 center = xy(plr.m_unit.GetPosition());
+		auto units = g_scene.FetchAllUnits(~0, center, int(radius));
+		Actor@ target = null;
+		float best = radius + 1;
+		for (uint i = 0; i < units.length(); i++)
+		{
+			if (!units[i].IsValid() || units[i].IsDestroyed() || units[i] == plr.m_unit)
+				continue;
+			auto actor = cast<Actor>(units[i].GetScriptBehavior());
+			if (actor is null || actor.IsDead() || units[i].GetDebugName().findFirst(args[2]) < 0)
+				continue;
+			float d = dist(center, xy(units[i].GetPosition()));
+			if (d < best)
+			{
+				best = d;
+				@target = actor;
+			}
+		}
+		if (target is null)
+		{
+			Fail(id, "no live actor matching " + args[2] + " within " + args[1]);
+			return;
+		}
+		Skills::Skill@ skill = null;
+		if (args.length() > 3)
+		{
+			uint sid = HashString(args[3]);
+			for (uint i = 0; i < plr.m_skills.length() && skill is null; i++)
+			{
+				if (plr.m_skills[i] !is null && plr.m_skills[i].m_skillId == sid)
+					@skill = plr.m_skills[i];
+			}
+			if (skill is null)
+			{
+				Fail(id, "the player has no skill " + args[3]);
+				return;
+			}
+		}
+		auto mods = plr.m_record.GetModifiers();
+		int crits = 0;
+		for (int i = 0; i < rolls; i++)
+		{
+			if (mods.Crit(plr, target, skill) > 0)
+				crits++;
+		}
+		vec2 dmul = mods.DamageMul(plr, target);
+		auto st = plr.m_record.currStats;
+		array<string> custom;
+		for (uint i = 0; i < st.m_customStats.length(); i++)
+		{
+			auto cs = st.m_customStats[i];
+			if (cs.svalue is null)
+				continue;
+			Json c;
+			c.Str("id", cs.id).Raw("value", formatFloat(cs.svalue.GetFloat(), "", 0, 4));
+			custom.insertLast(c.Close());
+		}
+		auto j = Reply(id, true);
+		j.Str("target", target.m_unit.GetDebugName()).Num("dist", best).Int("rolls", rolls).Int("crits", crits)
+			.Raw("damageMul", "[" + formatFloat(dmul.x, "", 0, 4) + "," + formatFloat(dmul.y, "", 0, 4) + "]")
+			.Raw("mainCrit", formatFloat(st.MainHand.CritChance, "", 0, 4)).Raw("mainCritDmg", formatFloat(st.MainHand.CritDamage, "", 0, 4))
+			.Raw("offCrit", formatFloat(st.OffHand.CritChance, "", 0, 4)).Raw("offCritDmg", formatFloat(st.OffHand.CritDamage, "", 0, 4))
+			.Raw("spellCrit", formatFloat(st.SpellCritChance, "", 0, 4)).Raw("spellCritDmg", formatFloat(st.SpellCritDamage, "", 0, 4));
+		if (skill !is null)
+			j.Str("skill", args[3]).Raw("skillCrit", formatFloat(skill.m_modCritChance, "", 0, 4))
+				.Raw("skillCritDmg", formatFloat(skill.m_modCritDamage, "", 0, 4)).Raw("skillDmgMul", formatFloat(skill.m_modDamageMul, "", 0, 4));
+		j.Raw("custom", RawArray(custom));
+		Emit(j);
+	}
+
 	void Register_firearms()
 	{
 		RegisterVerb("orb", "<orbId> [times|down]", Verb(VerbOrb));
@@ -210,5 +299,6 @@ namespace GameLab
 		RegisterVerb("floats", "", Verb(VerbFloats));
 		RegisterVerb("skillbar", "", Verb(VerbSkillbar));
 		RegisterVerb("targets", "[radius] [filter]", Verb(VerbTargets));
+		RegisterVerb("critprobe", "<rolls> <radius> <filter> [skillId]", Verb(VerbCritProbe));
 	}
 }

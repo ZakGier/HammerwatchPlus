@@ -1,0 +1,127 @@
+{
+ "name": "plan-firearms-orbs2",
+ "about": "Test plan through the plan_firearms_more bot: the Firearms orbs plan-firearms-a/-b/-orbs leave out. Elemental Bullets' chance and its fire/ice/lightning/poison weights (RollElement run 20000 times on the live stats, `hwp firearms elements roll`) and real rifle rounds; the blind/slow/stun riders on a dummy; Extended Clip's rounds and crit damage per round, Extended Crit Chance; Shrapnel's armor break; BOOM Headshot! and Elemental Exposure (gl critprobe calls the player's modifiers.Crit as a hit does); Overpacked Explosives' damage mul, Elemental Shrapnel's penetration and damage on the magic dummy, Rocket Jump; Critical Focus per adrenaline stack, EpiPen on a dodge; Our Turret!'s stat only (the boost needs a second player). Uses givestacks, skillpoints, orb and levelup cheats: not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms_more",
+   "kwargs": {
+    "sections": "orbs_base"
+   },
+   "name": "orbs base",
+   "expect": {
+    "elemental_bullets_chance": true,
+    "bullets_fire_weighted": true,
+    "bullets_ice_weighted": true,
+    "bullets_lightning_weighted": true,
+    "bullets_poison_weighted": true,
+    "bullets_fire_elemental": true,
+    "riders_need_orbs": true,
+    "bullets_blind_rider": true,
+    "bullets_slow_rider": true,
+    "bullets_stun_rider": true,
+    "extended_clip_rounds": true,
+    "extended_clip_crit_damage": true,
+    "extended_crit_chance": true,
+    "frag_shrapnel_armor_break": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms_more",
+   "kwargs": {
+    "sections": "orbs_marksman"
+   },
+   "name": "orbs marksman",
+   "expect": {
+    "boom_headshot_crit": true,
+    "exposure_crit_per_element": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms_more",
+   "kwargs": {
+    "sections": "orbs_demo"
+   },
+   "name": "orbs demo",
+   "expect": {
+    "overpacked_damage": true,
+    "elemental_shrapnel_pen": true,
+    "elemental_shrapnel_more_damage": true,
+    "rocket_jump_throws": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms_more",
+   "kwargs": {
+    "sections": "orbs_assault"
+   },
+   "name": "orbs assault",
+   "expect": {
+    "critical_focus_per_stack": true,
+    "epipen_on_dodge": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms_more",
+   "kwargs": {
+    "sections": "orbs_engineer"
+   },
+   "name": "orbs engineer",
+   "expect": {
+    "our_turret_stat": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

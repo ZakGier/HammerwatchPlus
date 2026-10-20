@@ -78,6 +78,9 @@ namespace HWP { namespace Firearms { vec2 g_lastMuzzle; float g_lastRange; } }
 // g_shotTimes: when (g_scene.GetTime) the local player's last SHOT_TIMES gun rounds started
 // ("hwp firearms shots")
 namespace HWP { namespace Firearms { const uint SHOT_TIMES = 16; array<int> g_shotTimes; } }
+// g_eleRolls: the local player's gun shots by roll, plain first then ELEMENTS ("hwp firearms
+// elements"; "elements reset" zeroes it)
+namespace HWP { namespace Firearms { array<int> g_eleRolls = { 0, 0, 0, 0, 0 }; } }
 
 class HWPFirearmsGunShot : ShootProjectile
 {
@@ -112,6 +115,8 @@ class HWPFirearmsGunShot : ShootProjectile
 		{
 			auto plr = cast<PlayerBase>(owner);
 			e = HWP::Firearms::RollElement(plr, HWP::Firearms::CustomStat(plr, "hwp-ele-chance"));
+			if (plr !is null && plr is cast<PlayerBase>(GetLocalPlayer()))
+				HWP::Firearms::g_eleRolls[e + 1]++;
 		}
 		builder.PushArray();
 		builder.PushInteger(e);

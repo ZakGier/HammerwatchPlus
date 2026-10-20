@@ -1,7 +1,7 @@
 <!--
 	Elemental Bullets' rounds (Elemental.as HWPFirearmsGunShot fires one when a shot rolls an
 	element): a gun's round (rifle_round, glock_round...) with its weapon damage all as the
-	element and no armor penetration, the orbs' riders (HWPFirearmsBulletRider) and the
+	element and no armor penetration, the orbs' riders (HWPFirearmsBulletRider), the element's impact and the
 	element's tinted look (round_<LOOK>_<ELEMENT>.effect). One file per gun and element,
 	each a single %block Round with that gun's numbers.
 -->
@@ -41,6 +41,11 @@
 				<string name="class">SpawnEffect</string>
 				<string name="effect">effects/generic/impacts/pierce_impact_1.effect</string>
 				<bool name="clone-owner-params">true</bool>
+			</dict>
+			<!-- the element's own impact (the game's fire/ice/lightning/poison_impact_1) -->
+			<dict>
+				<string name="class">SpawnEffect</string>
+				<string name="effect">effects/generic/impacts/%%ELEMENT%%_impact_1.effect</string>
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>

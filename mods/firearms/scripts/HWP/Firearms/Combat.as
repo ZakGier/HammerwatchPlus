@@ -766,7 +766,8 @@ namespace Modifiers
 // Adrenaline's effects on the player (assault_adrenaline.sval), local only:
 // - heal (the hurt trigger): spend every stack for heal of max health each. The trigger runs
 //   before the damage, so the heal waits a frame (g_adrenalineHeal, UpdateCombat).
-// - epipen (EpiPen's dash trigger): with no stacks, gain epipen stacks.
+// - epipen (EpiPen's dash trigger): with no stacks, gain epipen stacks, with a red glow
+//   (epipen_glow) and the potion sound.
 class HWPFirearmsAdrenaline : IEffect
 {
 	float m_heal;
@@ -798,6 +799,10 @@ class HWPFirearmsAdrenaline : IEffect
 			if (stacks > 0)
 				return false;
 			plr.AddStacks(plr, def, m_epipen);
+			auto glow = LoadActorBuff(HWP::Firearms::BUFFS + "epipen_glow");
+			if (glow !is null)
+				plr.ApplyBuff(ActorBuff(plr, glow, 1.0f, false));
+			PlaySound3D(Resources::GetSoundEvent("event:/sfx/items/item_potion"), plr.m_unit.GetPosition());
 			HWP::Log("firearms", "adrenaline: epipen, " + plr.GetStacks(def) + " stacks");
 			return true;
 		}
