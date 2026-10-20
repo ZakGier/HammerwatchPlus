@@ -3,7 +3,7 @@
 		<string name="anim">default</string>
 		<int name="ttl">240</int>
 		<float name="speed">52</float>
-		<int name="penetration">2</int>
+		<int name="penetration">0</int>
 		<bool name="bounce-on-collide">false</bool>
 
 		<array name="modifiers">
@@ -21,7 +21,7 @@
 			<dict>
 				<string name="class">PlayerDamage</string>
 				<bool name="off-hand">false</bool>
-				<float name="mul">1.6</float>
+				<float name="mul">0.52</float>
 				<bool name="shield-blockable">true</bool>
 			</dict>
 			<dict>

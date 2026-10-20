@@ -37,10 +37,10 @@
 	<scenes>
 		<scene>
 			<collision static="false">
-				<circle radius="128" sensor="true" shoot-through="true" aim-through="true" />
+				<circle radius="64" sensor="true" shoot-through="true" aim-through="true" />
 			</collision>
 			<effect src="players/rogue/effects/rog_toxic_cloud_start.effect?cg=0.4&cr=0.3&cb=0.1" />
-			<effect delay="150" src="players/rogue/effects/rog_toxic_cloud.effect?cg=0.4&cr=0.3&cb=0.1&poison=1&radius=128" />
+			<effect delay="150" src="players/rogue/effects/rog_toxic_cloud.effect?cg=0.4&cr=0.3&cb=0.1&poison=1&radius=64" />
 		</scene>
 	</scenes>
 </unit>

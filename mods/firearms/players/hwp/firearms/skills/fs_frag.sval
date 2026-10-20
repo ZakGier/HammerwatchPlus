@@ -1,7 +1,7 @@
 %include "players/skills_cost.inc"
 <!--
 	Frag Grenade: thrown at the cursor, physical damage with armor penetration in a radius of
-	128 (twice the Rogue's demolitions grenade, 64). Three mutually exclusive orbs turn it into
+	64 (the Rogue's demolitions grenade's; it was 128 until 2026-10-19). Three mutually exclusive orbs turn it into
 	another grenade (grenade-type): each swaps the thrown unit (proj-unit) and the cooldown
 	(cooldown-bind, as Paladin's divine_pillars.sval), and keeps the level's damage and
 	penetration in its own element. Every explosion also carries Elemental Shrapnel's
@@ -43,7 +43,7 @@
 		<bool name="blocking">false</bool>
 		<bool name="repeating">false</bool>
 
-		<int name="radius">128</int>
+		<int name="radius">64</int>
 		<int name="range">170</int>
 		<int name="range-min">16</int>
 		<bool name="raycast-to-target">false</bool>
@@ -54,7 +54,7 @@
 		<dict name="binds">
 			<int name="cooldown">4000</int>
 			<string name="proj-unit">players/hwp/firearms/projectiles/grenade_frag.unit</string>
-			<int name="area-radius">128</int>
+			<int name="area-radius">64</int>
 			<int name="grenade-dmg">100</int>
 			<float name="grenade-pen">0.2</float>
 			<int name="grenade-tick">10</int>

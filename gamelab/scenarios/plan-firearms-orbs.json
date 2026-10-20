@@ -67,6 +67,9 @@
     "over_reload_manual_perfect": true,
     "over_reload_capped": true,
     "over_reload_plain_clears": true,
+    "over_reload_click_perfect": true,
+    "over_reload_miss_red_once": true,
+    "reload_bar_without_orb": true,
     "over_reload_no_free_mag": true
    }
   },

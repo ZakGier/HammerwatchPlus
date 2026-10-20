@@ -93,11 +93,27 @@ class HWPFirearmsGunShot : ShootProjectile
 	{
 		super(unit, params);
 		@m_plain = m_projectile;
+		m_converge = GetParamInt(unit, params, "converge", false, 0);
 		for (uint i = 0; i < HWP::Firearms::ELEMENTS.length(); i++)
 		{
 			string path = GetParamString(unit, params, HWP::Firearms::ELEMENTS[i], false, "");
 			m_rounds.insertLast(path == "" ? null : Resources::GetUnitProducer(path));
 		}
+	}
+
+	// "converge" (px): a round leaving a gun held off the aim line (rotate-offset) is angled to
+	// cross the line that far out, instead of flying parallel to it 6 px aside. Parallel rounds
+	// grazed past small targets: a lone pistol hit a target dummy (radius 4) with 8 of ~26
+	// rounds (probe-pistol 20261020-002514).
+	int m_converge;
+
+	vec2 GetShootDir(vec2 dir, int i, bool allowRandom) override
+	{
+		vec2 d = ShootProjectile::GetShootDir(dir, i, allowRandom);
+		if (m_converge <= 0 || !m_rotateOffset || m_offset.y == 0)
+			return d;
+		float ang = atan(d.y, d.x) - atan(m_offset.y, float(m_converge));
+		return vec2(cos(ang), sin(ang));
 	}
 
 	void Pick(int e)

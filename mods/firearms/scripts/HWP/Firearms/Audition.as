@@ -162,10 +162,52 @@ class HWPFirearmsSound : PlaySound
 	}
 }
 
+// The last rounds of a clip click: after the round is spent (place it after %block Spend), a
+// dry click at the owner when the clip holds "low" rounds or fewer (3 for one gun, 6 for
+// dual pistols). The click is the game's metal button (a mod can't add a sound file).
+class HWPFirearmsLowClick : IAction
+{
+	int m_low;
+	SoundEvent@ m_snd;
+
+	HWPFirearmsLowClick(UnitPtr unit, SValue& params)
+	{
+		m_low = GetParamInt(unit, params, "low", false, 3);
+		@m_snd = Resources::GetSoundEvent(GetParamString(unit, params, "sound", false, "event:/sfx/doodads/buttons/button_metal"));
+	}
+
+	void SetWeaponInformation(uint weapon) {}
+	bool NeedNetParams() { return false; }
+
+	bool DoAction(SValueBuilder@ builder, Actor@ owner, Actor@ target, vec2 pos, vec2 dir, float intensity)
+	{
+		auto plr = cast<Player>(owner); // the shooter's own machine: a husk's clip isn't synced
+		if (plr is null)
+			return true;
+		auto st = HWP::Firearms::FindStack(plr, ActorBuffStackDef::Get(HWP::Firearms::CLIP));
+		int left = st is null ? 0 : st.m_stacks;
+		if (left <= m_low && m_snd !is null)
+		{
+			PlaySound3D(m_snd, plr.m_unit.GetPosition());
+			HWP::Firearms::g_lowClicks++;
+		}
+		return true;
+	}
+
+	bool NetDoAction(SValue@ param, Actor@ owner, vec2 pos, vec2 dir)
+	{
+		return DoAction(null, owner, null, pos, dir, 1.0f);
+	}
+
+	void Update(int dt, int cooldown) {}
+	void CancelAction() {}
+}
+
 namespace HWP
 {
 	namespace Firearms
 	{
 		array<SoundInstance@> g_shotSounds;
+		int g_lowClicks = 0; // low-clip clicks played here, for `hwp firearms clip`
 	}
 }

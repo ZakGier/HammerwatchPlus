@@ -12,7 +12,7 @@
 			<collision static="false">
 				<circle radius="8" sensor="true" shoot-through="true" aim-through="true" />
 			</collision>
-			<effect layer="-1" src="players/sorcerer/effects/static_field.effect?radius=128" />
+			<effect layer="-1" src="players/sorcerer/effects/static_field.effect?radius=64" />
 		</scene>
 	</scenes>
 </unit>

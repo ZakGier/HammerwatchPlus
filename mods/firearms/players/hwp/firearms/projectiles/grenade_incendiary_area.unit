@@ -35,9 +35,9 @@
 	<scenes>
 		<scene>
 			<collision static="false">
-				<circle radius="128" sensor="true" shoot-through="true" aim-through="true" />
+				<circle radius="64" sensor="true" shoot-through="true" aim-through="true" />
 			</collision>
-			<effect src="effects/generic/areas/fire_area_ground_1.effect?radius=128" />
+			<effect src="effects/generic/areas/fire_area_ground_1.effect?radius=64" />
 		</scene>
 	</scenes>
 </unit>

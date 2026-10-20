@@ -210,6 +210,20 @@ namespace HWP
 					+ ", last miss flew " + formatFloat(HWP::Firearms::g_lastRange, "", 0, 1));
 				return;
 			}
+			// "reload": the reload bar (Combat.as OverReloadState): bars shown, Over-Reload tries,
+			// whether one shows now, its colour and gold window, and where it sits by the HUD's health bar
+			if (args.length() > 0 && args[0] == "reload")
+			{
+				auto o = HWP::Firearms::g_overReload;
+				vec2 hp;
+				float hpW;
+				bool hud = o.HealthBar(hp, hpW);
+				HWP::Commands::Reply("reload bar: shown " + o.m_bars + ", perfect " + o.m_hits + ", missed " + o.m_misses
+					+ ", now " + (o.m_active ? "auto" : (o.m_manual ? "manual" : "none"))
+					+ ", " + (o.m_missed ? "red" : "white") + ", gold " + (o.m_windowStart >= 0 ? "yes" : "no")
+					+ ", health bar " + (hud ? int(hp.x) + "," + int(hp.y) + " w " + int(hpW) : "none"));
+				return;
+			}
 			// "shots": the gaps between the local player's last gun rounds, in ms, oldest first
 			if (args.length() > 0 && args[0] == "shots")
 			{
@@ -292,6 +306,7 @@ namespace HWP
 			HWP::Commands::Reply(Resources::GetString(".hwp.firearms.status", {
 				{ "cls", rec.playerClass.m_id }, { "rifle", rifle }, { "clip", clip }, { "clipmax", clipMax },
 				{ "mana", mana }, { "max", maxMana } }));
+			HWP::Commands::Reply("low clips clicked " + g_lowClicks);
 		}
 	}
 }

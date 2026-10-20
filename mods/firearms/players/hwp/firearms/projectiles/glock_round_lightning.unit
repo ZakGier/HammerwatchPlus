@@ -1,2 +1,2 @@
 %include "players/hwp/firearms/projectiles/round_elemental.inc"
-%block Round 180 44 0 1 false pistol lightning
+%block Round 180 44 0 0.8 false pistol lightning

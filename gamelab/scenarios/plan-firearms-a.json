@@ -59,7 +59,8 @@
     "frag_thrown": true,
     "frag_explodes": true,
     "frag_lands_where_aimed": true,
-    "frag_damage_numbers": true
+    "frag_damage_numbers": true,
+    "frag_radius_64": true
    }
   },
   {

@@ -165,6 +165,8 @@ class Checks(Base):
         self.gl("char", "hwp_firearms", name)
         self.wait_phase("town", 60)
         time.sleep(2)
+        # the class starts with a pistol; these checks were written for the rifle (no 6 px muzzle offset)
+        self.gl("equip", "hwp_rifle_01", "common")
         lv = self.hwp("levelup 20", 1.0, until="now level")
         sc = self.gl("subclass", sub) if sub else {}
         self.hwp("skillpoints 40", 0.6, until="skill points")
@@ -384,9 +386,10 @@ class Checks(Base):
 
     # --- sections
     def firearms_frag(self):
-        """firearms s3: Frag Grenade (Skill2, 16-170 range, 128 radius) thrown at two spots 110
+        """firearms s3: Frag Grenade (Skill2, 16-170 range, 64 radius) thrown at two spots 110
         out, as far apart as the open directions allow, one dummy at each: the aimed one loses HP, the other doesn't, and the damage number
-        floats over the hit one."""
+        floats over the hit one. Beside the first spot, a dummy 40 to one side (inside 64) is hit
+        by the first throw and one 96 to the other (inside the old 128) isn't."""
         self.gl("char", "hwp_firearms", "LabFrag")
         self.wait_phase("town", 60)
         time.sleep(2)
@@ -395,8 +398,8 @@ class Checks(Base):
             return
         dirs = self.open_dirs(110)
         a = dirs[0]
-        # the open direction furthest round from a: at 84 deg the spots are only 147 apart for a
-        # 128 blast (grenade.inc), at 180 deg 220
+        # the open direction furthest round from a: at 84 deg the spots are only 147 apart, at
+        # 180 deg 220 (the blast was 128 until 2026-10-19, 64 now)
         b = min(dirs[1:], key=lambda v: v[0] * a[0] + v[1] * a[1], default=None)
         if b is None or b[0] * a[0] + b[1] * a[1] >= 0.1:
             b = (-a[1], a[0])
@@ -407,6 +410,12 @@ class Checks(Base):
             e, held, c = self.cursor_on(sx, sy, rng)
             eff.append((e, held, c))
         units = [self.dummy(e[0][0], e[0][1]) for e in eff]
+        # square to the throw line from the first spot (behind it, the aimed dummy blocks the
+        # blast's line of sight: Explode.as:173-190), 40 to one side and 96 to the other:
+        # inside and outside 64
+        ex, ey = eff[0][0]
+        el = max(1.0, (ex * ex + ey * ey) ** 0.5)
+        ring = [self.dummy(ex - ey / el * d, ey + ex / el * d) for d in (40, -96)]
         self.notes.append(f"frag spots asked {[(round(x), round(y)) for x, y in spots]}, cursor gave "
                           f"{[(round(e[0][0]), round(e[0][1]), e[1]) for e in eff]}, gamepad {eff[0][2].get('gamepad')}, "
                           f"quickcast {self.quickcast}")
@@ -414,10 +423,16 @@ class Checks(Base):
         results, texts_all, casts = [], [], []
         for i, (e, _, _) in enumerate(eff):
             hp0 = self.hps(units)
+            r0 = self.hps(ring) if i == 0 else None
             self.targeted("skill2", e[0], e[1], rng)
             texts = self.damage_texts(1.6)  # at once: it lands ~0.5 s after the click, its number lives 0.5 s
             cd = self.entry(self.bar(), "hwp_fs_frag").get("cd", 0)
             hp1 = self.hps(units)
+            if i == 0:
+                r1 = self.hps(ring)
+                inner, outer = (r1[u] < r0[u] - 0.001 for u in ring)
+                self.flag("frag_radius_64", inner and not outer,
+                          f"dummy 40 beside the spot hit {inner}, 96 beside hit {outer} (hp {r0} -> {r1})")
             casts.append(cd > 0 or hp1 != hp0)
             hit = [u for u in units if hp1[u] < hp0[u] - 0.001]
             px, py = self.pos()
@@ -703,6 +718,7 @@ class Checks(Base):
         self.gl("char", "hwp_firearms", "LabOrbs")
         self.wait_phase("town", 60)
         time.sleep(2)
+        self.gl("equip", "hwp_rifle_01", "common")  # the class starts with a pistol
         self.base_skills()
         if not self.enter_floor("orbs"):
             return
@@ -866,7 +882,91 @@ class Checks(Base):
         c5, mx5 = self.clip(), self.clip_max()
         self.flag("over_reload_plain_clears", mp1 and mx5 == mx0 and c5 == mx0,
                   f"plain manual Reload {plain}: clip {c5}/{mx5}")
+
+        def bar():
+            out = self.hwp("firearms reload", 0.3, until="reload bar: ")
+            lines = [ln for ln in out.splitlines() if "reload bar: " in ln]
+            return lines[-1] if lines else out.strip()[-300:]
+
+        # a left click inside the automatic reload's gold window is perfect too
+        lag, ctries, cperfect = 0.0, [], False
+        for _ in range(5):
+            mark = self.log_pos()
+            self.gl("givestacks", self.CLIP, -999)
+            t0 = time.time()
+            win = self.wait_log(r"over-reload: window (\d+)-(\d+) of (\d+) ms", mark, 1.0)
+            if not win:
+                ctries.append("no window logged")
+                break
+            a, b, _ = (int(x) for x in win.groups())
+            time.sleep(max(0.0, t0 + (a + b) / 2000 - lag - time.time()))
+            self.gl("input", 60, 0, 0, d[0], d[1], "main")
+            time.sleep(0.4)
+            log = self.log_from(mark)
+            hit = re.search(r"over-reload: perfect \(click\) at (\d+)", log)
+            miss = re.search(r"over-reload: missed \(click\) at (\d+)", log)
+            got = int((hit or miss).group(1)) if (hit or miss) else None
+            ctries.append((a, b, got))
+            if hit:
+                cperfect = True
+                break
+            if got is not None:
+                lag += (got - (a + b) / 2) / 1000
+            time.sleep(1.8)
+        time.sleep(0.3)
+        c6, mx6 = self.clip(), self.clip_max()
+        # the click that lands it may go on to start a burst once the clip is full
+        self.flag("over_reload_click_perfect", cperfect and mx6 == mx0 + 5 and c6 >= mx6 - 3,
+                  f"tries (window start, end, clicked at) {ctries}; clip {c6}/{mx6}")
+        self.gl("givestacks", self.CLIP, -999)
+        time.sleep(2.6)
+
+        # a miss: the bar stays up with its white red, and a second press in the gold does nothing
+        mark = self.log_pos()
+        self.gl("givestacks", self.CLIP, -999)
+        t0 = time.time()
+        win = self.wait_log(r"over-reload: window (\d+)-(\d+) of (\d+) ms", mark, 1.0)
+        missed, red, second = None, "", None
+        if win:
+            a, b, total = (int(x) for x in win.groups())
+            early = a - total // 2 >= 300   # room for a click before the gold
+            # late gold: click right after it, so the click (with the console lag) still lands before the end
+            at = (total // 2 + 60) if early else min(total - 80, b + 40)
+            time.sleep(max(0.0, t0 + at / 1000 - time.time()))
+            self.gl("input", 60, 0, 0, d[0], d[1], "main")
+            time.sleep(0.15)
+            self.g.shot("reload-bar-missed", settle=False)  # before the console line, while the bar is up
+            red = bar()
+            if early:
+                time.sleep(max(0.0, t0 + (a + b) / 2000 - time.time()))
+                self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+            time.sleep(0.3)
+            log = self.log_from(mark)
+            missed = re.search(r"over-reload: missed \(click\) at (\d+)", log)
+            second = re.findall(r"over-reload: (?:manual )?(?:perfect|missed)", log)
+        time.sleep(2.0)
+        mx7 = self.clip_max()
+        # the bar stays red to the reload's end (shot reload-bar-missed); read after the shot it may have ended
+        self.flag("over_reload_miss_red_once", missed is not None and ", red," in red and len(second or []) == 1
+                  and mx7 == mx0, f"window {win and win.group(0)}; bar after the miss {red!r}; judged {second}; max {mx7}")
         self.orb_off("hwp_fs_reload_over")
+
+        # without the orb: the bar still shows (white, no gold) for the automatic and a manual
+        # reload, just above the HUD's health bar
+        self.gl("givestacks", self.CLIP, -999)
+        time.sleep(0.4)
+        self.g.shot("reload-bar-plain", settle=False)
+        plain_auto = bar()
+        time.sleep(2.2)
+        self.ready("hwp_fs_reload")
+        self.gl("givestacks", self.CLIP, -10)
+        self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+        time.sleep(0.3)
+        self.g.shot("reload-bar-manual", settle=False)
+        plain_manual = bar()
+        time.sleep(2.0)
+        self.flag("reload_bar_without_orb", "now auto, white, gold no" in plain_auto and "now manual, white, gold no" in plain_manual
+                  and "health bar none" not in plain_auto, f"{plain_auto!r} / {plain_manual!r}")
 
         def frag(orb, secs, land=0.9):
             ok, _ = self.orb(orb)

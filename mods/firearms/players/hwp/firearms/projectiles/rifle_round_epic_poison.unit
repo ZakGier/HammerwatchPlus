@@ -1,2 +1,2 @@
 %include "players/hwp/firearms/projectiles/round_elemental.inc"
-%block Round 260 56 2 2 false rifle poison
+%block Round 260 56 0 0.65 false rifle poison

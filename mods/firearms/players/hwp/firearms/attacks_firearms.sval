@@ -27,7 +27,7 @@
 
 	<dict>
 		<string name="name">.skills.attacks.twohanded.hwp_rifle1.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle1.desc?dmg=160%</string>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle1.desc?dmg=52%</string>
 		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 48 24 24</vec4></array>
 		<string name="id">hwp_attack_rifle</string>
 		<string name="type">mainhand</string>
@@ -36,13 +36,13 @@
 		<dict name="skill">
 			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
-			<int name="anim-length">560</int>
+			<int name="anim-length">800</int>
 
 			<int name="cooldown">0</int>
 			<float name="move-speed-mul">0.5</float>
-			<ivec2 name="move-speed">0 560</ivec2>
+			<ivec2 name="move-speed">0 800</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 560</ivec2>
+			<ivec2 name="blocking">0 800</ivec2>
 			<int name="castpoint">0</int>
 			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">true</bool>
@@ -50,7 +50,7 @@
 			%block HasRound
 
 			<dict name="actions">
-				<array name="cast">
+				<array name="shot1">
 					<dict>
 						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_round.unit</string>
@@ -67,17 +67,79 @@
 						<float name="volume">1.4</float>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
+				</array>
+				<array name="shot2">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_poison.unit</string>
+						<int name="dist">22</int>
+						<int name="spread">2</int>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
+					</dict>
+					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
+				</array>
+				<array name="shot3">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_poison.unit</string>
+						<int name="dist">22</int>
+						<int name="spread">2</int>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
+					</dict>
+					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
 				</array>
 			</dict>
 
 			<array name="timeline">
-				<i>0</i><s>cast</s>
+				<i>0</i><s>shot1</s>
+				<i>100</i><s>shot2</s>
+				<i>200</i><s>shot3</s>
 			</array>
 		</dict>
 	</dict>
 	<dict>
 		<string name="name">.skills.attacks.twohanded.hwp_rifle1.name</string>
-		<string name="description">.skills.attacks.twohanded.hwp_rifle1_epic.desc?dmg=200%</string>
+		<string name="description">.skills.attacks.twohanded.hwp_rifle1_epic.desc?dmg=65%</string>
 		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>48 48 24 24</vec4></array>
 		<string name="id">hwp_attack_rifle_epic</string>
 		<string name="type">mainhand</string>
@@ -86,13 +148,13 @@
 		<dict name="skill">
 			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
-			<int name="anim-length">560</int>
+			<int name="anim-length">800</int>
 
 			<int name="cooldown">0</int>
 			<float name="move-speed-mul">0.5</float>
-			<ivec2 name="move-speed">0 560</ivec2>
+			<ivec2 name="move-speed">0 800</ivec2>
 			<float name="cast-speed-mul">1</float>
-			<ivec2 name="blocking">0 560</ivec2>
+			<ivec2 name="blocking">0 800</ivec2>
 			<int name="castpoint">0</int>
 			<ivec2 name="update-aim">0 1</ivec2>
 			<bool name="repeating">true</bool>
@@ -100,7 +162,7 @@
 			%block HasRound
 
 			<dict name="actions">
-				<array name="cast">
+				<array name="shot1">
 					<dict>
 						<string name="class">HWPFirearmsGunShot</string>
 						<string name="projectile">players/hwp/firearms/projectiles/rifle_round_epic.unit</string>
@@ -117,11 +179,73 @@
 						<float name="volume">1.4</float>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
+				</array>
+				<array name="shot2">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round_epic.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_epic_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_epic_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_epic_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_epic_poison.unit</string>
+						<int name="dist">22</int>
+						<int name="spread">2</int>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
+					</dict>
+					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
+				</array>
+				<array name="shot3">
+					<dict>
+						<bool name="cond-target-self">true</bool>
+						<array name="conditional">
+							<s>buff stacks</s><s>players/hwp/firearms/stacks_firearms.sval:clip</s><s>ge</s><i>1</i>
+						</array>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsGunShot</string>
+						<string name="projectile">players/hwp/firearms/projectiles/rifle_round_epic.unit</string>
+						<string name="fire">players/hwp/firearms/projectiles/rifle_round_epic_fire.unit</string>
+						<string name="ice">players/hwp/firearms/projectiles/rifle_round_epic_ice.unit</string>
+						<string name="lightning">players/hwp/firearms/projectiles/rifle_round_epic_lightning.unit</string>
+						<string name="poison">players/hwp/firearms/projectiles/rifle_round_epic_poison.unit</string>
+						<int name="dist">22</int>
+						<int name="spread">2</int>
+					</dict>
+					<dict>
+						<string name="class">HWPFirearmsSound</string>
+						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
+						<float name="volume">1.4</float>
+					</dict>
+					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
 				</array>
 			</dict>
 
 			<array name="timeline">
-				<i>0</i><s>cast</s>
+				<i>0</i><s>shot1</s>
+				<i>100</i><s>shot2</s>
+				<i>200</i><s>shot3</s>
 			</array>
 		</dict>
 	</dict>
@@ -215,17 +339,18 @@
 	</dict>
 
 	<!--
-		Glock, main hand (left click). Alone (shield, tome, empty off hand): two accurate
-		rounds a cycle. With the off-hand Glock's marker: one round from each muzzle in turn,
-		0.9 damage each and a spread that blooms while held - less control, a bit less DPS.
+		Glock, main hand (left click). Alone (shield, tome, empty off hand): one accurate
+		round every 300 ms. With the off-hand Glock's marker: one round from each muzzle in turn,
+		0.8 damage each (as alone) and a spread that blooms while held: two clips, two guns' affixes, less control.
 		Each round leaves its own gun: the main hand's (right hand) 6 px right of the aim line
 		(rotate-offset 0 6), the off hand's 6 px left (0 -6); measured by look-firearms-muzzles.
+		Each is angled to cross the aim line 100 px out (converge, Elemental.as HWPFirearmsGunShot).
 		Rounds start just past the gun's tip: dist 12 for a pistol, 22 for the rifle (ShootProjectile
 		clamps it to a wall in between), and are drawn 11 px up, the gun's height.
 	-->
 	<dict>
 		<string name="name">.skills.attacks.mainhand.hwp_glock.name</string>
-		<string name="description">.skills.attacks.mainhand.hwp_glock.desc?dmg=100%&dual=90%</string>
+		<string name="description">.skills.attacks.mainhand.hwp_glock.desc?dmg=80%&dual=80%</string>
 		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>72 48 24 24</vec4></array>
 		<string name="id">hwp_attack_glock</string>
 		<string name="type">mainhand</string>
@@ -235,6 +360,9 @@
 			<string name="class">HWPFirearmsGun</string>
 			<string name="anim">attack</string>
 			<int name="anim-length">600</int>
+			<!-- alone (no off-hand Glock marker), one round every 300 ms instead of two a 600 ms cycle -->
+			<int name="hwp-solo-length">300</int>
+			<string name="hwp-solo-unless">glock_off</string>
 
 			<int name="cooldown">0</int>
 			<float name="move-speed-mul">0.6</float>
@@ -265,6 +393,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<int name="spread">3</int>
 					</dict>
 					<dict>
@@ -272,6 +401,10 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
 				</array>
 				<array name="left">
 					<dict>
@@ -290,6 +423,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
 					</dict>
 					<dict>
@@ -297,6 +431,10 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">6</int>
+					</dict>
 				</array>
 				<array name="right">
 					<dict>
@@ -315,6 +453,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
 					</dict>
 					<dict>
@@ -322,13 +461,16 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">6</int>
+					</dict>
 				</array>
 			</dict>
 
 			<array name="timeline">
 				<i>0</i><s>solo</s>
 				<i>0</i><s>left</s>
-				<i>300</i><s>solo</s>
 				<i>300</i><s>right</s>
 			</array>
 		</dict>
@@ -340,7 +482,7 @@
 	-->
 	<dict>
 		<string name="name">.skills.attacks.offhand.hwp_glock.name</string>
-		<string name="description">.skills.attacks.offhand.hwp_glock.desc?dmg=90%</string>
+		<string name="description">.skills.attacks.offhand.hwp_glock.desc?dmg=80%</string>
 		<array name="icon"><s>players/hwp/firearms/icons.png</s><i>100</i><vec4>96 48 24 24</vec4></array>
 		<string name="id">hwp_attack_glock_off</string>
 		<string name="type">offhand</string>
@@ -380,6 +522,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<int name="spread">18</int>
 					</dict>
 					<dict>
@@ -392,6 +535,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<int name="spread">18</int>
 					</dict>
 					<dict>
@@ -399,6 +543,10 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 2
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">6</int>
+					</dict>
 				</array>
 				<array name="solo">
 					<dict>
@@ -423,6 +571,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<int name="spread">4</int>
 					</dict>
 					<dict>
@@ -430,6 +579,10 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">3</int>
+					</dict>
 				</array>
 				<!-- both pistols out with one round left: the off hand fires it alone -->
 				<array name="last">
@@ -455,6 +608,7 @@
 						<int name="dist">12</int>
 						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
+						<int name="converge">100</int>
 						<int name="spread">4</int>
 					</dict>
 					<dict>
@@ -462,6 +616,10 @@
 						<string name="sound">event:/sfx/actors/humans/bandits/bandit_rogue/bandit_rogue_bomb_bounce</string>
 					</dict>
 					%block Spend 1
+					<dict>
+						<string name="class">HWPFirearmsLowClick</string>
+						<int name="low">6</int>
+					</dict>
 				</array>
 			</dict>
 

@@ -1,0 +1,21 @@
+{
+ "name": "bench-weapons",
+ "about": "Measurement (balance): the main attack of the shortbow, longbow, crossbow, rifle, one pistol and two pistols on one target dummy, on the same Firearms Specialist (dexterity, no skills cast) at levels 1 and 12, reloads included; gamelab/bots/bench_weapons.py. Writes gamelab/results/bench/weapons.json.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "bot",
+   "bot": "bench_weapons",
+   "save_as": "bench",
+   "expect": {}
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

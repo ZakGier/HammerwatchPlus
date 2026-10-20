@@ -89,7 +89,7 @@
 %if FRAG
 			<dict>
 				<string name="class">SpawnEffect</string>
-				<string name="effect">effects/generic/explosions/bomb_explosion_2.effect?radius=128</string>
+				<string name="effect">effects/generic/explosions/bomb_explosion_2.effect?radius=64</string>
 			</dict>
 			<dict>
 				<string name="class">PlaySound</string>
@@ -99,7 +99,7 @@
 %if STUN
 			<dict>
 				<string name="class">SpawnEffect</string>
-				<string name="effect">effects/generic/explosions/bomb_explosion_2.effect?radius=128&lightning=1</string>
+				<string name="effect">effects/generic/explosions/bomb_explosion_2.effect?radius=64&lightning=1</string>
 			</dict>
 			<!-- the electric flash over the whole radius: Sorcerer's static field, held briefly -->
 			<dict>

@@ -1,6 +1,6 @@
 {
  "name": "mod-firearms-clip",
- "about": "The clip: full when a new character spawns in the village and on a run's first floor; the count carried to the next floor (no refill); hwp firearms empty leaves it at 0 with no reload, and pulling the trigger then starts the reload; Reload costs no mana.",
+ "about": "The clip (the starting Service Pistol: 10): full when a new character spawns in the village and on a run's first floor; the count carried to the next floor (no refill); hwp firearms empty leaves it at 0 with no reload, and pulling the trigger then starts the reload; Reload costs no mana.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -32,7 +32,7 @@
   {
    "do": "log_has",
    "name": "town spawn: full clip",
-   "pattern": "\\[HWP:firearms\\] clip filled 30/30 \\(had 0, level town\\)",
+   "pattern": "\\[HWP:firearms\\] clip filled 10/10 \\(had 0, level town\\)",
    "timeout": 10
   },
   {
@@ -116,7 +116,7 @@
   {
    "do": "log_capture",
    "name": "an emptied clip stays empty (no reload by itself)",
-   "pattern": "clip (?P<clip>\\d+)/30, mana",
+   "pattern": "clip (?P<clip>\\d+)/10, mana",
    "save_as": "town_empty_wait",
    "timeout": 1
   },
@@ -221,7 +221,7 @@
   {
    "do": "log_has",
    "name": "first floor of a run: full clip",
-   "pattern": "\\[HWP:firearms\\] clip filled 30/30 \\(had \\d+, level 1\\)",
+   "pattern": "\\[HWP:firearms\\] clip filled 10/10 \\(had \\d+, level 1\\)",
    "timeout": 10
   },
   {
@@ -274,7 +274,7 @@
   {
    "do": "log_capture",
    "name": "floor 2: clip kept",
-   "pattern": "\\[HWP:firearms\\] clip kept (?P<clip>\\d+)/30 \\(had (?P<had>\\d+), level 2\\)",
+   "pattern": "\\[HWP:firearms\\] clip kept (?P<clip>\\d+)/10 \\(had (?P<had>\\d+), level 2\\)",
    "save_as": "floor2",
    "timeout": 10
   },

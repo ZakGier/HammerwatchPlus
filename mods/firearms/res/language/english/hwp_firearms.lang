@@ -70,8 +70,8 @@
 	<string name="equipment.twohanded.hwp_rifle.2a">Field Rifle</string>
 	<string name="equipment.twohanded.hwp_rifle.3a">Marksman's Rifle</string>
 	<string name="skills.attacks.twohanded.hwp_rifle1.name">Shoot</string>
-	<string name="skills.attacks.twohanded.hwp_rifle1.desc">Fire a heavy round for %dmg% weapon damage. It pierces up to 2 more enemies, dealing 50% then 25% damage to them. Uses 1 round.</string>
-	<string name="skills.attacks.twohanded.hwp_rifle1_epic.desc">Fire a heavy round for %dmg% weapon damage. It pierces up to 2 more enemies, dealing 50% then 25% damage to them. Uses 1 round.</string>
+	<string name="skills.attacks.twohanded.hwp_rifle1.desc">Fire a three-round burst, %dmg% weapon damage a round. Uses 1 round a shot.</string>
+	<string name="skills.attacks.twohanded.hwp_rifle1_epic.desc">Fire a three-round burst, %dmg% weapon damage a round. Uses 1 round a shot.</string>
 
 
 	<string name="stacks.hwp_firearms.clip.name">Clip</string>

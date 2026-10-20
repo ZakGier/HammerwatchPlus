@@ -49,7 +49,7 @@
 	<array name="starting-equipment">
 		<string>chest_dex_t1a</string>
 		<string>feet_dex_t1a</string>
-		<string>hwp_rifle_01</string>
+		<string>hwp_glock_mh_01</string> <!-- one pistol, main hand (the user's pick, 2026-10-19) -->
 	</array>
 %endblock
 

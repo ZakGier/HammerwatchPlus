@@ -174,12 +174,13 @@ namespace HWP
 			HoardedSkill("players/hwp/firearms/stacks_firearms.sval:gl_charges", "hwp_attack_rifle_gl", "hwp_attack_rifle_gl_epic"),
 			HoardedSkill("players/hwp/firearms/stacks_firearms.sval:rocket_charges", "hwp_fs_rpg") };
 
-		// Over-Reload: while a reload runs, a 200 ms window opens at a random point in its
-		// second half (drawn as a gold arc on a ring over the player). Two kinds of reload:
-		// - the automatic one (the reloading stack): casting Reload inside the window (a miss
-		//   ends the cast);
-		// - a manual Reload cast, up to its castpoint (HWPFirearmsReload): pressing Reload again
-		//   inside the window, which also finishes the cast at once.
+		// The reload bar: every reload (the automatic one, the reloading stack, and a manual
+		// Reload cast up to its castpoint) shows a white bar filling just above the HUD's health
+		// bar. With Over-Reload a 200 ms gold window sits at a random point in its second half.
+		// One try a reload: press Reload, or left click in the bar's second half (clicks still
+		// held from the shooting don't count), while the bar is in the gold. A hit finishes the
+		// reload at once; a miss turns the bar's white red until the reload ends, and an
+		// automatic reload goes on.
 		// A perfect reload applies perfect_reload_<level>, which raises the clip max until the
 		// clip next runs dry or a reload isn't perfect. It replaces any bonus already held, so
 		// the clip never holds more than a perfect reload of an empty clip gives.
@@ -194,17 +195,24 @@ namespace HWP
 
 		class OverReloadState
 		{
-			bool m_active;
-			int m_total;
-			int m_windowStart;
+			bool m_active;        // the automatic reload runs
+			bool m_manual;        // a manual Reload cast runs
+			int m_total = 1;
+			int m_windowStart = -1; // -1: no gold window (Over-Reload not learned)
 			int m_elapsed;
 			bool m_wasCasting;
-			bool m_manual;
 			bool m_wasDown;
+			bool m_wasFire;
 			int m_topUp;
-			// this automatic reload's one try has been judged: no window and no Reload cast
+			// this automatic reload's one try has been judged: no Reload cast
 			// (HWPFirearmsReload.CanActivate) until the reloading stack is gone
 			bool m_autoTried;
+			bool m_manualTried;
+			bool m_missed;        // the try missed: the bar's white is red
+			bool m_perfect;       // the try landed
+			int m_hits;           // tries here, for `hwp firearms reload`
+			int m_misses;
+			int m_bars;           // reload bars shown
 
 			int Level(PlayerBase@ plr)
 			{
@@ -233,36 +241,71 @@ namespace HWP
 					plr.RefreshModifiers();
 			}
 
-			bool InWindow() { return (m_active || m_manual) && m_elapsed >= m_windowStart && m_elapsed < m_windowStart + OVER_WINDOW; }
+			bool InWindow() { return (m_active || m_manual) && m_windowStart >= 0 && m_elapsed >= m_windowStart && m_elapsed < m_windowStart + OVER_WINDOW; }
 
-			void PickWindow(int total)
+			// a new bar; the gold window only with the orb
+			void Start(int total, bool gold)
 			{
 				m_total = max(1, total);
+				m_missed = false;
+				m_perfect = false;
+				m_bars++;
 				int half = m_total / 2;
-				m_windowStart = half + randi(max(1, m_total - half - OVER_WINDOW));
+				m_windowStart = gold ? half + randi(max(1, m_total - half - OVER_WINDOW)) : -1;
 			}
 
-			// A perfect reload finishes at once: the cast jumps to just short of its castpoint, so
-			// it lands next frame. Its cast list (Explosive Reload's throw first) then reads the
-			// clip as it was, and the top-up two frames on fills the raised max.
+			// A perfect reload finishes at once. A Reload cast jumps to just short of its
+			// castpoint, so it lands next frame: its cast list (Explosive Reload's throw first)
+			// then reads the clip as it was. Without a cast (a left click during the automatic
+			// reload) the reloading stack is ended, and its lose-effects refill the clip. The
+			// top-up two frames on fills the raised max.
 			void Perfect(PlayerBase@ plr, Skills::PlayerSkillDirectional@ dir, int level)
 			{
 				auto def = LoadActorBuff(BUFFS + "perfect_reload_" + level);
 				if (def !is null)
 					plr.ApplyBuff(ActorBuff(plr, def, 1.0f, false));
-				if (dir !is null && dir.m_castingT >= 0 && dir.m_castingT < dir.m_castpoint - 1)
+				if (dir is null)
+				{
+					auto reloading = ActorBuffStackDef::Get(RELOADING);
+					if (reloading !is null)
+						plr.AddStacks(plr, reloading, -1);
+				}
+				else if (dir.m_castingT >= 0 && dir.m_castingT < dir.m_castpoint - 1)
 					dir.m_castingT = dir.m_castpoint - 1;
 				m_topUp = 2;
+				m_perfect = true;
+				m_hits++;
 				g_reloadSounds.Perfect(plr);
 			}
 
+			void Missed()
+			{
+				m_missed = true;
+				m_misses++;
+			}
+
 			// the window is still to come: the lever waits, since a perfect reload replaces it
-			bool WindowPending() { return (m_active || m_manual) && m_elapsed < m_windowStart + OVER_WINDOW; }
+			bool WindowPending() { return (m_active || m_manual) && m_windowStart >= 0 && !m_missed && !m_perfect && m_elapsed < m_windowStart + OVER_WINDOW; }
 
 			bool ReloadDown(PlayerBase@ plr, Skills::Skill@ reload)
 			{
 				auto p = cast<Player>(plr);
 				return p !is null && p.m_targetHelper !is null && reload !is null && p.m_targetHelper.GetSkillInput(reload).Down;
+			}
+
+			// the main attack's button (left click)
+			bool FireDown(PlayerBase@ plr)
+			{
+				auto p = cast<Player>(plr);
+				if (p is null || p.m_targetHelper is null)
+					return false;
+				for (uint i = 0; i < plr.m_skills.length(); i++)
+				{
+					auto s = plr.m_skills[i];
+					if (s !is null && s.m_type == PlayerSkillType::MainHand)
+						return p.m_targetHelper.GetSkillInput(s).Down;
+				}
+				return false;
 			}
 
 			void Update(PlayerBase@ plr, int ms)
@@ -281,57 +324,67 @@ namespace HWP
 				auto dir = cast<Skills::PlayerSkillDirectional>(reload);
 				bool casting = reload !is null && Casting(reload);
 				bool wasActive = m_active;
-				// the reloading stack outlives the Reload cast's start (it drops at the castpoint):
-				// once a cast is under way, its press has been judged
-				if (st is null || st.m_stacks <= 0)
+				bool autoRuns = st !is null && st.m_stacks > 0;
+				if (!autoRuns)
 					m_autoTried = false;
-				if (st !is null && st.m_stacks > 0 && level > 0 && !m_autoTried && !(casting && m_wasCasting))
+				if (autoRuns && !m_manual)
 				{
 					int total = Modifiers::lerp(st.m_defMod.m_timerTime, st.GetIntensity());
 					if (!m_active || total != m_total)
 					{
 						m_active = true;
-						PickWindow(total);
-						HWP::Log("firearms", "over-reload: window " + m_windowStart + "-" + (m_windowStart + OVER_WINDOW)
-							+ " of " + m_total + " ms, " + (m_total - st.m_timerTickC) + " ms in");
+						Start(total, level > 0);
+						if (level > 0)
+							HWP::Log("firearms", "over-reload: window " + m_windowStart + "-" + (m_windowStart + OVER_WINDOW)
+								+ " of " + m_total + " ms, " + (m_total - st.m_timerTickC) + " ms in");
 					}
 					m_elapsed = m_total - st.m_timerTickC;
 				}
 				else
 					m_active = false;
 
-				// edges of the held button, not Pressed: gamelab-hands writes the input from its
+				// edges of the held buttons, not Pressed: gamelab-hands writes the input from its
 				// own UpdateFrame, which may run after this one
 				bool down = ReloadDown(plr, reload);
-				if (casting && !m_wasCasting && level > 0)
+				bool fire = FireDown(plr);
+				bool click = fire && !m_wasFire;
+				if (casting && !m_wasCasting)
 				{
-					// the stack may already be gone this frame if the cast point is 0: judge by
-					// the window as it stood last frame
-					bool fromAuto = m_active || wasActive;
-					bool hit = m_active ? InWindow() : (wasActive && m_elapsed >= m_windowStart && m_elapsed < m_windowStart + OVER_WINDOW);
-					ClearPerfect(plr);
-					if (hit)
+					if (m_active || wasActive)
 					{
-						Perfect(plr, dir, level);
-						HWP::Log("firearms", "over-reload: perfect at " + m_elapsed + "/" + m_total + " ms");
-					}
-					else if (wasActive)
-						HWP::Log("firearms", "over-reload: missed at " + m_elapsed + " ms (window " + m_windowStart + ")");
-					// a missed try ends the cast: the automatic reload goes on (the cast, the
-					// whole Reload time, would outlast it)
-					if (fromAuto && !hit && dir !is null)
-						dir.Deactivate();
-					if (fromAuto)
+						// a Reload cast during the automatic reload is Over-Reload's try (CanActivate
+						// allows no other). The stack may already be gone this frame if the cast
+						// point is 0: judge by the window as it stood last frame
+						bool hit = m_windowStart >= 0 && m_elapsed >= m_windowStart && m_elapsed < m_windowStart + OVER_WINDOW;
+						ClearPerfect(plr);
+						if (hit)
+						{
+							Perfect(plr, dir, level);
+							HWP::Log("firearms", "over-reload: perfect at " + m_elapsed + "/" + m_total + " ms");
+						}
+						else
+						{
+							Missed();
+							HWP::Log("firearms", "over-reload: missed at " + m_elapsed + " ms (window " + m_windowStart + ")");
+							// the cast, the whole Reload time, would outlast the automatic reload
+							if (dir !is null)
+								dir.Deactivate();
+						}
 						m_autoTried = true;
-					m_active = false;
-
-					if (!fromAuto && dir !is null && dir.m_castpoint > 0)
+					}
+					else if (dir !is null && dir.m_castpoint > 0)
 					{
+						// a manual reload that isn't perfect loses the bonus: it is judged now
+						// and given back on a hit
+						if (level > 0)
+							ClearPerfect(plr);
 						m_manual = true;
+						m_manualTried = false;
 						m_elapsed = 0;
-						PickWindow(dir.m_castpoint);
-						HWP::Log("firearms", "over-reload: manual window " + m_windowStart + "-" + (m_windowStart + OVER_WINDOW)
-							+ " of " + m_total + " ms, " + dir.m_castingT + " ms in");
+						Start(dir.m_castpoint, level > 0);
+						if (level > 0)
+							HWP::Log("firearms", "over-reload: manual window " + m_windowStart + "-" + (m_windowStart + OVER_WINDOW)
+								+ " of " + m_total + " ms, " + dir.m_castingT + " ms in");
 					}
 				}
 				else if (m_manual)
@@ -341,34 +394,94 @@ namespace HWP
 					else
 					{
 						m_elapsed = dir.m_castingT;
-						if (down && !m_wasDown)
+						bool tryNow = (down && !m_wasDown) || (click && m_elapsed >= m_total / 2);
+						if (tryNow && m_windowStart >= 0 && !m_manualTried)
 						{
+							m_manualTried = true;
+							ClearPerfect(plr);
 							if (InWindow())
 							{
 								Perfect(plr, dir, level);
 								HWP::Log("firearms", "over-reload: manual perfect at " + m_elapsed + "/" + m_total + " ms");
 							}
 							else
+							{
+								Missed();
 								HWP::Log("firearms", "over-reload: manual missed at " + m_elapsed + " ms (window " + m_windowStart + ")");
-							m_manual = false;
+							}
 						}
+					}
+				}
+				else if (m_active && click && m_windowStart >= 0 && !m_autoTried && m_elapsed >= m_total / 2)
+				{
+					// a left click in the automatic reload's second half
+					m_autoTried = true;
+					ClearPerfect(plr);
+					if (InWindow())
+					{
+						Perfect(plr, null, level);
+						HWP::Log("firearms", "over-reload: perfect (click) at " + m_elapsed + "/" + m_total + " ms");
+					}
+					else
+					{
+						Missed();
+						HWP::Log("firearms", "over-reload: missed (click) at " + m_elapsed + " ms (window " + m_windowStart + ")");
 					}
 				}
 				m_wasCasting = casting;
 				m_wasDown = down;
+				m_wasFire = fire;
+			}
+
+			// the HUD health bar's top left and width, in GUI space; false without a HUD
+			bool HealthBar(vec2 &out pos, float &out width)
+			{
+				pos = vec2();
+				width = 0;
+				auto hud = GetHUD();
+				if (hud is null)
+					return false;
+				for (uint i = 0; i < hud.m_components.length(); i++)
+				{
+					auto comp = cast<HUDPlayer>(hud.m_components[i]);
+					if (comp is null || comp.m_wBarHealth is null || !comp.m_wBarHealth.m_visible)
+						continue;
+					pos = comp.m_wBarHealth.m_origin;
+					width = comp.m_wBarHealth.m_width;
+					return width > 0;
+				}
+				return false;
 			}
 
 			void Render(PlayerBase@ plr, int idt, SpriteBatch& sb)
 			{
 				if (!m_active && !m_manual)
 					return;
-				vec2 pos = ToScreenspace(plr.m_unit.GetInterpolatedPosition(idt) + vec3(0, -26, 0)) / g_gameMode.m_wndScale;
-				const float full = 2 * PI;
-				const float top = -PI / 2;
-				sb.DrawCircle(pos, 9, vec4(0, 0, 0, 0.6f), 24, 3);
-				sb.DrawCircleArc(pos, 9, top, full * m_elapsed / float(m_total), 0, vec4(0.85f, 0.85f, 0.9f, 0.9f), 24, 2);
-				vec4 gold = InWindow() ? vec4(1, 1, 0.6f, 1) : vec4(0.95f, 0.75f, 0.2f, 1);
-				sb.DrawCircleArc(pos, 9, top + full * m_windowStart / float(m_total), full * OVER_WINDOW / float(m_total), 0, gold, 24, 3);
+				vec2 at;
+				float w;
+				const float h = 4;
+				if (HealthBar(at, w))
+					at.y -= h + 3;
+				else
+				{
+					// no HUD: over the player
+					w = 30;
+					at = ToScreenspace(plr.m_unit.GetInterpolatedPosition(idt) + vec3(0, -30, 0)) / g_gameMode.m_wndScale - vec2(w / 2, 0);
+				}
+				at = vec2(int(at.x), int(at.y));
+				sb.FillRectangle(vec4(at.x - 1, at.y - 1, w + 2, h + 2), vec4(0, 0, 0, 0.7f));
+				float done = clamp(m_elapsed / float(m_total), 0.0f, 1.0f);
+				vec4 fill = m_missed ? vec4(0.9f, 0.15f, 0.15f, 1) : vec4(0.9f, 0.9f, 0.95f, 1);
+				sb.FillRectangle(vec4(at.x, at.y, int(w * done), h), fill);
+				if (m_windowStart >= 0)
+				{
+					vec4 gold = m_perfect || InWindow() ? vec4(1, 1, 0.6f, 1) : vec4(0.95f, 0.75f, 0.2f, 1);
+					if (m_missed)
+						gold.w = 0.45f;
+					float gx = w * m_windowStart / float(m_total);
+					float gw = max(2.0f, w * OVER_WINDOW / float(m_total));
+					sb.FillRectangle(vec4(at.x + int(gx), at.y - 1, int(gw), h + 2), gold);
+				}
 			}
 		}
 
@@ -1146,10 +1259,26 @@ class HWPFirearmsGun : Skills::PlayerSkillDirectional
 	int CARRY_MAX = 100; // AngelScript allows no const class properties
 	int m_carry = -1;
 
-	HWPFirearmsGun(UnitPtr unit, SValue& params) { super(unit, params); }
+	// A gun alone in the hands can run a shorter cycle: "hwp-solo-length" replaces anim-length
+	// while the owner lacks the "hwp-solo-unless" marker buff (the lone Glock: one round every
+	// 300 ms, not two a 600 ms cycle, which read as a two-round burst). The timeline entries
+	// past the short cycle then never fire.
+	int m_fullLen;
+	int m_soloLen;
+	string m_soloUnless;
+
+	HWPFirearmsGun(UnitPtr unit, SValue& params)
+	{
+		super(unit, params);
+		m_fullLen = m_animLen;
+		m_soloLen = GetParamInt(unit, params, "hwp-solo-length", false, -1);
+		m_soloUnless = GetParamString(unit, params, "hwp-solo-unless", false, "");
+	}
 
 	void NetActivate(vec2 target, float intensity) override
 	{
+		if (m_soloLen > 0)
+			m_animLen = HWP::Firearms::HasBuff(m_owner, m_soloUnless) ? m_fullLen : m_soloLen;
 		Skills::PlayerSkillDirectional::NetActivate(target, intensity);
 		if (m_carry >= 0)
 			m_castingT = m_carry;

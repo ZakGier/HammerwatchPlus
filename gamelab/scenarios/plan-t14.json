@@ -55,6 +55,7 @@
    },
    "name": "firearms clip",
    "expect": {
+    "starts_with_one_pistol": true,
     "spawn_clip_full": true,
     "shot_costs_round": true,
     "shot_no_mana": true,

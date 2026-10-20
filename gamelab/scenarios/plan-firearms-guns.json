@@ -1,6 +1,6 @@
 {
  "name": "plan-firearms-guns",
- "about": "Test plan through the plan_checks bot: firearms guns. Magazines (pistol 10, dual 20, rifle 30), pistol and shield 2 rounds a cycle, dual pistols 2 a left-click cycle and 2 at once on right click (not on 1 round), an off-hand pistol with a sword 1. The shield and sword need STR a level-1 gunner lacks, so the bot turns equipment requirements off.",
+ "about": "Test plan through the plan_checks bot: firearms guns. Magazines (pistol 10, dual 20, rifle 30), pistol and shield 1 round a click (no burst), the last 3 rounds click (6 with dual pistols), the rifle a 3-round burst a click, dual pistols 2 a left-click cycle and 2 at once on right click (not on 1 round), an off-hand pistol with a sword 1. The shield and sword need STR a level-1 gunner lacks, so the bot turns equipment requirements off.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -56,14 +56,17 @@
    "name": "firearms guns",
    "expect": {
     "pistol_shield_mag_10": true,
-    "pistol_shield_two_rounds": true,
     "dual_mag_20": true,
     "dual_left_two_rounds": true,
     "dual_right_two_at_once": true,
     "dual_right_last_round": true,
     "offhand_pistol_mag_10": true,
     "offhand_pistol_one_round": true,
-    "rifle_mag_30": true
+    "rifle_mag_30": true,
+    "pistol_shield_one_round": true,
+    "pistol_last_three_click": true,
+    "dual_last_six_click": true,
+    "rifle_three_round_burst": true
    }
   },
   {
