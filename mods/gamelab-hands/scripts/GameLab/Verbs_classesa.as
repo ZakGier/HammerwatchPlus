@@ -337,5 +337,6 @@ namespace GameLab
 		RegisterVerb("track", "<tag> <ms> <radius> <filter>", Verb(VerbTrack));
 		RegisterVerb("actorbuffs", "[radius] [filter]", Verb(VerbActorBuffs));
 		RegisterVerb("skilltip", "<skillId> [level]", Verb(VerbSkillTip));
+		RegisterVerb("spherepicks", "<skillId> [skillId] [skillId]", Verb(VerbSpherePicks));
 	}
 }

@@ -216,6 +216,24 @@ namespace GameLab
 			CollectTexts(w.m_children[i], acc);
 	}
 
+	// the widget a "menu ... !click|!press" presses next, and whether it releases too
+	AInteractableWidget@ g_pendingClick;
+	int g_pendingClickMs = 0;
+	bool g_pendingRelease = false;
+
+	void UpdatePendingClick(int ms)
+	{
+		if (g_pendingClick is null)
+			return;
+		g_pendingClickMs -= ms;
+		if (g_pendingClickMs > 0)
+			return;
+		g_pendingClick.ClickDown(false, vec2());
+		if (g_pendingRelease)
+			g_pendingClick.ClickUp(false, vec2());
+		@g_pendingClick = null;
+	}
+
 	// menu [tab] [subtab|-] [widget] [func...]: open the player menu the way its key does
 	// (HWR2GameMode::TogglePlayerMenu, when it is not open yet), then press the
 	// tab buttons: PlayerMenu::OnFunc("set-tab <tab>") and the open tab's own
@@ -228,21 +246,8 @@ namespace GameLab
 	// "!click" instead presses [widget] itself the way the window does on use
 	// (AInteractableWidget.ClickDown: a textinput starts taking typed text), 250 ms
 	// later: this command arrives through the console, whose closing would end the
-	// text input a click started while it was open.
-	AInteractableWidget@ g_pendingClick;
-	int g_pendingClickMs = 0;
-
-	void UpdatePendingClick(int ms)
-	{
-		if (g_pendingClick is null)
-			return;
-		g_pendingClickMs -= ms;
-		if (g_pendingClickMs > 0)
-			return;
-		g_pendingClick.ClickDown(false, vec2());
-		@g_pendingClick = null;
-	}
-
+	// text input a click started while it was open. "!press" clicks it fully (ClickDown
+	// then ClickUp), for widgets that act on the release (core's hwp-material cells).
 	void VerbMenu(const string &in id, array<string>@ args)
 	{
 		auto gm = cast<HWR2GameMode>(g_gameMode);
@@ -271,7 +276,7 @@ namespace GameLab
 		MenuTab@ tab = tabs.m_tabs[tabs.m_currentIndex];
 		if (args.length() > 1 && args[1] != "-")
 			tab.OnFunc(null, "set-tab " + args[1]);
-		if (args.length() > 3 && args[3] == "!click")
+		if (args.length() > 3 && (args[3] == "!click" || args[3] == "!press"))
 		{
 			auto iw = cast<AInteractableWidget>(tab.m_widget.GetWidgetById(args[2]));
 			if (iw is null)
@@ -281,6 +286,7 @@ namespace GameLab
 			}
 			@g_pendingClick = iw;
 			g_pendingClickMs = 250;
+			g_pendingRelease = args[3] == "!press";
 		}
 		else if (args.length() > 3)
 		{

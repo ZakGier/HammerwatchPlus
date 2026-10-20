@@ -1,0 +1,174 @@
+{
+ "name": "mod-orbwarn",
+ "about": "core OrbWarn: an orb pick that would close mutually exclusive orbs (blocked-by-skills) says so under its description in red, with their icons and names. A Firearms Specialist with Frag Grenade gets the demo's endless orb with fixed picks (gl spherepicks): Stun Grenade lists Incendiary and Gas, Shrapnel lists nothing; once Stun is owned, Shrapnel still lists nothing and Stun's own next level closes nothing more. Uses levelup and skillpoints cheats: not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 150,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "char",
+   "args": [
+    "hwp_firearms",
+    "Orbs"
+   ]
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 60
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp levelup 20"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp skillpoints 40"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "skill",
+   "args": [
+    "hwp_fs_frag",
+    "1"
+   ],
+   "expect": {
+    "level": 1
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "gamelab/skill_sphere_endless.unit",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "spherepicks",
+   "args": [
+    "hwp_fs_frag_stun",
+    "hwp_fs_frag_shrapnel",
+    "hwp_fs_frag_gas"
+   ],
+   "expect": {
+    "picks": 3
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "GameLabEndless"
+   ],
+   "expect": {
+    "window": "GiveSkillSphereMenu"
+   }
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:orbwarn\\] pick 1 \\(hwp_fs_frag_stun\\) makes unavailable hwp_fs_frag_fire, hwp_fs_frag_gas",
+   "timeout": 5
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:orbwarn\\] pick 3 \\(hwp_fs_frag_gas\\) makes unavailable hwp_fs_frag_stun, hwp_fs_frag_fire",
+   "timeout": 5
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:orbwarn\\] pick 2 \\(hwp_fs_frag_shrapnel\\) makes unavailable nothing",
+   "timeout": 5
+  },
+  {
+   "do": "shot",
+   "name": "orb-warning"
+  },
+  {
+   "do": "gl",
+   "verb": "func",
+   "args": [
+    "pick",
+    "1"
+   ]
+  },
+  {
+   "do": "log_has",
+   "pattern": "endless orb: picked",
+   "timeout": 5
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "spherepicks",
+   "args": [
+    "hwp_fs_frag_stun",
+    "hwp_fs_frag_shrapnel"
+   ],
+   "expect": {
+    "picks": 2
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "use",
+   "args": [
+    "GameLabEndless"
+   ],
+   "expect": {
+    "window": "GiveSkillSphereMenu"
+   },
+   "name": "the orb again, Stun owned"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "shot",
+   "name": "orb-owned"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:orbwarn\\] pick 1 \\(hwp_fs_frag_stun\\) makes unavailable nothing",
+   "timeout": 5,
+   "name": "an owned orb's next level closes nothing more"
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

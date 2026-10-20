@@ -24,6 +24,17 @@ namespace HWP
 			return "[" + g_keyName + "] " + Resources::GetString(".hwp.droptrade.drop");
 		}
 
+		// the item action key (core ItemActions: Eat on a fish), default E
+		const int DEFAULT_ACTION_SCANCODE = 8; // SDL scancode for E
+		int g_actionScancode = DEFAULT_ACTION_SCANCODE;
+		bool g_actionWasDown = false;
+
+		string ActionNavText(Equipment::Equipment@ item)
+		{
+			string label = HWP::ItemActions::Label(item);
+			return label == "" ? "" : "[E] " + label;
+		}
+
 		void MakeButton(KeyNavigationText@ text, WindowInput::OnFunc@ func)
 		{
 			@text.m_func = func;
@@ -61,6 +72,11 @@ namespace HWP
 			g_wasDown = down;
 			if (pressed && TabOpen())
 				g_tab.HWPDrop();
+			bool aDown = Platform::IsKeyDown(ControllerType::Keyboard, 0, g_actionScancode);
+			bool aPressed = aDown && !g_actionWasDown;
+			g_actionWasDown = aDown;
+			if (aPressed && TabOpen())
+				g_tab.HWPAction();
 		}
 
 		void CmdDropKey(array<string>@ args)

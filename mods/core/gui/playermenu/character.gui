@@ -356,7 +356,7 @@
 											<text text="0" id="material-town-ore-text" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 										</sprite>
 
-										<!-- HammerwatchPlus core: supplies kept per character (bet tokens, fishing bait, farm seeds). HWP::Materials providers
+										<!-- HammerwatchPlus core: supplies kept per character (bet tokens, fishing bait). HWP::Materials providers
 										     fill the hwp-material cells by id; a cell without one hides and the grid closes up, without any the
 										     section hides and the tab keeps its height. Cells stay visible here (see Materials.as) -->
 										<hwp-materials id="hwp-materials" offset="-6 80" width="217" height="39" >
@@ -381,40 +381,79 @@
 													<!-- Glow squid (fishing) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-cabbage" src="material-background-small" width="29" height="26" only-mouse="true" >
+											</group>
+										</hwp-materials>
+
+										<!-- HammerwatchPlus core: Plants & Herbs (farming): a row of seeds and a row of what they grow, 8 across
+										     (28x24 cells, the vanilla box drawn compact). It moves under Supplies (Materials.as) -->
+										<hwp-materials id="hwp-plants" offset="-6 120" width="217" height="37" >
+											<sprite src="material-header" offset="0 0" >
+												<text text=".hwp.materials.plants" anchor="0.5 0.5" offset="0 0" font="title" color="#ffffff" />
+											</sprite>
+
+											<group id="cells" offset="0 13" width="217" height="24" flow="hboxwrapped" spacing="-1" spacing-line="1" >
+												<hwp-material id="hwp-mat-seed-cabbage" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Cabbage seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-carrot" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-carrot" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Carrot seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-onion" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-onion" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Onion seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-potato" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-potato" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Potato seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-wheat" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-wheat" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Wheat seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-lucky_leaf" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-lucky_leaf" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Lucky Leaf seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-ember_kush" src="material-background-small" width="29" height="26" only-mouse="true" >
+												<hwp-material id="hwp-mat-seed-ember_kush" src="material-background-small" width="28" height="24" only-mouse="true" >
 													<!-- Ember Kush seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-saints_sage" src="material-background-small" width="29" height="26" only-mouse="true" >
-													<!-- Saints Sage seeds (farming) -->
+												<hwp-material id="hwp-mat-seed-saints_sage" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Saint's Sage seeds (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
-												<hwp-material id="hwp-mat-seed-gamblers_gold" src="material-background-small" width="29" height="26" only-mouse="true" >
-													<!-- Gamblers Gold seeds (farming) -->
+												<hwp-material id="hwp-mat-crop-cabbage" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Cabbage harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-carrot" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Carrot harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-onion" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Onion harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-potato" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Potato harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-wheat" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Wheat harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-lucky_leaf" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Lucky Leaf harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-ember_kush" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Ember Kush harvest (farming) -->
+													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
+												</hwp-material>
+												<hwp-material id="hwp-mat-crop-saints_sage" src="material-background-small" width="28" height="24" only-mouse="true" >
+													<!-- Saint's Sage harvest (farming) -->
 													<text text="0" id="count" anchor="0.5 1" offset="0 -1" font="text" color="#ffffff" />
 												</hwp-material>
 											</group>

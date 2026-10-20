@@ -1,0 +1,40 @@
+{
+ "name": "mod-mmhmm",
+ "about": "core's Mm-hmm! hat bonus: rare hats from the kit verb get it exactly when they qualify (25 %, a function of the item), on top of their rolled modifiers; a common hat never; the worn hat with it counts crits while a rifle shoots a target dummy (bench). The voice is the modifier's net-synced crit trigger; GameLab is muted, so the sound is not measured. Uses levelup, kit and give cheats: not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 200,
+ "steps": [
+  {
+   "do": "bot",
+   "bot": "check_mmhmm",
+   "kwargs": {
+    "sections": "hats"
+   },
+   "name": "rare hats",
+   "expect": {
+    "mmhmm_rare_rule": true,
+    "mmhmm_common_never": true,
+    "mmhmm_stable": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "check_mmhmm",
+   "kwargs": {
+    "sections": "crits"
+   },
+   "name": "crits with it",
+   "expect": {
+    "mmhmm_given": true,
+    "mmhmm_crits": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

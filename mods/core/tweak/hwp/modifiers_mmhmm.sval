@@ -1,0 +1,40 @@
+<loader>Equipment::ItemModifier::LoadMultiple</loader>
+<!--
+	"Mm-hmm!" (scripts/HWP/Core/MmHmm.as): a bonus modifier some rare and epic head items get on
+	top of their rolled ones. It is never rolled (spawn-chance 0, quality "quest", which no item
+	has); MmHmm.as adds it to a qualifying hat once it is yours. Every critical hit of its wearer
+	plays a village merchant's voice (the Material Trader's), no cooldown. A TriggerEffect of an
+	equipment modifier is net-synced (ModifierTriggerEffect, TriggerEffect.as), and the sound
+	is 2D, so every player hears it. "quest" also keeps it out of the enchanter's two slots
+	(GetCurrEncSlotIdx picks the common and the rare mod) and out of an epic item's name.
+-->
+<array>
+	<dict>
+		<string name="id">hwp_mod_mmhmm</string>
+		<string name="quality">quest</string>
+		<float name="spawn-chance">0</float>
+		<bool name="blueprint">false</bool>
+		<bool name="exclusive">false</bool>
+
+		<array name="tags">
+			<string>mods_head</string>
+		</array>
+
+		<dict name="modifier">
+			<string name="class">Modifiers::TriggerEffect</string>
+			<string name="description">.hwp.mmhmm.desc</string>
+			<string name="trigger">crit</string>
+			<float name="chance">1</float>
+			<bool name="target-self">true</bool>
+			<int name="timeout">0</int>
+
+			<array name="effects">
+				<dict>
+					<string name="class">PlaySound</string>
+					<string name="sound">event:/sfx/actors/npcs/male_8/interact_male_8</string>
+					<bool name="2d">true</bool>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+</array>

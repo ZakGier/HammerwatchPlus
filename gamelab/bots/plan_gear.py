@@ -67,6 +67,13 @@ class Checks(Base):
         self.g.key(key, hold)
         time.sleep(0.7)
 
+    def swap_x(self):
+        """X, then wait out the swap's 2 s channel."""
+        mark = len(self.g.read_log())
+        self.press("x")
+        self.swapped(mark)
+        time.sleep(0.3)
+
     def bag(self):
         """hwp bag: (items, slots)."""
         m = re.findall(r"Bag: (\d+)/(\d+)", self.hwp("bag", 0.3, until="Bag:"))
@@ -130,7 +137,8 @@ class Checks(Base):
         self.flag("s3_nav_swap", any("Swap to weapon set" in t for t in h.get("nav") or []), str(h.get("nav")))
         mark = len(self.g.read_log())
         c = self.gl("menu", "character", "-", "hwp-alt-main", "!click")  # ClickDown 250 ms later
-        time.sleep(1.0)
+        self.swapped(mark, 4.0)  # the 2 s channel runs behind the menu too
+        time.sleep(0.3)
         back = self.main_hand()
         st2 = self.status()
         self.flag("s3_click_swaps", bool(c.get("ok")) and bool(back and sword and back[1] == sword[1])
@@ -144,7 +152,7 @@ class Checks(Base):
         self.close()
         r = self.gl("equip", BOW, "common", 1)
         time.sleep(1.2)
-        self.press("x")
+        self.swap_x()
         st = self.status()
         self.flag("s5_bow_stored", bool(r.get("ok")) and "bow" in st[1].lower() and st[2] == "-", str(st))
         self.menu()
@@ -161,18 +169,18 @@ class Checks(Base):
         and you are told (WeaponSwap.Swap: MayEquip, then the "cannot" reply)."""
         self.close()
         time.sleep(1.2)
-        self.press("x")  # the bow back in hand, the other set empty
+        self.swap_x()  # the bow back in hand, the other set empty
         on = self.req_cheat(True)
         r = self.gl("equip", HEAVY, "common", 10)  # the bow goes to the bag
         time.sleep(1.2)
-        self.press("x")  # the heavy sword stored, hands empty
+        self.swap_x()  # the heavy sword stored, hands empty
         off = self.req_cheat(False)
         st0 = self.status()
         self.flag("s5_heavy_stored", on and off and bool(r.get("ok")) and st0[1] not in ("", "-")
                   and self.main_hand() is None, f"cheat {on}/{off}, {json.dumps(r)[:120]}, {st0}")
         time.sleep(1.2)
         mark = len(self.g.read_log())
-        self.press("x")
+        self.swap_x()
         log = self.log_since(mark)
         st1 = self.status()
         cannot = re.findall(r"\[HWP\] Cannot equip (.*?) \(requirements\), it stays in the other set", log)
@@ -203,7 +211,7 @@ class Checks(Base):
         st0 = self.status()
         time.sleep(1.2)
         mark = len(self.g.read_log())
-        self.press("x")
+        self.swap_x()
         time.sleep(0.5)
         log = self.log_since(mark)
         n1, cap1 = self.bag()
@@ -213,8 +221,10 @@ class Checks(Base):
         landed = [i for i in new if floor and i["item"] == floor[-1]]
         self.flag("s8_cannot", "[HWP] Cannot equip" in log, log.strip()[-300:])
         self.flag("s8_to_feet", bool(landed) and landed[0]["dist"] <= 60, f"{floor} {json.dumps(new)[:300]}")
-        self.flag("s8_only_you", bool(landed) and landed[0]["owner"] == "me" and not landed[0]["hidden"],
-                  json.dumps(landed)[:200])
+        # a lab character may have the zeroed Guid that also marks shared items
+        zero_id = bool(self.gl("items", 80).get("my_id_shared"))
+        self.flag("s8_only_you", bool(landed) and (landed[0]["owner"] == "me" or (zero_id and landed[0]["owner"] == "shared"))
+                  and not landed[0]["hidden"], f"my id is the shared Guid: {zero_id}; {json.dumps(landed)[:200]}")
         self.flag("s8_hands_empty_alt_kept", self.main_hand() is None and st1[1] == st0[1], f"{st0} -> {st1}")
         self.flag("s8_bag_capped", n1 == n0 and n1 <= cap1, f"bag {n0}/{cap0} -> {n1}/{cap1}")
         self.menu()

@@ -272,7 +272,8 @@ namespace GameLab
 	// within radius (default 120) of the player: unit, item name, quality, owner ("shared":
 	// anyone may take it, "me": only the local player, "other"), picked, hidden (a pickup owned
 	// by someone else is hidden on this machine), drop animation ms left, distance. Capped at
-	// GEAR_ITEMS_CAP; "count" is every match.
+	// GEAR_ITEMS_CAP; "count" is every match. "my_id_shared": the local character's id is the
+	// zeroed Guid that marks shared items, so "shared" may also mean "me".
 	void VerbGearItems(const string &in id, array<string>@ args)
 	{
 		auto plr = GetLocalPlayer();
@@ -311,8 +312,10 @@ namespace GameLab
 				.Num("dist", d);
 			items.insertLast(e.Close());
 		}
+		// my_id_shared: this character's id is the zeroed "shared" Guid, so an item kept for
+		// it can't be told from a shared one by its owner
 		Emit(Reply(id, true).Int("radius", radius).Int("count", count).Int("truncated", count > items.length() ? int(count - items.length()) : 0)
-			.Raw("items", RawArray(items)));
+			.Bool("my_id_shared", rec !is null && rec.id == Item::g_sharedItem).Raw("items", RawArray(items)));
 	}
 
 	void Register_gear()

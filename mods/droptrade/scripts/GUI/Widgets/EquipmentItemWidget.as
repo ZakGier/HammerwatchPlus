@@ -383,12 +383,17 @@ class EquipmentItemWidget : ItemWidgetBase
 
 			case ItemWidgetType::Inventory:
 			{
-				return {
+				array<string> texts = {
 					FormatKeyName(GetActionBinding("MenuForward")) + " " + Resources::GetString(".menu.nav.equip"),
 					FormatKeyName(GetActionBinding("MenuContext")) + " " + Resources::GetString(".menu.nav.compare"),
 					FormatKeyName(GetActionBinding("MenuAdditional")) + " " + Resources::GetString(".menu.nav.destroy"),
 					HWP::DropTrade::NavText()   // HammerwatchPlus
 				};
+				// HammerwatchPlus: a registered item action (eat a fish, ...)
+				string act = HWP::DropTrade::ActionNavText(cast<Equipment::Equipment>(m_item));
+				if (act != "")
+					texts.insertLast(act);
+				return texts;
 			}
 
 			case ItemWidgetType::Trinket:

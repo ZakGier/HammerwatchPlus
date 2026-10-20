@@ -201,10 +201,27 @@ class PlayerMenuCharacterTab : MenuTab
 
 		// HammerwatchPlus: the Destroy and Drop hints (Back, Equip, Compare, Destroy, Drop) are clickable
 		auto host = cast<AWindowObject>(m_tabSystem is null ? null : m_tabSystem.m_host);
-		if (host is null || host.m_navigationBar is null || HWPHoveredItem() is null || host.m_navigationBar.m_texts.length() != 5)
+		if (host is null || host.m_navigationBar is null || HWPHoveredItem() is null || host.m_navigationBar.m_texts.length() < 5)
 			return;
 		HWP::DropTrade::MakeButton(host.m_navigationBar.m_texts[3], WindowInput::OnFunc(this.MenuAdditional));
 		HWP::DropTrade::MakeButton(host.m_navigationBar.m_texts[4], WindowInput::OnFunc(this.HWPDrop));
+		if (host.m_navigationBar.m_texts.length() >= 6)
+			HWP::DropTrade::MakeButton(host.m_navigationBar.m_texts[5], WindowInput::OnFunc(this.HWPAction));
+	}
+
+	// HammerwatchPlus: the hovered inventory item's registered action (core ItemActions: eat a fish)
+	void HWPAction()
+	{
+		auto equipment = HWPHoveredItem();
+		auto record = GetLocalPlayerRecord();
+		if (equipment is null || record is null)
+			return;
+		auto item = cast<Equipment::Equipment>(equipment.m_item);
+		if (!HWP::ItemActions::Do(record, item))
+			return;
+		m_manager.CloseTooltip();
+		m_refreshTooltip = true;
+		OnInteractableIndexChanged();
 	}
 
 	// HammerwatchPlus: the inventory item under the cursor / selection, or null

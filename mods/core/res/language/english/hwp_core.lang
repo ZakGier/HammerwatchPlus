@@ -1,6 +1,9 @@
 <lang name="English" official="false">
 	<string name="hwp.core.hello">HammerwatchPlus language file loaded</string>
 	<string name="hwp.materials.supplies">Supplies</string>
+	<string name="hwp.materials.plants">Plants &amp; Herbs</string>
+	<string name="hwp.orbwarn.closes">Makes unavailable:</string>
+	<string name="hwp.mmhmm.desc">Mm-hmm! Every critical hit, a merchant approves (everyone hears it)</string>
 	<string name="hwp.options.tab">Plus</string>
 	<string name="hwp.options.title">HammerwatchPlus Options</string>
 	<string name="hwp.options.hint">Click a button to change the setting.</string>

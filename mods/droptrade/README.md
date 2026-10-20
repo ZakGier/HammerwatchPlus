@@ -16,6 +16,11 @@ and no text input or chat has the keyboard. The item leaves the bag before it
 is dropped, so a stale hover can never spawn a copy. `hwp dropkey` shows it, `hwp dropkey 10 G`
 changes it (per machine).
 
+An item with a registered action (core `HWP::ItemActions`; today the fishing
+mod's **Eat** on a fish: 100 health per star, town or run, the fish is used
+up) gets a fifth hint, **`[E] Eat`**, and the E key (SDL scancode 8, polled the
+same way) does it on the hovered item (`HWPAction()`).
+
 ## Overrides
 
 Two base files are replaced wholesale (declared in `module.json`, pristine
@@ -23,8 +28,8 @@ copies next to them as `.orig`; `tools/build.py --check` reports drift):
 
 | File | Change |
 |---|---|
-| `scripts/GUI/PlayerMenu/Character.as` | `HWPDrop()` and `HWPHoveredItem()`; `OnInteractableIndexChanged` gives the Destroy / Drop hints click handlers; the constructor registers the tab for the drop key |
-| `scripts/GUI/Widgets/EquipmentItemWidget.as` | a fourth navigation hint, `[Q] Drop` |
+| `scripts/GUI/PlayerMenu/Character.as` | `HWPDrop()`, `HWPAction()` and `HWPHoveredItem()`; `OnInteractableIndexChanged` gives the Destroy / Drop hints click handlers; the constructor registers the tab for the drop key |
+| `scripts/GUI/Widgets/EquipmentItemWidget.as` | a fourth navigation hint, `[Q] Drop`, and a fifth for an item action (`[E] Eat`) |
 
 The diff against the base is deliberately small (`diff -u X.orig X`).
 `Character` is created by the player menu by class name, so a classmap does
