@@ -300,6 +300,20 @@ class Checks(Base):
         self.flag("arch_mul_vanilla", has_num(mul_t, pct), f"{mul_t!r}, vanilla {pct}% (architect variation {lvl})")
         self.flag("arch_cost_vanilla", all(has_num(cost, v) for v in want.values()),
                   f"{cost!r} (no picks: {cost0!r}), vanilla {want}; per-item rounding would say {2 * int(1000 * mul)} gold")
+        # a challenge takes its fixed amount off after the curve (Glass Bones: 2500 gold, 15
+        # stone) and its row shows that in red; a material stops at 0. Unpicked again after.
+        self.gl("press", "hwp_challenge_glass_bones")
+        time.sleep(1)
+        cost_c = self.widget("total-cost").get("text", "")
+        rows = [n for r in self.gl("widgets", 14).get("roots", []) for n in r.get("nodes", [])
+                if n.get("id") == "cost" and "ff5050" in (n.get("text") or "")]
+        self.g.shot("architect-challenge")
+        want_c = {"gold": max(0, want["gold"] - 2500), "wood": want["wood"]}
+        self.flag("arch_challenge_discount", all(has_num(cost_c, v) for v in want_c.values()) and "stone" not in cost_c.lower()
+                  and len(rows) == 7, f"{cost_c!r}, want {want_c} and no stone; {len(rows)} red challenge rows "
+                  f"(first {rows[0].get('text') if rows else None!r})")
+        self.gl("press", "hwp_challenge_glass_bones")
+        time.sleep(1)
         self.gl("func", "exit", "yes")
         time.sleep(1)
         w3 = self.window()

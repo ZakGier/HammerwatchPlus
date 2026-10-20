@@ -1,6 +1,6 @@
 {
  "name": "mod-architect-challenges",
- "about": "mods/architect challenges: the seven HoH1 bad-wish challenges load as free architect alterations; their discounts multiply the vanilla cost curve and stop at a free run (0%, never below). Picked for a run (hwp architect try, the loadout Play's effect), the generation ones reach the floor (Crowded Halls + Champions set on the enemy placer) and the picks are on the player record. Then no script errors in our files.",
+ "about": "mods/architect challenges: the seven HoH1 bad-wish challenges load as free architect alterations; each takes a fixed gold + material amount off the bill after vanilla's cost curve, and a material stops at 0 (never pays out). Picked for a run (hwp architect try, the loadout Play's effect), the generation ones reach the floor (Crowded Halls + Champions set on the enemy placer) and the picks are on the player record. Then no script errors in our files.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -27,7 +27,7 @@
   },
   {
    "do": "log_has",
-   "pattern": "- hwp_challenge_glass_bones -25% Challenge: Glass Bones",
+   "pattern": "- hwp_challenge_glass_bones -2500 gold -15 stone Challenge: Glass Bones",
    "timeout": 5,
    "name": "challenges loaded with names and discounts"
   },
@@ -48,13 +48,19 @@
   },
   {
    "do": "console",
-   "line": "hwp architect challenges architect_far_sight hwp_challenge_glass_bones"
+   "line": "hwp architect challenges architect_more_treasury hwp_challenge_glass_bones"
   },
   {
    "do": "log_has",
-   "pattern": "cost multiplier 75% for 2 pick",
+   "pattern": "cost multiplier 100% for 2 pick",
    "timeout": 5,
-   "name": "Glass Bones takes 25% off"
+   "name": "a challenge leaves the curve alone"
+  },
+  {
+   "do": "log_has",
+   "pattern": "solo bill gold 500 wood 10 stone 0",
+   "timeout": 5,
+   "name": "Glass Bones takes 2500 gold and 15 stone off 3000 gold, 10 wood, 5 stone; stone stops at 0"
   },
   {
    "do": "console",
@@ -62,9 +68,9 @@
   },
   {
    "do": "log_has",
-   "pattern": "cost multiplier 0% for 10 pick",
+   "pattern": "solo bill gold \\d+ wood 0 stone 0",
    "timeout": 5,
-   "name": "all seven challenges: free, not below"
+   "name": "all seven challenges: stone down to 0, not below"
   },
   {
    "do": "console",

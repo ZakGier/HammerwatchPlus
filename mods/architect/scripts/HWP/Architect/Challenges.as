@@ -1,9 +1,9 @@
 // HWP architect challenges: Heroes of Hammerwatch 1's "bad wishes" as free
 // Architect alterations (tweak/hwp/architect_challenges.sval). They have no
-// cost, so the picker treats them as vanilla debuffs; instead of vanilla's
-// count-based discount each one takes its own share off the alterations you
-// buy (CHALLENGES), summed and capped at 100%: a run can become free, never
-// profitable.
+// cost of their own; instead each one takes a fixed amount of gold and one
+// material off the alterations you buy (DISCOUNT_*), shown in red in the
+// picker's cost column. A material's total stops at 0: a run can become free,
+// never profitable.
 //
 // Most challenges are plain modifiers on the mission buff. The two that change
 // the level (Crowded Halls, Champions) are applied by ChallengeSetup, which the
@@ -19,50 +19,76 @@ namespace HWP
 	{
 		const float CROWDED_DENSITY = 1.35f;
 
-		// id -> discount (fraction of the alterations' cost)
+		// id -> discount: DISCOUNT_GOLD gold and DISCOUNT_MAT of DISCOUNT_TYPE
 		const array<string> CHALLENGES = {
 			"hwp_challenge_crowded", "hwp_challenge_champions", "hwp_challenge_lean_pickups",
 			"hwp_challenge_bitter_draughts", "hwp_challenge_glass_bones", "hwp_challenge_sharp_traps",
 			"hwp_challenge_slim_pickings"
 		};
-		const array<float> DISCOUNTS = { 0.15f, 0.15f, 0.10f, 0.10f, 0.25f, 0.10f, 0.15f };
+		const array<int> DISCOUNT_GOLD = { 1500, 1500, 1000, 1000, 2500, 1000, 1500 };
+		const array<int> DISCOUNT_TYPE = {
+			int(MaterialType::Stone), int(MaterialType::Wood), int(MaterialType::Wood),
+			int(MaterialType::Stone), int(MaterialType::Stone), int(MaterialType::Wood),
+			int(MaterialType::Wood)
+		};
+		const array<int> DISCOUNT_MAT = { 10, 10, 5, 5, 15, 5, 10 };
 
 		array<uint> g_challengeHashes;
 
-		// -1 when the id is not an HWP challenge
-		float ChallengeDiscount(uint id)
+		// index into CHALLENGES, -1 when the id is not an HWP challenge
+		int ChallengeIndex(uint id)
 		{
 			if (g_challengeHashes.length() == 0)
 			{
 				for (uint i = 0; i < CHALLENGES.length(); i++)
 					g_challengeHashes.insertLast(HashString(CHALLENGES[i]));
 			}
-			int i = g_challengeHashes.find(id);
-			return i < 0 ? -1.0f : DISCOUNTS[i];
+			return g_challengeHashes.find(id);
+		}
+
+		// what a challenge takes off the bill, as a positive cost; null for anything else
+		ShopCost@ ChallengeDiscount(uint id)
+		{
+			int i = ChallengeIndex(id);
+			if (i < 0)
+				return null;
+			auto cost = ShopCost(MaterialType::Gold, DISCOUNT_GOLD[i]);
+			cost.AddCost(MaterialType(DISCOUNT_TYPE[i]), DISCOUNT_MAT[i]);
+			return cost;
+		}
+
+		// the picker's cost column for a challenge: "-1.5k gold  -10 stone" in red
+		// (gold in thousands: "-1500" runs off the row's right edge)
+		string DiscountText(uint id)
+		{
+			int i = ChallengeIndex(id);
+			if (i < 0)
+				return "";
+			int g = DISCOUNT_GOLD[i];
+			string gold = "-" + (g / 1000) + (g % 1000 >= 100 ? "." + ((g % 1000) / 100) : "") + "k";
+			string mat = DISCOUNT_TYPE[i] == int(MaterialType::Stone) ? ".tab.overlay.player.stone" : ".tab.overlay.player.wood";
+			return "\\cff5050" + Resources::GetString(".tab.overlay.player.gold", {{ "amount", gold }})
+				+ "  " + Resources::GetString(mat, {{ "amount", "-" + DISCOUNT_MAT[i] }}) + "\\d";
 		}
 
 		// The cost multiplier for a pick list: vanilla's curve over the bought
-		// alterations (and vanilla's discount for any other free ones), times
-		// what the challenges leave of it.
+		// alterations (and vanilla's discount for any other free ones). The
+		// challenges' discounts come off after it (MissionArchitect CalcMyCost).
 		float CostMul(const array<uint> &in ids)
 		{
 			int numBuffs = 0;
 			int numDebuffs = 0;
-			float discount = 0;
 			for (uint i = 0; i < ids.length(); i++)
 			{
 				auto buff = MissionBuff::Get(ids[i]);
-				if (buff is null)
+				if (buff is null || ChallengeIndex(ids[i]) >= 0)
 					continue;
-				float d = ChallengeDiscount(ids[i]);
-				if (d >= 0)
-					discount += d;
-				else if (buff.m_cost.GetTotalCost() == 0)
+				if (buff.m_cost.GetTotalCost() == 0)
 					numDebuffs++;
 				else
 					numBuffs++;
 			}
-			return CalcArchitectCostMul(numBuffs, numDebuffs) * max(0.0f, 1.0f - discount);
+			return CalcArchitectCostMul(numBuffs, numDebuffs);
 		}
 
 		bool Picked(const string &in id)

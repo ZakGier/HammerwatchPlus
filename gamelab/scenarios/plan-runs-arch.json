@@ -1,0 +1,14 @@
+{
+ "name": "plan-runs-arch",
+ "about": "Test plan, architect s1 only (plan-runs-a's architect_loadout section): the Architect loadout row opens the picker, two picks, the multiplier and cost as vanilla's CalcCost, a Glass Bones pick takes 2500 gold and 15 stone off with the challenge rows' discounts in red (shot architect-challenge), the cost taken at run start.",
+ "fixture": "town-paladin",
+ "mods": ["core", "architect"],
+ "timeout": 300,
+ "steps": [
+  {"do": "console", "line": "e_cheats 1"},
+  {"do": "bot", "bot": "plan_runs", "kwargs": {"sections": "architect_loadout"}, "name": "architect loadout row",
+   "expect": {"arch_loadout_open": true, "arch_row_clickable": true, "arch_picks": true, "arch_cost_vanilla": true,
+              "arch_challenge_discount": true, "arch_run_started": true, "arch_gold_taken": true}},
+  {"do": "log_clean"}
+ ]
+}

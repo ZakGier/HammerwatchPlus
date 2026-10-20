@@ -18,20 +18,23 @@ Architect alterations for the whole party.
   `module.json`, pristine `.orig` next to it, every change marked `HWP`).
   Vanilla's `SyncMissionLoadoutArchitect` message keeps working (host pays).
 - **Challenges** (HoH1's fountain "bad wishes"): seven free alterations in the
-  Architect list (`tweak/hwp/architect_challenges.sval`). Each one takes its share
-  off the cost of the alterations you buy. The shares are summed and capped at
-  100%, so a run can become free, but challenges never pay out gold or materials
-  (`HWP::Architect::CostMul`, in `scripts/HWP/Architect/Challenges.as`):
+  Architect list (`tweak/hwp/architect_challenges.sval`). Each one takes a fixed
+  amount of gold and one material off the bill of whoever pays for its slot (the
+  split pool for the host's picks), after vanilla's cost curve, which challenges
+  don't count toward. Its picker row shows the discount in red ("-1.5k gold -10
+  stone"; full numbers run off the row). A material stops at 0, so a run can become
+  free, but challenges never pay out (`HWP::Architect::ChallengeDiscount`, in
+  `scripts/HWP/Architect/Challenges.as`; `CalcMyCost` in the override):
 
   | Challenge | HoH1 wish | Effect | Discount |
   |---|---|---|---|
-  | Crowded Halls | more_enemies | enemy density x1.35 | 15% |
-  | Champions | more_elites, minibosses_everywhere | elites and minibosses allowed on every floor | 15% |
-  | Lean Pickups | bad_pickups | health/mana pickups x0.5 | 10% |
-  | Bitter Draughts | potion_confuse | drinking a potion confuses you (5 s) | 10% |
-  | Glass Bones | 1_hp | damage taken x1.4 | 25% |
-  | Sharpened Traps | more_trap_damage | trap damage x2 (`Modifiers::HWPTrapDamage`) | 10% |
-  | Slim Pickings | no_ore | wood/stone/iron/crystals/dust/ore x0.5 | 15% |
+  | Crowded Halls | more_enemies | enemy density x1.35 | -1500 gold, -10 stone |
+  | Champions | more_elites, minibosses_everywhere | elites and minibosses allowed on every floor | -1500 gold, -10 wood |
+  | Lean Pickups | bad_pickups | health/mana pickups x0.5 | -1000 gold, -5 wood |
+  | Bitter Draughts | potion_confuse | drinking a potion confuses you (5 s) | -1000 gold, -5 stone |
+  | Glass Bones | 1_hp | damage taken x1.4 | -2500 gold, -15 stone |
+  | Sharpened Traps | more_trap_damage | trap damage x2 (`Modifiers::HWPTrapDamage`) | -1000 gold, -5 wood |
+  | Slim Pickings | no_ore | wood/stone/iron/crystals/dust/ore x0.5 | -1500 gold, -10 wood |
 
   Crowded Halls and Champions change the level. `ChallengeSetup` is a generation
   command the module ctor wraps around the first unconditional command of every

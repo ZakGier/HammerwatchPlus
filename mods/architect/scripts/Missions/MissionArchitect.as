@@ -166,15 +166,19 @@ class SelectArchitectLoadout : MissionGUILoadout
 	// HWP: what the local player pays. Cost multiplier counts every pick no
 	// matter who pays, like vanilla; like vanilla it applies to the summed
 	// cost (own picks, and the split picks), so solo matches vanilla to the
-	// gold piece; shares round up.
+	// gold piece; shares round up. A challenge's fixed discount comes off the
+	// bill of whoever pays for its slot (the split pool for the host's picks)
+	// after the multiplier, and a material stops at 0.
 	ShopCost@ CalcMyCost()
 	{
-		float mul = HWP::Architect::CostMul(m_buffs); // HWP: challenges discount
+		float mul = HWP::Architect::CostMul(m_buffs);
 
 		uint8 me = uint8(m_player.peer);
 		int players = HWP::Architect::ActivePlayers();
 		auto own = ShopCost();
 		auto pooled = ShopCost();
+		auto ownOff = ShopCost();
+		auto pooledOff = ShopCost();
 		for (uint i = 0; i < m_buffs.length(); i++)
 		{
 			auto missionBuff = MissionBuff::Get(m_buffs[i]);
@@ -184,6 +188,16 @@ class SelectArchitectLoadout : MissionGUILoadout
 			bool split = payer == 0 && HWP::Architect::g_split && players > 1;
 			if (!split && payer != me)
 				continue;
+
+			auto discount = HWP::Architect::ChallengeDiscount(m_buffs[i]);
+			if (discount !is null)
+			{
+				if (split)
+					pooledOff.AddCost(discount);
+				else
+					ownOff.AddCost(discount);
+				continue;
+			}
 
 			for (uint j = 0; j + 1 < missionBuff.m_cost.m_cost.length(); j += 2)
 			{
@@ -197,13 +211,14 @@ class SelectArchitectLoadout : MissionGUILoadout
 		auto cost = ShopCost();
 		for (uint j = 0; j + 1 < own.m_cost.length(); j += 2)
 		{
-			int amount = int(own.m_cost[j + 1] * mul);
+			int amount = int(own.m_cost[j + 1] * mul) - ownOff.GetCost(MaterialType(own.m_cost[j]));
 			if (amount > 0)
 				cost.AddCost(MaterialType(own.m_cost[j]), amount);
 		}
 		for (uint j = 0; j + 1 < pooled.m_cost.length(); j += 2)
 		{
-			int amount = (int(pooled.m_cost[j + 1] * mul) + players - 1) / players;
+			int left = int(pooled.m_cost[j + 1] * mul) - pooledOff.GetCost(MaterialType(pooled.m_cost[j]));
+			int amount = (left + players - 1) / players;
 			if (amount > 0)
 				cost.AddCost(MaterialType(pooled.m_cost[j]), amount);
 		}
@@ -338,7 +353,11 @@ class SelectArchitectSelector : AWindowObject
 			
 			auto cost = cast<TextWidget>(buffW.GetWidgetById("cost"));
 			cost.m_textWidth = 55;
-			cost.SetText(buffs[i].m_cost.GetText(host.m_player));
+			// HWP: a challenge shows what it takes off, in red
+			string off = HWP::Architect::DiscountText(buffs[i].m_idHash);
+			if (off != "")
+				cost.m_textWidth = 80; // two negative amounts wrap in 55
+			cost.SetText(off != "" ? off : buffs[i].m_cost.GetText(host.m_player));
 
 			HWPMarkWidget(buffW, buffs[i].m_idHash, Resources::GetString(buffs[i].m_name)); // HWP
 

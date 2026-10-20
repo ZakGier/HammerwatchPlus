@@ -249,19 +249,38 @@ namespace HWP
 		}
 
 		// hwp architect challenges [id...]: every challenge with its discount,
-		// and the cost multiplier of the given pick list (alteration or challenge ids)
+		// and the cost multiplier and solo bill of the given pick list
+		// (alteration or challenge ids)
 		void CmdChallenges(array<string>@ args)
 		{
 			for (uint i = 0; i < CHALLENGES.length(); i++)
 			{
 				auto buff = MissionBuff::Get(HashString(CHALLENGES[i]));
-				HWP::Commands::Reply("- " + CHALLENGES[i] + " -" + int(DISCOUNTS[i] * 100 + 0.5f) + "% "
+				HWP::Commands::Reply("- " + CHALLENGES[i] + " -" + DISCOUNT_GOLD[i] + " gold -" + DISCOUNT_MAT[i]
+					+ (DISCOUNT_TYPE[i] == int(MaterialType::Stone) ? " stone " : " wood ")
 					+ (buff is null ? "(not loaded)" : Resources::GetString(buff.m_name)));
 			}
 			array<uint> ids;
 			for (uint i = 1; i < args.length(); i++)
 				ids.insertLast(HashString(args[i]));
 			HWP::Commands::Reply("cost multiplier " + int(CostMul(ids) * 100 + 0.5f) + "% for " + (args.length() - 1) + " pick(s)");
+
+			// the bill one player pays for the list, as CalcMyCost works it out
+			float mul = CostMul(ids);
+			auto sum = ShopCost();
+			auto off = ShopCost();
+			for (uint i = 0; i < ids.length(); i++)
+			{
+				auto buff = MissionBuff::Get(ids[i]);
+				auto d = ChallengeDiscount(ids[i]);
+				if (d !is null)
+					off.AddCost(d);
+				else if (buff !is null)
+					sum.AddCost(buff.m_cost);
+			}
+			HWP::Commands::Reply("solo bill gold " + max(0, int(sum.GetCost(MaterialType::Gold) * mul) - off.GetCost(MaterialType::Gold))
+				+ " wood " + max(0, int(sum.GetCost(MaterialType::Wood) * mul) - off.GetCost(MaterialType::Wood))
+				+ " stone " + max(0, int(sum.GetCost(MaterialType::Stone) * mul) - off.GetCost(MaterialType::Stone)));
 		}
 
 		// hwp architect try <id...> (cheats, host): put these alterations or
