@@ -1004,6 +1004,160 @@ class Checks(Base):
         self.clear_dummies()
         self.to_town()
 
+    def firearms_start_ranks(self):
+        """A save from before Frag and the doctrine skills started at rank 1 (499f1d7) holds
+        their ranks relative to 0, so it would load each one rank up. FirearmsModule.as
+        MigrateStartRanks takes that rank off once per character, at a level start: a new
+        character only gets the mark. `gl char` swaps the character in place, with no level
+        start, so a floor stands in for the town load that follows character creation. Old
+        save made by hand: a Frag rank picked (saved 1, loaded 2), the mark taken off; then
+        a floor start moves it back to 1, and a second pass changes nothing."""
+        self.gl("char", "hwp_firearms", "LabStartRanks")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+
+        def ranks():
+            log = self.hwp("firearms startranks", 0.4, until="start ranks:")
+            m = re.findall(r"start ranks: marked (\w+), .*?hwp_fs_frag (\d+)/(\d+)", log)
+            return (m[-1][0], int(m[-1][1]), int(m[-1][2])) if m else (None, -1, -1)
+
+        unmarked = ranks()
+        mark = self.log_pos()
+        if not self.enter_floor("startranks_new"):
+            return
+        fresh = ranks()
+        self.flag("start_ranks_new_char", unmarked == ("no", 0, 1) and fresh == ("yes", 0, 1)
+                  and "saved ranks moved" not in self.log_from(mark),
+                  f"new character {unmarked}, after its first level start {fresh}")
+        self.to_town()
+        self.hwp("skillpoints 10", 0.6, until="skill points")
+        self.gl("skill", "hwp_fs_frag", 1)
+        time.sleep(0.6)
+        self.hwp("firearms startranks clear", 0.4, until="start ranks:")
+        old = ranks()
+        mark = self.log_pos()
+        if not self.enter_floor("startranks"):
+            return
+        moved = ranks()
+        log = self.log_from(mark)
+        self.flag("start_ranks_migrated", old == ("no", 1, 2) and moved == ("yes", 0, 1)
+                  and "saved ranks moved to the rank-1 start: hwp_fs_frag 1->0" in log,
+                  f"old save {old}, after the floor start {moved}")
+        self.hwp("firearms startranks run", 0.4, until="start ranks:")
+        again = ranks()
+        self.flag("start_ranks_once", again == moved, f"a second pass: {again}")
+        self.to_town()
+
+    def firearms_reload_cut(self):
+        """An ability or a weapon swap interrupts a reload (Combat.as Interrupting). A Frag
+        thrown by its keys (Skill2, then the click) during a manual Reload cancels it: the clip
+        stays as it was, and Reload again refills it. A Frag 0.6 s into the automatic reload
+        holds it at its start, so the clip fills a whole reload after the throw, not 1.6 s after
+        emptying. The weapon swap's channel (hwp swap, the X key) does the same to both, and the
+        guns still don't fire during a manual Reload, which no longer blocks skills."""
+        self.gl("char", "hwp_firearms", "LabReloadCut")
+        self.wait_phase("town", 60)
+        time.sleep(2)
+        self.gl("equip", "hwp_rifle_01", "common")
+        self.base_skills()
+        if not self.enter_floor("reloadcut"):
+            return
+        d = self.open_dirs(110)[0]
+        rng = (16, 170)
+        mx = self.clip_max()
+
+        def manual(cut):
+            """A Reload with 10 rounds spent, cut 0.4 s in; the clip 2.4 s on, and the log."""
+            self.ready("hwp_fs_reload")
+            self.ready("hwp_fs_frag")
+            self.top_up()
+            self.gl("givestacks", self.CLIP, 999)
+            self.gl("givestacks", self.CLIP, -10)
+            before, mark = self.clip(), self.log_pos()
+            self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+            time.sleep(0.4)
+            cut()
+            time.sleep(2.4)
+            return before, self.clip(), self.log_from(mark)
+
+        # the cursor first, so the throw's two presses come quickly after the Reload
+        (tx, ty), held, _ = self.cursor_on(d[0] * 110, d[1] * 110, rng)
+        ax, ay = unit(tx, ty)
+
+        def throw():
+            self.gl("input", 60, 0, 0, ax, ay, "skill2")
+            time.sleep(0.3)
+            self.gl("input", 1, 0, 0, ax, ay, "main")
+
+        # Thrown from its keys, the Frag itself cancels the Reload (PlayerTargetingHelper
+        # CancelOther, now that the Reload doesn't block it); "cancels it" is logged only when
+        # Interrupting gets there first
+        before, after, log = manual(throw)
+        cd = self.entry(self.bar(), "hwp_fs_frag").get("cd", 0)
+        self.flag("reload_cut_by_ability", "reload: cast icon on" in log and after == before and cd > 0,
+                  f"clip {before} -> {after}/{mx} 2.4 s after the Reload, frag cooldown {cd}, cursor held {held}, "
+                  f"logged cut {'cancels it' in log}")
+        self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+        time.sleep(2.4)
+        again = self.clip()
+        self.flag("reload_again_after_cut", again == mx, f"Reload again: clip {again}/{mx}")
+
+        # the guns wait for a manual Reload: a held trigger through it fires nothing
+        self.ready("hwp_fs_reload")
+        self.gl("givestacks", self.CLIP, 999)
+        self.gl("givestacks", self.CLIP, -10)
+        self.gl("input", 60, 0, 0, d[0], d[1], "skill1")
+        time.sleep(0.2)
+        c0 = self.clip()
+        self.gl("input", 900, 0, 0, d[0], d[1], "main")
+        time.sleep(0.6)
+        c1 = self.clip()
+        time.sleep(1.6)
+        c2 = self.clip()
+        self.flag("reload_guns_wait", c1 == c0 and c2 >= mx - 3,
+                  f"clip {c0} as the trigger went down, {c1} while held, {c2}/{mx} after the Reload")
+        time.sleep(1.0)
+
+        # the automatic reload: emptied, then a Frag 0.6 s in
+        self.ready("hwp_fs_frag")
+        self.top_up()
+        mark, t0 = self.log_pos(), time.time()
+        self.gl("givestacks", self.CLIP, -999)
+        time.sleep(max(0.0, t0 + 0.6 - time.time()))
+        self.gl("castat", "hwp_fs_frag", d[0] * 110, d[1] * 110, "nocd")
+        t1 = time.time()
+        filled = self.refill_time(limit=5.0)
+        total = round(t1 - t0 + filled, 2) if filled is not None else None
+        log = self.log_from(mark)
+        self.flag("auto_reload_held_by_ability", total is not None and total >= 2.0 and filled >= 1.4
+                  and "holds the automatic reload" in log and "starts over" in log,
+                  f"refilled {filled} s after the throw, {total} s after emptying (1.6 s alone)")
+        time.sleep(0.5)
+
+        # the weapon swap's channel (2 s), cancelled again well before it lands
+        def swap_briefly():
+            self.hwp("swap", 0.3, until="swap channel started")
+            time.sleep(0.3)
+            self.hwp("swap", 0.3, until="swap cancelled")
+
+        before, after, log = manual(swap_briefly)
+        self.flag("reload_cut_by_swap", "an ability at" in log and "cancels it" in log and after == before,
+                  f"clip {before} -> {after}/{mx}")
+        time.sleep(0.5)
+        mark, t0 = self.log_pos(), time.time()
+        self.gl("givestacks", self.CLIP, -999)
+        time.sleep(0.2)
+        self.hwp("swap", 0.3, until="swap channel started")
+        time.sleep(max(0.0, t0 + 1.9 - time.time()))
+        mid = self.clip()   # 1.6 s alone would have filled it by now
+        self.hwp("swap", 0.3, until="swap cancelled")
+        t1 = time.time()
+        filled = self.refill_time(limit=5.0)
+        log = self.log_from(mark)
+        self.flag("auto_reload_held_by_swap", mid == 0 and filled is not None and "holds the automatic reload" in log
+                  and "starts over" in log,
+                  f"clip {mid} 1.9 s after emptying (the channel up), refilled {filled} s after the cancel")
+
     def firearms_assault(self):
         """firearms s4 for Assault. Double Barrel Burst fires two shells (logged by
         HWPFirearmsShotgun: "shotgun: N hit, M within R at xMUL"), a dummy 60 px out is in

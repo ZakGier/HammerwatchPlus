@@ -80,6 +80,38 @@ namespace HWP
 			return p !is null && p.m_castingT >= 0;
 		}
 
+		// An ability interrupts a reload: a spell, an off-hand skill that isn't a gun (the
+		// grenade launcher, a shield), or the weapon swap's channel (the weaponswap mod's buff;
+		// never held without that mod). OverReloadState.Update cancels a Reload cast for it and
+		// holds the automatic reload at its start until the ability is done.
+		const uint SWAPPING = HashString("players/hwp/weaponswap/buffs_weaponswap.sval:swapping");
+
+		bool Interrupting(PlayerBase@ plr, Skills::Skill@ reload)
+		{
+			if (plr.HasBuff(SWAPPING))
+				return true;
+			for (uint i = 0; i < plr.m_skills.length(); i++)
+			{
+				auto s = plr.m_skills[i];
+				if (s is null || s is reload || !Casting(s))
+					continue;
+				if (s.m_type == PlayerSkillType::Spell
+					|| (s.m_type == PlayerSkillType::OffHand && cast<HWPFirearmsGun>(s) is null))
+					return true;
+			}
+			return false;
+		}
+
+		// a Reload cast short of its castpoint, the reload itself
+		bool ReloadCasting(Actor@ owner)
+		{
+			auto plr = cast<PlayerBase>(owner);
+			if (plr is null)
+				return false;
+			auto dir = cast<Skills::PlayerSkillDirectional>(FindSkill(plr, RELOAD_ID));
+			return dir !is null && dir.m_castingT >= 0 && dir.m_castingT < dir.m_castpoint;
+		}
+
 		// Ordinance Hoarder: while the Frag Grenade, the Grenade Launcher or the Rocket Launcher
 		// sits ready it banks a charge per cooldown's worth of time, up to the charges stack's
 		// max (0 without the passive). When the skill goes on cooldown and a charge is banked,
@@ -213,6 +245,9 @@ namespace HWP
 			int m_hits;           // tries here, for `hwp firearms reload`
 			int m_misses;
 			int m_bars;           // reload bars shown
+			bool m_held;          // an ability holds the reload (Interrupting)
+			int m_cuts;           // Reload casts an ability cancelled
+			int m_holds;          // automatic reloads an ability started over
 
 			int Level(PlayerBase@ plr)
 			{
@@ -322,12 +357,42 @@ namespace HWP
 				auto st = FindStack(plr, ActorBuffStackDef::Get(RELOADING));
 				auto reload = FindSkill(plr, RELOAD_ID);
 				auto dir = cast<Skills::PlayerSkillDirectional>(reload);
+				bool autoRuns = st !is null && st.m_stacks > 0;
+
+				// An ability cancels a Reload cast, the clip as it was: Reload again starts a new
+				// one. The automatic reload (an empty clip) is held at its start, the bar hidden,
+				// and runs again from the beginning once the ability is done. Its timer only runs
+				// here (a husk's stack never ticks, ActorBuffStacked.AddStacks), so no message.
+				bool held = Interrupting(plr, reload);
+				if (held)
+				{
+					if (dir !is null && Casting(reload) && dir.m_castingT < dir.m_castpoint)
+					{
+						HWP::Log("firearms", "reload: an ability at " + dir.m_castingT + "/" + dir.m_castpoint + " ms cancels it");
+						dir.Deactivate();
+						m_manual = false;
+						m_cuts++;
+					}
+					if (autoRuns)
+					{
+						if (!m_held)
+						{
+							HWP::Log("firearms", "reload: an ability holds the automatic reload at its start");
+							m_holds++;
+						}
+						st.m_timerTickC = Modifiers::lerp(st.m_defMod.m_timerTime, st.GetIntensity());
+						m_autoTried = false;
+					}
+				}
+				else if (m_held && autoRuns)
+					HWP::Log("firearms", "reload: the ability is done, the automatic reload starts over");
+				m_held = held;
+
 				bool casting = reload !is null && Casting(reload);
 				bool wasActive = m_active;
-				bool autoRuns = st !is null && st.m_stacks > 0;
 				if (!autoRuns)
 					m_autoTried = false;
-				if (autoRuns && !m_manual)
+				if (autoRuns && !m_manual && !held)
 				{
 					int total = Modifiers::lerp(st.m_defMod.m_timerTime, st.GetIntensity());
 					if (!m_active || total != m_total)
@@ -1120,9 +1185,14 @@ class HWPFirearmsRocketJump : IEffect
 //   learned (the press is then that reload's timing try, Combat.as OverReloadState).
 // - A dodge cancels it (PlayerTargetingHelper.CancelOther) with the clip as it was; with
 //   Dodge Reload Skip it finishes at once instead: the cast list runs, then the cast ends.
+// - So does an ability or a weapon swap (HWP::Firearms::Interrupting): it never blocks other
+//   skills, and none starts while an ability runs. The guns wait for it instead
+//   (HWPFirearmsGun.CanActivate).
 class HWPFirearmsReload : Skills::PlayerSkillDirectional
 {
 	HWPFirearmsReload(UnitPtr unit, SValue& params) { super(unit, params); }
+
+	bool IsBlocking() override { return false; }
 
 	bool CanActivate(bool warn = true) override
 	{
@@ -1132,6 +1202,8 @@ class HWPFirearmsReload : Skills::PlayerSkillDirectional
 		auto clip = ActorBuffStackDef::Get(HWP::Firearms::CLIP);
 		if (plr is null || clip is null)
 			return true;
+		if (HWP::Firearms::Interrupting(plr, this))
+			return false;
 		int mx = HWP::Firearms::ClipMax(plr, clip);
 		if (mx > 0 && plr.GetStacks(clip) >= mx)
 		{
@@ -1296,6 +1368,10 @@ class HWPFirearmsGun : Skills::PlayerSkillDirectional
 
 	bool CanActivate(bool warn = true) override
 	{
+		// a Reload cast blocks no skill, so that an ability can cut it short, but a gun waits
+		// for it as it did while the cast blocked (and would cancel it by firing)
+		if (HWP::Firearms::ReloadCasting(m_owner))
+			return false;
 		bool ok = Skills::PlayerSkillDirectional::CanActivate(warn && m_warnArmed);
 		if (warn && m_warnArmed && !ok)
 			HWP::Log("firearms", m_id + ": refused, warned (a fresh click)");

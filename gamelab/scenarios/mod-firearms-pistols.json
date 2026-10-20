@@ -225,7 +225,7 @@
    "do": "gl",
    "verb": "skills",
    "expect": {
-    "skills.3.id": "hwp_attack_glock_off"
+    "skills.4.id": "hwp_attack_glock_off"
    }
   },
   {

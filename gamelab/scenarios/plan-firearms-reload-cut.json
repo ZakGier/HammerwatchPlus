@@ -1,0 +1,73 @@
+{
+ "name": "plan-firearms-reload-cut",
+ "about": "Test plan through the plan_firearms bot: an ability (Frag) or the weapon swap's channel cancels a manual Reload and holds the automatic reload at its start; Reload works again after; the guns don't fire during a manual Reload. Also the once-per-character move of saved ranks for the skills that now start at rank 1 (FirearmsModule.as MigrateStartRanks).",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "bot",
+   "bot": "plan_firearms",
+   "kwargs": {
+    "sections": "firearms_start_ranks,firearms_reload_cut"
+   },
+   "name": "firearms reload cut",
+   "expect": {
+    "reload_cut_by_ability": true,
+    "reload_again_after_cut": true,
+    "reload_guns_wait": true,
+    "auto_reload_held_by_ability": true,
+    "reload_cut_by_swap": true,
+    "auto_reload_held_by_swap": true,
+    "start_ranks_new_char": true,
+    "start_ranks_migrated": true,
+    "start_ranks_once": true
+   }
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

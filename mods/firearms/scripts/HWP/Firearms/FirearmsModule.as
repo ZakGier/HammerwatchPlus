@@ -64,6 +64,50 @@ namespace HWP
 			return rec.playerClass.m_id == CLASS_ID || rec.playerClass.parent == HashString(CLASS_ID);
 		}
 
+		// Frag and the eight doctrine skills start at rank 1 since 2026-10-20 (499f1d7; rank 0
+		// before). The game saves a picked rank relative to the skill's starting level
+		// (PlayerRecord.GetSkillLevel adds m_startingLevel), so a character saved before then
+		// would load each such skill one rank up, past max at max. Once per character this
+		// takes that rank back off the save: the skill keeps the rank it had, and the points of
+		// the rank that is now free come back with it (GetSkillPointsSpentOnSkills counts from
+		// the starting level), as a new character has them. A new character has nothing picked
+		// yet when it first loads, so the mark is all it gets.
+		const string KEY_START_RANKS = "firearms.start_ranks";
+		const array<string> RANK1_SKILLS = { "hwp_fs_frag", "hwp_fs_snipe", "hwp_fs_focus", "hwp_fs_rpg",
+			"hwp_fs_hoarder", "hwp_fs_burst", "hwp_fs_adrenaline", "hwp_fs_turret", "hwp_fs_myturret" };
+
+		void MigrateStartRanks()
+		{
+			auto rec = GetLocalPlayerRecord();
+			if (rec is null || !IsFirearms(rec))
+				return;
+			auto bag = HWP::SaveData::Player(rec);
+			if (bag.GetBool(KEY_START_RANKS))
+				return;
+			bag.SetBool(KEY_START_RANKS, true);
+			string moved = "";
+			for (uint i = 0; i < RANK1_SKILLS.length(); i++)
+			{
+				int lvl = 0;
+				if (!rec.pickedSkills.get(RANK1_SKILLS[i], lvl) || lvl <= 0)
+					continue;
+				rec.pickedSkills.set(RANK1_SKILLS[i], lvl - 1);
+				// as PlayerRecord.SkillUp tells the others
+				(Network::Message("PlayerSyncSkillLevel") << HashString(RANK1_SKILLS[i]) << (lvl - 1) << false).SendToAll();
+				moved += (moved == "" ? "" : ", ") + RANK1_SKILLS[i] + " " + lvl + "->" + (lvl - 1);
+			}
+			if (moved == "")
+				return;
+			rec.SyncStatPoints();
+			auto plr = cast<PlayerBase>(rec.actor);
+			if (plr !is null)
+			{
+				plr.LoadSkills();
+				rec.RefreshModifiers();
+			}
+			HWP::Log("firearms", "saved ranks moved to the rank-1 start: " + moved);
+		}
+
 		int ClipMax(PlayerBase@ plr, ActorBuffStackDef@ def)
 		{
 			auto mod = plr.GetModifiedStack(def);
@@ -221,6 +265,7 @@ namespace HWP
 				HWP::Commands::Reply("reload bar: shown " + o.m_bars + ", perfect " + o.m_hits + ", missed " + o.m_misses
 					+ ", now " + (o.m_active ? "auto" : (o.m_manual ? "manual" : "none"))
 					+ ", " + (o.m_missed ? "red" : "white") + ", gold " + (o.m_windowStart >= 0 ? "yes" : "no")
+					+ ", held " + (o.m_held ? "yes" : "no") + ", cut " + o.m_cuts + ", restarted " + o.m_holds
 					+ ", health bar " + (hud ? int(hp.x) + "," + int(hp.y) + " w " + int(hpW) : "none"));
 				return;
 			}
@@ -280,6 +325,39 @@ namespace HWP
 				HWP::Commands::Reply("clip emptied, no reload");
 				return;
 			}
+			// "startranks [clear|run]": the rank-1 skills' saved and loaded ranks and whether the
+			// save is marked (MigrateStartRanks). "clear" (cheat) takes the mark off, "run" runs
+			// the migration now, as a floor start does: for trying it on a character saved after.
+			if (args.length() > 0 && args[0] == "startranks")
+			{
+				auto r = GetLocalPlayerRecord();
+				if (r is null || r.playerClass is null)
+				{
+					HWP::Commands::Reply("no character loaded");
+					return;
+				}
+				if (args.length() > 1 && (args[1] == "clear" || args[1] == "run"))
+				{
+					if (!HWP::Cheats::On())
+						return;
+					if (args[1] == "clear")
+						HWP::SaveData::Player(r).Remove(KEY_START_RANKS);
+					else
+						MigrateStartRanks();
+				}
+				string ranks = "";
+				for (uint i = 0; i < RANK1_SKILLS.length(); i++)
+				{
+					int saved = 0;
+					if (!r.pickedSkills.get(RANK1_SKILLS[i], saved))
+						saved = 0;
+					ranks += " " + RANK1_SKILLS[i] + " " + saved + "/"
+						+ r.GetSkillLevel(r.playerClass.GetSkillDef(HashString(RANK1_SKILLS[i]), true));
+				}
+				HWP::Commands::Reply("start ranks: marked " + (HWP::SaveData::Player(r).GetBool(KEY_START_RANKS) ? "yes" : "no")
+					+ ", saved/loaded" + ranks);
+				return;
+			}
 			auto rec = GetLocalPlayerRecord();
 			if (rec is null || rec.playerClass is null)
 			{
@@ -318,7 +396,7 @@ namespace Modules
 		HWPFirearmsModule()
 		{
 			super("hwp-firearms");
-			HWP::Commands::Register("firearms", "[empty|shots|elements [reset|roll n]|sound [n|next|prev|again|list]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
+			HWP::Commands::Register("firearms", "[empty|shots|reload|startranks [clear|run]|elements [reset|roll n]|sound [n|next|prev|again|list]]  Firearms Specialist status; empty (cheat) empties the clip without reloading; startranks shows the rank-1 skills' saved ranks (clear and run are cheats); sound (cheat) plays a firing-sound candidate", HWP::Commands::Handler(HWP::Firearms::CmdStatus));
 			HWP::Firearms::SelfCheck(false);
 			HWP::Bag::OnEquip(HWP::Bag::EquipPrepare(HWP::Firearms::PistolEquip));
 		}
@@ -327,6 +405,7 @@ namespace Modules
 		{
 			HWP::Firearms::g_checked = false;
 			HWP::Firearms::SelfCheck(true);
+			HWP::Firearms::MigrateStartRanks();
 			@HWP::Firearms::g_filledFor = null;
 			HWP::Firearms::g_filledClass = "";
 			HWP::Firearms::g_levelStart = true;

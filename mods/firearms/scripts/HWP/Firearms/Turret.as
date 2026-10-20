@@ -17,9 +17,6 @@ namespace HWP
 	{
 		// 10 m: the game shows 6 px a metre (Tweak::PixelsPerMeter, Data/Misc.as:15)
 		const int NEAR = 60;
-		// the turret's attack scene (units/turret_attack.effect): its skill's cooldown starts
-		// only once the scene ends (CompositeActorSkill.as:514-541)
-		const int ATTACK_MS = 200;
 	}
 }
 
@@ -49,8 +46,14 @@ class HWPFirearmsTurret : PlayerOwnedActor
 		if (m_skills.length() > 0)
 		{
 			auto skill = cast<CompositeActorSkill>(m_skills[0]);
-			if (skill !is null)
-				rate = skill.m_cooldown.x + HWP::Firearms::ATTACK_MS;
+			// the skill's cooldown starts only once its attack scene (units/turret_attack.effect)
+			// ends (CompositeActorSkill.as:514-541), so a shot comes every scene + cooldown;
+			// the scene's length is read as DashStrike.as does
+			if (skill !is null && skill.m_anims.length() > 0)
+			{
+				auto scene = m_unit.GetUnitProducer().GetUnitScene(skill.m_anims[0].GetSceneName(0));
+				rate = skill.m_cooldown.x + (scene is null ? 0 : scene.Length());
+			}
 		}
 		HWP::Log("firearms", "turret: placed, " + GetMaxHp() + " hp (+" + int(m_hpPct * 100)
 			+ "% of the owner's), a shot every " + rate + " ms, " + m_decay + " ms to decay");

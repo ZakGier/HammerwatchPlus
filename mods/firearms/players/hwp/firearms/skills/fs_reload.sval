@@ -18,9 +18,11 @@
 	<dict name="skill">
 		<int name="skill-cost">SKILLCOSTLEVEL_1</int>
 		<!-- the cast is the reload: it refills at the castpoint, the level's whole recharge
-		     time (cooldown, the same number, is what the tooltip shows). A dodge cancels it
-		     (HWPFirearmsReload, Combat.as). Each level sets castpoint, blocking, update-aim
-		     and timeline together. -->
+		     time (cooldown, the same number, is what the tooltip shows). A dodge, an ability
+		     or the weapon swap cancels it (HWPFirearmsReload, Combat.as). HWPFirearmsReload
+		     overrides IsBlocking to false, so the blocking below doesn't hold other skills
+		     back; the guns wait for the cast on their own. Each level sets castpoint,
+		     blocking, update-aim and timeline together. -->
 		<string name="class">HWPFirearmsReload</string>
 		<string name="anim">cast</string>
 		<int name="anim-length">700</int>

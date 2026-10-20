@@ -14,8 +14,12 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   At 0 rounds the **Reloading** stack starts (1.6 s timer; a dodge restarts it)
   and refills the clip when it ends. **Reload** (a starting skill, as are Frag and each doctrine's two) is a cast of
   2.0 s down to 1.2 s that refills when it ends, with the automatic reload's
-  icon sweep. A dodge cancels it; a full clip refuses it. A held trigger only
-  says "cant" on a fresh click (`HWPFirearmsGun`).
+  icon sweep. A dodge, any other ability or the weapon swap (X) cancels it with
+  the clip as it was, and Reload starts a new one; a full clip refuses it. The
+  guns don't fire while it casts. An ability or a swap during the automatic
+  reload holds it at its start, and it runs again from the beginning once the
+  ability is done (`HWP::Firearms::Interrupting`, Combat.as; `plan-firearms-reload-cut`).
+  A held trigger only says "cant" on a fresh click (`HWPFirearmsGun`).
   Mana pays for gadgets: the grenade launcher, grenades, rockets, bursts.
   The pool is 60 + 2 a level, 1 a second (docs/RE_NOTES.md, the Firearms balance pass).
   The last rounds of a clip click (3 or fewer, 6 or fewer with dual pistols):
@@ -158,7 +162,9 @@ the 4th (turret) doctrine and the remaining orbs. See `docs/design/firearms.md`.
 6. Specializations and orbs: `plan-firearms-a` (Frag, the picker, Marksman),
    `plan-firearms-b` (Demolitionist, Assault) and `plan-firearms-orbs` (the
    Reload and Frag orbs). Orbs are taken with `gl orb <id>` (the sphere's
-   SkillTempUp).
+   SkillTempUp). `plan-firearms-reload-cut`: an ability or the swap cuts a
+   reload, and the saved-rank move for skills that start at rank 1
+   (`hwp firearms startranks`).
 7. Over-Reload by hand: empty the clip, watch the bar above the health bar,
    press Reload (or left click) in the gold; the clip shows +6. Then Reload
    with rounds left and press Reload again in the gold: still +6, not +12.
