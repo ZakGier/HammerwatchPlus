@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_rpg_jump",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "Rocket Jump"
+    }
+  ],
+  "name": "Rocket Jump",
+  "notes": "",
+  "order": null,
+  "skill": "rocket",
+  "status": "built",
+  "summary": "When you are within the Rocket Launcher missile explosion radius is pushes you away from it's center and you dodge damage."
+}

@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_adrenaline",
+  "cooldown": "",
+  "group": "assault",
+  "kind": "passive",
+  "levels": [
+    "Heal 0.5% per stack up to 20 stacks",
+    "Heal 0.5% per stack up to 25 stacks",
+    "Heal 1% per stack up to 25 stacks",
+    "Heal 1% per stack up to 30 stacks",
+    "Heal 1.5% per stack up to 30 stacks"
+  ],
+  "mana": "",
+  "name": "Adrenaline",
+  "notes": "",
+  "order": 1,
+  "role": "",
+  "status": "built",
+  "summary": "Build up stacks of adrenaline from kills. When taking damage, consume the stacks to heal a small amount.",
+  "unlock": "free"
+}

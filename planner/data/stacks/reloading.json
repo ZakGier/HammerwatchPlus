@@ -1,0 +1,13 @@
+{
+  "built": "players/hwp/firearms/stacks_firearms.sval:reloading",
+  "empty": "",
+  "gain": "Clip reaching 0",
+  "max": "1",
+  "modifiers": "ModifyStack add-time (faster reloads)",
+  "name": "Reloading",
+  "notes": "A dodge while reloading restarts the timer (measured 1.75s vs 2.92s with a dodge at 0.9s).",
+  "order": 1,
+  "spent": "Timer ends (refills clip) or Reload skill",
+  "status": "tested",
+  "timer": "1.6s (measured ~1.75s), shown as a radial"
+}

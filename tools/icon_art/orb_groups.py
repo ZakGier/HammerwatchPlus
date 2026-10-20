@@ -1,6 +1,6 @@
 """The picker's vanilla orb groups: for each class with a vo_<cls>.py, out/orbs/<cls>.json
 naming every orb it draws (name, parent skill, description, the images rorb.py wrote).
-python orb_groups.py <dump>; <dump> as for planner_icons.py (planner/classes/*.json)."""
+python orb_groups.py [<data>]; <data> as for planner_icons.py (default planner/data)."""
 import importlib
 import json
 import sys
@@ -14,7 +14,7 @@ CLASSES = ["paladin", "priest", "ranger", "rogue", "sorcerer", "warlock", "warri
 def main(dump):
     out = HERE / "out" / "orbs"
     for cls in CLASSES:
-        d = json.load(open(Path(dump) / "planner/classes" / f"{cls}.json", encoding="utf-8"))
+        d = json.load(open(Path(dump) / "classes" / f"{cls}.json", encoding="utf-8"))
         d = d.get("data", d)
         info = {}
         for g in [d["base"]] + [s.get("skills", []) for s in d.get("specs", [])]:
@@ -39,4 +39,4 @@ def main(dump):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1] if len(sys.argv) > 1 else HERE.parents[1] / "planner/data")

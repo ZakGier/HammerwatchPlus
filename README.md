@@ -84,7 +84,7 @@ puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wil
 nearby kept Morale off.
 The Firearms Specialist's clip, reload and guns pass `plan-t14` and `plan-firearms-guns`
 (magazines 30/10/20, rounds per click for each loadout, dodge-interrupted reload). Its class
-planner also drafts a 4th spec and new orbs for every vanilla class (`docs/design/firearms.md`).
+planner also holds a 4th spec slot for every other class (`docs/design/firearms.md`).
 Its Marksman and Demolitionist specializations and the base kit's orbs followed (2026-10-19),
 checked by `plan-firearms-a`, `-b` and `-orbs` through a new `gl orb` verb. Placeholder
 icons come from `tools/make_firearms_icons.py`. Over-Reload now works on a manual Reload too
@@ -117,7 +117,10 @@ An ability or the weapon swap now cuts a Firearms reload, and Reload starts it a
 a save from before Frag and the doctrine skills started at rank 1 that is past the new max is
 pulled back to it (`plan-firearms-reload-cut`). A second code review's fixes cover the joint hand-over,
 the turret's shot rate, puzzle rooms, the key pool and the bench. The class planner now
-shows the three ported HoH1 classes and the Priest's and Paladin's HoH1 masteries.
+shows the three ported HoH1 classes and the Priest's and Paladin's HoH1 masteries. It is
+now a local web app in the repo (`planner/`: double-click `planner.cmd` or run
+`python -m planner`), its records JSON files under `planner/data/`; every class but the
+Firearms Specialist has a placeholder 4th specialization in place of the drafted ideas.
 The HoH1-to-HoH2 trinket comparison (missing, modified, new and flat-value trinkets,
 grouped by HoH2 set, with shared verdicts) is a private web app outside the repo; its link
 is in `docs/RE_NOTES.md`.
@@ -143,6 +146,7 @@ python -m gamelab doctor --smoke      # boot null-payload again; a failure names
 python tools/build.py                 # pack dist/HWP-<module>.bin + dist/HammerwatchPlus-All.bin
 python tools/hwr_archive.py --help    # low-level archive tool (list/extract/pack HW2R and HWRR)
 python tools/icon_art/render.py all   # skill icon ideas in the vanilla style (tools/icon_art/README.md)
+python -m planner                     # the class planner in your browser (or double-click planner.cmd; planner/README.md)
 python tools/import_hoh1.py pets|levels|campaign|classes   # HoH1 content by hand (doctor --fix runs all four)
 ```
 

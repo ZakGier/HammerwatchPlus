@@ -1,0 +1,11 @@
+{
+  "cls": "wizard",
+  "group": "wizard-spec4",
+  "kind": "active",
+  "levels": [],
+  "name": "Placeholder Active",
+  "order": 0,
+  "status": "idea",
+  "summary": "Placeholder: not designed yet.",
+  "unlock": "bought"
+}

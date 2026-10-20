@@ -1,0 +1,7 @@
+{
+  "blurb": "Explosives. Bonus weapon: Rocket Launcher.",
+  "name": "Demolitionist",
+  "notes": "Rename: clashes with rogue_demolitions. Tube moves to the rifle's grenade-launcher secondary; Jetpack becomes a mod or goes.",
+  "order": 3,
+  "status": "idea"
+}

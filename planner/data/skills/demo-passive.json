@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_hoarder",
+  "cooldown": "",
+  "group": "demolitions",
+  "kind": "passive",
+  "levels": [
+    "Charges 10% faster, allow for 1 extra charge",
+    "Charges 20% faster, allow for 1 extra charge",
+    "Charges 30% faster, allow for 2 extra charges",
+    "Charges 40% faster, allow for 2 extra charges",
+    "Charges 50% faster, allow for 3 extra charges"
+  ],
+  "mana": "",
+  "name": "Ordinance Hoarder",
+  "notes": "",
+  "order": 1,
+  "role": "",
+  "status": "built",
+  "summary": "Allows Explosives (Grenade, Grenade Launcher and Rocket Launcher) Charges to refresh faster and stack charges over time when not used.",
+  "unlock": "free"
+}

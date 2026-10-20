@@ -1,0 +1,7 @@
+{
+  "name": "Bullet damage",
+  "notes": "",
+  "order": 0,
+  "stat": "Attack power (weapon attacks); spell power for doctrine skills",
+  "trinkets": "Any attack-power item"
+}

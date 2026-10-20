@@ -1,0 +1,2234 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact.",
+      "file": "players/wizard/skills/wiz_magic_missiles.sval",
+      "id": "wiz_magic_missiles",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "70"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "90"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "Discharges several magic missiles that seek out nearby enemies and deal Physical damage on impact."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Fires additional projectiles per cast.",
+          "id": "wiz_magic_missiles_projectiles",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "Fires additional projectiles per cast."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "2"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Fires additional projectiles per cast."
+            }
+          ],
+          "name": "Missile Barrage",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The projectiles gain the ability to jump to additional targets on hit.",
+          "id": "wiz_magic_missiles_jumps",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Jumps",
+                  "1"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The projectiles gain the ability to jump to additional targets on hit."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Jumps",
+                  "2"
+                ]
+              ],
+              "q": "rare",
+              "text": "The projectiles gain the ability to jump to additional targets on hit."
+            }
+          ],
+          "name": "Rebounding Missiles",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The projectiles gain a chance to inflict Stun.",
+          "id": "wiz_magic_missiles_stun",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "The projectiles gain a chance to inflict Stun."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The projectiles gain a chance to inflict Stun."
+            }
+          ],
+          "name": "Concussive Impacts",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Magic Missiles",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::ShootProjectileTarget",
+      "desc": "Unleash a fireball towards the targeted location that explodes dealing Fire damage.",
+      "file": "players/wizard/skills/wiz_fireball.sval",
+      "id": "fireball",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Unleash a fireball towards the targeted location that explodes dealing Fire damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "90"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Unleash a fireball towards the targeted location that explodes dealing Fire damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "110"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Unleash a fireball towards the targeted location that explodes dealing Fire damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "130"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Unleash a fireball towards the targeted location that explodes dealing Fire damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "170"
+            ],
+            [
+              "Mana Cost",
+              "60"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Unleash a fireball towards the targeted location that explodes dealing Fire damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases the size of the explosion.",
+          "id": "fireball_size",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "size",
+                  "Size:"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the size of the explosion."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "size",
+                  "+25%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases the size of the explosion."
+            }
+          ],
+          "name": "Enhanced Fireball",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Enemies hit by the fireball are inflicted by Vulnerability.",
+          "id": "fireball_blastwave",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "slow",
+                  "Status Effect:"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies hit by the fireball are inflicted by Vulnerability."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "slow",
+                  "Vulnerability"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Enemies hit by the fireball are inflicted by Vulnerability."
+            }
+          ],
+          "name": "Blastwave",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The fireball now bounces and triggers an explosion with each bounce.",
+          "id": "fireball_bounces",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "bounces",
+                  "Bounces:"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The fireball now bounces and triggers an explosion with each bounce."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "bounces",
+                  "1"
+                ]
+              ],
+              "q": "rare",
+              "text": "The fireball now bounces and triggers an explosion with each bounce."
+            }
+          ],
+          "name": "Bouncing Fireball",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Fireball",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Increases your Mana and Intelligence.",
+      "file": "players/wizard/skills/wiz_arcane_intellect.sval",
+      "id": "wiz_arcane_intellect",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Mana",
+              "+10%"
+            ],
+            [
+              "Intelligence",
+              "+10%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Mana and Intelligence."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Mana",
+              "+15%"
+            ],
+            [
+              "Intelligence",
+              "+15%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Mana and Intelligence."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Mana",
+              "+20%"
+            ],
+            [
+              "Intelligence",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Mana and Intelligence."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Mana",
+              "+25%"
+            ],
+            [
+              "Intelligence",
+              "+25%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Mana and Intelligence."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Mana",
+              "+30%"
+            ],
+            [
+              "Intelligence",
+              "+30%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Mana and Intelligence."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Reduces your spell cooldowns.",
+          "id": "wiz_arcane_intellect_scholar",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cooldown",
+                  "-15%"
+                ]
+              ],
+              "q": "common",
+              "text": "Reduces your spell cooldowns."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cooldown",
+                  "-30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Reduces your spell cooldowns."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cooldown",
+                  "-50%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Reduces your spell cooldowns."
+            }
+          ],
+          "name": "Savant",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You deal increased damage with Arcane weapons.",
+          "id": "wiz_arcane_intellect_attacks",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+15%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased damage with Arcane weapons."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You deal increased damage with Arcane weapons."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You deal increased damage with Arcane weapons."
+            }
+          ],
+          "name": "Arcane Weaponry",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Increases your Experience Gain.",
+          "id": "wiz_arcane_intellect_learning",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Experience Gain",
+                  "+25%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Experience Gain."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Experience Gain",
+                  "+50%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases your Experience Gain."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Experience Gain",
+                  "+100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases your Experience Gain."
+            }
+          ],
+          "name": "Learning",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Arcane Intellect",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken.",
+      "file": "players/wizard/skills/wiz_barrier.sval",
+      "id": "wiz_barrier",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Taken",
+              "-30%"
+            ],
+            [
+              "Max Stacks",
+              "3"
+            ],
+            [
+              "Stack Replenish Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Taken",
+              "-35%"
+            ],
+            [
+              "Max Stacks",
+              "3"
+            ],
+            [
+              "Stack Replenish Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Taken",
+              "-40%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Replenish Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Taken",
+              "-45%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Replenish Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage Taken",
+              "-50%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ],
+            [
+              "Stack Replenish Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You generate protective stacks of Barrier over time. When taking damage a stack is expended, lowering the damage taken."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [
+            "wiz_barrier_ice"
+          ],
+          "desc": "Taking damage while having stacks of Barrier ignites the air around yourself for a duration, dealing Fire damage to nearby enemies.",
+          "id": "wiz_barrier_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire Damage",
+                  "30"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Stack Duration",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage while having stacks of Barrier ignites the air around yourself for a duration, dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire Damage",
+                  "60"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Stack Duration",
+                  "5s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Taking damage while having stacks of Barrier ignites the air around yourself for a duration, dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire Damage",
+                  "90"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Stack Duration",
+                  "5s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Taking damage while having stacks of Barrier ignites the air around yourself for a duration, dealing Fire damage to nearby enemies."
+            }
+          ],
+          "name": "Flame Shield",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [
+            "wiz_barrier_fire"
+          ],
+          "desc": "As long as you have stacks of Barrier you have increased Armor and Ice Resistance. You also inflict Freeze to any attackers.",
+          "id": "wiz_barrier_ice",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor",
+                  "+20%"
+                ],
+                [
+                  "Ice Resistance",
+                  "+25%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Barrier you have increased Armor and Ice Resistance. You also inflict Freeze to any attackers."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor",
+                  "+40%"
+                ],
+                [
+                  "Ice Resistance",
+                  "+50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "As long as you have stacks of Barrier you have increased Armor and Ice Resistance. You also inflict Freeze to any attackers."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor",
+                  "+60%"
+                ],
+                [
+                  "Ice Resistance",
+                  "+100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "As long as you have stacks of Barrier you have increased Armor and Ice Resistance. You also inflict Freeze to any attackers."
+            }
+          ],
+          "name": "Frost Shell",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Casting a Spell gains a chance to generate stacks of Barrier. This effect has a short cooldown.",
+          "id": "wiz_barrier_generate",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Casting a Spell gains a chance to generate stacks of Barrier. This effect has a short cooldown."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Casting a Spell gains a chance to generate stacks of Barrier. This effect has a short cooldown."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "1s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Casting a Spell gains a chance to generate stacks of Barrier. This effect has a short cooldown."
+            }
+          ],
+          "name": "Protective Warding",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Barrier",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/wizard/skills/phantasmal_force.sval",
+      "name": "Phantasmal Force"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A skilled wielder of the arcane that can devastate their opponents with their magical powers.",
+  "gear": [
+    "chest_int_t1a",
+    "feet_int_t1a",
+    "mainhand_wand_fire_01",
+    "offhand_tome_ice_01"
+  ],
+  "name": "Wizard",
+  "order": 8,
+  "specs": [
+    {
+      "id": "wizard_evocation",
+      "name": "Evocation",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage.",
+          "file": "players/wizard/skills/wiz_meteor_shower.sval",
+          "id": "wiz_meteor",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Duration",
+                  "3s"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "250"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Duration",
+                  "3.5s"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "300"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "400"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Duration",
+                  "4.5s"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "500"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon meteors to fall in the area for a duration, dealing both Physical and Fire damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [
+                "wiz_meteor_comet"
+              ],
+              "desc": "The meteors create an area of burning ground on impact, dealing additional Fire damage for a period.",
+              "id": "wiz_meteor_ground",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "10%"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The meteors create an area of burning ground on impact, dealing additional Fire damage for a period."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "15%"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The meteors create an area of burning ground on impact, dealing additional Fire damage for a period."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Duration",
+                      "5s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The meteors create an area of burning ground on impact, dealing additional Fire damage for a period."
+                }
+              ],
+              "name": "Burning Ground",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [
+                "wiz_meteor_ground"
+              ],
+              "desc": "Increases the damage, changes its type to Ice and Physical, and gains a chance to inflict Freeze.",
+              "id": "wiz_meteor_comet",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+25%"
+                    ],
+                    [
+                      "Chance",
+                      "25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases the damage, changes its type to Ice and Physical, and gains a chance to inflict Freeze."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+50%"
+                    ],
+                    [
+                      "Chance",
+                      "50%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases the damage, changes its type to Ice and Physical, and gains a chance to inflict Freeze."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+75%"
+                    ],
+                    [
+                      "Chance",
+                      "100%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Increases the damage, changes its type to Ice and Physical, and gains a chance to inflict Freeze."
+                }
+              ],
+              "name": "Comet",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "ice",
+                "physical"
+              ]
+            }
+          ],
+          "name": "Meteor Shower",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells.",
+          "file": "players/wizard/skills/wiz_incanters_flow.sval",
+          "id": "wiz_incanters_flow",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-2%"
+                ],
+                [
+                  "Cast Speed per Stack",
+                  "+2%"
+                ],
+                [
+                  "Max Stacks",
+                  "8"
+                ],
+                [
+                  "Stack Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-2.5%"
+                ],
+                [
+                  "Cast Speed per Stack",
+                  "+2.5%"
+                ],
+                [
+                  "Max Stacks",
+                  "8"
+                ],
+                [
+                  "Stack Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-3%"
+                ],
+                [
+                  "Cast Speed per Stack",
+                  "+3%"
+                ],
+                [
+                  "Max Stacks",
+                  "8"
+                ],
+                [
+                  "Stack Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-3.5%"
+                ],
+                [
+                  "Cast Speed per Stack",
+                  "+3.5%"
+                ],
+                [
+                  "Max Stacks",
+                  "8"
+                ],
+                [
+                  "Stack Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-4%"
+                ],
+                [
+                  "Cast Speed per Stack",
+                  "+4%"
+                ],
+                [
+                  "Max Stacks",
+                  "8"
+                ],
+                [
+                  "Stack Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Incanter's Cadence. Each stack increases your Cast Speed and reduces the Mana Cost of spells."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Each stack of Incanter's Cadence increases your Spell Crit Chance.",
+              "id": "wiz_incanters_crit",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Crit Chance per Stack",
+                      "2%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Incanter's Cadence increases your Spell Crit Chance."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Crit Chance per Stack",
+                      "3%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Each stack of Incanter's Cadence increases your Spell Crit Chance."
+                }
+              ],
+              "name": "Rising Crescendo",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Each stack of Incanter's Cadence increases your Weapon Speed.",
+              "id": "wiz_incanters_attacks",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Weapon Speed per Stack",
+                      "+3%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Incanter's Cadence increases your Weapon Speed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Weapon Speed per Stack",
+                      "+4%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Incanter's Cadence increases your Weapon Speed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Weapon Speed per Stack",
+                      "+5%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Each stack of Incanter's Cadence increases your Weapon Speed."
+                }
+              ],
+              "name": "Incanter's Flow",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Incanter's Cadence",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "wizard_conjuration",
+      "name": "Conjuration",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage.",
+          "file": "players/wizard/skills/conjuration_hydras.sval",
+          "id": "conjuration_hydras",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Duration",
+                  "12s"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure multiple hydra that spew fire at nearby enemies dealing Fire damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You conjure additional hydra heads with each cast.",
+              "id": "conjuration_hydras_add",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "amount",
+                      "Amount:"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You conjure additional hydra heads with each cast."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "amount",
+                      "+1"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You conjure additional hydra heads with each cast."
+                }
+              ],
+              "name": "Greater Hydra",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Changes damage type to Ice.",
+              "id": "conjuration_hydras_ice",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [],
+                  "q": "uncommon",
+                  "text": "Changes damage type to Ice."
+                }
+              ],
+              "name": "Frost Breath",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Conjure Hydras",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSummonSkill",
+          "desc": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage.",
+          "file": "players/wizard/skills/conjuration_sword.sval",
+          "id": "conjuration_sword",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "170"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical sword that follows you around at all times. The sword slashes at nearby enemies dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [
+                "conjuration_sword_ice"
+              ],
+              "desc": "The sword is now engulfed in flames and continously deals Fire damage to nearby enemies.",
+              "id": "conjuration_sword_fire",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The sword is now engulfed in flames and continously deals Fire damage to nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "30%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The sword is now engulfed in flames and continously deals Fire damage to nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "50%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The sword is now engulfed in flames and continously deals Fire damage to nearby enemies."
+                }
+              ],
+              "name": "Flame Blade",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "fire"
+              ]
+            },
+            {
+              "blockedBy": [
+                "conjuration_sword_fire"
+              ],
+              "desc": "The sword now deals Ice damage and gains a chance to inflict Freeze.",
+              "id": "conjuration_sword_ice",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+30%"
+                    ],
+                    [
+                      "Chance",
+                      "25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The sword now deals Ice damage and gains a chance to inflict Freeze."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+60%"
+                    ],
+                    [
+                      "Chance",
+                      "50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The sword now deals Ice damage and gains a chance to inflict Freeze."
+                }
+              ],
+              "name": "Ice Blade",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Animated Sword",
+          "summon": true,
+          "type": "Spell"
+        }
+      ]
+    },
+    {
+      "id": "wizard_transmutation",
+      "name": "Transmutation",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed.",
+          "file": "players/wizard/skills/transmutation_haste.sval",
+          "id": "transmutation_haste",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Movement Speed",
+                  "+25%"
+                ],
+                [
+                  "Weapon Speed",
+                  "+30%"
+                ],
+                [
+                  "Cast Speed",
+                  "+30%"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Movement Speed",
+                  "+25%"
+                ],
+                [
+                  "Weapon Speed",
+                  "+35%"
+                ],
+                [
+                  "Cast Speed",
+                  "+35%"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Movement Speed",
+                  "+25%"
+                ],
+                [
+                  "Weapon Speed",
+                  "+40%"
+                ],
+                [
+                  "Cast Speed",
+                  "+40%"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Movement Speed",
+                  "+25%"
+                ],
+                [
+                  "Weapon Speed",
+                  "+45%"
+                ],
+                [
+                  "Cast Speed",
+                  "+45%"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Movement Speed",
+                  "+25%"
+                ],
+                [
+                  "Weapon Speed",
+                  "+50%"
+                ],
+                [
+                  "Cast Speed",
+                  "+50%"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a temporary buff that increases your Weapon, Cast and Movement Speed."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You also gain Evasion for the duration of the buff.",
+              "id": "transmutation_haste_blur",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You also gain Evasion for the duration of the buff."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You also gain Evasion for the duration of the buff."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You also gain Evasion for the duration of the buff."
+                }
+              ],
+              "name": "Blur",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "For the duration of the buff you inflict nearby enemies with Slow.",
+              "id": "wiz_haste_slow_aura",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Aura Range",
+                      "40"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "For the duration of the buff you inflict nearby enemies with Slow."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Aura Range",
+                      "80"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "For the duration of the buff you inflict nearby enemies with Slow."
+                }
+              ],
+              "name": "Temporal Shift",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Haste",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Grants additional Strength and Dexterity per character level.",
+          "file": "players/wizard/skills/transmutation_body.sval",
+          "id": "transmutation_body",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Amount",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Strength and Dexterity per character level."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Amount",
+                  "+1.25"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Strength and Dexterity per character level."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Amount",
+                  "+1.5"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Strength and Dexterity per character level."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Amount",
+                  "+1.75"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Strength and Dexterity per character level."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Amount",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Strength and Dexterity per character level."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [
+                "transmutation_body_dex"
+              ],
+              "desc": "Grants Spell Power per Strength.",
+              "id": "transmutation_body_str",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Power",
+                      "+0.5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Grants Spell Power per Strength."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Power",
+                      "+1"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Grants Spell Power per Strength."
+                }
+              ],
+              "name": "Enhanced Strength",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [
+                "transmutation_body_str"
+              ],
+              "desc": "Grants Spell Power per Dexterity.",
+              "id": "transmutation_body_dex",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Power",
+                      "+0.5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Grants Spell Power per Dexterity."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Spell Power",
+                      "+1"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Grants Spell Power per Dexterity."
+                }
+              ],
+              "name": "Enhanced Dexterity",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain immunity to Slow and Cripple.",
+              "id": "transmutation_body_slow",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [],
+                  "q": "rare",
+                  "text": "You gain immunity to Slow and Cripple."
+                }
+              ],
+              "name": "Free Movement",
+              "quality": "rare",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Enhanced Physique",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 0,
+    "dex": 2,
+    "foc": 10,
+    "health": 80,
+    "int": 10,
+    "mana": 120,
+    "str": 2,
+    "vit": 6
+  },
+  "vanilla": true
+}

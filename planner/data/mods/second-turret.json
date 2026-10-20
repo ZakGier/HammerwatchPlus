@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_turret_second",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "You can now place up to two turrets."
+    }
+  ],
+  "name": "Second Turret",
+  "notes": "A third placed turret will destroy the oldest placed turret if two are still alive.",
+  "order": null,
+  "skill": "deploy-turret",
+  "status": "built",
+  "summary": "Adds ability to place a second turret without destroying the first."
+}

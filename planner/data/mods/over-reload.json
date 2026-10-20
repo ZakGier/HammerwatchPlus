@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_reload_over",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Grants 5 extra bullets"
+    },
+    {
+      "q": "uncommon",
+      "text": "Grants 10 Extra bullets"
+    },
+    {
+      "q": "rare",
+      "text": "Grants 15 extra bullets"
+    }
+  ],
+  "name": "Perfect Reload",
+  "notes": "Reloading (even without this orb mod) will show an 'effect' that lasts the reload time amount. when it expires your reload completes. This orb adds to that effect a UI element that is a golden pie slice, the equivalent of 0.2s/total reload time of the volume of the circle. i.e. if the reload time is 1 secon, the pie slice is 1/5th the size of the circle. if you tap reload a second time when the reload effect has decayed to that section of the reload, it triggers a \"perfect\" reload that gives the bonus ammo and ends the reload animation, refilling your gun(s) faster than a normal reload would. the pie slice always appears between the second half of the reload, in a random spot each time.",
+  "order": null,
+  "skill": "reload",
+  "status": "built",
+  "summary": "While reloading, if reload is tapped a second time, timed perfectly within the golden window of the reload, it grants a extra bullets overloading the magazine and finishing the reload early."
+}

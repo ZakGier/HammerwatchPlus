@@ -1,0 +1,7 @@
+{
+  "name": "Headshots",
+  "notes": "Class title already grants crit chance.",
+  "order": 2,
+  "stat": "Crit chance / crit damage",
+  "trinkets": "Crit items"
+}

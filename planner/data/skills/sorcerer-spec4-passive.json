@@ -1,0 +1,11 @@
+{
+  "cls": "sorcerer",
+  "group": "sorcerer-spec4",
+  "kind": "passive",
+  "levels": [],
+  "name": "Placeholder Passive",
+  "order": 1,
+  "status": "idea",
+  "summary": "Placeholder: not designed yet.",
+  "unlock": "bought"
+}

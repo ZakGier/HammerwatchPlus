@@ -1,0 +1,2420 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Throws several knives in a cone dealing Physical damage.",
+      "file": "players/rogue/skills/rog_fan_of_knives.sval",
+      "id": "rog_fan_of_knives",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "20"
+            ],
+            [
+              "Projectiles",
+              "5"
+            ],
+            [
+              "Projectile Piercing",
+              "1"
+            ],
+            [
+              "Mana Cost",
+              "10"
+            ],
+            [
+              "Cooldown",
+              "0.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws several knives in a cone dealing Physical damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "25"
+            ],
+            [
+              "Projectiles",
+              "5"
+            ],
+            [
+              "Projectile Piercing",
+              "2"
+            ],
+            [
+              "Mana Cost",
+              "15"
+            ],
+            [
+              "Cooldown",
+              "0.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws several knives in a cone dealing Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "30"
+            ],
+            [
+              "Projectiles",
+              "7"
+            ],
+            [
+              "Projectile Piercing",
+              "2"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "0.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws several knives in a cone dealing Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "35"
+            ],
+            [
+              "Projectiles",
+              "7"
+            ],
+            [
+              "Projectile Piercing",
+              "3"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "0.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws several knives in a cone dealing Physical damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "40"
+            ],
+            [
+              "Projectiles",
+              "9"
+            ],
+            [
+              "Projectile Piercing",
+              "3"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "0.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws several knives in a cone dealing Physical damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "The projectiles now bounce off walls and collisions. Each bounce reduces speed and damage.",
+          "id": "rog_fan_of_knives_ricochet",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "rare",
+              "text": "The projectiles now bounce off walls and collisions. Each bounce reduces speed and damage."
+            }
+          ],
+          "name": "Ricochet",
+          "quality": "rare",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain increased crit chance with Fan of Knives.",
+          "id": "rog_fan_of_knives_crit",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "5%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain increased crit chance with Fan of Knives."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "10%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain increased crit chance with Fan of Knives."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You gain increased crit chance with Fan of Knives."
+            }
+          ],
+          "name": "Deadly Aim",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Deals additional Poison damage.",
+          "id": "rog_fan_of_knives_poison",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Deals additional Poison damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals additional Poison damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Deals additional Poison damage."
+            }
+          ],
+          "name": "Poisoned Knives",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "poison"
+          ]
+        },
+        {
+          "blockedBy": [],
+          "desc": "You throw fewer projectiles in a forward direction. The projectiles deal more damage and have a slightly longer lifetime.",
+          "id": "rog_fan_of_knives_focused",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "2"
+                ],
+                [
+                  "Damage",
+                  "+300%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You throw fewer projectiles in a forward direction. The projectiles deal more damage and have a slightly longer lifetime."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "3"
+                ],
+                [
+                  "Damage",
+                  "+300%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You throw fewer projectiles in a forward direction. The projectiles deal more damage and have a slightly longer lifetime."
+            }
+          ],
+          "name": "Focused Throw",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Fan of Knives",
+      "summon": false,
+      "type": "Offhand Attack"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage.",
+      "file": "players/rogue/skills/rog_flurry.sval",
+      "id": "rog_flurry",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Strikes",
+              "3"
+            ],
+            [
+              "Damage",
+              "30%"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Strikes",
+              "3"
+            ],
+            [
+              "Damage",
+              "35%"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Strikes",
+              "3"
+            ],
+            [
+              "Damage",
+              "45%"
+            ],
+            [
+              "Mana Cost",
+              "35"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Strikes",
+              "3"
+            ],
+            [
+              "Damage",
+              "55%"
+            ],
+            [
+              "Mana Cost",
+              "35"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Strikes",
+              "3"
+            ],
+            [
+              "Damage",
+              "70%"
+            ],
+            [
+              "Mana Cost",
+              "45"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You perform a series of strikes, hitting all enemies in an area around you, dealing Mainhand Weapon damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Gains a chance to inflict Disarm.",
+          "id": "rog_flurry_of_blades_disarm",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Gains a chance to inflict Disarm."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Gains a chance to inflict Disarm."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Gains a chance to inflict Disarm."
+            }
+          ],
+          "name": "Disarming Strikes",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [
+            "rog_flurry_of_blades_lightning"
+          ],
+          "desc": "Bolas are applied to each target hit plus an additional nearby enemy. Enemies affected are slowed and take Fire damage for a period.",
+          "id": "rog_flurry_of_blades_bolas",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "2s"
+                ],
+                [
+                  "Slow Effect",
+                  "70%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Bolas are applied to each target hit plus an additional nearby enemy. Enemies affected are slowed and take Fire damage for a period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Slow Effect",
+                  "70%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Bolas are applied to each target hit plus an additional nearby enemy. Enemies affected are slowed and take Fire damage for a period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "3s"
+                ],
+                [
+                  "Slow Effect",
+                  "70%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Bolas are applied to each target hit plus an additional nearby enemy. Enemies affected are slowed and take Fire damage for a period."
+            }
+          ],
+          "name": "Fiery Bolas",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [
+            "rog_flurry_of_blades_bolas"
+          ],
+          "desc": "Deals additional Lightning Damage",
+          "id": "rog_flurry_of_blades_lightning",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals additional Lightning Damage"
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals additional Lightning Damage"
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ]
+              ],
+              "q": "rare",
+              "text": "Deals additional Lightning Damage"
+            }
+          ],
+          "name": "Shock Assault",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "melee",
+            "physical",
+            "lightning"
+          ]
+        }
+      ],
+      "name": "Flurry of Blades",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out.",
+      "file": "players/rogue/skills/rog_slice_and_dice.sval",
+      "id": "rog_slice_and_dice",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Speed per Stack",
+              "+2%"
+            ],
+            [
+              "Max Stacks",
+              "20"
+            ],
+            [
+              "Stack Duration",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Speed per Stack",
+              "+2%"
+            ],
+            [
+              "Max Stacks",
+              "20"
+            ],
+            [
+              "Stack Duration",
+              "3.5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Speed per Stack",
+              "+2.5%"
+            ],
+            [
+              "Max Stacks",
+              "20"
+            ],
+            [
+              "Stack Duration",
+              "3.5s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Speed per Stack",
+              "+2.5%"
+            ],
+            [
+              "Max Stacks",
+              "20"
+            ],
+            [
+              "Stack Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Weapon Speed per Stack",
+              "+3%"
+            ],
+            [
+              "Max Stacks",
+              "20"
+            ],
+            [
+              "Stack Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits with Melee skills grant stacks of Slice and Dice. Each stack increases your Weapon Speed. You lose all stacks at once if the duration runs out."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Each stack increases your Mana Regen.",
+          "id": "rog_slice_and_dice_adrenaline",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "+1%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack increases your Mana Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "+2%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack increases your Mana Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "+4%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack increases your Mana Regen."
+            }
+          ],
+          "name": "Adrenaline",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Each stack increases your Parry.",
+          "id": "rog_slice_and_dice_parry",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "1%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack increases your Parry."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "2%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack increases your Parry."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "3%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack increases your Parry."
+            }
+          ],
+          "name": "Blade Parry",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Each stack increases your Cast Speed, and you also gain stacks by casting Spells.",
+          "id": "rog_slice_and_dice_castspeed",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cast Speed per Stack",
+                  "+2%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack increases your Cast Speed, and you also gain stacks by casting Spells."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cast Speed per Stack",
+                  "+3%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack increases your Cast Speed, and you also gain stacks by casting Spells."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Cast Speed per Stack",
+                  "+5%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack increases your Cast Speed, and you also gain stacks by casting Spells."
+            }
+          ],
+          "name": "Agile Casting",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Slice and Dice",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds.",
+      "file": "players/rogue/skills/rog_evasion.sval",
+      "id": "rog_evasion",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Evasion",
+              "10%"
+            ],
+            [
+              "Recharge Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Evasion",
+              "15%"
+            ],
+            [
+              "Recharge Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Evasion",
+              "20%"
+            ],
+            [
+              "Recharge Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Evasion",
+              "25%"
+            ],
+            [
+              "Recharge Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Evasion",
+              "30%"
+            ],
+            [
+              "Recharge Time",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Evasion and a single stack of guaranteed evasion that is recharged every few seconds."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases your Movement Speed.",
+          "id": "rog_evasion_movespeed",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Movement Speed."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Movement Speed."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+30%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases your Movement Speed."
+            }
+          ],
+          "name": "Fleet Footed",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Grants additional Crit Chance for a short period after evading.",
+          "id": "rog_evasion_opening",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "10%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Crit Chance for a short period after evading."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "20%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Grants additional Crit Chance for a short period after evading."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance",
+                  "30%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Grants additional Crit Chance for a short period after evading."
+            }
+          ],
+          "name": "Lethal Opening",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Dashing gains a chance to recharge the guaranteed evasion of Sidestep.",
+          "id": "rog_evasion_dash",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Dashing gains a chance to recharge the guaranteed evasion of Sidestep."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Dashing gains a chance to recharge the guaranteed evasion of Sidestep."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Dashing gains a chance to recharge the guaranteed evasion of Sidestep."
+            }
+          ],
+          "name": "On the Move",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Sidestep",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/rogue/skills/rog_grappling_hook.sval",
+      "name": "Grappling Hook"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A swashbuckling scoundrel that utilize innate agility and cunning tactics to overcome their foes.",
+  "gear": [
+    "chest_dex_t1a",
+    "feet_dex_t1a",
+    "twohanded_daggers_01"
+  ],
+  "name": "Rogue",
+  "order": 4,
+  "specs": [
+    {
+      "id": "rogue_blades",
+      "name": "Blades",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage.",
+          "file": "players/rogue/skills/blades_mortal_strike.sval",
+          "id": "blades_mortal_strike",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "200%"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "250%"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "350%"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "450%"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "600%"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deliver a quick deadly strike that deals massive Mainhand Weapon damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The strike now chains to additional enemies in a cone behind the target. Deals less damage for each consecutive enemy hit.",
+              "id": "blades_mortal_strike_phantasmal",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "-25%"
+                    ],
+                    [
+                      "Chains",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The strike now chains to additional enemies in a cone behind the target. Deals less damage for each consecutive enemy hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "-25%"
+                    ],
+                    [
+                      "Chains",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The strike now chains to additional enemies in a cone behind the target. Deals less damage for each consecutive enemy hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "-25%"
+                    ],
+                    [
+                      "Chains",
+                      "3"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The strike now chains to additional enemies in a cone behind the target. Deals less damage for each consecutive enemy hit."
+                }
+              ],
+              "name": "Phantasmal Strike",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain a small amount of Life Leech with Mortal Strike.",
+              "id": "blades_mortal_strike_leech",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Life Leech",
+                      "2%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a small amount of Life Leech with Mortal Strike."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Life Leech",
+                      "4%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a small amount of Life Leech with Mortal Strike."
+                }
+              ],
+              "name": "Crimson Strike",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Mortal Strike",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you.",
+          "file": "players/rogue/skills/blades_assassin.sval",
+          "id": "blades_assassin",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Attack Crit Damage",
+                  "+20%"
+                ],
+                [
+                  "Detection Range",
+                  "-20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Attack Crit Damage",
+                  "+40%"
+                ],
+                [
+                  "Detection Range",
+                  "-20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Attack Crit Damage",
+                  "+60%"
+                ],
+                [
+                  "Detection Range",
+                  "-35%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Attack Crit Damage",
+                  "+80%"
+                ],
+                [
+                  "Detection Range",
+                  "-35%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Attack Crit Damage",
+                  "+100%"
+                ],
+                [
+                  "Detection Range",
+                  "-50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Weapon Crit Damage and reduces the range of enemies detecting you."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You gain a chance to instantly kill an enemy on Low Life when scoring crits with Melee skills. Does not work on Bosses.",
+              "id": "blades_assassin_executioner",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to instantly kill an enemy on Low Life when scoring crits with Melee skills. Does not work on Bosses."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a chance to instantly kill an enemy on Low Life when scoring crits with Melee skills. Does not work on Bosses."
+                }
+              ],
+              "name": "Executioner",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Attacking with Melee weapons strikes a random nearby enemy for Mainhand Weapon damage.",
+              "id": "blades_assassin_hidden_cuts",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "50%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Attacking with Melee weapons strikes a random nearby enemy for Mainhand Weapon damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Attacking with Melee weapons strikes a random nearby enemy for Mainhand Weapon damage."
+                }
+              ],
+              "name": "Hidden Cuts",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Assassin",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "rogue_poison",
+      "name": "Poison",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud.",
+          "file": "players/rogue/skills/poison_toxic_cloud.sval",
+          "id": "poison_cloud",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "18s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "18s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "18s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "9s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "18s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "18s"
+                ]
+              ],
+              "q": "common",
+              "text": "You deploy a large toxic cloud that lingers for a period. The cloud blocks enemy vision and deals Poison damage to any enemies inside the cloud."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You and your allies gain Evasion while inside the cloud.",
+              "id": "poison_cloud_evasion",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You and your allies gain Evasion while inside the cloud."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You and your allies gain Evasion while inside the cloud."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You and your allies gain Evasion while inside the cloud."
+                }
+              ],
+              "name": "Billowing Cloud",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Enemies entering the cloud are inflicted by Armor Break.",
+              "id": "poison_cloud_corrosion",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Minor Armor Break"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Enemies entering the cloud are inflicted by Armor Break."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Armor Break"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Enemies entering the cloud are inflicted by Armor Break."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Greater Armor Break"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Enemies entering the cloud are inflicted by Armor Break."
+                }
+              ],
+              "name": "Corrosion",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Toxic Cloud",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability.",
+          "file": "players/rogue/skills/poison_mastery.sval",
+          "id": "poison_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Poison damage and your Poison skills gain a chance to inflict Vulnerability."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Adds Poison damage to your weapons per character level.",
+              "id": "poison_mastery_weapons",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+0.5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Adds Poison damage to your weapons per character level."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Adds Poison damage to your weapons per character level."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "+2"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Adds Poison damage to your weapons per character level."
+                }
+              ],
+              "name": "Coated Weapons",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Increases your Poison Penetration and Poison Resistance.",
+              "id": "poison_mastery_resistance",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Poison Resistance",
+                      "25"
+                    ],
+                    [
+                      "Poison Penetration",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases your Poison Penetration and Poison Resistance."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Poison Resistance",
+                      "50"
+                    ],
+                    [
+                      "Poison Penetration",
+                      "15%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases your Poison Penetration and Poison Resistance."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Poison Resistance",
+                      "100"
+                    ],
+                    [
+                      "Poison Penetration",
+                      "20%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Increases your Poison Penetration and Poison Resistance."
+                }
+              ],
+              "name": "Deadly Toxins",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Poison Mastery",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "rogue_demolitions",
+      "name": "Demolitions",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage.",
+          "file": "players/rogue/skills/demolitions_grenade.sval",
+          "id": "demolitions_grenade",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Mana Cost",
+                  "30"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "240"
+                ],
+                [
+                  "Mana Cost",
+                  "30"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "300"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "360"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "440"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw a grenade in forward direction that detonates after a brief period, dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [
+                "demolitions_grenade_shock"
+              ],
+              "desc": "The grenade now explodes on impact and leaves an area of burning ground for a short period, dealing Fire damage.",
+              "id": "demolitions_grenade_incendiary",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "10%"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The grenade now explodes on impact and leaves an area of burning ground for a short period, dealing Fire damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "15%"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The grenade now explodes on impact and leaves an area of burning ground for a short period, dealing Fire damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The grenade now explodes on impact and leaves an area of burning ground for a short period, dealing Fire damage."
+                }
+              ],
+              "name": "Incendiary Grenades",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "fire"
+              ]
+            },
+            {
+              "blockedBy": [
+                "demolitions_grenade_incendiary"
+              ],
+              "desc": "The grenade deals additional Lightning damage that can chain to other nearby enemies.",
+              "id": "demolitions_grenade_shock",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "10%"
+                    ],
+                    [
+                      "Chains",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The grenade deals additional Lightning damage that can chain to other nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Chains",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The grenade deals additional Lightning damage that can chain to other nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ],
+                    [
+                      "Chains",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The grenade deals additional Lightning damage that can chain to other nearby enemies."
+                }
+              ],
+              "name": "Shock Grenades",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "If you start a dash near an enemy you drop a grenade. This effect has a short cooldown.",
+              "id": "demolitions_grenade_dash",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Effect Cooldown",
+                      "2s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "If you start a dash near an enemy you drop a grenade. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "If you start a dash near an enemy you drop a grenade. This effect has a short cooldown."
+                }
+              ],
+              "name": "Explosive Exit",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Grenade",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown",
+          "file": "players/rogue/skills/demolitions_artificer_suit.sval",
+          "id": "artificer_suit",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Armor",
+                  "+5%"
+                ],
+                [
+                  "Damage",
+                  "+5%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown"
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Armor",
+                  "+10%"
+                ],
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown"
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Armor",
+                  "+15%"
+                ],
+                [
+                  "Damage",
+                  "+15%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown"
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Armor",
+                  "+20%"
+                ],
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown"
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Armor",
+                  "+25%"
+                ],
+                [
+                  "Damage",
+                  "+25%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor and Physical damage. Taking damage causes a flashbang to trigger inflicting nearby enemies with Blindness. This effect has a short cooldown"
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Weapon skills has a chance to trigger a lightning bolt to zap a random nearby enemy, dealing Lightning damage.",
+              "id": "artificer_suit_zzzap",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "30%"
+                    ],
+                    [
+                      "Damage",
+                      "40"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Weapon skills has a chance to trigger a lightning bolt to zap a random nearby enemy, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Damage",
+                      "70"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Weapon skills has a chance to trigger a lightning bolt to zap a random nearby enemy, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Damage",
+                      "100"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Weapon skills has a chance to trigger a lightning bolt to zap a random nearby enemy, dealing Lightning damage."
+                }
+              ],
+              "name": "Zzzap",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "Casting spells has a chance of discharging multiple shrapnels in all directions, dealing Physical and Fire damage.",
+              "id": "artificer_suit_shrapnels",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ],
+                    [
+                      "Damage",
+                      "80"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Casting spells has a chance of discharging multiple shrapnels in all directions, dealing Physical and Fire damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Damage",
+                      "80"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Casting spells has a chance of discharging multiple shrapnels in all directions, dealing Physical and Fire damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "100%"
+                    ],
+                    [
+                      "Damage",
+                      "80"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Casting spells has a chance of discharging multiple shrapnels in all directions, dealing Physical and Fire damage."
+                }
+              ],
+              "name": "Shrapnels",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "fire"
+              ]
+            }
+          ],
+          "name": "Artificer Suit",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 5,
+    "dex": 10,
+    "foc": 5,
+    "health": 100,
+    "int": 4,
+    "mana": 100,
+    "str": 5,
+    "vit": 6
+  },
+  "vanilla": true
+}

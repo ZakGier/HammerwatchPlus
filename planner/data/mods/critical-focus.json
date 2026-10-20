@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_adrenaline_crit",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+0.5% crit chance per stack"
+    },
+    {
+      "q": "rare",
+      "text": "+1% crit chance per stack"
+    },
+    {
+      "q": "epic",
+      "text": "+1.5% crit chance per stack"
+    }
+  ],
+  "name": "Critical Focus",
+  "notes": "",
+  "order": null,
+  "skill": "adrenaline",
+  "status": "built",
+  "summary": "Stacks of adrenaline also increase crit chance"
+}

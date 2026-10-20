@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_turret_reinforced",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "+25% of your max health"
+    },
+    {
+      "q": "uncommon",
+      "text": "+50% of your max health"
+    },
+    {
+      "q": "rare",
+      "text": "+75% of your max health"
+    }
+  ],
+  "name": "Reinforced Turret",
+  "notes": "",
+  "order": null,
+  "skill": "deploy-turret",
+  "status": "built",
+  "summary": "Increase the health of the turret based on your max health"
+}

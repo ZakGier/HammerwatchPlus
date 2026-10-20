@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_scavenger_stun",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "0.25 Second Stun"
+    },
+    {
+      "q": "rare",
+      "text": "0.5 Second Stun"
+    }
+  ],
+  "name": "Stunning Shock",
+  "notes": "",
+  "order": null,
+  "skill": "scavenger",
+  "status": "built",
+  "summary": "Lightning elemental bullets stun the enemy. Stun time stacks with multiple hits."
+}

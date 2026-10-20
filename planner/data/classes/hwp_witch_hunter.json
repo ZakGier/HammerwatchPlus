@@ -1,0 +1,1185 @@
+{
+  "base": [
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Hits have a # chance to burn for # extra fire damage.",
+      "file": "players/hwp/witchhunter/skills/torch.sval",
+      "id": "hwp_witch_hunter_torch",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Chance",
+              "30%"
+            ],
+            [
+              "Fire Damage",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits have a 30% chance to burn for 10 extra fire damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Chance",
+              "35%"
+            ],
+            [
+              "Fire Damage",
+              "18"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits have a 35% chance to burn for 18 extra fire damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Chance",
+              "40%"
+            ],
+            [
+              "Fire Damage",
+              "26"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits have a 40% chance to burn for 26 extra fire damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Chance",
+              "45%"
+            ],
+            [
+              "Fire Damage",
+              "34"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits have a 45% chance to burn for 34 extra fire damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Chance",
+              "50%"
+            ],
+            [
+              "Fire Damage",
+              "42"
+            ]
+          ],
+          "q": "common",
+          "text": "Hits have a 50% chance to burn for 42 extra fire damage."
+        }
+      ],
+      "mods": [],
+      "name": "Searing Torch",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::SpawnUnit",
+      "desc": "Light a pyre with # health that burns nearby enemies for # fire damage every second for #.",
+      "file": "players/hwp/witchhunter/skills/pyre.sval",
+      "id": "hwp_witch_hunter_pyre",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Fire Damage",
+              "15"
+            ],
+            [
+              "Health",
+              "200"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "Light a pyre with 200 health that burns nearby enemies for 15 fire damage every second for 8s."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Fire Damage",
+              "22"
+            ],
+            [
+              "Health",
+              "300"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "Light a pyre with 300 health that burns nearby enemies for 22 fire damage every second for 8s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Fire Damage",
+              "30"
+            ],
+            [
+              "Health",
+              "400"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "Light a pyre with 400 health that burns nearby enemies for 30 fire damage every second for 8s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Fire Damage",
+              "38"
+            ],
+            [
+              "Health",
+              "500"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "Light a pyre with 500 health that burns nearby enemies for 38 fire damage every second for 8s."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Fire Damage",
+              "45"
+            ],
+            [
+              "Health",
+              "600"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "Light a pyre with 600 health that burns nearby enemies for 45 fire damage every second for 8s."
+        }
+      ],
+      "mods": [],
+      "name": "Pyre",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSummonSkill",
+      "desc": "Your hound (# health, # damage per bite) hunts with you; a new one comes every # when the last falls.",
+      "file": "players/hwp/witchhunter/skills/hound.sval",
+      "id": "hwp_witch_hunter_hound",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "35"
+            ],
+            [
+              "Health",
+              "500"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "Your hound (500 health, 35 damage per bite) hunts with you; a new one comes every 20s when the last falls."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Health",
+              "700"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "Your hound (700 health, 50 damage per bite) hunts with you; a new one comes every 20s when the last falls."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "65"
+            ],
+            [
+              "Health",
+              "900"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "Your hound (900 health, 65 damage per bite) hunts with you; a new one comes every 20s when the last falls."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Health",
+              "1100"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "Your hound (1100 health, 80 damage per bite) hunts with you; a new one comes every 20s when the last falls."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "95"
+            ],
+            [
+              "Health",
+              "1300"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "Your hound (1300 health, 95 damage per bite) hunts with you; a new one comes every 20s when the last falls."
+        }
+      ],
+      "mods": [],
+      "name": "Hound",
+      "port": "HoH1",
+      "summon": true,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillPosition",
+      "desc": "Brand the ground: enemies in a # radius take # fire damage and become vulnerable.",
+      "file": "players/hwp/witchhunter/skills/ward.sval",
+      "id": "hwp_witch_hunter_ward",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Fire Damage",
+              "20"
+            ],
+            [
+              "Range",
+              "56"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Brand the ground: enemies in a 56 radius take 20 fire damage and become vulnerable."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Fire Damage",
+              "30"
+            ],
+            [
+              "Range",
+              "60"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Brand the ground: enemies in a 60 radius take 30 fire damage and become vulnerable."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Fire Damage",
+              "40"
+            ],
+            [
+              "Range",
+              "64"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Brand the ground: enemies in a 64 radius take 40 fire damage and become vulnerable."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Fire Damage",
+              "50"
+            ],
+            [
+              "Range",
+              "68"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Brand the ground: enemies in a 68 radius take 50 fire damage and become vulnerable."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Fire Damage",
+              "60"
+            ],
+            [
+              "Range",
+              "72"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "Brand the ground: enemies in a 72 radius take 60 fire damage and become vulnerable."
+        }
+      ],
+      "mods": [],
+      "name": "Ward of Branding",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    }
+  ],
+  "cut": [],
+  "desc": "The HoH1 crossbow zealot: a hound, a pyre and a burning torch. Masters as Inquisitor (crits and crows), Pyromancer (brands and immolation) or Hunter (a pack of hounds and silver bolts). HoH1 kit: Repeater Crossbow (attack); Hound, Ward of Branding, Pyre (actives); Fanatic Zeal, Murder of Crows, Searing Torch (passives). Here the crossbow is the starting weapon; Hound (now a passive summon), Ward, Pyre and Searing Torch are the base kit; Fanatic Zeal and Murder of Crows (now an active) are the Inquisitor's.",
+  "gear": [
+    "chest_dex_t1a",
+    "feet_dex_t1a",
+    "hwp_crossbow_01"
+  ],
+  "name": "Witch Hunter",
+  "order": 11,
+  "port": "HoH1",
+  "specs": [
+    {
+      "id": "hwp_witch_hunter_inquisitor",
+      "name": "Inquisitor",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Attack and spell critical chance up by #.",
+          "file": "players/hwp/witchhunter/skills/zeal.sval",
+          "id": "hwp_witch_hunter_zeal",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Critical chance",
+                  "+5%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack and spell critical chance up by +5%."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Critical chance",
+                  "+8%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack and spell critical chance up by +8%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Critical chance",
+                  "+11%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack and spell critical chance up by +11%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Critical chance",
+                  "+14%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack and spell critical chance up by +14%."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Critical chance",
+                  "+18%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack and spell critical chance up by +18%."
+            }
+          ],
+          "mods": [],
+          "name": "Fanatic Zeal",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PlayerSkillPosition",
+          "desc": "Call down crows on the target spot: enemies in a # radius take # physical damage and are blinded.",
+          "file": "players/hwp/witchhunter/skills/crows.sval",
+          "id": "hwp_witch_hunter_crows",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Range",
+                  "64"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Call down crows on the target spot: enemies in a 64 radius take 40 physical damage and are blinded."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Range",
+                  "68"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Call down crows on the target spot: enemies in a 68 radius take 60 physical damage and are blinded."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Range",
+                  "72"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Call down crows on the target spot: enemies in a 72 radius take 80 physical damage and are blinded."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Range",
+                  "76"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Call down crows on the target spot: enemies in a 76 radius take 100 physical damage and are blinded."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Range",
+                  "80"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Call down crows on the target spot: enemies in a 80 radius take 120 physical damage and are blinded."
+            }
+          ],
+          "mods": [],
+          "name": "Murder of Crows",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Every kill restores # mana.",
+          "file": "players/hwp/witchhunter/skills/judgement.sval",
+          "id": "hwp_witch_hunter_judgement",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana",
+                  "3"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill restores 3 mana."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana",
+                  "4"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill restores 4 mana."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana",
+                  "5"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill restores 5 mana."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana",
+                  "6"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill restores 6 mana."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Mana",
+                  "7"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill restores 7 mana."
+            }
+          ],
+          "mods": [],
+          "name": "Judgement",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_witch_hunter_pyromancer",
+      "name": "Pyromancer",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Attacks deal # extra fire damage.",
+          "file": "players/hwp/witchhunter/skills/brand.sval",
+          "id": "hwp_witch_hunter_brand",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Fire Damage",
+                  "+4-6"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +4-6 extra fire damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Fire Damage",
+                  "+7-10"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +7-10 extra fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Fire Damage",
+                  "+10-14"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +10-14 extra fire damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Fire Damage",
+                  "+13-18"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +13-18 extra fire damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Fire Damage",
+                  "+16-24"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +16-24 extra fire damage."
+            }
+          ],
+          "mods": [],
+          "name": "Brand",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Set yourself alight for #: attacks deal 8-12 extra fire damage and 10% more damage overall.",
+          "file": "players/hwp/witchhunter/skills/immolation.sval",
+          "id": "hwp_witch_hunter_immolation",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "14s"
+                ]
+              ],
+              "q": "common",
+              "text": "Set yourself alight for 8s: attacks deal 8-12 extra fire damage and 10% more damage overall."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "Set yourself alight for 8s: attacks deal 8-12 extra fire damage and 10% more damage overall."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "Set yourself alight for 8s: attacks deal 8-12 extra fire damage and 10% more damage overall."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "11s"
+                ]
+              ],
+              "q": "common",
+              "text": "Set yourself alight for 8s: attacks deal 8-12 extra fire damage and 10% more damage overall."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Set yourself alight for 8s: attacks deal 8-12 extra fire damage and 10% more damage overall."
+            }
+          ],
+          "mods": [],
+          "name": "Immolation",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Spell hits have a # chance to break the target's armor.",
+          "file": "players/hwp/witchhunter/skills/cinders.sval",
+          "id": "hwp_witch_hunter_cinders",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Spell hits have a 20% chance to break the target's armor."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Spell hits have a 25% chance to break the target's armor."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ]
+              ],
+              "q": "common",
+              "text": "Spell hits have a 30% chance to break the target's armor."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "35%"
+                ]
+              ],
+              "q": "common",
+              "text": "Spell hits have a 35% chance to break the target's armor."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ]
+              ],
+              "q": "common",
+              "text": "Spell hits have a 40% chance to break the target's armor."
+            }
+          ],
+          "mods": [],
+          "name": "Cinders",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_witch_hunter_hunter",
+      "name": "Hunter",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You can keep # more hounds.",
+          "file": "players/hwp/witchhunter/skills/pack.sval",
+          "id": "hwp_witch_hunter_pack",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more hounds."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more hounds."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more hounds."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Max summons",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +2 more hounds."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Max summons",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +2 more hounds."
+            }
+          ],
+          "mods": [],
+          "name": "Pack",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Attacks deal # extra physical damage.",
+          "file": "players/hwp/witchhunter/skills/silver_bolts.sval",
+          "id": "hwp_witch_hunter_silver_bolts",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Physical damage",
+                  "+4-6"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +4-6 extra physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Physical damage",
+                  "+8-12"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +8-12 extra physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Physical damage",
+                  "+12-18"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +12-18 extra physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Physical damage",
+                  "+16-24"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +16-24 extra physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Physical damage",
+                  "+20-30"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +20-30 extra physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Silver Bolts",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Movement speed up by #.",
+          "file": "players/hwp/witchhunter/skills/tracker.sval",
+          "id": "hwp_witch_hunter_tracker",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Movement speed",
+                  "+5%"
+                ]
+              ],
+              "q": "common",
+              "text": "Movement speed up by +5%."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Movement speed",
+                  "+8%"
+                ]
+              ],
+              "q": "common",
+              "text": "Movement speed up by +8%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Movement speed",
+                  "+11%"
+                ]
+              ],
+              "q": "common",
+              "text": "Movement speed up by +11%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Movement speed",
+                  "+15%"
+                ]
+              ],
+              "q": "common",
+              "text": "Movement speed up by +15%."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Movement speed",
+                  "+20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Movement speed up by +20%."
+            }
+          ],
+          "mods": [],
+          "name": "Tracker",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 3,
+    "dex": 8,
+    "foc": 6,
+    "health": 100,
+    "int": 7,
+    "mana": 60,
+    "str": 5,
+    "vit": 5
+  },
+  "vanilla": true
+}

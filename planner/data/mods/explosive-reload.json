@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_reload_explosive",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "5 Physical Damage per Bullet Remaining"
+    },
+    {
+      "q": "uncommon",
+      "text": "8 Physical Damage per Bullet Remaining"
+    },
+    {
+      "q": "rare",
+      "text": "12 Physical Damage per Bullet Remaining"
+    }
+  ],
+  "name": "Explosive Reload",
+  "notes": "Duel glocks will throw two magazines, one quickly after the other, when explosive reloading.",
+  "order": null,
+  "skill": "reload",
+  "status": "built",
+  "summary": "Reloading a non-empty magazine throws it forward and explodes for damage relative to how much ammo remained in it."
+}

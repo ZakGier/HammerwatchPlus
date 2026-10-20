@@ -1,0 +1,2462 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow.",
+      "file": "players/warlock/skills/demons_tail.sval",
+      "id": "demons_tail",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "100"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "130"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Conjures a diabolical whip to lash out in a forward direction, dealing Physical damage and inflicting Slow."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [
+            "demons_tail_fire"
+          ],
+          "desc": "Crackling arcs of lightning are discharged at nearby enemies, dealing Lightning damage.",
+          "id": "demons_tail_lightning",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Crackling arcs of lightning are discharged at nearby enemies, dealing Lightning damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "40%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Crackling arcs of lightning are discharged at nearby enemies, dealing Lightning damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "80%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Crackling arcs of lightning are discharged at nearby enemies, dealing Lightning damage."
+            }
+          ],
+          "name": "Crackling Lash",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "melee",
+            "lightning"
+          ]
+        },
+        {
+          "blockedBy": [
+            "demons_tail_lightning"
+          ],
+          "desc": "Flames erupt along the lash that lingers for a short period, dealing Fire damage.",
+          "id": "demons_tail_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "10%"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "2.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Flames erupt along the lash that lingers for a short period, dealing Fire damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "15%"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "2.5s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Flames erupt along the lash that lingers for a short period, dealing Fire damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "2.5s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Flames erupt along the lash that lingers for a short period, dealing Fire damage."
+            }
+          ],
+          "name": "Fiery Lash",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "melee",
+            "fire"
+          ]
+        },
+        {
+          "blockedBy": [],
+          "desc": "Enemies hit by the end of the whip are now also inflicted by Stun.",
+          "id": "war_demons_tail_stun",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "rare",
+              "text": "Enemies hit by the end of the whip are now also inflicted by Stun."
+            }
+          ],
+          "name": "Heavy Impact",
+          "quality": "rare",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Demon's Tail",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed.",
+      "file": "players/warlock/skills/dark_ritual.sval",
+      "id": "dark_ritual",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Completion Time",
+              "3s"
+            ],
+            [
+              "Damage",
+              "15"
+            ],
+            [
+              "End Damage",
+              "300%"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Completion Time",
+              "3s"
+            ],
+            [
+              "Damage",
+              "20"
+            ],
+            [
+              "End Damage",
+              "300%"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Completion Time",
+              "3s"
+            ],
+            [
+              "Damage",
+              "30"
+            ],
+            [
+              "End Damage",
+              "300%"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Completion Time",
+              "3s"
+            ],
+            [
+              "Damage",
+              "40"
+            ],
+            [
+              "End Damage",
+              "300%"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Completion Time",
+              "3s"
+            ],
+            [
+              "Damage",
+              "55"
+            ],
+            [
+              "End Damage",
+              "300%"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Mana Cost",
+              "60"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You start performing a ritual that completes after a few seconds. Enemies take Physical damage while inside the area and even more damage when it completes. The ritual is terminated if you leave the area before it is completed."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Enemies inside the area now has a chance to be inflicted with stacks of Bleeding.",
+          "id": "dark_ritual_blood",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies inside the area now has a chance to be inflicted with stacks of Bleeding."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Enemies inside the area now has a chance to be inflicted with stacks of Bleeding."
+            }
+          ],
+          "name": "Blood Ritual",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The damage type is changed to Fire and the ritual deals even more damage when it is completed.",
+          "id": "dark_ritual_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "500%"
+                ]
+              ],
+              "q": "common",
+              "text": "The damage type is changed to Fire and the ritual deals even more damage when it is completed."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "800%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The damage type is changed to Fire and the ritual deals even more damage when it is completed."
+            }
+          ],
+          "name": "Conflagration",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "fire"
+          ]
+        },
+        {
+          "blockedBy": [],
+          "desc": "You and your allies gain Life Leech while inside the area.",
+          "id": "dark_ritual_leech",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Life Leech",
+                  "2%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You and your allies gain Life Leech while inside the area."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Life Leech",
+                  "3%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You and your allies gain Life Leech while inside the area."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Life Leech",
+                  "4%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You and your allies gain Life Leech while inside the area."
+            }
+          ],
+          "name": "Leeching Ritual",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Dark Ritual",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown.",
+      "file": "players/warlock/skills/drain_essence.sval",
+      "id": "drain_essence",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Health % per stack",
+              "+2%"
+            ],
+            [
+              "Mana % per stack",
+              "+2%"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Effect Cooldown",
+              "0.25s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Health % per stack",
+              "+2.5%"
+            ],
+            [
+              "Mana % per stack",
+              "+2.5%"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Effect Cooldown",
+              "0.25s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Health % per stack",
+              "+3%"
+            ],
+            [
+              "Mana % per stack",
+              "+3%"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Effect Cooldown",
+              "0.25s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Health % per stack",
+              "+3.5%"
+            ],
+            [
+              "Mana % per stack",
+              "+3.5%"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Effect Cooldown",
+              "0.25s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Health % per stack",
+              "4%"
+            ],
+            [
+              "Mana % per stack",
+              "4%"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Effect Cooldown",
+              "0.25s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Essence when hitting enemies with Melee skills. Each stack increases your max Health and Mana. This effect has a short cooldown."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "When you gain stacks of Essence you restore a percentage of your Health.",
+          "id": "drain_essence_life",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Heal",
+                  "2%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you gain stacks of Essence you restore a percentage of your Health."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Heal",
+                  "2.5%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "When you gain stacks of Essence you restore a percentage of your Health."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Heal",
+                  "3%"
+                ]
+              ],
+              "q": "rare",
+              "text": "When you gain stacks of Essence you restore a percentage of your Health."
+            }
+          ],
+          "name": "Life Siphon",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "When you gain stacks of Essence you restore a percentage of your Mana.",
+          "id": "drain_essence_mana",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "3%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you gain stacks of Essence you restore a percentage of your Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "5%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "When you gain stacks of Essence you restore a percentage of your Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "7%"
+                ]
+              ],
+              "q": "rare",
+              "text": "When you gain stacks of Essence you restore a percentage of your Mana."
+            }
+          ],
+          "name": "Energy Siphon",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You now also inflict stacks of Bleeding to the targets you gain Essence from.",
+          "id": "drain_essence_blood",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "You now also inflict stacks of Bleeding to the targets you gain Essence from."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "2"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You now also inflict stacks of Bleeding to the targets you gain Essence from."
+            }
+          ],
+          "name": "Drain Blood",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain a chance to gain stacks of Essence when killing enemies.",
+          "id": "drain_essence_harvester",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a chance to gain stacks of Essence when killing enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a chance to gain stacks of Essence when killing enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You gain a chance to gain stacks of Essence when killing enemies."
+            }
+          ],
+          "name": "Essence Harvester",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Drain Essence",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You project an aura around you that makes enemies deal less damage.",
+      "file": "players/warlock/skills/aura.sval",
+      "id": "aura",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "-10%"
+            ],
+            [
+              "Aura Range",
+              "50"
+            ]
+          ],
+          "q": "common",
+          "text": "You project an aura around you that makes enemies deal less damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "-15%"
+            ],
+            [
+              "Aura Range",
+              "50"
+            ]
+          ],
+          "q": "common",
+          "text": "You project an aura around you that makes enemies deal less damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "-20%"
+            ],
+            [
+              "Aura Range",
+              "60"
+            ]
+          ],
+          "q": "common",
+          "text": "You project an aura around you that makes enemies deal less damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "-25%"
+            ],
+            [
+              "Aura Range",
+              "60"
+            ]
+          ],
+          "q": "common",
+          "text": "You project an aura around you that makes enemies deal less damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "-30%"
+            ],
+            [
+              "Aura Range",
+              "80"
+            ]
+          ],
+          "q": "common",
+          "text": "You project an aura around you that makes enemies deal less damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Enemies in your aura also take more damage.",
+          "id": "aura_vulnerability",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies in your aura also take more damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Enemies in your aura also take more damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "30%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Enemies in your aura also take more damage."
+            }
+          ],
+          "name": "Agony",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Melee weapon hits deal additional Poison damage to a different nearby enemy.",
+          "id": "aura_poison",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ]
+              ],
+              "q": "common",
+              "text": "Melee weapon hits deal additional Poison damage to a different nearby enemy."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Melee weapon hits deal additional Poison damage to a different nearby enemy."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ]
+              ],
+              "q": "rare",
+              "text": "Melee weapon hits deal additional Poison damage to a different nearby enemy."
+            }
+          ],
+          "name": "Spreading Corruption",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "passive",
+            "poison"
+          ]
+        },
+        {
+          "blockedBy": [],
+          "desc": "Casting a Spell deals Fire damage to all enemies affected by your aura.",
+          "id": "aura_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Casting a Spell deals Fire damage to all enemies affected by your aura."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Casting a Spell deals Fire damage to all enemies affected by your aura."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ]
+              ],
+              "q": "rare",
+              "text": "Casting a Spell deals Fire damage to all enemies affected by your aura."
+            }
+          ],
+          "name": "Spontaneous Combustion",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "passive",
+            "fire"
+          ]
+        }
+      ],
+      "name": "Aura of Atrophy",
+      "summon": false,
+      "type": "Spell"
+    }
+  ],
+  "cut": [],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A practitioner of the dark arts that specializes in manipulating the souls of their adversaries.",
+  "gear": [
+    "chest_int_t1a",
+    "feet_int_t1a",
+    "offhand_tome_fire_01",
+    "mainhand_dirk_01"
+  ],
+  "name": "Warlock",
+  "order": 6,
+  "specs": [
+    {
+      "id": "warlock_summoning",
+      "name": "Summoning",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectionalChannelling",
+          "desc": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage.",
+          "file": "players/warlock/skills/summon_fiends.sval",
+          "id": "summon_fiends",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Fiend Damage",
+                  "20"
+                ],
+                [
+                  "Fiend Health",
+                  "300"
+                ],
+                [
+                  "Fiend Lifetime",
+                  "30s"
+                ],
+                [
+                  "Fiend Max Summoned",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Fiend Damage",
+                  "25"
+                ],
+                [
+                  "Fiend Health",
+                  "400"
+                ],
+                [
+                  "Fiend Lifetime",
+                  "30s"
+                ],
+                [
+                  "Fiend Max Summoned",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Fiend Damage",
+                  "35"
+                ],
+                [
+                  "Fiend Health",
+                  "600"
+                ],
+                [
+                  "Fiend Lifetime",
+                  "30s"
+                ],
+                [
+                  "Fiend Max Summoned",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Fiend Damage",
+                  "45"
+                ],
+                [
+                  "Fiend Health",
+                  "800"
+                ],
+                [
+                  "Fiend Lifetime",
+                  "30s"
+                ],
+                [
+                  "Fiend Max Summoned",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Fiend Damage",
+                  "60"
+                ],
+                [
+                  "Fiend Health",
+                  "1200"
+                ],
+                [
+                  "Fiend Lifetime",
+                  "30s"
+                ],
+                [
+                  "Fiend Max Summoned",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Channel the spell to summon fiends by consuming stacks of Essence. Fiends attack nearby enemies, dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Your fiends deal additional Fire damage and gain the ability to spew fireballs at their targets.",
+              "id": "summon_fiends_infernal",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "damage",
+                      "Damage:"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your fiends deal additional Fire damage and gain the ability to spew fireballs at their targets."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "damage",
+                      "25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your fiends deal additional Fire damage and gain the ability to spew fireballs at their targets."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "damage",
+                      "50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your fiends deal additional Fire damage and gain the ability to spew fireballs at their targets."
+                }
+              ],
+              "name": "Infernal Fiends",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "fire"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your fiends explode upon death, dealing Physical damage in a small area.",
+              "id": "summon_fiends_explosive",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "150%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your fiends explode upon death, dealing Physical damage in a small area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "300%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your fiends explode upon death, dealing Physical damage in a small area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "500%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your fiends explode upon death, dealing Physical damage in a small area."
+                }
+              ],
+              "name": "Explosive Demise",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Summon Fiends",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSummonSkill",
+          "desc": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage.",
+          "file": "players/warlock/skills/summon_gargoyle.sval",
+          "id": "summon_gargoyle",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Health",
+                  "1200"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Health",
+                  "1400"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Health",
+                  "1800"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "180"
+                ],
+                [
+                  "Health",
+                  "2200"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "240"
+                ],
+                [
+                  "Health",
+                  "3000"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "Passively summons a gargoyle to fight by your side. The gargoyle attacks enemies with its claws and trident, dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Your gargoyle deals additional Fire damage with its claws.",
+              "id": "summon_gargoyle_fire",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your gargoyle deals additional Fire damage with its claws."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "80%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your gargoyle deals additional Fire damage with its claws."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "120%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your gargoyle deals additional Fire damage with its claws."
+                }
+              ],
+              "name": "Flaming Strikes",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical",
+                "fire"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your gargoyle's trident now continously zap enemies for additional Lightning damage.",
+              "id": "summon_gargoyle_lightning",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your gargoyle's trident now continously zap enemies for additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "80%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your gargoyle's trident now continously zap enemies for additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "120%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your gargoyle's trident now continously zap enemies for additional Lightning damage."
+                }
+              ],
+              "name": "Lightning Trident",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical",
+                "lightning"
+              ]
+            }
+          ],
+          "name": "Gargoyle Servant",
+          "summon": true,
+          "type": "Spell"
+        }
+      ]
+    },
+    {
+      "id": "warlock_souls",
+      "name": "Souls",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area.",
+          "file": "players/warlock/skills/soul_vortex.sval",
+          "id": "soul_vortex",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "30s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "30s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "30s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "30s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "12s"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "30s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a swirling vortex of soul energy around you, dealing Physical and Poison damage to all enemies in the area."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The vortex now continously trigger bolts of lightning to randomly strike the area around you, dealing additional Lightning damage.",
+              "id": "soul_vortex_lightning",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The vortex now continously trigger bolts of lightning to randomly strike the area around you, dealing additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "80%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The vortex now continously trigger bolts of lightning to randomly strike the area around you, dealing additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "120%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The vortex now continously trigger bolts of lightning to randomly strike the area around you, dealing additional Lightning damage."
+                }
+              ],
+              "name": "Lightning Vortex",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "poison",
+                "physical",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain Evasion for the duration of the spell.",
+              "id": "soul_vortex_evasion",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "15%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain Evasion for the duration of the spell."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Evasion",
+                      "30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain Evasion for the duration of the spell."
+                }
+              ],
+              "name": "Vortex Shroud",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Soul Vortex",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage.",
+          "file": "players/warlock/skills/soul_shaper.sval",
+          "id": "soul_shaper",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "30%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "40%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "50%"
+                ]
+              ],
+              "q": "common",
+              "text": "As long as you have stacks of Essence your Mainhand Weapon attacks unleash a soul projectile towards a random nearby enemy, dealing Mainhand damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The projectiles gain a chance to explode for additional damage. This effect has a short cooldown.",
+              "id": "soul_shaper_cleave",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "10%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles gain a chance to explode for additional damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "20%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles gain a chance to explode for additional damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "30%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The projectiles gain a chance to explode for additional damage. This effect has a short cooldown."
+                }
+              ],
+              "name": "Soul Cleave",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The projectiles jumps to additional targets on hit.",
+              "id": "soul_shaper_jumps",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Jumps",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles jumps to additional targets on hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Jumps",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles jumps to additional targets on hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Jumps",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The projectiles jumps to additional targets on hit."
+                }
+              ],
+              "name": "Relentless Souls",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Soul Shaper",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "warlock_chaos",
+      "name": "Chaos",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage.",
+          "file": "players/warlock/skills/chaos_blade.sval",
+          "id": "chaos_blade",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "160"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "180"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "3s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure a magical blade to slash the area in front of you, dealing Physical and Lightning damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The spell now also unleashes a number of projectiles in arc in front of you.",
+              "id": "chaos_blade_arcs",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "25%"
+                    ],
+                    [
+                      "Projectiles",
+                      "5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The spell now also unleashes a number of projectiles in arc in front of you."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "25%"
+                    ],
+                    [
+                      "Projectiles",
+                      "9"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The spell now also unleashes a number of projectiles in arc in front of you."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "25%"
+                    ],
+                    [
+                      "Projectiles",
+                      "13"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The spell now also unleashes a number of projectiles in arc in front of you."
+                }
+              ],
+              "name": "Blade Arcs",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The blade slash now inflict stacks of Bleeding.",
+              "id": "chaos_blade_bleeding",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Bleeding Stacks",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The blade slash now inflict stacks of Bleeding."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Bleeding Stacks",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The blade slash now inflict stacks of Bleeding."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Bleeding Stacks",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The blade slash now inflict stacks of Bleeding."
+                }
+              ],
+              "name": "Rupture",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Chaos Blade",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage.",
+          "file": "players/warlock/skills/chaos_rift.sval",
+          "id": "chaos_rift",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Tick Rate",
+                  "0.25s"
+                ],
+                [
+                  "Max Placed",
+                  "4"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Tick Rate",
+                  "0.25s"
+                ],
+                [
+                  "Max Placed",
+                  "4"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Tick Rate",
+                  "0.25s"
+                ],
+                [
+                  "Max Placed",
+                  "5"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Tick Rate",
+                  "0.25s"
+                ],
+                [
+                  "Max Placed",
+                  "5"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Tick Rate",
+                  "0.25s"
+                ],
+                [
+                  "Max Placed",
+                  "6"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting a Spell spawns a rift that deals Physical and Lightning damage to nearby enemies. Rifts spawned close to each other create streams of energy between them, dealing additional damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Killing an enemy has a chance to spawn a rift. This effect has a short cooldown.",
+              "id": "chaos_rift_kill",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing an enemy has a chance to spawn a rift. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing an enemy has a chance to spawn a rift. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "1s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Killing an enemy has a chance to spawn a rift. This effect has a short cooldown."
+                }
+              ],
+              "name": "Chaos Reaper",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Hits with Chaos Blade gains a chance to spawn a rift. This effect has a short cooldown.",
+              "id": "chaos_rift_blade",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits with Chaos Blade gains a chance to spawn a rift. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits with Chaos Blade gains a chance to spawn a rift. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Hits with Chaos Blade gains a chance to spawn a rift. This effect has a short cooldown."
+                }
+              ],
+              "name": "Rift Blade",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Chaos Rifts",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 0,
+    "dex": 3,
+    "foc": 8,
+    "health": 80,
+    "int": 8,
+    "mana": 120,
+    "str": 3,
+    "vit": 8
+  },
+  "vanilla": true
+}

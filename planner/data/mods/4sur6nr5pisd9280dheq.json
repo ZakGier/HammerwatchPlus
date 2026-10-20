@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_myturret_feed",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "20% chance of elemental bullet"
+    },
+    {
+      "q": "uncommon",
+      "text": "40% chance of elemental bullet"
+    },
+    {
+      "q": "rare",
+      "text": "60% chance of elemental bullet"
+    }
+  ],
+  "name": "Elemental Belt-Feed",
+  "notes": "Elemental bullets share buffs with the main elemental bullet passive",
+  "order": null,
+  "skill": "turret-passive",
+  "status": "built",
+  "summary": "Standing near your turret also gives a chance to load elemental bullets into it."
+}

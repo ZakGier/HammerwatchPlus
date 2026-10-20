@@ -2100,3 +2100,34 @@ another Reload press starts it again as usual. Then the second `/code-review hig
 - **With the fix** (a `ulayer` per plant sprite, 1a41acc): 20261020-125428. 0 changed pixels
   in every plot across all 11 frame pairs, while the frames themselves differed by
   7,000-14,000 pixels (foliage sway). All three plants are drawn in every frame.
+
+## The class planner moves into the repo (2026-10-20)
+
+- **Was:** a claude.ai artifact (https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3) with its
+  records in the artifact's database, private to the owner. **Now:** `planner/`, a local
+  web app. `python -m planner` (or double-click `planner.cmd`) serves `planner/web/` on
+  127.0.0.1:8737 and opens the browser; standard library only, so it needs nothing but
+  Python. Each record is `planner/data/<collection>/<id>.json` (sorted keys, 2-space
+  indent); a Save writes the file, and the page polls every 2 s, so a `git pull` shows up.
+  The artifact is left as it was; the repo copy is the live one from here.
+- **Copied:** all 8 collections as of the artifact's version 1792511098-3a67 (12 classes,
+  13 doctrines, 28 skills, 49 orbs, 4 weapons, 2 stacks, 6 attributes, 1 reference), then:
+  - **Removed, at the owner's request:** the drafted 4th spec of each vanilla class (8
+    doctrines, their 16 skills and 16 orbs, all status "idea" and never edited), and the
+    page's "Brainstorm with Claude" card that drafted them. The Firearms Specialist's
+    doctrines are untouched.
+  - **Added:** a placeholder 4th spec (`<cls>-spec4`, "Placeholder", with a "Placeholder
+    Active" and "Placeholder Passive") for the 8 vanilla classes and the 3 HoH1 classes.
+    The Priest and Paladin keep their ported HoH1 mastery as well, as the page already
+    showed them (base kit, vanilla specs, ported mastery, then the 4th).
+- **Icons:** `tools/icon_art/planner_icons.py` now reads `planner/data/`, also cuts the HoH1
+  classes' icons (mods/classes svals), and writes `planner/web/icons.png` and `icons.json`.
+  The committed sheet uses the committed placeholder atlases; with the HoH1 art imported
+  (`mods/classes/hoh1art/`) it also writes the git-ignored `icons.local.png`, which the
+  server sends for `icons.png`. The generated ids match the artifact's sheet, less the 32
+  idea icons.
+- **Fixed on the way:** the page reset the remembered class to Firearms on its first render,
+  before the data had loaded. `#<class id>` in the address now opens that class.
+- Checked: the API (read, write, delete; a bad collection, an id with `../`, a cross-site
+  Origin and a non-object body are refused with 400) and headless Edge renders of the
+  Firearms, Priest, Ranger, Thief and Paladin pages, each placeholder spec in place.

@@ -1,0 +1,17 @@
+{
+  "built": "hwp_glock_oh_01/02/03",
+  "clip": 10,
+  "damage": "off-hand damage",
+  "mana": "none",
+  "name": "Glock (off hand)",
+  "notes": "Dual Glocks: shared clip of 20 (10 each), less control, slightly lower DPS, more burst. Right click needs 2 rounds.",
+  "order": 1,
+  "pairing": "Grants marker buff hwp_glock_off; adds its magazine to the shared clip.",
+  "primary": "",
+  "rate": "",
+  "reload": "shared clip",
+  "secondary": "With a main-hand Glock: fires both at once, 2 rounds, wide spread (burst). Otherwise one off-hand round.",
+  "slot": "offhand",
+  "spread": "wide when firing both",
+  "status": "built"
+}

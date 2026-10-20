@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_reload",
+  "cooldown": "none (the cast is the reload)",
+  "group": "base",
+  "kind": "active",
+  "levels": [
+    "reload 2.0s",
+    "reload 1.8s",
+    "reload 1.6s",
+    "reload 1.4s",
+    "reload 1.2s"
+  ],
+  "mana": "0",
+  "name": "Reload",
+  "notes": "Dodging while reloading cancels your reload (the clip stays as it was; with Dodge Reload Skip it finishes instead). If you are out of bullets, it will automatically start reloading again.",
+  "order": 0,
+  "role": "reload",
+  "status": "tested",
+  "summary": "Tactical reload: a cast that takes the whole recharge (2.0 s down to 1.2 s), then refills the clip. Refused on a full clip. Shows the same icon sweep as the automatic reload. When the clip hits 0 an automatic reload starts by itself.",
+  "unlock": "free"
+}

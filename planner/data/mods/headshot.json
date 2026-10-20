@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_snipe_headshot",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": ""
+    }
+  ],
+  "name": "Headshot",
+  "notes": "just one rare level of it. applies crit to sniper shot for first enemy hit by it.",
+  "order": null,
+  "skill": "snipe",
+  "status": "built",
+  "summary": "Sniper shot deals guaranteed critical damage to the first enemy it hits."
+}

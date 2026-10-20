@@ -1,0 +1,17 @@
+{
+  "built": "hwp_rifle_01/02/03",
+  "clip": 30,
+  "damage": "heavy",
+  "mana": "grenade launcher only",
+  "name": "Rifle",
+  "notes": "AP rounds come from upgrades, not the base gun. Magazine comes from the rifle's marker buff (ModifyStack add-max 30). Verified in GameLab plan-t14.",
+  "order": 2,
+  "pairing": "",
+  "primary": "Slow, heavy round that pierces (560 ms, 160% damage, pierce 2). 1 round per shot, no mana.",
+  "rate": "slow",
+  "reload": "1.6s auto (measured ~1.75s); dodge restarts",
+  "secondary": "Under-barrel grenade launcher: 4 mana, 1.5s cooldown, no rounds; splash for clearing low-HP mobs.",
+  "slot": "twohand",
+  "spread": "tight",
+  "status": "tested"
+}

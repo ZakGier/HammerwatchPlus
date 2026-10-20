@@ -1,0 +1,24 @@
+{
+  "built": "hwp_fs_frag_fire",
+  "exclusive": "grenade-type",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Burning lasts 4 seconds"
+    },
+    {
+      "q": "uncommon",
+      "text": "Burning lasts 6 seconds"
+    },
+    {
+      "q": "rare",
+      "text": "Burning lasts 8 seconds"
+    }
+  ],
+  "name": "Incendiary Grenade",
+  "notes": "Deals fire damage and puts fire on the ground in that area for some time. Looks like Burning Ground (Wizard Meteor orb) in the whole frag radius area.",
+  "order": 1,
+  "skill": "stun-bang",
+  "status": "built",
+  "summary": "Turns the Frag Grenade into an Incendiary Grenade that deals fire damage and blinds enemies while they burn. Has fire penetration instead of armor penetration. Deals 10% of frag's damage every 0.5s with a 10 second cooldown."
+}

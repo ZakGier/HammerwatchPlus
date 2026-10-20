@@ -1,0 +1,2264 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You throw two spinning axes that deal Physical damage to all enemies in their paths.",
+      "file": "players/warrior/skills/whirling_axes.sval",
+      "id": "whirling_axes",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "40"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You throw two spinning axes that deal Physical damage to all enemies in their paths."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You throw two spinning axes that deal Physical damage to all enemies in their paths."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "70"
+            ],
+            [
+              "Mana Cost",
+              "35"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You throw two spinning axes that deal Physical damage to all enemies in their paths."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "90"
+            ],
+            [
+              "Mana Cost",
+              "35"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You throw two spinning axes that deal Physical damage to all enemies in their paths."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "130"
+            ],
+            [
+              "Mana Cost",
+              "45"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You throw two spinning axes that deal Physical damage to all enemies in their paths."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "The axes now returns to you after a period.",
+          "id": "whirling_axes_return",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "rare",
+              "text": "The axes now returns to you after a period."
+            }
+          ],
+          "name": "Revolving Axes",
+          "quality": "rare",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The axes deal additional Fire damage.",
+          "id": "whirling_axes_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "The axes deal additional Fire damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "40%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The axes deal additional Fire damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "80%"
+                ]
+              ],
+              "q": "rare",
+              "text": "The axes deal additional Fire damage."
+            }
+          ],
+          "name": "Burning Axes",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "fire"
+          ]
+        },
+        {
+          "blockedBy": [],
+          "desc": "The axes gain a chance to instantly kill an enemy on Low Life. Does not work on Bosses.",
+          "id": "whirling_axes_culling",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "The axes gain a chance to instantly kill an enemy on Low Life. Does not work on Bosses."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The axes gain a chance to instantly kill an enemy on Low Life. Does not work on Bosses."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ]
+              ],
+              "q": "rare",
+              "text": "The axes gain a chance to instantly kill an enemy on Low Life. Does not work on Bosses."
+            }
+          ],
+          "name": "Culling Axes",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Whirling Axes",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period.",
+      "file": "players/warrior/skills/warcry.sval",
+      "id": "warcry",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Speed",
+              "20%"
+            ],
+            [
+              "Movement Speed",
+              "10%"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Speed",
+              "25%"
+            ],
+            [
+              "Movement Speed",
+              "10%"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Speed",
+              "30%"
+            ],
+            [
+              "Movement Speed",
+              "10%"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Speed",
+              "35%"
+            ],
+            [
+              "Movement Speed",
+              "10%"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Weapon Speed",
+              "40%"
+            ],
+            [
+              "Movement Speed",
+              "10%"
+            ],
+            [
+              "Duration",
+              "8s"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You and all allies in the area gain a buff that increases Weapon and Movement Speed for a period."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Enemies around you are inflicted by Weakness when casting War Cry.",
+          "id": "warcry_weakness",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Status Effect",
+                  "Weakness"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies around you are inflicted by Weakness when casting War Cry."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Status Effect",
+                  "Greater Weakness"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies around you are inflicted by Weakness when casting War Cry."
+            }
+          ],
+          "name": "Intimidating Cry",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You regain a portion of your Health when casting War Cry.",
+          "id": "warcry_restore_health",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "10%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You regain a portion of your Health when casting War Cry."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You regain a portion of your Health when casting War Cry."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You regain a portion of your Health when casting War Cry."
+            }
+          ],
+          "name": "Second Wind",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain stacks of Killing Spree for each enemy around you when casting War Cry.",
+          "id": "warcry_killing_spree",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "uncommon",
+              "text": "You gain stacks of Killing Spree for each enemy around you when casting War Cry."
+            }
+          ],
+          "name": "Battle Cry",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "War Cry",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Increases your Health and Poison Resistance.",
+      "file": "players/warrior/skills/constitution.sval",
+      "id": "constitution",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Health",
+              "+10%"
+            ],
+            [
+              "Poison Resistance",
+              "+10%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Health and Poison Resistance."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Health",
+              "+15%"
+            ],
+            [
+              "Poison Resistance",
+              "+15%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Health and Poison Resistance."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Health",
+              "+20%"
+            ],
+            [
+              "Poison Resistance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Health and Poison Resistance."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Health",
+              "+25%"
+            ],
+            [
+              "Poison Resistance",
+              "+25%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Health and Poison Resistance."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Health",
+              "+30%"
+            ],
+            [
+              "Poison Resistance",
+              "+30%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Health and Poison Resistance."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "You deal increased damage with Melee skills.",
+          "id": "constitution_melee",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased damage with Melee skills."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You deal increased damage with Melee skills."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You deal increased damage with Melee skills."
+            }
+          ],
+          "name": "Combat Training",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You take less damage.",
+          "id": "constitution_dmg_reduction",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage Taken",
+                  "-10%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You take less damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage Taken",
+                  "-20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You take less damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage Taken",
+                  "-30%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You take less damage."
+            }
+          ],
+          "name": "Toughness",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Increases your Armor Penetration.",
+          "id": "constitution_armor_pen",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor Penetration",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Armor Penetration."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor Penetration",
+                  "+15%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Armor Penetration."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Armor Penetration",
+                  "+20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases your Armor Penetration."
+            }
+          ],
+          "name": "Mighty Strength",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Warrior's Constitution",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out.",
+      "file": "players/warrior/skills/killing_spree.sval",
+      "id": "killing_spree",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage per Stack",
+              "+2%"
+            ],
+            [
+              "Stack Duration",
+              "6s"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage per Stack",
+              "+2.5%"
+            ],
+            [
+              "Stack Duration",
+              "7s"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage per Stack",
+              "+3%"
+            ],
+            [
+              "Stack Duration",
+              "8s"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage per Stack",
+              "+4%"
+            ],
+            [
+              "Stack Duration",
+              "9s"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage per Stack",
+              "+5%"
+            ],
+            [
+              "Stack Duration",
+              "10s"
+            ],
+            [
+              "Max Stacks",
+              "10"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain stacks of Killing Spree by killing enemies. Each stack increases your damage. You lose all stacks at once if the duration runs out."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Each stack now also grants Weapon and Spell Crit Chance.",
+          "id": "killing_spree_crit",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance per Stack",
+                  "1%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack now also grants Weapon and Spell Crit Chance."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance per Stack",
+                  "1.5%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack now also grants Weapon and Spell Crit Chance."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Crit Chance per Stack",
+                  "2%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack now also grants Weapon and Spell Crit Chance."
+            }
+          ],
+          "name": "Brutality",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Each stack increases your Health Regen.",
+          "id": "killing_spree_regen",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Regen per Stack",
+                  "+2%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack increases your Health Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Regen per Stack",
+                  "+4%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack increases your Health Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Regen per Stack",
+                  "+8%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack increases your Health Regen."
+            }
+          ],
+          "name": "Killer Physique",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Melee hits against Bosses and Elites gain a chance to add stacks of Killing Spree.",
+          "id": "killing_spree_dauntless",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Melee hits against Bosses and Elites gain a chance to add stacks of Killing Spree."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Melee hits against Bosses and Elites gain a chance to add stacks of Killing Spree."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Melee hits against Bosses and Elites gain a chance to add stacks of Killing Spree."
+            }
+          ],
+          "name": "Dauntless",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Killing Spree",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/warrior/skills/charge.sval",
+      "name": "Charge"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A fighter comfortable with a wide variety of weaponry who can stand their ground against most foes.",
+  "gear": [
+    "chest_str_t1a",
+    "feet_str_t1a",
+    "twohanded_greataxe_01"
+  ],
+  "name": "Warrior",
+  "order": 7,
+  "specs": [
+    {
+      "id": "warrior_berserker",
+      "name": "Berserker",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillLeap",
+          "desc": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area.",
+          "file": "players/warrior/skills/berserker_leap.sval",
+          "id": "berserker_leap",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Mana Cost",
+                  "30"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Mana Cost",
+                  "30"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "170"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "240"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You leap towards the target location, landing with a slam dealing Physical damage and inflicting Stun to enemies in the area."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "After landing you set off a series of tremors that erupt after a short delay, dealing additional Physical damage.",
+              "id": "leap_tremors",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "After landing you set off a series of tremors that erupt after a short delay, dealing additional Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "60%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "After landing you set off a series of tremors that erupt after a short delay, dealing additional Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "90%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "After landing you set off a series of tremors that erupt after a short delay, dealing additional Physical damage."
+                }
+              ],
+              "name": "Trembling Impact",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You ignite the ground at the location form where you leap and land, dealing Fire damage for period of time.",
+              "id": "leap_fire",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "10%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You ignite the ground at the location form where you leap and land, dealing Fire damage for period of time."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You ignite the ground at the location form where you leap and land, dealing Fire damage for period of time."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You ignite the ground at the location form where you leap and land, dealing Fire damage for period of time."
+                }
+              ],
+              "name": "Fiery Leap",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "melee",
+                "fire"
+              ]
+            }
+          ],
+          "name": "Leap",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills.",
+          "file": "players/warrior/skills/berserker_rage.sval",
+          "id": "berserker_rage",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Crit Chance",
+                  "20%"
+                ],
+                [
+                  "Crit Damage",
+                  "+20%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Crit Chance",
+                  "21%"
+                ],
+                [
+                  "Crit Damage",
+                  "+40%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Crit Chance",
+                  "22%"
+                ],
+                [
+                  "Crit Damage",
+                  "+60%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Crit Chance",
+                  "23%"
+                ],
+                [
+                  "Crit Damage",
+                  "+80%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Crit Chance",
+                  "25%"
+                ],
+                [
+                  "Crit Damage",
+                  "+100%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage will grant you a temporary Rage buff for a period, increasing your Crit Chance and Crit Damage with Physical skills."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You automatically gain rage when on Low Life, you also take less damage when on Low Life.",
+              "id": "rage_low_health",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage Taken",
+                      "-30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You automatically gain rage when on Low Life, you also take less damage when on Low Life."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage Taken",
+                      "-45%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You automatically gain rage when on Low Life, you also take less damage when on Low Life."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage Taken",
+                      "-60%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You automatically gain rage when on Low Life, you also take less damage when on Low Life."
+                }
+              ],
+              "name": "Unyielding Rage",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain Rage when casting War Cry. Your cooldowns are also reduced during Rage.",
+              "id": "rage_warcry",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Cooldown",
+                      "-25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain Rage when casting War Cry. Your cooldowns are also reduced during Rage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Cooldown",
+                      "-50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain Rage when casting War Cry. Your cooldowns are also reduced during Rage."
+                }
+              ],
+              "name": "Furious Cry",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Rage",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "warrior_primalist",
+      "name": "Primalist",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You place a totem at the target location that deals Physical damage to nearby enemies for a period.",
+          "file": "players/warrior/skills/primalist_totem.sval",
+          "id": "primalist_totem",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Max Traps Placed",
+                  "3"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You place a totem at the target location that deals Physical damage to nearby enemies for a period."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Max Traps Placed",
+                  "3"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You place a totem at the target location that deals Physical damage to nearby enemies for a period."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Max Traps Placed",
+                  "4"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You place a totem at the target location that deals Physical damage to nearby enemies for a period."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "9s"
+                ],
+                [
+                  "Max Traps Placed",
+                  "4"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You place a totem at the target location that deals Physical damage to nearby enemies for a period."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Max Traps Placed",
+                  "5"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You place a totem at the target location that deals Physical damage to nearby enemies for a period."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The totems periodically shock nearby enemies dealing Lightning damage. If the totems are placed close to eachother they create barriers of lightning between them dealing additional damage.",
+              "id": "primalist_totem_shock",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "damage",
+                      "Damage:"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The totems periodically shock nearby enemies dealing Lightning damage. If the totems are placed close to eachother they create barriers of lightning between them dealing additional damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "damage",
+                      "20%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The totems periodically shock nearby enemies dealing Lightning damage. If the totems are placed close to eachother they create barriers of lightning between them dealing additional damage."
+                }
+              ],
+              "name": "Shock Totems",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "Changes the damage type to Ice and gains a chance to inflict Freeze.",
+              "id": "primalist_totem_frost",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "chance",
+                      "Chance:"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Changes the damage type to Ice and gains a chance to inflict Freeze."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "chance",
+                      "20%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Changes the damage type to Ice and gains a chance to inflict Freeze."
+                }
+              ],
+              "name": "Frostbite Totems",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Ancient Totems",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown.",
+          "file": "players/warrior/skills/primalist_strikes.sval",
+          "id": "primalist_strikes",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "1s"
+                ]
+              ],
+              "q": "common",
+              "text": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "65%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "75%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "85%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "100%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.2s"
+                ]
+              ],
+              "q": "common",
+              "text": "Your Melee Weapon attacks cause tremors around you dealing Mainhand damage in the area. This effect has a short cooldown."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Your Melee Weapon hits gain a chance to deal additional Lightning damage to the target and a random different nearby enemy.",
+              "id": "primalist_strikes_tempest",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100"
+                    ],
+                    [
+                      "Chance",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Melee Weapon hits gain a chance to deal additional Lightning damage to the target and a random different nearby enemy."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "120"
+                    ],
+                    [
+                      "Chance",
+                      "45%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Melee Weapon hits gain a chance to deal additional Lightning damage to the target and a random different nearby enemy."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "140"
+                    ],
+                    [
+                      "Chance",
+                      "60%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your Melee Weapon hits gain a chance to deal additional Lightning damage to the target and a random different nearby enemy."
+                }
+              ],
+              "name": "Tempest Strikes",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your Melee Weapon hits gain a chance to trigger a small explosion dealing additional Ice damage. This effect has a short cooldown.",
+              "id": "primalist_strikes_glacial",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100"
+                    ],
+                    [
+                      "Chance",
+                      "30%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Melee Weapon hits gain a chance to trigger a small explosion dealing additional Ice damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "120"
+                    ],
+                    [
+                      "Chance",
+                      "45%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Melee Weapon hits gain a chance to trigger a small explosion dealing additional Ice damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "140"
+                    ],
+                    [
+                      "Chance",
+                      "60%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.1s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your Melee Weapon hits gain a chance to trigger a small explosion dealing additional Ice damage. This effect has a short cooldown."
+                }
+              ],
+              "name": "Glacial Strikes",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Tremor Strikes",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "warrior_tyrant",
+      "name": "Tyrant",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple.",
+          "file": "players/warrior/skills/tyrant_chains.sval",
+          "id": "tyrant_chains",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "125"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "175"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "225"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "300"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You throw out chains all around you, dealing Physical damage and inflicting enemies with Cripple."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The chains now inflict stacks of Bleeding.",
+              "id": "tyrant_chains_bleeding",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Stacks",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The chains now inflict stacks of Bleeding."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Stacks",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The chains now inflict stacks of Bleeding."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Stacks",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The chains now inflict stacks of Bleeding."
+                }
+              ],
+              "name": "Barbed Chains",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Spike projectiles are now released at the end of the chains.",
+              "id": "tyrant_chains_spikes",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Projectiles",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Spike projectiles are now released at the end of the chains."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Projectiles",
+                      "3"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Spike projectiles are now released at the end of the chains."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Projectiles",
+                      "4"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Spike projectiles are now released at the end of the chains."
+                }
+              ],
+              "name": "Spiked Chains",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Chains",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding.",
+          "file": "players/warrior/skills/tyrant_passive.sval",
+          "id": "tyrant_passive",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Physical damage and your Physical skills gain a chance to inflict stacks of Bleeding."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Killing enemies with Physical skills have a chance to trigger an explosion of gibs dealing Physical damage and applying Bleeding in the area.",
+              "id": "tyrant_explode",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "50"
+                    ],
+                    [
+                      "Chance",
+                      "20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing enemies with Physical skills have a chance to trigger an explosion of gibs dealing Physical damage and applying Bleeding in the area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100"
+                    ],
+                    [
+                      "Chance",
+                      "25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing enemies with Physical skills have a chance to trigger an explosion of gibs dealing Physical damage and applying Bleeding in the area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "200"
+                    ],
+                    [
+                      "Chance",
+                      "30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Killing enemies with Physical skills have a chance to trigger an explosion of gibs dealing Physical damage and applying Bleeding in the area."
+                }
+              ],
+              "name": "Exploding Gibs",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You deal increased damage to enemies based on their missing health.",
+              "id": "tyrant_missing_health",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage per missing Health percent",
+                      "+0.5%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You deal increased damage to enemies based on their missing health."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage per missing Health percent",
+                      "+1%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You deal increased damage to enemies based on their missing health."
+                }
+              ],
+              "name": "Slayer",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Ruthlessness",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 5,
+    "dex": 6,
+    "foc": 2,
+    "health": 170,
+    "int": 2,
+    "mana": 70,
+    "str": 10,
+    "vit": 10
+  },
+  "vanilla": true
+}

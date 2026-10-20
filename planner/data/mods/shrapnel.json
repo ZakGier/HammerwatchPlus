@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_frag_shrapnel",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Reduce enemy armor by 10%"
+    },
+    {
+      "q": "uncommon",
+      "text": "Reduce enemy armor by 20%"
+    },
+    {
+      "q": "rare",
+      "text": "Reduce enemy armor by 30%"
+    }
+  ],
+  "name": "Shrapnel",
+  "notes": "uses pre-exisiting armor reduction in game",
+  "order": null,
+  "skill": "stun-bang",
+  "status": "built",
+  "summary": "Grenades reduce armor of damaged enemies for 2 seconds"
+}

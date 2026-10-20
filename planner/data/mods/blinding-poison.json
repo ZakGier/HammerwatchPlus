@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_scavenger_blind",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "Poison elemental bullets blind"
+    }
+  ],
+  "name": "Blinding Poison",
+  "notes": "",
+  "order": null,
+  "skill": "scavenger",
+  "status": "built",
+  "summary": "Poison elemental bullets blind the enemy for 1 second. Blind time stacks with multiple hits."
+}

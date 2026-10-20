@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_scavenger",
+  "cooldown": "",
+  "group": "base",
+  "kind": "passive",
+  "levels": [
+    "10% chance of elemental bullet",
+    "20% chance of elemental bullet",
+    "30% chance of elemental bullet",
+    "40% chance of elemental bullet",
+    "50% chance of elemental bullet"
+  ],
+  "mana": "",
+  "name": "Elemental Bullets",
+  "notes": "Elemental bullets deal elemental damage instead of physical, so no armor pen for them.",
+  "order": 3,
+  "role": "",
+  "status": "built",
+  "summary": "Fired shots have a chance to be one of four elemental bullets, dealing their damage as respective elemental damage instead of physical. Does not affect bonus weapons.",
+  "unlock": "bought"
+}

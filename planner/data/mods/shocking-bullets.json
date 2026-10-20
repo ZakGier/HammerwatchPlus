@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_scavenger_lightning",
+  "cls": "hwp_firearms",
+  "exclusive": "bullet-type",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Lightning bullets are 30% more likely"
+    },
+    {
+      "q": "uncommon",
+      "text": "Lightning bullets are 60% more likely"
+    },
+    {
+      "q": "rare",
+      "text": "Lightning bullets are 100% more likely"
+    }
+  ],
+  "name": "Shocking Bullets",
+  "notes": "Doesn't increase the chance of the elemental bullets generally, just the chance the elemental bullet will be of this type",
+  "order": null,
+  "skill": "scavenger",
+  "status": "built",
+  "summary": "Increases chance of elemental bullets being the lightning type"
+}

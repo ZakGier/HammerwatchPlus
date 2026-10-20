@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_reload_dodge",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": ""
+    }
+  ],
+  "name": "Dodge Reload Skip",
+  "notes": "There is just one level for this mod",
+  "order": null,
+  "skill": "reload",
+  "status": "built",
+  "summary": "Dodging while reloading finishes your reload immediately instead of cancelling it"
+}

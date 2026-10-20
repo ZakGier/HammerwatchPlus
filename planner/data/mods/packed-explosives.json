@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_hoarder_overpacked",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+15% explosives damage"
+    },
+    {
+      "q": "uncommon",
+      "text": "+25% explosives damage"
+    }
+  ],
+  "name": "Overpacked Explosives",
+  "notes": "",
+  "order": null,
+  "skill": "demo-passive",
+  "status": "built",
+  "summary": "Explosives like grenades and rocket launcher missiles deal increased damage"
+}

@@ -33,6 +33,8 @@ Update both README.md and `docs/RE_NOTES.md` at the end of every work session.
   `UpdateFrame` ticks only after a session starts (`docs/RE_NOTES.md`, mod lifecycle).
 - Log paths and the mod stack: `docs/MODDING_NOTES.md`. Hooks: `docs/hooks.md`.
 - Mod conventions: `docs/modules.md`.
+- Class planner (the class designs, Firearms included): `planner/`, run with `python -m planner`;
+  records in `planner/data/<collection>/<id>.json` (`planner/README.md`).
 - Run outputs: `gamelab/results/<time>-<scenario>-<mode>/`.
   - `run.json`: verdict and assertions.
   - `gl.jsonl`: telemetry.

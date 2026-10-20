@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_rpg_fatboy",
+  "cls": "hwp_firearms",
+  "exclusive": "missile-type",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "Blinds for 2 seconds and deals 40% of missile damage as poison."
+    },
+    {
+      "q": "rare",
+      "text": "Blinds for 4 seconds and deals 60% of missile damage as poison."
+    }
+  ],
+  "name": "Fat Boy",
+  "notes": "",
+  "order": null,
+  "skill": "rocket",
+  "status": "built",
+  "summary": "Fires a slower moving nuclear warhead that blinds and poisons enemies in the area."
+}

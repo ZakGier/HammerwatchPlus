@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_rpg",
+  "clip": "",
+  "damage": "fire, wide radius",
+  "mana": "6",
+  "name": "Rocket Launcher",
+  "notes": "Not an item.",
+  "order": 3,
+  "pairing": "",
+  "primary": "Demolitions doctrine active (bonus weapon, like Snipe).",
+  "rate": "8s cd",
+  "reload": "",
+  "secondary": "",
+  "slot": "doctrine",
+  "spread": "",
+  "status": "built"
+}

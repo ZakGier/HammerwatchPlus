@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_focus",
+  "cooldown": "",
+  "group": "sniper",
+  "kind": "passive",
+  "levels": [
+    "Max 15% crit chance/damage bonus",
+    "Max 20% crit chance/damage bonus",
+    "Max 25% crit chance/damage bonus",
+    "Max 30% crit chance/damage bonus",
+    "Max 40% crit chance/damage bonus"
+  ],
+  "mana": "",
+  "name": "Critical Aim",
+  "notes": "Increases crit chance and damage for all weapons and abilities",
+  "order": 1,
+  "role": "",
+  "status": "built",
+  "summary": "Hitting successive shots with your weapons without missing increases your crit chance and damage with all weapons and abilities until you miss. +1% crit chance and +1% crit damage per stack.",
+  "unlock": "free"
+}

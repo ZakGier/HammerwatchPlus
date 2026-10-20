@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_steady_crit",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "+0.25% chance per bullet"
+    },
+    {
+      "q": "uncommon",
+      "text": "+0.5% chance per bullet"
+    },
+    {
+      "q": "rare",
+      "text": "+0.75% chance per bullet"
+    }
+  ],
+  "name": "Extended Crit Chance",
+  "notes": "",
+  "order": null,
+  "skill": "steady-hands",
+  "status": "built",
+  "summary": "Crit chance also now scales with remaining bullets in the magazine"
+}

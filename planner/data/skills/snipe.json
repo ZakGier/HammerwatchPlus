@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_snipe",
+  "cooldown": "3s",
+  "group": "sniper",
+  "kind": "active",
+  "levels": [
+    "300% damage with 25% armor penetration for 20 mana",
+    "400% damage with 25% armor penetration for 20 mana",
+    "500% damage with 40% armor penetration for 25 mana",
+    "600% damage with 40% armor penetration for 25 mana",
+    "750% damage with 60% armor penetration for 30 mana"
+  ],
+  "mana": "20",
+  "name": "Sniper Shot",
+  "notes": "Similar to Rogue Mortal Strike",
+  "order": 0,
+  "role": "",
+  "status": "built",
+  "summary": "Expends 10 ammo to fire a high damage armor penetrating shot. Damage scales off of main-hand and offhand combined, or two hand, damage.",
+  "unlock": "free"
+}

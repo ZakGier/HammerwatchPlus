@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_focus_exposure",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "1% increased crit chance per element"
+    },
+    {
+      "q": "rare",
+      "text": "2% increased crit chance per element"
+    },
+    {
+      "q": "epic",
+      "text": "3% increased crit chance per element"
+    }
+  ],
+  "name": "Elemental Exposure",
+  "notes": "",
+  "order": null,
+  "skill": "sniper-passive",
+  "status": "built",
+  "summary": "Increased crit chance against enemies taking elemental damage. Multiple elements at once will trigger this effect multiple times."
+}

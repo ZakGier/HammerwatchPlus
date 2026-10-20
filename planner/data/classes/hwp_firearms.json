@@ -1,0 +1,34 @@
+{
+  "custom": true,
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/shared/skills/ballista.sval",
+      "name": "Heavy Ballista"
+    },
+    {
+      "desc": "",
+      "file": "players/shared/skills/battle_banner.sval",
+      "name": "Battle Banner"
+    },
+    {
+      "desc": "",
+      "file": "players/shared/skills/combo_choices.sval",
+      "name": "Combo: Kills"
+    },
+    {
+      "desc": "Shoots a nova of projectiles every second while combo is active.",
+      "file": "players/shared/skills/combo_levlable.sval",
+      "name": "Combo Nova"
+    },
+    {
+      "desc": "",
+      "file": "players/shared/skills/first_aid.sval",
+      "name": "First Aid"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "HammerwatchPlus class: clip-fed guns, mana for gadgets. Four doctrines, one of them turrets.",
+  "name": "Firearms Specialist",
+  "order": 0
+}

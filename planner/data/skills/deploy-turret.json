@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_turret",
+  "cooldown": "12s",
+  "group": "turrets",
+  "kind": "active",
+  "levels": [
+    "Fire rate 0.6 seconds",
+    "Fire rate 0.5 seconds",
+    "Fire rate 0.4 seconds",
+    "Fire rate 0.3 seconds",
+    "Fire rate 0.2 seconds"
+  ],
+  "mana": "50",
+  "name": "Deploy Turret",
+  "notes": "Stationary summon, has health and can be targeted by nearby enemies or accidentally hit by their attacks, also slowly loses health over time (30 seconds for full health loss). use pre-existing players/shared/units/ballista_heavy.unit",
+  "order": 0,
+  "role": "",
+  "status": "built",
+  "summary": "Place a turret at the target spot. It shoots nearby enemies for 100% weapon damage until it expires or is destroyed.",
+  "unlock": "free"
+}

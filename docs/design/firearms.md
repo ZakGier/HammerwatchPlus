@@ -1,9 +1,10 @@
 # Firearms Specialist: design
 
-The live design is the planner, an editable page whose data is read back before each
-build step: https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3 (private to the owner).
+The live design is the class planner, a local web app in the repo whose records are read
+back before each build step: double-click `planner.cmd` or run `python -m planner`
+(`planner/README.md`); the records are `planner/data/<collection>/<id>.json`.
 Its tabs are the class tree, orbs, grenade, arsenal, clip and reload, attributes and budget.
-It also holds the 4th specialization planned for every vanilla class. Each class's base
+It also holds a 4th specialization slot for every other class (a placeholder until designed). Each class's base
 kit, three specs and every vanilla orb are prepopulated from the game data, and an
 "All classes" view tracks progress.
 This file holds the settled decisions and where each one is built.

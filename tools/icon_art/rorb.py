@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 from vpaint import sheet
 HERE = Path(__file__).resolve().parent
-PUB = HERE / "out" / "planner_pub"
+PUB = HERE.parents[1] / "planner" / "web"
 cls = sys.argv[1]
 mod = importlib.import_module("vo_" + cls)
 names = sys.argv[2:] or list(mod.ORBS)

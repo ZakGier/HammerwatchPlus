@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_scavenger_slow",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "Ice elemental bullets slow"
+    }
+  ],
+  "name": "Slowing Freeze",
+  "notes": "",
+  "order": null,
+  "skill": "scavenger",
+  "status": "built",
+  "summary": "Ice elemental bullets slow the enemy for 1 second. Slow time stacks with multiple hits."
+}

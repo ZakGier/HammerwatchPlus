@@ -1,0 +1,24 @@
+{
+  "built": "hwp_fs_frag_stun",
+  "exclusive": "grenade-type",
+  "levels": [
+    {
+      "q": "common",
+      "text": "1 second stun"
+    },
+    {
+      "q": "uncommon",
+      "text": "2 second stun"
+    },
+    {
+      "q": "rare",
+      "text": "3 second stun"
+    }
+  ],
+  "name": "Stun Grenade",
+  "notes": "Slows instead of stuns bosses (unless they are immune to slow). deals same damage as level of frag damage and penetration. Effect UI is a large electrical flash, like static field effect, that fills whole frag radius",
+  "order": 0,
+  "skill": "stun-bang",
+  "status": "built",
+  "summary": "Turns the Frag Grenade into a Stun Grenade that deals lightning damage and stuns enemies. Has lightning penetration instead of armor penetration. 5 Second Cooldown."
+}

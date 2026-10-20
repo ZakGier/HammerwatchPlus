@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_burst_breath",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "15% bonus fire damage that lasts for 1 second"
+    },
+    {
+      "q": "rare",
+      "text": "30% bonus fire damage that lasts for 3 second"
+    }
+  ],
+  "name": "Dragon's Breath",
+  "notes": "Creates fire in the same cone that the shotgun burst shot.",
+  "order": null,
+  "skill": "burst",
+  "status": "built",
+  "summary": "Applies fire damage to shells and sets the ground on fire."
+}

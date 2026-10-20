@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_burst",
+  "cooldown": "5s",
+  "group": "assault",
+  "kind": "active",
+  "levels": [
+    "+20% shotgun damage to enemies within 5m for 5 mana",
+    "+40% shotgun damage to enemies within 5m for 5 mana",
+    "+60% shotgun damage to enemies within 7m for 6 mana",
+    "+80% shotgun damage to enemies within 7m for 6 mana",
+    "+100% shotgun damage to enemies within 10m for 7 mana"
+  ],
+  "mana": "5",
+  "name": "Double Barrel Burst",
+  "notes": "1m = 1 unit of range. 50 degree cone. each shot of the burst fires where you are aiming, but they all fire off one after the other in quick succession. Dodging cancels it but does not refund the mana or cooldown.",
+  "order": 0,
+  "role": "",
+  "status": "built",
+  "summary": "Fire 2 shotgun rounds that deal more damage the closer the enemy is. 150 damage in wide cone for each shell.",
+  "unlock": "free"
+}

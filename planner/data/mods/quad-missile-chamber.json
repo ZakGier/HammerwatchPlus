@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_rpg_quad",
+  "cls": "hwp_firearms",
+  "exclusive": "missile-type",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "30% Damage and Radius"
+    },
+    {
+      "q": "rare",
+      "text": "35% Damage and Radius"
+    }
+  ],
+  "name": "Quad Missile Chambers",
+  "notes": "",
+  "order": null,
+  "skill": "rocket",
+  "status": "built",
+  "summary": "Instead of firing one missile you fire 4 smaller missiles in quick succession that have reduced damage and radius."
+}

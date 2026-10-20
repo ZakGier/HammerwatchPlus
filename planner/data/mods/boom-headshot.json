@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_focus_boom",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "+3% crit chance and +10% crit damage"
+    },
+    {
+      "q": "uncommon",
+      "text": "+4% crit chance and +20% crit damage"
+    },
+    {
+      "q": "rare",
+      "text": "+5% crit chance and +30% crit damage"
+    }
+  ],
+  "name": "BOOM Headshot!",
+  "notes": "",
+  "order": null,
+  "skill": "sniper-passive",
+  "status": "built",
+  "summary": "Increases your base crit chance and damage for all weapons. The sniper gains double the bonus."
+}

@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_rpg",
+  "cooldown": "8s",
+  "group": "demolitions",
+  "kind": "active",
+  "levels": [
+    "200 Damage",
+    "240 Damage",
+    "280 Damage",
+    "330 Damage",
+    "400 Damage"
+  ],
+  "mana": "6",
+  "name": "Rocket Launcher",
+  "notes": "A doctrine active, not an item.",
+  "order": 0,
+  "role": "weapon",
+  "status": "built",
+  "summary": "Bonus weapon: a rocket that explodes in a wide radius.",
+  "unlock": "free"
+}

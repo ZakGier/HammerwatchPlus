@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_frag",
+  "cooldown": "4s",
+  "group": "base",
+  "kind": "active",
+  "levels": [
+    "100 Damage, 20% armor piercing, 20 mana",
+    "130 damage, 25% armor piercing, 25 mana",
+    "160 damage, 25% armor piercing, 25 mana",
+    "200 damage, 30% armor piercing, 30 mana",
+    "250 damage, 35% armor piercing, 30 mana"
+  ],
+  "mana": "gadget (mana)",
+  "name": "Frag Grenade",
+  "notes": "Orb mods turn it into another grenade type (mutually exclusive). Area should be double of the rogue's demolition grenade.",
+  "order": 1,
+  "role": "grenade",
+  "status": "built",
+  "summary": "Thrown grenade that deals physical damage to enemies in a large area. Penetrates armor.",
+  "unlock": "free"
+}

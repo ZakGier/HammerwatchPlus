@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Class Planner</title>
+<style>
+:root{
+  --bg:#f5f3ee; --panel:#ffffff; --panel-2:#faf8f4; --ink:#1d1c1a; --muted:#6b675f; --line:#e2ded5;
+  --accent:#b4501e; --accent-ink:#ffffff; --focus:#d9772f;
+  --q-common:#7a7a7a; --q-uncommon:#2f8a3c; --q-rare:#2c6fc4; --q-epic:#8a3fc4;
+  --s-idea:#9a948a; --s-designed:#c08a1e; --s-built:#2c6fc4; --s-tested:#2f8a3c;
+  --active:#b4501e; --passive:#5a6bb0; --warn:#b03a2e;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+  --ico-bg:#2b2622;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141311; --panel:#1e1c19; --panel-2:#24221e; --ink:#ece8e0; --muted:#a29d93; --line:#34312b;
+    --accent:#e0743a; --accent-ink:#1a0f08; --focus:#f0904f;
+    --q-common:#a3a3a3; --q-uncommon:#5cc46a; --q-rare:#5c9cf0; --q-epic:#b57af0;
+    --s-idea:#8c877e; --s-designed:#e0aa3e; --s-built:#5c9cf0; --s-tested:#5cc46a;
+    --active:#e0743a; --passive:#8b9be0; --warn:#e06a5c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+    --ico-bg:#0d0c0b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141311; --panel:#1e1c19; --panel-2:#24221e; --ink:#ece8e0; --muted:#a29d93; --line:#34312b;
+  --accent:#e0743a; --accent-ink:#1a0f08; --focus:#f0904f;
+  --q-common:#a3a3a3; --q-uncommon:#5cc46a; --q-rare:#5c9cf0; --q-epic:#b57af0;
+  --s-idea:#8c877e; --s-designed:#e0aa3e; --s-built:#5c9cf0; --s-tested:#5cc46a;
+  --active:#e0743a; --passive:#8b9be0; --warn:#e06a5c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  --ico-bg:#0d0c0b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:0 max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left));}
+.wrap{max-width:1180px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;padding:20px 0 10px}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+.sync{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--s-idea)}
+.dot.ok{background:var(--s-tested)} .dot.bad{background:var(--warn)}
+.clsbar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.clsbar button{flex:none;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.clsbar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.clsbar .mini{width:7px;height:7px;border-radius:50%}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:16px;scrollbar-width:none}
+nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:9px 12px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.btn{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:5px 10px;font:inherit;font-size:13px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.danger{color:var(--warn)}
+.btn.small{padding:2px 8px;font-size:12px}
+.ro .needs-write{display:none!important}
+.notice{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--muted);margin-bottom:14px;font-size:13px}
+.grid{display:grid;gap:14px}
+.cols-4{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.cols-3{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:12px 14px;min-width:0}
+.doctrine{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.doctrine.new{border:2px solid var(--accent)}
+.doctrine>h2{display:flex;align-items:center;gap:8px;font-size:15px;margin:0}
+.doctrine .blurb{color:var(--muted);font-size:12.5px;margin:-4px 0 0}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.title{font-weight:650;font-size:14.5px;overflow-wrap:anywhere}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;border:1px solid currentColor;white-space:nowrap;text-transform:lowercase}
+.kind-active{color:var(--active)} .kind-passive{color:var(--passive)}
+.chip.van{color:var(--muted)}
+.st-idea{color:var(--s-idea)} .st-designed{color:var(--s-designed)} .st-built{color:var(--s-built)} .st-tested{color:var(--s-tested)}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.summary{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.vdesc{margin:6px 0 0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.levels{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:2px;font-size:12.5px}
+.levels li{display:grid;grid-template-columns:28px 1fr;gap:6px}
+.levels b{color:var(--muted);font-weight:600}
+.mods{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;display:grid;gap:6px}
+.mod{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:start;padding:6px 8px;border-radius:7px;background:var(--panel-2);cursor:pointer;border:1px solid transparent}
+.mod:hover{border-color:var(--line)}
+.mod.static{cursor:default;grid-template-columns:auto 1fr}
+.mod.static:hover{border-color:transparent}
+.pips{display:flex;gap:3px;padding-top:4px}
+/* game icons: 24px cells of icons.png drawn at 2x, pixels kept sharp */
+.ico{display:inline-block;flex:none;border-radius:5px;background-color:var(--ico-bg);background-image:url(icons.png);background-repeat:no-repeat;image-rendering:pixelated;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.ico.none{background:none;box-shadow:none;border:1px dashed var(--line)}
+.mi{display:grid;gap:4px;justify-items:center;align-content:start}
+.mi .pips{padding-top:0}
+.pip{width:9px;height:9px;border-radius:2px}
+.q-common{background:var(--q-common)} .q-uncommon{background:var(--q-uncommon)} .q-rare{background:var(--q-rare)} .q-epic{background:var(--q-epic)}
+details.vm{margin-top:8px}
+details.vm>summary{cursor:pointer;font-size:12px;color:var(--muted);list-style:none}
+details.vm>summary::-webkit-details-marker{display:none}
+details.vm>summary::before{content:"▸ "} details.vm[open]>summary::before{content:"▾ "}
+details.vm .mods{margin-top:6px}
+table.lvt{width:auto;max-width:100%;margin-top:6px;font-size:12px;border-radius:6px;box-shadow:none}
+table.lvt th,table.lvt td{padding:3px 8px}
+table.lvt th{font-size:10.5px}
+table.lvt .pip{display:inline-block;vertical-align:-1px}
+.orbsum{font-size:13px;color:var(--muted);margin:-6px 0 12px}
+h3.spechead{font-size:14px;margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.excl{font-size:11px;color:var(--warn);font-weight:600}
+.clickable{cursor:pointer}
+.clickable:hover{border-color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:10px}
+.stat{background:var(--panel-2);border-radius:7px;padding:6px 8px}
+.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.stat .v{font-weight:650;overflow-wrap:anywhere}
+.para{margin-top:8px;font-size:13px}
+.para .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--panel-2)}
+tr.clickable:hover td{background:var(--panel-2)}
+.tablewrap{overflow-x:auto}
+.meter{margin:6px 0 14px}
+.meter .bar{height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.meter .fill{height:100%;background:var(--accent)}
+.meter .fill.over{background:var(--warn)}
+.meter .lbl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+.rounds{display:flex;flex-wrap:wrap;gap:3px;margin:10px 0}
+.round{width:10px;height:22px;border-radius:3px 3px 2px 2px;background:var(--accent)}
+.round.spent{background:var(--line)}
+.sectionhead{display:flex;align-items:center;gap:10px;margin:4px 0 12px;flex-wrap:wrap}
+.sectionhead h2{margin:0;font-size:16px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:0;width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.dlg-h{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:1}
+.dlg-b{padding:14px 16px;display:grid;gap:12px}
+.dlg-f{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--panel)}
+label.f{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
+label.f input,label.f select,label.f textarea,.lv input,.lv select{font:inherit;font-size:14px;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;width:100%}
+label.f textarea{min-height:64px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lv{display:grid;gap:6px}
+.lvrow{display:grid;grid-template-columns:28px auto 1fr auto;gap:6px;align-items:center}
+.lvrow.noq{grid-template-columns:28px 1fr auto}
+.lvrow b{font-size:12px;color:var(--muted)}
+.err{color:var(--warn);font-size:13px}
+@media (max-width:560px){.two{grid-template-columns:1fr} h1{font-size:19px} .sync{margin-left:0;width:100%}}
+[hidden]{display:none!important}
+</style>
+</head><body>
+
+<div class="wrap" id="app">
+  <header>
+    <h1 id="clsTitle">Class Planner</h1>
+    <span class="sub">HammerwatchPlus class planner</span>
+    <span class="sync"><span class="dot" id="syncDot"></span><span id="syncText">Connecting…</span></span>
+  </header>
+  <div class="clsbar" id="clsbar" role="group" aria-label="Class"></div>
+  <nav role="tablist" id="tabs"></nav>
+  <div id="notice"></div>
+  <main id="view"></main>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlgForm">
+    <div class="dlg-h"><strong id="dlgTitle" class="grow"></strong><button class="btn small" value="cancel" formnovalidate>Close</button></div>
+    <div class="dlg-b" id="dlgBody"></div>
+    <div class="dlg-f">
+      <button class="btn danger needs-write" type="button" id="dlgDelete">Delete</button>
+      <span class="grow err" id="dlgErr"></span>
+      <button class="btn" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn primary needs-write" type="button" id="dlgSave">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+const STATUSES = ["idea","designed","built","tested"];
+const QUALITIES = ["common","uncommon","rare","epic"];
+const COLLECTIONS = ["classes","doctrines","skills","mods","weapons","stacks","attributes","reference"];
+const FIREARMS = "hwp_firearms";
+
+// Field schemas drive both the cards and the edit dialog.
+const SCHEMA = {
+  doctrines: {label:"Specialization", fields:[
+    ["name","text","Name"],["status","status","Status"],["order","number","Order"],
+    ["blurb","textarea","Fantasy / role"],["notes","textarea","Notes"]]},
+  skills: {label:"Skill", fields:[
+    ["name","text","Name"],["status","status","Status"],
+    ["group","doctrine","Specialization"],["kind","select:active,passive","Kind"],
+    ["unlock","select:free,bought","Unlock"],["role","select:,grenade,reload,weapon,summon","Role"],
+    ["order","number","Order"],["built","text","In-game id / file"],
+    ["mana","text","Mana cost"],["cooldown","text","Cooldown"],
+    ["summary","textarea","What it does"],
+    ["levels","levels5","Skill levels 1-5"],["notes","textarea","Notes"]]},
+  mods: {label:"Orb mod", fields:[
+    ["name","text","Name"],["status","status","Status"],
+    ["skill","skill","Parent skill"],["exclusive","text","Exclusive group (blank = stacks freely)"],
+    ["order","number","Order"],["built","text","In-game id"],
+    ["summary","textarea","What it does"],
+    ["levels","levelsq","Mod levels (1-3), quality each"],["notes","textarea","Notes"]]},
+  weapons: {label:"Weapon", fields:[
+    ["name","text","Name"],["status","status","Status"],
+    ["slot","select:mainhand,offhand,twohand,doctrine","Slot"],["order","number","Order"],
+    ["clip","number","Magazine (clip add-max)"],["reload","text","Reload"],
+    ["damage","text","Damage"],["rate","text","Fire rate"],
+    ["spread","text","Spread"],["mana","text","Mana use"],
+    ["primary","textarea","Left click"],["secondary","textarea","Right click"],
+    ["pairing","textarea","Pairing rules"],["built","text","In-game ids"],["notes","textarea","Notes"]]},
+  stacks: {label:"Stack", fields:[
+    ["name","text","Name"],["status","status","Status"],["order","number","Order"],
+    ["max","text","Max"],["timer","text","Timer"],
+    ["gain","textarea","Gained by"],["spent","textarea","Spent by"],
+    ["empty","textarea","On reaching 0"],["modifiers","textarea","What modifies it"],
+    ["built","text","In-game id"],["notes","textarea","Notes"]]},
+  attributes: {label:"Attribute", fields:[
+    ["name","text","Gun attribute"],["order","number","Order"],
+    ["stat","text","Vanilla stat / rail"],["trinkets","textarea","Items / trinkets that feed it"],
+    ["notes","textarea","Notes"]]},
+  reference: {label:"Targets", fields:[
+    ["actives","number","Actives per class"],["passives","number","Passives per class"],
+    ["modsTarget","number","Orb mods target"],["levelsTarget","number","Mod levels target"],
+    ["baseMods","text","Vanilla base-kit mods"],["specMods","text","Vanilla mods per spec"],
+    ["notes","textarea","Notes"]]},
+  classes: {label:"Class notes", fields:[["notes","textarea","Notes for this class's 4th spec"]]},
+};
+
+const TABS_FIREARMS = [["class","Class tree"],["orbs","Orb mods"],["grenade","Grenade"],["arsenal","Arsenal"],["clip","Clip & reload"],["attributes","Attributes"],["budget","Budget"],["overview","All classes"]];
+const TABS_VANILLA = [["class","Specializations"],["orbs","Orbs"],["budget","Budget"],["overview","All classes"]];
+const state = {tab:"class", cls:FIREARMS, data:{}, db:null, canWrite:false, ready:false};
+COLLECTIONS.forEach(c => state.data[c] = new Map());
+try { const t = localStorage.getItem("fp.tab"); if (t) state.tab = t; } catch {}
+try { const c = localStorage.getItem("fp.cls"); if (c) state.cls = c; } catch {}
+if (location.hash.length > 1) state.cls = decodeURIComponent(location.hash.slice(1));   // a link to one class: #ranger
+
+const $ = s => document.querySelector(s);
+// Skill and orb icons cut from the game's atlases (icons.json: in-game id -> cell of icons.png).
+let ICONS = {cell:24, cols:16, icons:{}};
+const iconOf = r => r ? [r.built, r.id, r._id].find(k => k && ICONS.icons[k] !== undefined) : undefined;
+function ico(r, size = 48){
+  const k = iconOf(r), st = "width:"+size+"px;height:"+size+"px";
+  if (k === undefined) return h("span",{class:"ico none", style:st, title:"No in-game icon yet"});
+  const i = ICONS.icons[k], c = ICONS.cols;
+  return h("span",{class:"ico", role:"img", "aria-label":(r.name||k)+" icon", title:k,
+    style:st+";background-size:"+(c*size)+"px auto;background-position:-"+(i%c)*size+"px -"+Math.floor(i/c)*size+"px"});
+}
+function h(tag, attrs, ...kids){
+  const el = document.createElement(tag);
+  if (attrs) for (const [k,v] of Object.entries(attrs)){
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()){ if (k == null || k === false) continue; el.append(k instanceof Node ? k : String(k)); }
+  return el;
+}
+const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 999; };
+const sortRecs = rs => rs.sort((a,b) => (num(a.order)-num(b.order)) || String(a.name||"").localeCompare(String(b.name||"")));
+const list = c => sortRecs([...state.data[c].values()]);
+// Records with no class field belong to the Firearms Specialist (they predate the other classes).
+const clsOf = r => r.cls || FIREARMS;
+const mine = (c, cls = state.cls) => list(c).filter(r => clsOf(r) === cls);
+const chip = (cls, text) => h("span",{class:"chip "+cls}, text);
+const statusChip = s => chip("st-"+(STATUSES.includes(s)?s:"idea"), s || "idea");
+const qualityOf = lv => QUALITIES.includes(lv && lv.q) ? lv.q : "common";
+const classDoc = (cls = state.cls) => state.data.classes.get(cls);
+const isVanilla = (cls = state.cls) => !!classDoc(cls)?.vanilla;
+// Where read-only game records come from: the game itself, or a port (the HoH1 classes of mods/classes).
+const srcOf = (x, c = classDoc()) => { const p = (x && x.port) || (c && c.port); return p ? p+" port" : "vanilla"; };
+const tabsFor = () => isVanilla() ? TABS_VANILLA : TABS_FIREARMS;
+const classes = () => list("classes").length ? list("classes") : [{_id:FIREARMS, name:"Firearms Specialist", order:0}];
+function vanillaSkills(cls = state.cls){
+  const c = classDoc(cls); if (!c || !c.vanilla) return [];
+  return [...(c.base||[]).map(s => ({...s, spec:"Base kit"})), ...(c.specs||[]).flatMap(sp => (sp.skills||[]).map(s => ({...s, spec:sp.name})))];
+}
+function skillName(id){
+  const r = state.data.skills.get(id); if (r) return r.name || id;
+  for (const c of state.data.classes.values()) for (const s of [...(c.base||[]), ...(c.specs||[]).flatMap(sp => sp.skills||[])]) if (s.id === id) return s.name;
+  return id;
+}
+
+// ---------- rendering ----------
+function renderClassBar(){
+  const bar = $("#clsbar"); bar.replaceChildren();
+  for (const c of classes()){
+    const spec = mine("doctrines", c._id).find(d => d.spec4);
+    const st = c._id === FIREARMS ? null : (spec ? spec.status || "idea" : null);
+    bar.append(h("button",{"aria-pressed":String(state.cls===c._id), title: spec ? "4th spec: "+(spec.name||"") : null,
+      onclick:()=>{ state.cls = c._id; try{localStorage.setItem("fp.cls",c._id)}catch{} render(); }},
+      st ? h("span",{class:"mini", style:"background:var(--s-"+st+")"}) : null, c.name || c._id));
+  }
+}
+function renderTabs(){
+  const nav = $("#tabs"); nav.replaceChildren();
+  const tabs = tabsFor();
+  if (!tabs.some(t => t[0] === state.tab)) state.tab = "class";
+  for (const [id,label] of tabs) nav.append(h("button",{role:"tab","aria-selected":String(state.tab===id), onclick:()=>{state.tab=id; try{localStorage.setItem("fp.tab",id)}catch{} render();}}, label));
+}
+function render(){
+  document.body.classList.toggle("ro", !state.canWrite);
+  const n = $("#notice"); n.replaceChildren();
+  if (!state.db) n.append(h("div",{class:"notice"}, state.ready ? "Can't reach the planner server. Start it from the repo root with: python -m planner (or double-click planner.cmd)." : "Loading saved design…"));
+  const v = $("#view"); v.replaceChildren();
+  if (!state.data.classes.size) return;   // nothing loaded yet
+  if (!classes().some(c => c._id === state.cls)) state.cls = FIREARMS;
+  const c = classDoc();
+  $("#clsTitle").textContent = c?.name || "Firearms Specialist";
+  renderClassBar();
+  renderTabs();
+  ({class: isVanilla() ? viewVanilla : viewClass, orbs:viewOrbs, grenade:viewGrenade, arsenal:viewArsenal, clip:viewClip,
+    attributes:viewAttributes, budget: isVanilla() ? viewVanillaBudget : viewBudget, overview:viewOverview})[state.tab](v);
+}
+
+function addBtn(text, coll, preset){ return h("button",{class:"btn small needs-write", onclick:()=>openEditor(coll,null,Object.assign({cls:state.cls}, preset||{}))}, "+ "+text); }
+// The commonest vanilla orb ladder (59 of 196 vanilla orbs).
+const ORB = () => ({levels:[{q:"uncommon", text:""},{q:"uncommon", text:""},{q:"rare", text:""}]});
+function empty(text, ...extra){ return h("div",{class:"empty"}, text, extra.length ? h("div",{style:"margin-top:10px"}, ...extra) : null); }
+
+function levelsList(levels){
+  const ls = (levels||[]).map((t,i)=>[i,t]).filter(([,t]) => t && String(t).trim());
+  if (!ls.length) return null;
+  return h("ul",{class:"levels"}, ls.map(([i,t]) => h("li",null,h("b",null,"L"+(i+1)), h("span",null,t))));
+}
+const pips = qs => h("div",{class:"pips", title: qs.join(" → ") || "no levels"}, qs.length ? qs.map(q => h("span",{class:"pip q-"+q})) : h("span",{class:"pip",style:"border:1px dashed var(--muted)"}));
+function modRow(m){
+  const lv = Array.isArray(m.levels) ? m.levels : [];
+  return h("div",{class:"mod", tabindex:"0", onclick:()=>openEditor("mods",m._id), onkeydown:e=>{if(e.key==="Enter")openEditor("mods",m._id)}},
+    h("div",{class:"mi"}, ico(m, 40), pips(lv.map(qualityOf))),
+    h("div",{style:"min-width:0"},
+      h("div",{class:"row"}, h("span",{style:"font-weight:600"}, m.name||m._id), m.exclusive ? h("span",{class:"excl"},"⊘ "+m.exclusive) : null),
+      m.summary ? h("div",{class:"mono",style:"font-family:inherit;font-size:12.5px"}, m.summary) : null),
+    statusChip(m.status));
+}
+// A vanilla orb's or skill's levels, from the game data: [{q, cost, params:[[label, value]], text}].
+const vq = m => Array.isArray(m.levels) ? m.levels.map(l => QUALITIES.includes(l && l.q) ? l.q : "common") : (m.qualities || [m.quality || "common"]);
+const vLevels = m => Array.isArray(m.levels) ? m.levels.filter(l => l && typeof l === "object") : [];
+function orbName(id){
+  for (const c of state.data.classes.values()) for (const s of [...(c.base||[]), ...(c.specs||[]).flatMap(sp => sp.skills||[])]){
+    if (s.id === id) return s.name;
+    const m = (s.mods||[]).find(x => x.id === id); if (m) return m.name;
+  }
+  return skillName(id);
+}
+// Params that never change are listed once; the ones that do get a column per level.
+function levelTable(levels){
+  if (!levels.length) return null;
+  const names = (levels[0].params||[]).map(p => p[0]);
+  const at = (l, i) => String(((l.params||[])[i]||[])[1] ?? "");
+  const vary = names.map((_, i) => levels.some(l => at(l, i) !== at(levels[0], i)));
+  const fixed = names.map((n, i) => vary[i] ? null : n+" "+at(levels[0], i)).filter(Boolean);
+  const cols = names.map((n, i) => [n, i]).filter(([, i]) => vary[i]);
+  const showCost = levels.some(l => l.cost != null && l.cost !== 1);
+  const showText = levels.some(l => (l.text||"") !== (levels[0].text||""));
+  return h("div",null,
+    fixed.length ? h("div",{class:"mono",style:"margin-top:4px"}, fixed.join(" · ")) : null,
+    h("div",{class:"tablewrap"}, h("table",{class:"lvt"},
+      h("thead",null, h("tr",null, h("th",null,"Lv"), h("th",null,"Quality"), showCost ? h("th",null,"Cost") : null, cols.map(([n]) => h("th",null,n)), showText ? h("th",null,"Text") : null)),
+      h("tbody",null, levels.map((l, j) => { const q = QUALITIES.includes(l.q) ? l.q : "common";
+        return h("tr",null, h("td",null,"L"+(j+1)), h("td",null, h("span",{class:"pip q-"+q}), " "+q), showCost ? h("td",null, l.cost) : null,
+          cols.map(([, i]) => h("td",null, at(l, i))), showText ? h("td",null, l.text||"") : null); })))));
+}
+function vanillaModRow(m){
+  return h("div",{class:"mod static"}, h("div",{class:"mi"}, ico(m, 40), pips(vq(m))),
+    h("div",{style:"min-width:0"},
+      h("div",{class:"row"}, h("span",{style:"font-weight:600"}, m.name||m.id),
+        (m.blockedBy||[]).length ? h("span",{class:"excl", title:"Can't be taken together"}, "⊘ "+m.blockedBy.map(orbName).join(", ")) : null,
+        (m.requires||[]).length ? h("span",{class:"mono"}, "needs "+m.requires.map(orbName).join(", ")) : null),
+      m.desc ? h("div",{class:"vdesc",style:"margin:0"}, m.desc) : null,
+      levelTable(vLevels(m))));
+}
+function skillCard(s){
+  const mods = list("mods").filter(m => m.skill === s._id);
+  const vanilla = isVanilla();
+  return h("div",{class:"card"},
+    h("div",{class:"row"}, ico(s),
+      h("span",{class:"title grow clickable", onclick:()=>openEditor("skills",s._id)}, s.name||s._id),
+      chip("kind-"+(s.kind==="passive"?"passive":"active"), s.kind||"active"), statusChip(s.status)),
+    h("div",{class:"row mono",style:"margin-top:2px"},
+      s.unlock ? h("span",null, s.unlock==="free"?"free at lv1":"bought") : null,
+      s.mana ? h("span",null,"· mana "+s.mana) : null, s.cooldown ? h("span",null,"· cd "+s.cooldown) : null,
+      s.built ? h("span",null,"· "+s.built) : null),
+    s.summary ? h("p",{class:"summary"}, s.summary) : null,
+    levelsList(s.levels),
+    h("div",{class:"mods"},
+      h("div",{class:"row"}, h("span",{class:"mono grow"}, mods.length+" orb mod"+(mods.length===1?"":"s")+" · "+mods.reduce((a,m)=>a+(m.levels||[]).length,0)+" levels"),
+        addBtn(vanilla ? "orb" : "mod","mods", Object.assign({skill:s._id}, vanilla ? ORB() : {}))),
+      mods.map(modRow)),
+    s.notes ? h("div",{class:"para"},h("span",{class:"k"},"Notes"), s.notes) : null,
+    h("div",{class:"row",style:"margin-top:8px"}, h("button",{class:"btn small", onclick:()=>openEditor("skills",s._id)}, state.canWrite?"Edit":"Details")));
+}
+function vanillaSkillCard(s, orbsOpen){
+  const extra = list("mods").filter(m => m.skill === s.id && clsOf(m) === state.cls);
+  const lv = (s.mods||[]).reduce((a,m)=>a+vq(m).length,0);
+  const sl = vLevels(s);
+  return h("div",{class:"card"},
+    h("div",{class:"row"}, ico(s), h("span",{class:"title grow"}, s.name||s.id), chip("kind-"+(s.kind==="passive"?"passive":"active"), s.summon ? "summon" : s.kind), chip("van", s.port ? s.port+" port" : "vanilla")),
+    s.desc ? h("p",{class:"vdesc"}, s.desc) : null,
+    sl.length ? h("details",{class:"vm"}, h("summary",null, sl.length+" skill level"+(sl.length===1?"":"s")), levelTable(sl)) : null,
+    (s.mods||[]).length ? h("details",{class:"vm", open: !!orbsOpen}, h("summary",null, s.mods.length+(s.port ? "" : " vanilla")+" orb"+(s.mods.length===1?"":"s")+" · "+lv+" levels"), h("div",{class:"mods",style:"border:0;padding:0"}, s.mods.map(vanillaModRow))) : null,
+    h("div",{class:"mods"},
+      h("div",{class:"row"}, h("span",{class:"mono grow"}, extra.length ? extra.length+" new orb"+(extra.length===1?"":"s") : "no new orbs"), addBtn("orb","mods", Object.assign({skill:s.id}, ORB()))),
+      extra.map(modRow)));
+}
+function doctrineSection(d, isNew){
+  const sk = mine("skills").filter(s => s.group === d._id);
+  const a = sk.filter(s=>s.kind!=="passive").length, p = sk.length - a;
+  return h("section",{class:"doctrine"+(isNew?" new":"")},
+    h("h2",null, h("span",{class:"grow clickable", onclick:()=>openEditor("doctrines",d._id)}, (isNew ? "4th: " : "")+(d.name||d._id)), statusChip(d.status)),
+    d.blurb ? h("p",{class:"blurb"}, d.blurb) : null,
+    h("div",{class:"row mono"}, h("span",{class:"grow"}, a+" active · "+p+" passive"), addBtn("skill","skills",{group:d._id})),
+    sk.length ? sk.map(skillCard) : h("div",{class:"empty"},"No skills yet"),
+    d.notes ? h("div",{class:"para"}, h("span",{class:"k"},"Notes"), d.notes) : null);
+}
+function viewClass(v){
+  const docs = mine("doctrines");
+  if (!docs.length && !mine("skills").length){ v.append(empty("No doctrines or skills yet.", addBtn("doctrine","doctrines"))); return; }
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"Base kit and doctrines"), h("span",{class:"grow"}), addBtn("doctrine","doctrines")));
+  const g = h("div",{class:"grid cols-4"});
+  for (const d of docs) g.append(doctrineSection(d, false));
+  const orphans = mine("skills").filter(s => !state.data.doctrines.has(s.group));
+  if (orphans.length) g.append(h("section",{class:"doctrine"}, h("h2",null,"Unassigned"), orphans.map(skillCard)));
+  v.append(g);
+  cutSkills(v, classDoc());
+}
+function cutSkills(v, c){
+  if (!c || !(c.cut||[]).length) return;
+  v.append(h("div",{class:"card",style:"margin-top:14px"},
+    h("div",{class:"row"}, h("span",{class:"title grow"},"Unused skills in the game data"), chip("van","vanilla")),
+    c.cutNote ? h("p",{class:"vdesc"}, c.cutNote) : null,
+    h("ul",{class:"levels",style:"grid-template-columns:1fr"}, c.cut.map(x => h("li",{style:"display:block"}, h("strong",null, x.name || x.file), " ", h("span",{class:"mono"}, x.file), x.desc ? " · "+x.desc : "")))));
+}
+function viewVanilla(v){
+  const c = classDoc();
+  const st = c.stats || {};
+  v.append(h("div",{class:"card",style:"margin-bottom:14px"},
+    h("div",{class:"row"}, h("span",{class:"title grow"}, c.name), chip("van", c.port ? c.port+" class, ported" : "vanilla class"),
+      h("button",{class:"btn small", onclick:()=>openEditor("classes", c._id)}, state.canWrite ? "Notes" : "Details")),
+    c.desc ? h("p",{class:"vdesc"}, c.desc) : null,
+    h("div",{class:"stats"}, ["str","dex","int","foc","vit","health","mana","armor"].filter(k => st[k] != null).map(k => h("div",{class:"stat"}, h("div",{class:"k"},k), h("div",{class:"v"}, st[k])))),
+    (c.gear||[]).length ? h("div",{class:"mono",style:"margin-top:8px"}, "Starts with: "+c.gear.join(", ")) : null,
+    c.notes ? h("div",{class:"para"}, h("span",{class:"k"},"Notes"), c.notes) : null));
+  const docs = mine("doctrines");
+  v.append(h("div",{class:"sectionhead"}, h("h2",null, c.port ? "Base kit, the three "+c.port+" masteries, and a 4th" : (c.specs||[]).some(sp => sp.port) ? "Base kit, the vanilla specs, the ported mastery, and the 4th" : "Base kit, the three vanilla specs, and the 4th"), h("span",{class:"grow"}),
+    docs.length ? null : addBtn("4th spec","doctrines",{spec4:true, order:4})));
+  const g = h("div",{class:"grid cols-4"});
+  g.append(h("section",{class:"doctrine"}, h("h2",null, h("span",{class:"grow"},"Base kit"), chip("van", srcOf(null))), (c.base||[]).map(vanillaSkillCard)));
+  for (const sp of c.specs||[]) g.append(h("section",{class:"doctrine"}, h("h2",null, h("span",{class:"grow"}, sp.name), chip("van", srcOf(sp))), (sp.skills||[]).map(vanillaSkillCard)));
+  for (const d of docs) g.append(doctrineSection(d, true));
+  if (!docs.length) g.append(h("section",{class:"doctrine new"}, h("h2",null,"4th spec"), h("div",{class:"empty"},"Not started")));
+  v.append(g);
+  cutSkills(v, c);
+}
+function viewVanillaOrbs(v){
+  const c = classDoc();
+  const vs = vanillaSkills();
+  const nv = vs.reduce((a,s)=>a+(s.mods||[]).length,0), nl = vs.reduce((a,s)=>a+(s.mods||[]).reduce((b,m)=>b+vq(m).length,0),0);
+  const ms = mine("mods");
+  v.append(h("div",{class:"sectionhead"}, h("h2",null, "Orbs: "+(c.name||"")), h("span",{class:"grow"}), addBtn("orb","mods", ORB())));
+  v.append(h("p",{class:"sub",style:"margin-top:-6px"}, "A purple orb (skill sphere) found in a run offers 3 picks drawn from the orbs of skills you have learned, each at its next level; a reroll costs Shadow Curse. The vanilla orbs below are read from the game data, with each level's quality and numbers. New orbs join the same pool."));
+  v.append(h("div",{class:"orbsum"}, nv+(c.port ? " "+c.port+" port" : " game")+" orbs · "+nl+" orb levels · "+ms.length+" new"));
+  const groups = [["Base kit", c.base||[], null], ...(c.specs||[]).map(sp => [sp.name, sp.skills||[], sp])];
+  for (const [name, ss, sp] of groups){
+    v.append(h("h3",{class:"spechead"}, name, chip("van", srcOf(sp))));
+    v.append(h("div",{class:"grid cols-3"}, ss.map(s => vanillaSkillCard(s, true))));
+  }
+  const vids = new Set(vs.map(s => s.id));
+  const rest = ms.filter(m => !vids.has(m.skill));
+  const own = mine("skills");
+  for (const d of mine("doctrines")){
+    const sk = own.filter(s => s.group === d._id);
+    v.append(h("h3",{class:"spechead"}, "4th: "+(d.name||d._id), statusChip(d.status)));
+    v.append(h("div",{class:"grid cols-3"}, sk.map(s => { const xs = rest.filter(m => m.skill === s._id);
+      return h("div",{class:"card"}, h("div",{class:"row"}, ico(s), h("span",{class:"title grow"}, s.name||s._id), chip("kind-"+(s.kind==="passive"?"passive":"active"), s.kind||"active")),
+        h("div",{class:"mods",style:"border:0;padding:0"}, xs.length ? xs.map(modRow) : h("span",{class:"mono"},"no orbs yet"), h("div",null, addBtn("orb","mods", Object.assign({skill:s._id}, ORB()))))); })));
+  }
+  const loose = rest.filter(m => !own.some(s => s._id === m.skill));
+  if (loose.length) v.append(h("h3",{class:"spechead"},"No parent skill"), h("div",{class:"card"}, h("div",{class:"mods",style:"border:0;padding:0"}, loose.map(modRow))));
+}
+function viewOrbs(v){
+  const vanilla = isVanilla();
+  if (vanilla) return viewVanillaOrbs(v);
+  const ms = mine("mods");
+  v.append(h("div",{class:"sectionhead"}, h("h2",null, vanilla ? "New orbs for "+(classDoc()?.name||"") : "Orb mods"), h("span",{class:"grow"}),
+    addBtn(vanilla ? "orb" : "mod","mods", vanilla ? ORB() : {})));
+  v.append(h("p",{class:"sub",style:"margin-top:-6px"}, vanilla
+    ? "A purple orb (skill sphere) found in a run offers 3 picks drawn from the orbs of skills you have learned, each at its next level; a reroll costs Shadow Curse. New orbs here join that pool. One can attach to the 4th spec's skills or to any vanilla skill of the class."
+    : "Every orb mod for the class, grouped by the skill it modifies."));
+  if (!ms.length){ v.append(empty("No orbs yet.")); return; }
+  const groups = new Map();
+  for (const m of ms){ const k = m.skill || ""; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(m); }
+  v.append(h("div",{class:"grid cols-3"}, [...groups].map(([k, xs]) => h("div",{class:"card"},
+    h("div",{class:"row"}, ico(state.data.skills.get(k) || {id:k}), h("span",{class:"title grow"}, k ? skillName(k) : "No parent skill"), state.data.skills.has(k) ? null : chip("van","vanilla skill"), h("span",{class:"mono"}, xs.length)),
+    h("div",{class:"mods",style:"border:0;padding:0"}, xs.map(modRow))))));
+}
+function viewGrenade(v){
+  const g = mine("skills").find(s => s.role === "grenade");
+  if (!g){ v.append(empty("No skill has the role “grenade” yet. Set Role on a skill to show it here.")); return; }
+  const mods = list("mods").filter(m => m.skill === g._id);
+  const groups = new Map();
+  for (const m of mods){ const k = m.exclusive || ""; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(m); }
+  v.append(h("div",{class:"sectionhead"}, h("h2",null, g.name||g._id), statusChip(g.status), h("span",{class:"grow"}), addBtn("grenade mod","mods",{skill:g._id, exclusive:"grenade-type"})));
+  v.append(h("p",{class:"sub",style:"margin-top:-6px"},"The base grenade, and the orb mods that change it. Mods in the same exclusive group can't be taken together: picking one blocks the rest."));
+  const grid = h("div",{class:"grid cols-3"});
+  grid.append(h("div",{class:"card"}, h("div",{class:"row"}, ico(g), h("span",{class:"title grow"},"Base: "+(g.name||g._id)), chip("kind-active","start")), g.summary ? h("p",{class:"summary"}, g.summary) : null, levelsList(g.levels)));
+  for (const [k, ms] of groups){
+    grid.append(h("div",{class:"card"},
+      h("div",{class:"row"}, h("span",{class:"title grow"}, k ? "Exclusive: "+k : "Stacks freely"), h("span",{class:"mono"}, ms.length+" mods")),
+      h("div",{class:"mods",style:"border:0;padding:0"}, ms.map(modRow))));
+  }
+  v.append(grid);
+}
+function weaponCard(w){
+  const st = (k,label) => w[k] !== undefined && w[k] !== "" ? h("div",{class:"stat"}, h("div",{class:"k"},label), h("div",{class:"v"}, w[k])) : null;
+  const para = (k,label) => w[k] ? h("div",{class:"para"}, h("span",{class:"k"},label), w[k]) : null;
+  return h("div",{class:"card clickable", tabindex:"0", onclick:()=>openEditor("weapons",w._id), onkeydown:e=>{if(e.key==="Enter")openEditor("weapons",w._id)}},
+    h("div",{class:"row"}, h("span",{class:"title grow"}, w.name||w._id), chip("kind-passive", w.slot||"?"), statusChip(w.status)),
+    w.built ? h("div",{class:"mono"}, w.built) : null,
+    h("div",{class:"stats"}, st("clip","Magazine"), st("reload","Reload"), st("damage","Damage"), st("rate","Rate"), st("spread","Spread"), st("mana","Mana")),
+    para("primary","Left click"), para("secondary","Right click"), para("pairing","Pairing"), para("notes","Notes"));
+}
+function viewArsenal(v){
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"Arsenal"), h("span",{class:"grow"}), addBtn("weapon","weapons")));
+  const ws = mine("weapons");
+  v.append(ws.length ? h("div",{class:"grid cols-3"}, ws.map(weaponCard)) : empty("No weapons yet."));
+}
+function viewClip(v){
+  const ss = mine("stacks");
+  const clip = ss.find(s => s._id === "clip");
+  const base = clip ? parseInt(clip.max, 10) || 0 : 0;
+  const guns = mine("weapons").filter(w => w.slot !== "doctrine");
+  const mh = guns.filter(w => w.slot === "mainhand" || w.slot === "twohand");
+  const oh = guns.filter(w => w.slot === "offhand");
+  const sel = {m: mh[0]?._id || "", o: ""};
+  try { const s = JSON.parse(localStorage.getItem("fp.loadout")||"{}"); if (s.m && state.data.weapons.has(s.m)) sel.m = s.m; if (s.o !== undefined) sel.o = s.o; } catch {}
+  const out = h("div");
+  const mSel = h("select",null, mh.map(w => h("option",{value:w._id, selected: w._id===sel.m}, w.name||w._id)));
+  const oSel = h("select",null, h("option",{value:""},"Shield / other offhand"), oh.map(w => h("option",{value:w._id, selected:w._id===sel.o}, w.name||w._id)));
+  let fired = 0;
+  function draw(){
+    const m = state.data.weapons.get(mSel.value), o = oSel.value ? state.data.weapons.get(oSel.value) : null;
+    const twohand = m && m.slot === "twohand";
+    oSel.disabled = twohand;
+    const mag = base + (Number(m?.clip)||0) + (!twohand && o ? Number(o.clip)||0 : 0);
+    fired = Math.min(fired, mag);
+    out.replaceChildren(
+      h("div",{class:"row"}, h("span",{class:"title"}, "Clip max "+mag), h("span",{class:"mono"}, "= base "+base+" + "+(m?.name||"?")+" "+(Number(m?.clip)||0)+(!twohand && o ? " + "+(o.name)+" "+(Number(o.clip)||0) : ""))),
+      h("div",{class:"rounds", "aria-label": (mag-fired)+" of "+mag+" rounds"}, Array.from({length:mag}, (_,i) => h("span",{class:"round"+(i < fired ? " spent" : "")}))),
+      h("div",{class:"row"},
+        h("button",{class:"btn", onclick:()=>{ if (fired < mag){ fired++; draw(); } }}, "Fire 1"),
+        h("button",{class:"btn", onclick:()=>{ fired = Math.min(mag, fired+2); draw(); }}, "Fire 2"),
+        h("button",{class:"btn", onclick:()=>{ fired = 0; draw(); }}, "Reload"),
+        h("span",{class:"mono"}, fired >= mag ? "Empty: auto-reload starts ("+(m?.reload||"reload time")+")" : (mag-fired)+" left")));
+  }
+  const save = () => { try{ localStorage.setItem("fp.loadout", JSON.stringify({m:mSel.value,o:oSel.value})); }catch{} draw(); };
+  mSel.addEventListener("change", save); oSel.addEventListener("change", save);
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"Clip & reload"), h("span",{class:"grow"}), addBtn("stack","stacks")));
+  if (guns.length) v.append(h("div",{class:"card",style:"margin-bottom:14px"},
+    h("div",{class:"row",style:"margin-bottom:8px"}, h("label",{class:"f grow"},"Main hand / two-hand", mSel), h("label",{class:"f grow"},"Off hand", oSel)), out));
+  if (guns.length) draw();
+  v.append(ss.length ? h("div",{class:"grid cols-3"}, ss.map(s => h("div",{class:"card clickable", tabindex:"0", onclick:()=>openEditor("stacks",s._id), onkeydown:e=>{if(e.key==="Enter")openEditor("stacks",s._id)}},
+    h("div",{class:"row"}, h("span",{class:"title grow"}, s.name||s._id), statusChip(s.status)),
+    s.built ? h("div",{class:"mono"}, s.built) : null,
+    h("div",{class:"stats"}, s.max!==undefined&&s.max!==""?h("div",{class:"stat"},h("div",{class:"k"},"Max"),h("div",{class:"v"},s.max)):null, s.timer?h("div",{class:"stat"},h("div",{class:"k"},"Timer"),h("div",{class:"v"},s.timer)):null),
+    [["gain","Gained by"],["spent","Spent by"],["empty","On reaching 0"],["modifiers","Modified by"],["notes","Notes"]].map(([k,l]) => s[k] ? h("div",{class:"para"},h("span",{class:"k"},l), s[k]) : null)))) : empty("No stacks defined yet."));
+}
+function viewAttributes(v){
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"Gun attributes → vanilla rails"), h("span",{class:"grow"}), addBtn("attribute","attributes")));
+  const as = mine("attributes");
+  if (!as.length){ v.append(empty("No attributes mapped yet.")); return; }
+  v.append(h("div",{class:"tablewrap"}, h("table",null,
+    h("thead",null,h("tr",null,h("th",null,"Gun attribute"),h("th",null,"Stat / rail"),h("th",null,"Items and trinkets"),h("th",null,"Notes"))),
+    h("tbody",null, as.map(a => h("tr",{class:"clickable", onclick:()=>openEditor("attributes",a._id)}, h("td",null,h("strong",null,a.name||a._id)), h("td",null,a.stat||""), h("td",null,a.trinkets||""), h("td",null,a.notes||"")))))));
+}
+function meter(label, have, target){
+  const t = Number(target) || 0, pct = t ? Math.min(100, have/t*100) : 0;
+  return h("div",{class:"meter"}, h("div",{class:"lbl"}, h("span",null,label), h("strong",null, have+" / "+(t||"?"))),
+    h("div",{class:"bar"}, h("div",{class:"fill"+(t && have>t?" over":""), style:"width:"+pct+"%"})));
+}
+const lvCount = ms => ms.reduce((a,m)=>a+(Array.isArray(m.levels)?m.levels.length:0),0);
+function viewBudget(v){
+  const ref = state.data.reference.get("vanilla") || {};
+  const sk = mine("skills"), mods = mine("mods");
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"Budget against vanilla"), h("span",{class:"grow"}),
+    h("button",{class:"btn small needs-write", onclick:()=>openEditor("reference", state.data.reference.has("vanilla") ? "vanilla" : null, {_newId:"vanilla"})}, "Edit targets")));
+  // A player holds the base kit plus one doctrine, so the skill meters read the fullest path.
+  const path = kind => { const base = sk.filter(s => s.group === "base" && (s.kind==="passive") === (kind==="passive")).length;
+    const per = mine("doctrines").filter(d => d._id !== "base").map(d => sk.filter(s => s.group === d._id && (s.kind==="passive") === (kind==="passive")).length);
+    return base + (per.length ? Math.max(...per) : 0); };
+  v.append(h("div",{class:"card"},
+    meter("Actives per player (base + one doctrine)", path("active"), ref.actives),
+    meter("Passives per player (base + one doctrine)", path("passive"), ref.passives),
+    meter("Orb mods", mods.length, ref.modsTarget),
+    meter("Mod levels", lvCount(mods), ref.levelsTarget),
+    ref.notes ? h("p",{class:"summary sub"}, ref.notes) : null));
+  const docs = mine("doctrines");
+  if (docs.length){
+    const q = ms => { const o = {}; ms.forEach(m => (m.levels||[]).forEach(l => o[qualityOf(l)] = (o[qualityOf(l)]||0)+1)); return QUALITIES.map(k => o[k] ? k[0].toUpperCase()+o[k] : "").filter(Boolean).join(" "); };
+    v.append(h("div",{class:"tablewrap",style:"margin-top:14px"}, h("table",null,
+      h("thead",null,h("tr",null, h("th",null,"Group"),h("th",null,"Actives"),h("th",null,"Passives"),h("th",null,"Mods"),h("th",null,"Levels"),h("th",null,"Quality mix"),h("th",null,"Vanilla"))),
+      h("tbody",null, docs.map(d => { const s = sk.filter(x=>x.group===d._id), ids = new Set(s.map(x=>x._id)), ms = mods.filter(m=>ids.has(m.skill));
+        return h("tr",null, h("td",null,h("strong",null,d.name||d._id)), h("td",null,s.filter(x=>x.kind!=="passive").length), h("td",null,s.filter(x=>x.kind==="passive").length), h("td",null,ms.length), h("td",null,lvCount(ms)), h("td",{class:"mono"},q(ms)), h("td",{class:"mono"}, d._id==="base" ? (ref.baseMods||"") : (ref.specMods||""))); })))));
+  }
+  const status = {}; [...sk, ...mods, ...mine("weapons")].forEach(r => status[r.status||"idea"] = (status[r.status||"idea"]||0)+1);
+  v.append(h("div",{class:"row",style:"margin-top:14px"}, h("span",{class:"mono"},"Skills, mods and weapons by status:"), STATUSES.map(s => chip("st-"+s, s+" "+(status[s]||0)))));
+}
+function viewVanillaBudget(v){
+  const c = classDoc();
+  const specMods = (c.specs||[]).map(sp => (sp.skills||[]).reduce((a,s)=>a+(s.mods||[]).length,0));
+  const avg = specMods.length ? Math.round(specMods.reduce((a,b)=>a+b,0)/specMods.length) : 0;
+  const docs = mine("doctrines"), sk = mine("skills"), mods = mine("mods");
+  const d = docs[0], dsk = d ? sk.filter(s => s.group === d._id) : [], ids = new Set(dsk.map(s => s._id));
+  const own = mods.filter(m => ids.has(m.skill));
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"4th spec against the vanilla three")));
+  v.append(h("div",{class:"card"},
+    meter("Actives in the 4th spec (vanilla specs have 1)", dsk.filter(s=>s.kind!=="passive").length, 1),
+    meter("Passives in the 4th spec (vanilla specs have 1)", dsk.filter(s=>s.kind==="passive").length, 1),
+    meter("Orbs on the 4th spec's own skills (vanilla average "+avg+")", own.length, avg)));
+  v.append(h("div",{class:"tablewrap",style:"margin-top:14px"}, h("table",null,
+    h("thead",null,h("tr",null, h("th",null,"Spec"),h("th",null,"Skills"),h("th",null,"Vanilla orbs"),h("th",null,"Orb levels"),h("th",null,"New orbs"))),
+    h("tbody",null,
+      [["Base kit", c.base||[]], ...(c.specs||[]).map(sp => [sp.name, sp.skills||[]])].map(([name, ss]) => { const i = new Set(ss.map(s=>s.id));
+        return h("tr",null, h("td",null,name), h("td",null,ss.map(s=>s.name).join(", ")), h("td",null,ss.reduce((a,s)=>a+(s.mods||[]).length,0)), h("td",null,ss.reduce((a,s)=>a+(s.mods||[]).reduce((b,m)=>b+vq(m).length,0),0)), h("td",null, mods.filter(m => i.has(m.skill)).length)); }),
+      docs.map(x => { const s = sk.filter(y => y.group === x._id), i = new Set(s.map(y=>y._id)), ms = mods.filter(m => i.has(m.skill));
+        return h("tr",null, h("td",null,h("strong",null,"4th: "+(x.name||x._id))), h("td",null,s.map(y=>y.name).join(", ")), h("td",null,"—"), h("td",null,lvCount(ms)), h("td",null,ms.length)); })))));
+}
+function viewOverview(v){
+  v.append(h("div",{class:"sectionhead"}, h("h2",null,"All classes")));
+  v.append(h("p",{class:"sub",style:"margin-top:-6px"},"Every class's new specialization and its new orbs. Pick a row to open that class."));
+  v.append(h("div",{class:"tablewrap"}, h("table",null,
+    h("thead",null,h("tr",null, h("th",null,"Class"),h("th",null,"Specs"),h("th",null,"New spec"),h("th",null,"Active"),h("th",null,"Passive"),h("th",null,"New orbs"))),
+    h("tbody",null, classes().map(c => {
+      const docs = mine("doctrines", c._id), sk = mine("skills", c._id), ms = mine("mods", c._id);
+      const isF = c._id === FIREARMS;
+      const spec = isF ? null : docs[0];
+      const ssk = spec ? sk.filter(s => s.group === spec._id) : [];
+      const cell = kind => { const s = ssk.find(x => (x.kind==="passive") === (kind==="passive")); return s ? h("span",null, s.name||s._id, " ", statusChip(s.status)) : (isF ? "—" : h("span",{class:"mono"},"none")); };
+      return h("tr",{class:"clickable", onclick:()=>{ state.cls = c._id; state.tab = "class"; try{localStorage.setItem("fp.cls",c._id); localStorage.setItem("fp.tab","class");}catch{} render(); scrollTo(0,0); }},
+        h("td",null,h("strong",null,c.name||c._id)),
+        h("td",{class:"mono"}, isF ? "new class: "+docs.filter(d=>d._id!=="base").length+" doctrines" : (c.specs||[]).map(s=>s.name).join(", ")),
+        h("td",null, isF ? "—" : spec ? h("span",null, spec.name||spec._id, " ", statusChip(spec.status)) : h("span",{class:"mono"},"not started")),
+        h("td",null, cell("active")), h("td",null, cell("passive")),
+        h("td",null, ms.length+" orb"+(ms.length===1?"":"s")));
+    })))));
+}
+
+// ---------- editor ----------
+let editing = null;
+function fieldInput(coll, key, type, val){
+  if (type === "textarea") return h("textarea",{name:key}, val ?? "");
+  if (type === "number") return h("input",{name:key, type:"number", step:"any", value: val ?? ""});
+  if (type === "status") return h("select",{name:key}, STATUSES.map(s => h("option",{value:s, selected:(val||"idea")===s}, s)));
+  if (type.startsWith("select:")) return h("select",{name:key}, type.slice(7).split(",").map(s => h("option",{value:s, selected:(val||"")===s}, s||"—")));
+  if (type === "doctrine") return h("select",{name:key}, mine("doctrines").map(d => h("option",{value:d._id, selected:val===d._id}, d.name||d._id)));
+  if (type === "skill"){
+    const own = mine("skills"), van = vanillaSkills();
+    const opts = [h("optgroup",{label:"New skills"}, own.map(s => h("option",{value:s._id, selected:val===s._id}, s.name||s._id)))];
+    const specs = [...new Set(van.map(s => s.spec))];
+    for (const sp of specs) opts.push(h("optgroup",{label:"Vanilla · "+sp}, van.filter(s => s.spec === sp).map(s => h("option",{value:s.id, selected:val===s.id}, s.name))));
+    return h("select",{name:key}, opts);
+  }
+  if (type === "levels5") return levelsEditor(key, Array.isArray(val)?val:[], false);
+  if (type === "levelsq") return levelsEditor(key, Array.isArray(val)?val:[], true);
+  return h("input",{name:key, type:"text", value: val ?? ""});
+}
+function levelsEditor(key, vals, withQ){
+  const box = h("div",{class:"lv","data-levels":key,"data-q":withQ?"1":""});
+  const rows = withQ ? vals.map(v => ({q:qualityOf(v), text:v.text||""})) : Array.from({length:5}, (_,i) => vals[i] || "");
+  function draw(){
+    box.replaceChildren(
+      ...rows.map((r,i) => withQ
+        ? h("div",{class:"lvrow"}, h("b",null,"L"+(i+1)),
+            h("select",{"data-i":i,"data-f":"q", onchange:e=>rows[i].q=e.target.value}, QUALITIES.map(q => h("option",{value:q, selected:r.q===q}, q))),
+            h("input",{type:"text", value:r.text, placeholder:"effect at this level", oninput:e=>rows[i].text=e.target.value}),
+            h("button",{class:"btn small", type:"button", onclick:()=>{rows.splice(i,1); draw();}}, "×"))
+        : h("div",{class:"lvrow noq"}, h("b",null,"L"+(i+1)), h("input",{type:"text", value:r, placeholder:"values at level "+(i+1), oninput:e=>rows[i]=e.target.value}), h("span"))),
+      withQ && rows.length < 3 ? h("div",null, h("button",{class:"btn small", type:"button", onclick:()=>{rows.push({q: rows.length ? rows[rows.length-1].q : "common", text:""}); draw();}}, "+ level")) : null);
+  }
+  box._rows = rows; draw();
+  return box;
+}
+function slug(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60); }
+function openEditor(coll, id, preset){
+  const sc = SCHEMA[coll], rec = id ? state.data[coll].get(id) : null;
+  const pre = Object.assign({}, preset||{}); delete pre._newId;
+  const body = rec ? structuredClone(stripMeta(rec)) : Object.assign({status:"idea"}, pre);
+  editing = {coll, id, newId: preset && preset._newId, preset: pre};
+  $("#dlgTitle").textContent = (rec ? (state.canWrite ? "Edit " : "") : "New ")+sc.label.toLowerCase()+(rec ? ": "+(rec.name||id) : "");
+  $("#dlgErr").textContent = "";
+  $("#dlgDelete").hidden = !rec || coll === "classes";
+  const b = $("#dlgBody"); b.replaceChildren();
+  const pairs = sc.fields.filter(f => !["textarea","levels5","levelsq"].includes(f[1]));
+  const wide = sc.fields.filter(f => ["textarea","levels5","levelsq"].includes(f[1]));
+  if (pairs.length){ const two = h("div",{class:"two"}); for (const [k,t,l] of pairs) two.append(h("label",{class:"f"}, l, fieldInput(coll,k,t,body[k]))); b.append(two); }
+  for (const [k,t,l] of wide) b.append(t.startsWith("levels") ? h("div",{class:"f"}, h("label",{class:"f"}, l), fieldInput(coll,k,t,body[k])) : h("label",{class:"f"}, l, fieldInput(coll,k,t,body[k])));
+  b.querySelectorAll("input,select,textarea").forEach(el => el.disabled = !state.canWrite);
+  if (rec) b.append(h("div",{class:"mono"}, coll+"/"+id));
+  $("#dlg").showModal();
+}
+function stripMeta(r){ const o = {...r}; delete o._id; return o; }
+function collect(){
+  const {coll} = editing, out = {};
+  for (const [k,t] of SCHEMA[coll].fields){
+    if (t.startsWith("levels")){
+      const box = $("#dlgBody").querySelector('[data-levels="'+k+'"]');
+      const rows = box._rows;
+      out[k] = t === "levelsq" ? rows.map(r => ({q:r.q, text:r.text.trim()})) : rows.map(r => String(r).trim());
+      if (t === "levels5"){ while (out[k].length && !out[k][out[k].length-1]) out[k].pop(); }
+      continue;
+    }
+    const el = $("#dlgBody").querySelector('[name="'+k+'"]');
+    if (!el) continue;
+    const v = el.value;
+    out[k] = t === "number" ? (v === "" ? null : Number(v)) : v;
+  }
+  return out;
+}
+$("#dlgSave").addEventListener("click", async () => {
+  if (!state.db || !editing) return;
+  const {coll, id, newId, preset} = editing;
+  const prev = id ? state.data[coll].get(id) : null;
+  const body = Object.assign({}, prev ? stripMeta(prev) : preset, collect());
+  let docId = id || newId || slug(body.name) || null;
+  if (!id && docId && state.data[coll].has(docId)) docId = docId + "-" + Math.random().toString(36).slice(2,6);
+  const btn = $("#dlgSave"); btn.disabled = true; $("#dlgErr").textContent = "";
+  try {
+    const ref = docId ? state.db.collection(coll).doc(docId) : state.db.collection(coll).doc();
+    await ref.set(body);
+    $("#dlg").close();
+  } catch (e) {
+    $("#dlgErr").textContent = "Couldn't save ("+(e && e.code || "error")+").";
+  } finally { btn.disabled = false; }
+});
+$("#dlgDelete").addEventListener("click", async () => {
+  if (!state.db || !editing || !editing.id) return;
+  if (!confirm("Delete this "+SCHEMA[editing.coll].label.toLowerCase()+"?")) return;
+  try { await state.db.collection(editing.coll).doc(editing.id).delete(); $("#dlg").close(); }
+  catch (e) { $("#dlgErr").textContent = "Couldn't delete ("+(e && e.code || "error")+")."; }
+});
+
+// ---------- data ----------
+function setSync(kind, text){ $("#syncDot").className = "dot "+(kind||""); $("#syncText").textContent = text; }
+let renderQueued = false;
+function queueRender(){ if (renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; if (!$("#dlg").open) render(); else pendingRender = true; }); }
+let pendingRender = false;
+$("#dlg").addEventListener("close", () => { editing = null; if (pendingRender){ pendingRender = false; render(); } });
+
+// The server keeps each record as planner/data/<collection>/<id>.json.
+function api(method, coll, id, body){
+  return fetch("api/"+coll+"/"+encodeURIComponent(id), {method, headers:{"Content-Type":"application/json"}, body: body ? JSON.stringify(body) : undefined})
+    .then(r => { if (!r.ok) throw {code: "http "+r.status}; return load(); });
+}
+const localDb = {collection: coll => ({doc: id => {
+  id = id || coll+"-"+Math.random().toString(36).slice(2,10);
+  return {set: body => api("PUT", coll, id, body), delete: () => api("DELETE", coll, id)};
+}})};
+let stamp = null;
+async function load(){
+  const j = await fetch("api/data").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+  for (const c of COLLECTIONS) state.data[c] = new Map(Object.entries(j.data[c]||{}).map(([id, d]) => [id, {...d, _id:id}]));
+  stamp = j.stamp;
+  state.db = localDb; state.canWrite = true;
+  setSync("ok","Saved to planner/data");
+  queueRender();
+}
+// Picks up changes made outside this tab: another tab, a git pull, a hand edit.
+async function poll(){
+  try {
+    const j = await fetch("api/stamp").then(r => r.json());
+    if (j.stamp !== stamp) await load();
+    else if (!state.db){ state.db = localDb; state.canWrite = true; setSync("ok","Saved to planner/data"); queueRender(); }
+  } catch {
+    if (state.db){ state.db = null; state.canWrite = false; setSync("bad","Server stopped"); queueRender(); }
+  }
+}
+
+render();
+fetch("icons.json").then(r => r.ok ? r.json() : null).then(j => { if (j && j.icons){ ICONS = j; queueRender(); } }).catch(() => {});
+load().catch(() => setSync("bad","Server not running")).finally(() => { state.ready = true; render(); setInterval(poll, 2000); });
+})();
+</script>
+
+</body></html>

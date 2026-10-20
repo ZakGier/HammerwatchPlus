@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_adrenaline_epipen",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+8 stacks"
+    },
+    {
+      "q": "rare",
+      "text": "+15 stacks"
+    }
+  ],
+  "name": "EpiPen",
+  "notes": "",
+  "order": null,
+  "skill": "adrenaline",
+  "status": "built",
+  "summary": "Dodging with no stacks of adrenaline instantly grants you stacks of adrenaline."
+}

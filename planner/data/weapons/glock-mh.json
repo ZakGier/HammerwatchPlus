@@ -1,0 +1,17 @@
+{
+  "built": "hwp_glock_mh_01/02/03",
+  "clip": 10,
+  "damage": "lower than rifle",
+  "mana": "none",
+  "name": "Glock (main hand)",
+  "notes": "With a shield or other off hand: 2 rounds per left-click cycle (two shots). Shield needs STR 10 (class base is 4).",
+  "order": 0,
+  "pairing": "Grants marker buff hwp_glock_main; the off-hand Glock reads it.",
+  "primary": "Alone or with a shield/offhand: one accurate round per shot. With an off-hand Glock: alternates left/right muzzles.",
+  "rate": "fast",
+  "reload": "1.6s auto; dodge restarts",
+  "secondary": "From the off-hand item (shield bash, etc.)",
+  "slot": "mainhand",
+  "spread": "tight alone; moderate when dual",
+  "status": "built"
+}

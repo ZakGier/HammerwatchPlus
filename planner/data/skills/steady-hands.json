@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_steady",
+  "cooldown": "",
+  "group": "base",
+  "kind": "passive",
+  "levels": [
+    "+10% magazine size",
+    "+20% magazine size",
+    "+30% magazine size",
+    "+40% magazine size",
+    "+50% magazine size"
+  ],
+  "mana": "",
+  "name": "Extended Clip Crit",
+  "notes": "i.e. if you have a rifle with 45 bullets in the chamber the first shot does +88% crit damage if it crits, the next shot does +86% etc. with duel pistols, each one is counted individually, so a 15 clip glock's first shot does +28% crit damage. The bonus weapons are affected too",
+  "order": 2,
+  "role": "",
+  "status": "built",
+  "summary": "Each remaining bullet in a magazine increases the crit damage by 2%. Increases the magazine size. ",
+  "unlock": "free"
+}

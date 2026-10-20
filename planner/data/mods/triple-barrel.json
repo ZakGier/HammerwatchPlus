@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_burst_triple",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "Adds third barrel to the shotgun"
+    }
+  ],
+  "name": "Triple Barrel",
+  "notes": "Shotgun now bursts 3 times instead of 2",
+  "order": null,
+  "skill": "burst",
+  "status": "built",
+  "summary": "Adds a third barrel to the shotgun burst"
+}

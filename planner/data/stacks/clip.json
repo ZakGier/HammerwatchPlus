@@ -1,0 +1,13 @@
+{
+  "built": "players/hwp/firearms/stacks_firearms.sval:clip",
+  "empty": "Starts the reloading stack",
+  "gain": "Reload skill, auto-reload, Scavenger",
+  "max": "0 + gun magazines (rifle 30, Glock 12 each, dual 24)",
+  "modifiers": "Each gun's marker buff: ModifyStack add-max (item modifiers can't modify stacks: they're added after stacks are refreshed). Later: mods and trinkets.",
+  "name": "Clip",
+  "notes": "Shown on the HUD with its count. Fills on spawn; counts down per shot.",
+  "order": 0,
+  "spent": "Each weapon shot (AddStacks -N)",
+  "status": "tested",
+  "timer": "none"
+}

@@ -1,0 +1,2700 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You strike all enemies in the area in front of you, dealing Physical damage.",
+      "file": "players/paladin/skills/pal_blessed_strikes.sval",
+      "id": "pal_blessed_strikes",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "70"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You strike all enemies in the area in front of you, dealing Physical damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "85"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You strike all enemies in the area in front of you, dealing Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "105"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You strike all enemies in the area in front of you, dealing Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "125"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You strike all enemies in the area in front of you, dealing Physical damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "150"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You strike all enemies in the area in front of you, dealing Physical damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases the size of the strike area.",
+          "id": "pal_blessed_strikes_size",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the size of the strike area."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases the size of the strike area."
+            }
+          ],
+          "name": "Massive Strike",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [
+            "pal_blessed_strikes_lightning"
+          ],
+          "desc": "The strike area erupts in flames dealing additional Fire damage for a period.",
+          "id": "pal_blessed_strikes_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "15%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The strike area erupts in flames dealing additional Fire damage for a period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The strike area erupts in flames dealing additional Fire damage for a period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "rare",
+              "text": "The strike area erupts in flames dealing additional Fire damage for a period."
+            }
+          ],
+          "name": "Purging Flames",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "fire"
+          ]
+        },
+        {
+          "blockedBy": [
+            "pal_blessed_strikes_fire"
+          ],
+          "desc": "Deals additional Lightning damage that can chain to other nearby enemies.",
+          "id": "pal_blessed_strikes_lightning",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "30%"
+                ],
+                [
+                  "Chains",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "Deals additional Lightning damage that can chain to other nearby enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "45%"
+                ],
+                [
+                  "Chains",
+                  "2"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals additional Lightning damage that can chain to other nearby enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "60%"
+                ],
+                [
+                  "Chains",
+                  "3"
+                ]
+              ],
+              "q": "rare",
+              "text": "Deals additional Lightning damage that can chain to other nearby enemies."
+            }
+          ],
+          "name": "Wrathful Strike",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "lightning"
+          ]
+        }
+      ],
+      "name": "Blessed Strike",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You heal yourself and all allies around you.",
+      "file": "players/paladin/skills/pal_lay_on_hands.sval",
+      "id": "pal_lay_on_hands",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Heal",
+              "60"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "12s"
+            ]
+          ],
+          "q": "common",
+          "text": "You heal yourself and all allies around you."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Heal",
+              "80"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "11s"
+            ]
+          ],
+          "q": "common",
+          "text": "You heal yourself and all allies around you."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Heal",
+              "120"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "10s"
+            ]
+          ],
+          "q": "common",
+          "text": "You heal yourself and all allies around you."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Heal",
+              "160"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "You heal yourself and all allies around you."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Heal",
+              "240"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "60"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "You heal yourself and all allies around you."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Also applies a buff that increases Health and Mana Regen for a short period.",
+          "id": "pal_lay_on_hands_invigorating",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "+25%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Also applies a buff that increases Health and Mana Regen for a short period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "+50%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Also applies a buff that increases Health and Mana Regen for a short period."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "+100%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Also applies a buff that increases Health and Mana Regen for a short period."
+            }
+          ],
+          "name": "Invigorating Touch",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Removes all Debuffs and Afflictions. You also gain immunity to all Debuffs for a short period.",
+          "id": "pal_lay_on_hands_cleansing",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Removes all Debuffs and Afflictions. You also gain immunity to all Debuffs for a short period."
+            }
+          ],
+          "name": "Cleansing Touch",
+          "quality": "rare",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Deals Physical damage to all Undead enemies in the area.",
+          "id": "pal_lay_on_hands_undead",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals Physical damage to all Undead enemies in the area."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Deals Physical damage to all Undead enemies in the area."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "400"
+                ]
+              ],
+              "q": "rare",
+              "text": "Deals Physical damage to all Undead enemies in the area."
+            }
+          ],
+          "name": "Turn Undead",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical"
+          ]
+        }
+      ],
+      "name": "Lay on Hands",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Increases your Armor, and grants a chance to block 100% Physical damage.",
+      "file": "players/paladin/skills/pal_shining_knight.sval",
+      "id": "pal_armor",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Armor",
+              "+5"
+            ],
+            [
+              "Armor",
+              "+5%"
+            ],
+            [
+              "Chance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Armor, and grants a chance to block 100% Physical damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Armor",
+              "+10"
+            ],
+            [
+              "Armor",
+              "+10%"
+            ],
+            [
+              "Chance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Armor, and grants a chance to block 100% Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Armor",
+              "+15"
+            ],
+            [
+              "Armor",
+              "+15%"
+            ],
+            [
+              "Chance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Armor, and grants a chance to block 100% Physical damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Armor",
+              "+20"
+            ],
+            [
+              "Armor",
+              "+20%"
+            ],
+            [
+              "Chance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Armor, and grants a chance to block 100% Physical damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Armor",
+              "+25"
+            ],
+            [
+              "Armor",
+              "+25%"
+            ],
+            [
+              "Chance",
+              "+20%"
+            ]
+          ],
+          "q": "common",
+          "text": "Increases your Armor, and grants a chance to block 100% Physical damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases your Fire, Ice and Lightning resistances.",
+          "id": "pal_armor_resistances",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Resistance",
+                  "+10"
+                ],
+                [
+                  "Resistance",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases your Fire, Ice and Lightning resistances."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Resistance",
+                  "+20"
+                ],
+                [
+                  "Resistance",
+                  "+20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Fire, Ice and Lightning resistances."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Resistance",
+                  "+30"
+                ],
+                [
+                  "Resistance",
+                  "+30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Fire, Ice and Lightning resistances."
+            }
+          ],
+          "name": "Elemental Bulwark",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain an additional chance to block 100% of any damage type.",
+          "id": "pal_armor_glancing_blows",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain an additional chance to block 100% of any damage type."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain an additional chance to block 100% of any damage type."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You gain an additional chance to block 100% of any damage type."
+            }
+          ],
+          "name": "Glancing Blows",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain a chance to strike a random nearby enemy with a bolt of lightning when taking damage, dealing Lightning damage based on your Armor value.",
+          "id": "pal_armor_wrath",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Damage",
+                  "70%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a chance to strike a random nearby enemy with a bolt of lightning when taking damage, dealing Lightning damage based on your Armor value."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "50%"
+                ],
+                [
+                  "Damage",
+                  "70%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a chance to strike a random nearby enemy with a bolt of lightning when taking damage, dealing Lightning damage based on your Armor value."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chance",
+                  "75%"
+                ],
+                [
+                  "Damage",
+                  "70%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a chance to strike a random nearby enemy with a bolt of lightning when taking damage, dealing Lightning damage based on your Armor value."
+            }
+          ],
+          "name": "Armor of Wrath",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "passive",
+            "lightning"
+          ]
+        }
+      ],
+      "name": "Armored Knight",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Your Melee Weapon hits have a chance to restore some of your Mana.",
+      "file": "players/paladin/skills/pal_conviction.sval",
+      "id": "pal_conviction",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Chance",
+              "10%"
+            ],
+            [
+              "Mana",
+              "3%"
+            ]
+          ],
+          "q": "common",
+          "text": "Your Melee Weapon hits have a chance to restore some of your Mana."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Chance",
+              "10%"
+            ],
+            [
+              "Mana",
+              "4%"
+            ]
+          ],
+          "q": "common",
+          "text": "Your Melee Weapon hits have a chance to restore some of your Mana."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Chance",
+              "15%"
+            ],
+            [
+              "Mana",
+              "4%"
+            ]
+          ],
+          "q": "common",
+          "text": "Your Melee Weapon hits have a chance to restore some of your Mana."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Chance",
+              "15%"
+            ],
+            [
+              "Mana",
+              "5%"
+            ]
+          ],
+          "q": "common",
+          "text": "Your Melee Weapon hits have a chance to restore some of your Mana."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Chance",
+              "20%"
+            ],
+            [
+              "Mana",
+              "5%"
+            ]
+          ],
+          "q": "common",
+          "text": "Your Melee Weapon hits have a chance to restore some of your Mana."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "While you are below half health your Spells cost less mana.",
+          "id": "pal_conviction_resolve",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-25%"
+                ]
+              ],
+              "q": "common",
+              "text": "While you are below half health your Spells cost less mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "While you are below half health your Spells cost less mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-75%"
+                ]
+              ],
+              "q": "rare",
+              "text": "While you are below half health your Spells cost less mana."
+            }
+          ],
+          "name": "Resolve",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "While you have more than half of your maximum mana left, you block damage for a cost of mana.",
+          "id": "conviction_shield",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Block Amount",
+                  "30%"
+                ],
+                [
+                  "Mana Lost per Damage Blocked",
+                  "0.5"
+                ]
+              ],
+              "q": "common",
+              "text": "While you have more than half of your maximum mana left, you block damage for a cost of mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Block Amount",
+                  "40%"
+                ],
+                [
+                  "Mana Lost per Damage Blocked",
+                  "0.5"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "While you have more than half of your maximum mana left, you block damage for a cost of mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Block Amount",
+                  "50%"
+                ],
+                [
+                  "Mana Lost per Damage Blocked",
+                  "0.5"
+                ]
+              ],
+              "q": "rare",
+              "text": "While you have more than half of your maximum mana left, you block damage for a cost of mana."
+            }
+          ],
+          "name": "Shield of Faith",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "When Conviction triggers you deal additional Physical damage based on your current Mana.",
+          "id": "conviction_mana_damage",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "When Conviction triggers you deal additional Physical damage based on your current Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "When Conviction triggers you deal additional Physical damage based on your current Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "When Conviction triggers you deal additional Physical damage based on your current Mana."
+            }
+          ],
+          "name": "Zeal",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "passive",
+            "physical"
+          ]
+        }
+      ],
+      "name": "Conviction",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/paladin/skills/charge.sval",
+      "name": "Zealous Charge"
+    },
+    {
+      "desc": "",
+      "file": "players/paladin/skills/pal_zealous_onslaught.sval",
+      "name": "Zealous Onslaught"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A righteous champion that upholds law and order through sheer force and firm belief.",
+  "gear": [
+    "chest_str_t1a",
+    "feet_str_t1a",
+    "mainhand_mace_01",
+    "offhand_shield_01"
+  ],
+  "name": "Paladin",
+  "order": 1,
+  "specs": [
+    {
+      "id": "paladin_justice",
+      "name": "Justice",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage.",
+          "file": "players/paladin/skills/pal_judgement.sval",
+          "id": "pal_judgement",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "150"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "1s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "175"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "1s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "225"
+                ],
+                [
+                  "Mana Cost",
+                  "75"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "1s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "275"
+                ],
+                [
+                  "Mana Cost",
+                  "75"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "1s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "350"
+                ],
+                [
+                  "Mana Cost",
+                  "90"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "1s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You pass judgement on random nearby enemies for a duration, striking them with a divine hammer dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "While Judgement is active you gain a chance to extend the duration when killing enemies. The duration cannot be extended to more than 7 seconds.",
+              "id": "pal_judgement_extend",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "While Judgement is active you gain a chance to extend the duration when killing enemies. The duration cannot be extended to more than 7 seconds."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "While Judgement is active you gain a chance to extend the duration when killing enemies. The duration cannot be extended to more than 7 seconds."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "While Judgement is active you gain a chance to extend the duration when killing enemies. The duration cannot be extended to more than 7 seconds."
+                }
+              ],
+              "name": "Prolonged Prosecution",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Deals additional Lightning damage.",
+              "id": "pal_judgement_lightning",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "60%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Deals additional Lightning damage."
+                }
+              ],
+              "name": "Hammer of Wrath",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "lightning"
+              ]
+            }
+          ],
+          "name": "Judgement",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker.",
+          "file": "players/paladin/skills/pal_lawbringer.sval",
+          "id": "pal_lawbringer",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "15%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Chance",
+                  "35%"
+                ]
+              ],
+              "q": "common",
+              "text": "When you block or take damage you have a chance to inflict Disarm and Silence to the attacker."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Hitting an enemy afflicted with a Status strikes them with a Judgement hammer.",
+              "id": "pal_lawbringer_punish",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hitting an enemy afflicted with a Status strikes them with a Judgement hammer."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Cooldown",
+                      "0.3s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hitting an enemy afflicted with a Status strikes them with a Judgement hammer."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Cooldown",
+                      "0.1s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Hitting an enemy afflicted with a Status strikes them with a Judgement hammer."
+                }
+              ],
+              "name": "Punish the Wicked",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Weapon and Spell hits gain a chance to shackle the target and a different nearby enemy. Shackled enemies have reduced movement speed and take continuous Physical damage.",
+              "id": "pal_lawbringer_shackles",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "10%"
+                    ],
+                    [
+                      "Damage",
+                      "20"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Weapon and Spell hits gain a chance to shackle the target and a different nearby enemy. Shackled enemies have reduced movement speed and take continuous Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Damage",
+                      "40"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Weapon and Spell hits gain a chance to shackle the target and a different nearby enemy. Shackled enemies have reduced movement speed and take continuous Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "20%"
+                    ],
+                    [
+                      "Damage",
+                      "60"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "3s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Weapon and Spell hits gain a chance to shackle the target and a different nearby enemy. Shackled enemies have reduced movement speed and take continuous Physical damage."
+                }
+              ],
+              "name": "Shackles",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Lawbringer",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "paladin_divine",
+      "name": "Divine",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness.",
+          "file": "players/paladin/skills/divine_pillars.sval",
+          "id": "divine_pillars",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "150"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "13.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "300"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "400"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "10.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "550"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "You summon pillars of heavenly light to explode at your location, dealing Physical damage and inflicting Blindness."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Causes additional pillars to strike in succession in a grid like pattern. The pillars deal half as much damage with each consecutive strike.",
+              "id": "pal_pillars_pattern",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Additional Explosions",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Causes additional pillars to strike in succession in a grid like pattern. The pillars deal half as much damage with each consecutive strike."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Additional Explosions",
+                      "2"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Causes additional pillars to strike in succession in a grid like pattern. The pillars deal half as much damage with each consecutive strike."
+                }
+              ],
+              "name": "Divine Pattern",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Deals additional Lightning damage.",
+              "id": "pal_pillars_lightning",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Lightning Damage",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Lightning Damage",
+                      "60%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Deals additional Lightning damage."
+                }
+              ],
+              "name": "Pillars of Wrath",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "lightning"
+              ]
+            }
+          ],
+          "name": "Divine Pillars",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown.",
+          "file": "players/paladin/skills/divine_protection.sval",
+          "id": "divine_protection",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "3s"
+                ],
+                [
+                  "Cooldown",
+                  "16s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "3s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "3.5s"
+                ],
+                [
+                  "Cooldown",
+                  "14s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "3.5s"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage when below half health has a chance to grant you a buff of Invulnerability for a brief period. This effect has a cooldown."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You gain a massive increase to Health Regen while you have the buff.",
+              "id": "divine_protection_restoration",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Health Regen",
+                      "+250%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a massive increase to Health Regen while you have the buff."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Health Regen",
+                      "+500%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a massive increase to Health Regen while you have the buff."
+                }
+              ],
+              "name": "Restoration",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "When you gain the buff you automatically cast Divine Pillars.",
+              "id": "divine_protection_pillars",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [],
+                  "q": "rare",
+                  "text": "When you gain the buff you automatically cast Divine Pillars."
+                }
+              ],
+              "name": "Divine Retort",
+              "quality": "rare",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Divine Protection",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "paladin_radiance",
+      "name": "Radiance",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectionalCharged",
+          "desc": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you.",
+          "file": "players/paladin/skills/radiance_immolation.sval",
+          "id": "radiance_immolation",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "300"
+                ],
+                [
+                  "Max Charge Time",
+                  "2s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "400"
+                ],
+                [
+                  "Max Charge Time",
+                  "2s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "500"
+                ],
+                [
+                  "Max Charge Time",
+                  "2s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "600"
+                ],
+                [
+                  "Max Charge Time",
+                  "2s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "700"
+                ],
+                [
+                  "Max Charge Time",
+                  "2s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a massive explosion that is unleashed when you release the spell, dealing Fire damage to all enemies around you."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Casting Immolation now increases your Fire damage for a duration.",
+              "id": "radiance_immolation_flames",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Damage",
+                      "+20%"
+                    ],
+                    [
+                      "Duration",
+                      "8s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Casting Immolation now increases your Fire damage for a duration."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Damage",
+                      "+40%"
+                    ],
+                    [
+                      "Duration",
+                      "8s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Casting Immolation now increases your Fire damage for a duration."
+                }
+              ],
+              "name": "Fuel the Flame",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You now unleash a blazing lance projectile that deals additional Fire damage to all enemies in its path.",
+              "id": "radiance_immolation_lance",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You now unleash a blazing lance projectile that deals additional Fire damage to all enemies in its path."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "80%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You now unleash a blazing lance projectile that deals additional Fire damage to all enemies in its path."
+                }
+              ],
+              "name": "Blazing Lance",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Immolation",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies.",
+          "file": "players/paladin/skills/radiance_flames.sval",
+          "id": "radiance_flames",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage per Stack",
+                  "10"
+                ],
+                [
+                  "Max Stacks",
+                  "5"
+                ],
+                [
+                  "Stack Duration",
+                  "5s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage per Stack",
+                  "12"
+                ],
+                [
+                  "Max Stacks",
+                  "5"
+                ],
+                [
+                  "Stack Duration",
+                  "5.5s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage per Stack",
+                  "16"
+                ],
+                [
+                  "Max Stacks",
+                  "5"
+                ],
+                [
+                  "Stack Duration",
+                  "6s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage per Stack",
+                  "20"
+                ],
+                [
+                  "Max Stacks",
+                  "5"
+                ],
+                [
+                  "Stack Duration",
+                  "6.5s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage per Stack",
+                  "26"
+                ],
+                [
+                  "Max Stacks",
+                  "5"
+                ],
+                [
+                  "Stack Duration",
+                  "7s"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Casting Spells generate stacks of Inner Flames. While you have stacks of Inner Flames you gain an aura dealing Fire damage to nearby enemies."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Each stack of Inner Flames adds Fire damage per your character level to your weapons.",
+              "id": "radiance_flames_dmg_add",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage per Stack",
+                      "+0.15"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Inner Flames adds Fire damage per your character level to your weapons."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage per Stack",
+                      "+0.20"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Inner Flames adds Fire damage per your character level to your weapons."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage per Stack",
+                      "+0.25"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Inner Flames adds Fire damage per your character level to your weapons."
+                }
+              ],
+              "name": "Flames of Devotion",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Each stack of Inner Flames increases your Fire Resistance and Fire Penetration.",
+              "id": "radiance_flames_resistance",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Resistance per Stack",
+                      "+15"
+                    ],
+                    [
+                      "Fire Penetration per Stack",
+                      "+3%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Inner Flames increases your Fire Resistance and Fire Penetration."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Resistance per Stack",
+                      "+30"
+                    ],
+                    [
+                      "Fire Penetration per Stack",
+                      "+5%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each stack of Inner Flames increases your Fire Resistance and Fire Penetration."
+                }
+              ],
+              "name": "Bringer of Flames",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Inner Flames",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_paladin_hoh1",
+      "name": "Holy Storm",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "A ring of # blessed blades bursts out around you and returns, each hitting for # physical damage.",
+          "file": "players/hwp/hoh1specs/skills/holy_storm.sval",
+          "id": "hwp_paladin_hoh1_holy_storm",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Projectiles",
+                  "6"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "A ring of 6 blessed blades bursts out around you and returns, each hitting for 20 physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "28"
+                ],
+                [
+                  "Projectiles",
+                  "6"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "A ring of 6 blessed blades bursts out around you and returns, each hitting for 28 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "36"
+                ],
+                [
+                  "Projectiles",
+                  "8"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "A ring of 8 blessed blades bursts out around you and returns, each hitting for 36 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Projectiles",
+                  "8"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "A ring of 8 blessed blades bursts out around you and returns, each hitting for 45 physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "55"
+                ],
+                [
+                  "Projectiles",
+                  "10"
+                ],
+                [
+                  "Mana Cost",
+                  "20"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "A ring of 10 blessed blades bursts out around you and returns, each hitting for 55 physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Holy Storm",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "For #: # armor and resistances, and attackers take # physical damage.",
+          "file": "players/hwp/hoh1specs/skills/shield_of_faith.sval",
+          "id": "hwp_paladin_hoh1_shield_of_faith",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Armor",
+                  "+50%"
+                ],
+                [
+                  "Thorns damage",
+                  "10-15"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "14s"
+                ]
+              ],
+              "q": "common",
+              "text": "For 6s: +50% armor and resistances, and attackers take 10-15 physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Armor",
+                  "+50%"
+                ],
+                [
+                  "Thorns damage",
+                  "10-15"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "For 6s: +50% armor and resistances, and attackers take 10-15 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Armor",
+                  "+50%"
+                ],
+                [
+                  "Thorns damage",
+                  "10-15"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "For 6s: +50% armor and resistances, and attackers take 10-15 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Armor",
+                  "+50%"
+                ],
+                [
+                  "Thorns damage",
+                  "10-15"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "11s"
+                ]
+              ],
+              "q": "common",
+              "text": "For 6s: +50% armor and resistances, and attackers take 10-15 physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Armor",
+                  "+50%"
+                ],
+                [
+                  "Thorns damage",
+                  "10-15"
+                ],
+                [
+                  "Mana Cost",
+                  "15"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "For 6s: +50% armor and resistances, and attackers take 10-15 physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Shield of Faith",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PlayerSkillLeap",
+          "desc": "Charge to the target spot, dealing # physical damage and briefly stunning enemies where you land.",
+          "file": "players/hwp/hoh1specs/skills/zealous_charge.sval",
+          "id": "hwp_paladin_hoh1_zealous_charge",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charge to the target spot, dealing 50 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charge to the target spot, dealing 70 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charge to the target spot, dealing 90 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "115"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charge to the target spot, dealing 115 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charge to the target spot, dealing 140 physical damage and briefly stunning enemies where you land."
+            }
+          ],
+          "mods": [],
+          "name": "Zealous Charge",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 10,
+    "dex": 2,
+    "foc": 8,
+    "health": 120,
+    "int": 2,
+    "mana": 80,
+    "str": 10,
+    "vit": 8
+  },
+  "vanilla": true
+}

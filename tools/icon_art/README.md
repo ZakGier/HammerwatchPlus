@@ -16,7 +16,7 @@ through `art/firearms/override/` and `tools/make_firearms_icons.py`.
 | fa.py, fa2.py, fa3.py | the Firearms Specialist's icons (skills, orbs, attacks, HUD) |
 | fa_r2.py | round 2 of those: three ideas per icon built on the round-1 pick and note (`out/picks_r1.json`); the 14x14 buff-bar icons at their own size |
 | vo_<class>.py | each vanilla class's orb icons |
-| planner_icons.py | the class planner's icon sheet, cut from the game's atlases |
+| planner_icons.py | the class planner's icon sheet (`planner/web/`), cut from the game's atlases |
 | orb_groups.py | the picker's per-class orb lists, from the planner's data |
 | render.py, rorb.py | write the ideas and comparison sheets |
 | picker.py, picker_tpl.html | the picker page (every idea, the current icon beside it) |
@@ -27,12 +27,12 @@ Everything is written under `tools/icon_art/out/` (git-ignored):
 ```
 python tools/icon_art/render.py all            # Firearms ideas -> out/firearms/, out/sheet_all_*.png
 python tools/icon_art/fa_r2.py                 # round 2 -> out/firearms_r2/, out/sheet_r2_*.png
-python tools/icon_art/planner_icons.py <dump>  # out/planner_pub/icons.png (the "now" column)
+python tools/icon_art/planner_icons.py         # planner/web/icons.png (also the "now" column)
 python tools/icon_art/rorb.py warrior          # one class's orb ideas -> out/orbs/warrior/
-python tools/icon_art/orb_groups.py <dump>     # out/orbs/<cls>.json
+python tools/icon_art/orb_groups.py           # out/orbs/<cls>.json
 python tools/icon_art/picker.py [r1]           # out/picker.html (Firearms round 2, or round 1 with r1)
 ```
 
-`<dump>` is a folder with the class planner's data as `planner/classes/*.json`,
-`planner/skills/*.json` and `planner/mods/*.json` (the planner artifact's database
-collections). Needs Pillow, and `gamecode/` for the vanilla atlases.
+planner_icons.py and orb_groups.py read the class planner's records in `planner/data/`
+(another folder of the same layout can be passed as the first argument). Needs Pillow, and
+`gamecode/` for the vanilla atlases.

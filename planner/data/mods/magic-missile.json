@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_rpg_magic",
+  "cls": "hwp_firearms",
+  "exclusive": "missile-type",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "Deals 80% of missile damage as ice, then 20% as fire"
+    },
+    {
+      "q": "rare",
+      "text": "Deals 100% of missile damage as ice, then 40% as fire"
+    }
+  ],
+  "name": "Magic Missile",
+  "notes": "Effect shows an ice missile that hits them and then burns them with blue fire, apply damage as specified, one after the other",
+  "order": null,
+  "skill": "rocket",
+  "status": "built",
+  "summary": "Fires a magical missile that first deals ice damage and then burns enemies."
+}

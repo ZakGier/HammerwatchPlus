@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_frag_gas",
+  "cls": "hwp_firearms",
+  "exclusive": "grenade-type",
+  "levels": [
+    {
+      "q": "common",
+      "text": "3 seconds"
+    },
+    {
+      "q": "uncommon",
+      "text": "4 seconds"
+    },
+    {
+      "q": "rare",
+      "text": "5 seconds"
+    }
+  ],
+  "name": "Gas Grenade",
+  "notes": "Similar to Rogue Toxic Cloud. But it can explode too.",
+  "order": null,
+  "skill": "stun-bang",
+  "status": "built",
+  "summary": "Turns the Frag Grenade into a Gas Grenade that poisons enemies and explodes for half of the frag grenade's damage if set on fire. Has poison penetration instead of armor penetration. Deals 10% of frag's damage as poison stack every 0.5s with a 6 second cooldown."
+}

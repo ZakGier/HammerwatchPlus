@@ -1,0 +1,1135 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Throw a fan of # knives for # physical damage each.",
+      "file": "players/hwp/thief/skills/knives.sval",
+      "id": "hwp_thief_knives",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "25"
+            ],
+            [
+              "Projectiles",
+              "3"
+            ],
+            [
+              "Mana Cost",
+              "6"
+            ],
+            [
+              "Cooldown",
+              "1.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a fan of 3 knives for 25 physical damage each."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "35"
+            ],
+            [
+              "Projectiles",
+              "3"
+            ],
+            [
+              "Mana Cost",
+              "6"
+            ],
+            [
+              "Cooldown",
+              "1.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a fan of 3 knives for 35 physical damage each."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "45"
+            ],
+            [
+              "Projectiles",
+              "4"
+            ],
+            [
+              "Mana Cost",
+              "6"
+            ],
+            [
+              "Cooldown",
+              "1.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a fan of 4 knives for 45 physical damage each."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Projectiles",
+              "4"
+            ],
+            [
+              "Mana Cost",
+              "6"
+            ],
+            [
+              "Cooldown",
+              "1.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a fan of 4 knives for 60 physical damage each."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "75"
+            ],
+            [
+              "Projectiles",
+              "5"
+            ],
+            [
+              "Mana Cost",
+              "6"
+            ],
+            [
+              "Cooldown",
+              "1.2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a fan of 5 knives for 75 physical damage each."
+        }
+      ],
+      "mods": [],
+      "name": "Throwing Knives",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillPosition",
+      "desc": "Grappling Hook",
+      "file": "players/rogue/skills/rog_grappling_hook.sval",
+      "id": "rog_grappling_hook",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 1,
+          "params": [],
+          "q": "common",
+          "text": "Grappling Hook"
+        }
+      ],
+      "mods": [],
+      "name": "Grappling Hook",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillPosition",
+      "desc": "Throw a smoke bomb at the target spot: enemies in a # radius are blinded and slowed for #.",
+      "file": "players/hwp/thief/skills/smoke.sval",
+      "id": "hwp_thief_smoke",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Range",
+              "56"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a smoke bomb at the target spot: enemies in a 56 radius are blinded and slowed for 3s."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Range",
+              "56"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a smoke bomb at the target spot: enemies in a 56 radius are blinded and slowed for 3s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Range",
+              "60"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a smoke bomb at the target spot: enemies in a 60 radius are blinded and slowed for 3s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Range",
+              "64"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a smoke bomb at the target spot: enemies in a 64 radius are blinded and slowed for 3s."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Range",
+              "72"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Cooldown",
+              "9s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throw a smoke bomb at the target spot: enemies in a 72 radius are blinded and slowed for 3s."
+        }
+      ],
+      "mods": [],
+      "name": "Smoke Bomb",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You evade # of attacks.",
+      "file": "players/hwp/thief/skills/sidestep.sval",
+      "id": "hwp_thief_sidestep",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Evade chance",
+              "5%"
+            ]
+          ],
+          "q": "common",
+          "text": "You evade 5% of attacks."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Evade chance",
+              "8%"
+            ]
+          ],
+          "q": "common",
+          "text": "You evade 8% of attacks."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Evade chance",
+              "11%"
+            ]
+          ],
+          "q": "common",
+          "text": "You evade 11% of attacks."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Evade chance",
+              "14%"
+            ]
+          ],
+          "q": "common",
+          "text": "You evade 14% of attacks."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Evade chance",
+              "18%"
+            ]
+          ],
+          "q": "common",
+          "text": "You evade 18% of attacks."
+        }
+      ],
+      "mods": [],
+      "name": "Sidestep",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [],
+  "desc": "A HoH1 classic: fast, fragile and always behind you. Throwing knives, a grappling hook and smoke bombs; masters as Assassin (crits and shadow strikes), Trickster (frenzy and caltrops) or Shadow (cloaks and poison). HoH1 kit: Twin Daggers (attack); Throwing Knives, Grappling Hook, Smoke Bomb (actives); Sidestep, Slice and Dice, Vicious Cuts (passives). Here the daggers are the starting weapon, the three actives and Sidestep are the base kit, Vicious Cuts is the Assassin's, and Slice and Dice is now the Trickster's active self-buff.",
+  "gear": [
+    "chest_dex_t1a",
+    "feet_dex_t1a",
+    "twohanded_daggers_01"
+  ],
+  "name": "Thief",
+  "order": 9,
+  "port": "HoH1",
+  "specs": [
+    {
+      "id": "hwp_thief_assassin",
+      "name": "Assassin",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Critical hit chance up by # and critical damage by #.",
+          "file": "players/hwp/thief/skills/vicious_cuts.sval",
+          "id": "hwp_thief_vicious_cuts",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Critical chance",
+                  "+5%"
+                ],
+                [
+                  "Critical damage",
+                  "+20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hit chance up by +5% and critical damage by +20%."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Critical chance",
+                  "+8%"
+                ],
+                [
+                  "Critical damage",
+                  "+30%"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hit chance up by +8% and critical damage by +30%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Critical chance",
+                  "+11%"
+                ],
+                [
+                  "Critical damage",
+                  "+40%"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hit chance up by +11% and critical damage by +40%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Critical chance",
+                  "+14%"
+                ],
+                [
+                  "Critical damage",
+                  "+50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hit chance up by +14% and critical damage by +50%."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Critical chance",
+                  "+18%"
+                ],
+                [
+                  "Critical damage",
+                  "+60%"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hit chance up by +18% and critical damage by +60%."
+            }
+          ],
+          "mods": [],
+          "name": "Vicious Cuts",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PlayerSkillLeap",
+          "desc": "Leap through the shadows to the target spot, dealing # physical damage and briefly stunning enemies where you land.",
+          "file": "players/hwp/thief/skills/shadow_strike.sval",
+          "id": "hwp_thief_shadow_strike",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Leap through the shadows to the target spot, dealing 60 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Leap through the shadows to the target spot, dealing 80 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Leap through the shadows to the target spot, dealing 100 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Leap through the shadows to the target spot, dealing 120 physical damage and briefly stunning enemies where you land."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "150"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Leap through the shadows to the target spot, dealing 150 physical damage and briefly stunning enemies where you land."
+            }
+          ],
+          "mods": [],
+          "name": "Shadow Strike",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Critical hits leave # stacks of bleeding.",
+          "file": "players/hwp/thief/skills/backstab.sval",
+          "id": "hwp_thief_backstab",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Bleed stacks",
+                  "2"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hits leave 2 stacks of bleeding."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Bleed stacks",
+                  "3"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hits leave 3 stacks of bleeding."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Bleed stacks",
+                  "4"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hits leave 4 stacks of bleeding."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Bleed stacks",
+                  "5"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hits leave 5 stacks of bleeding."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Bleed stacks",
+                  "6"
+                ]
+              ],
+              "q": "common",
+              "text": "Critical hits leave 6 stacks of bleeding."
+            }
+          ],
+          "mods": [],
+          "name": "Backstab",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_thief_trickster",
+      "name": "Trickster",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Work yourself into a frenzy: attack speed up by 30% for #.",
+          "file": "players/hwp/thief/skills/slice.sval",
+          "id": "hwp_thief_slice",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "Work yourself into a frenzy: attack speed up by 30% for 6s."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Cooldown",
+                  "11s"
+                ]
+              ],
+              "q": "common",
+              "text": "Work yourself into a frenzy: attack speed up by 30% for 6s."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Work yourself into a frenzy: attack speed up by 30% for 6s."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Work yourself into a frenzy: attack speed up by 30% for 6s."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "6s"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Work yourself into a frenzy: attack speed up by 30% for 6s."
+            }
+          ],
+          "mods": [],
+          "name": "Slice and Dice",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PlayerSkillPosition",
+          "desc": "Scatter caltrops at the target spot: enemies in a # radius take # physical damage, bleed and are slowed.",
+          "file": "players/hwp/thief/skills/caltrops.sval",
+          "id": "hwp_thief_caltrops",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Range",
+                  "48"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Scatter caltrops at the target spot: enemies in a 48 radius take 20 physical damage, bleed and are slowed."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Range",
+                  "52"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Scatter caltrops at the target spot: enemies in a 52 radius take 30 physical damage, bleed and are slowed."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Range",
+                  "56"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Scatter caltrops at the target spot: enemies in a 56 radius take 40 physical damage, bleed and are slowed."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Range",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Scatter caltrops at the target spot: enemies in a 60 radius take 50 physical damage, bleed and are slowed."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Range",
+                  "64"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Scatter caltrops at the target spot: enemies in a 64 radius take 60 physical damage, bleed and are slowed."
+            }
+          ],
+          "mods": [],
+          "name": "Caltrops",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Attack speed up by #.",
+          "file": "players/hwp/thief/skills/quick_hands.sval",
+          "id": "hwp_thief_quick_hands",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Attack speed",
+                  "+5%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack speed up by +5%."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Attack speed",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack speed up by +10%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Attack speed",
+                  "+15%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack speed up by +15%."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Attack speed",
+                  "+20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack speed up by +20%."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Attack speed",
+                  "+25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Attack speed up by +25%."
+            }
+          ],
+          "mods": [],
+          "name": "Quick Hands",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_thief_shadow",
+      "name": "Shadow",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Melt into the shadows for #: every attack misses you and you move 15% faster.",
+          "file": "players/hwp/thief/skills/cloak.sval",
+          "id": "hwp_thief_cloak",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Melt into the shadows for 2.5s: every attack misses you and you move 15% faster."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "Melt into the shadows for 2.5s: every attack misses you and you move 15% faster."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Cooldown",
+                  "8s"
+                ]
+              ],
+              "q": "common",
+              "text": "Melt into the shadows for 2.5s: every attack misses you and you move 15% faster."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "Melt into the shadows for 2.5s: every attack misses you and you move 15% faster."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "2.5s"
+                ],
+                [
+                  "Cooldown",
+                  "6s"
+                ]
+              ],
+              "q": "common",
+              "text": "Melt into the shadows for 2.5s: every attack misses you and you move 15% faster."
+            }
+          ],
+          "mods": [],
+          "name": "Cloak of Shadows",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Hits have a # chance to deal # extra poison damage.",
+          "file": "players/hwp/thief/skills/poisoned_blades.sval",
+          "id": "hwp_thief_poisoned_blades",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ],
+                [
+                  "Poison damage",
+                  "15"
+                ]
+              ],
+              "q": "common",
+              "text": "Hits have a 25% chance to deal 15 extra poison damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ],
+                [
+                  "Poison damage",
+                  "25"
+                ]
+              ],
+              "q": "common",
+              "text": "Hits have a 30% chance to deal 25 extra poison damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "35%"
+                ],
+                [
+                  "Poison damage",
+                  "35"
+                ]
+              ],
+              "q": "common",
+              "text": "Hits have a 35% chance to deal 35 extra poison damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "40%"
+                ],
+                [
+                  "Poison damage",
+                  "45"
+                ]
+              ],
+              "q": "common",
+              "text": "Hits have a 40% chance to deal 45 extra poison damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Chance",
+                  "50%"
+                ],
+                [
+                  "Poison damage",
+                  "55"
+                ]
+              ],
+              "q": "common",
+              "text": "Hits have a 50% chance to deal 55 extra poison damage."
+            }
+          ],
+          "mods": [],
+          "name": "Poisoned Blades",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Taking damage has a # chance to cloak you for 2.5 s (at most once every 8 s).",
+          "file": "players/hwp/thief/skills/vanish.sval",
+          "id": "hwp_thief_vanish",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage has a 10% chance to cloak you for 2.5 s (at most once every 8 s)."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Chance",
+                  "15%"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage has a 15% chance to cloak you for 2.5 s (at most once every 8 s)."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage has a 20% chance to cloak you for 2.5 s (at most once every 8 s)."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Chance",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage has a 25% chance to cloak you for 2.5 s (at most once every 8 s)."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Chance",
+                  "30%"
+                ]
+              ],
+              "q": "common",
+              "text": "Taking damage has a 30% chance to cloak you for 2.5 s (at most once every 8 s)."
+            }
+          ],
+          "mods": [],
+          "name": "Vanish",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 2,
+    "dex": 10,
+    "foc": 6,
+    "health": 90,
+    "int": 4,
+    "mana": 40,
+    "str": 4,
+    "vit": 6
+  },
+  "vanilla": true
+}

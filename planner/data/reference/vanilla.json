@@ -1,0 +1,9 @@
+{
+  "actives": 3,
+  "baseMods": "12-13 mods, ~29-36 levels",
+  "levelsTarget": 75,
+  "modsTarget": 30,
+  "notes": "Vanilla classes: base 2 actives + 2 passives, each spec +1 active +1 passive. Mod levels: 118 mods have 3, 65 have 2, 15 have 1. Targets assume 4 doctrines.",
+  "passives": 3,
+  "specMods": "4-5 mods, ~7-14 levels"
+}

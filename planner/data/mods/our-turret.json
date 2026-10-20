@@ -1,0 +1,17 @@
+{
+  "built": "hwp_fs_myturret_shared",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "Other teammates can now repair and buff your turrets."
+    }
+  ],
+  "name": "Our Turret!",
+  "notes": "Any teammate now standing in a turret's range can repair/buff it, but it does not stack the buff with you. They apply effects with any mods you have, including elemental belt feed",
+  "order": null,
+  "skill": "turret-passive",
+  "status": "built",
+  "summary": "Other teammates can also repair and buff your turrets. The buffs do not stack."
+}

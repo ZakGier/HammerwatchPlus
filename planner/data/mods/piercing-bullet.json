@@ -1,0 +1,25 @@
+{
+  "built": "hwp_fs_snipe_pierce",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Pierces 2 enemies"
+    },
+    {
+      "q": "uncommon",
+      "text": "Pierces 4 enemies"
+    },
+    {
+      "q": "rare",
+      "text": "Pierces 6 enemies"
+    }
+  ],
+  "name": "Piercing Bullet",
+  "notes": "Similar to Phantasmal Strike orb",
+  "order": null,
+  "skill": "snipe",
+  "status": "built",
+  "summary": "The sniper shot pierces enemies at -15% damage for each enemy hit"
+}

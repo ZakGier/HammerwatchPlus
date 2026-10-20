@@ -1,0 +1,2320 @@
+{
+  "base": [
+    {
+      "class": "Skills::ShootProjectileTarget",
+      "desc": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked.",
+      "file": "players/ranger/skills/ran_marked_shot.sval",
+      "id": "ran_mark",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "40"
+            ],
+            [
+              "Damage",
+              "+10%"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Damage",
+              "+10%"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Damage",
+              "+15%"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "70"
+            ],
+            [
+              "Damage",
+              "+15%"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Damage",
+              "+20%"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "You fire a projectile that deals Physical damage and applies Marked to all enemies in the targeted area. You deal more damage to enemies inflicted by Marked."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "You gain a short buff of increased Movement Speed when hitting Marked targets.",
+          "id": "ran_mark_pursuit",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+10%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a short buff of increased Movement Speed when hitting Marked targets."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+20%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a short buff of increased Movement Speed when hitting Marked targets."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Movement Speed",
+                  "+30%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a short buff of increased Movement Speed when hitting Marked targets."
+            }
+          ],
+          "name": "Hot Pursuit",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Killing enemies inflicted by Marked has a chance to restore some of your Health and Mana.",
+          "id": "ran_mark_kill",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "3%"
+                ],
+                [
+                  "Mana Restored",
+                  "3%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Killing enemies inflicted by Marked has a chance to restore some of your Health and Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "4%"
+                ],
+                [
+                  "Mana Restored",
+                  "4%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Killing enemies inflicted by Marked has a chance to restore some of your Health and Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "5%"
+                ],
+                [
+                  "Mana Restored",
+                  "5%"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Killing enemies inflicted by Marked has a chance to restore some of your Health and Mana."
+            }
+          ],
+          "name": "Thrill of the Hunt",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You deal additional damage to Bosses and Elites inflicted by Marked.",
+          "id": "ran_mark_big_game",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal additional damage to Bosses and Elites inflicted by Marked."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You deal additional damage to Bosses and Elites inflicted by Marked."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "30%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You deal additional damage to Bosses and Elites inflicted by Marked."
+            }
+          ],
+          "name": "Big Game Hunter",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Marked Shot",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple.",
+      "file": "players/ranger/skills/ran_trap.sval",
+      "id": "ran_trap",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Max Traps Placed",
+              "6"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Max Traps Placed",
+              "6"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "120"
+            ],
+            [
+              "Max Traps Placed",
+              "9"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "160"
+            ],
+            [
+              "Max Traps Placed",
+              "9"
+            ],
+            [
+              "Mana Cost",
+              "25"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "220"
+            ],
+            [
+              "Max Traps Placed",
+              "12"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Throws a trap that deploys after a brief duration. The traps deal Physical damage in a small area when triggered and inflict Cripple."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "You deploy additional traps with each cast.",
+          "id": "ran_trap_multiple",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Additional Traps",
+                  "1"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You deploy additional traps with each cast."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Additional Traps",
+                  "2"
+                ]
+              ],
+              "q": "rare",
+              "text": "You deploy additional traps with each cast."
+            }
+          ],
+          "name": "Multiple Deploy",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The traps now inflict stacks of Bleeding.",
+          "id": "ran_trap_bleeding",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Bleeding Stacks",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "The traps now inflict stacks of Bleeding."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Bleeding Stacks",
+                  "2"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The traps now inflict stacks of Bleeding."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Bleeding Stacks",
+                  "3"
+                ]
+              ],
+              "q": "rare",
+              "text": "The traps now inflict stacks of Bleeding."
+            }
+          ],
+          "name": "Serrated Traps",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The traps deal additional Ice damage.",
+          "id": "ran_trap_frost",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "common",
+              "text": "The traps deal additional Ice damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The traps deal additional Ice damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "100%"
+                ]
+              ],
+              "q": "rare",
+              "text": "The traps deal additional Ice damage."
+            }
+          ],
+          "name": "Frost Traps",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "physical",
+            "ice"
+          ]
+        }
+      ],
+      "name": "Trap",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage.",
+      "file": "players/ranger/skills/ran_rhythm.sval",
+      "id": "ran_rhythm",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Crit Chance",
+              "5%"
+            ],
+            [
+              "Weapon Crit Chance per Stack",
+              "2.5%"
+            ],
+            [
+              "Weapon Crit Damage per Stack",
+              "+10%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Duration",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Weapon Crit Chance",
+              "5%"
+            ],
+            [
+              "Weapon Crit Chance per Stack",
+              "2.5%"
+            ],
+            [
+              "Weapon Crit Damage per Stack",
+              "+15%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Duration",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Crit Chance",
+              "5%"
+            ],
+            [
+              "Weapon Crit Chance per Stack",
+              "2.5%"
+            ],
+            [
+              "Weapon Crit Damage per Stack",
+              "+20%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Duration",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Weapon Crit Chance",
+              "5%"
+            ],
+            [
+              "Weapon Crit Chance per Stack",
+              "2.5%"
+            ],
+            [
+              "Weapon Crit Damage per Stack",
+              "+25%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Duration",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Weapon Crit Chance",
+              "5%"
+            ],
+            [
+              "Weapon Crit Chance per Stack",
+              "2.5%"
+            ],
+            [
+              "Weapon Crit Damage per Stack",
+              "+30%"
+            ],
+            [
+              "Max Stacks",
+              "4"
+            ],
+            [
+              "Stack Duration",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You gain Weapon Crit Chance, and scoring Weapon Crits grant you stacks of Rhythm. Each stack of Rhythm increases your Weapon Crit Chance and Weapon Crit Damage."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Each stack of Rhythm increases your Weapon Speed.",
+          "id": "ran_rhythm_attack_speed",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Weapon Speed per Stack",
+                  "+5%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack of Rhythm increases your Weapon Speed."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Weapon Speed per Stack",
+                  "+10%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack of Rhythm increases your Weapon Speed."
+            }
+          ],
+          "name": "In the Flow",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Each stack of Rhythm reduces your Mana costs.",
+          "id": "ran_rhythm_mana_cost",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-2.5%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack of Rhythm reduces your Mana costs."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-5%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack of Rhythm reduces your Mana costs."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Cost per Stack",
+                  "-10%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack of Rhythm reduces your Mana costs."
+            }
+          ],
+          "name": "Efficiency",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain a stack of Rhythm when dashing.",
+          "id": "ran_rhythm_dash",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "uncommon",
+              "text": "You gain a stack of Rhythm when dashing."
+            }
+          ],
+          "name": "Momentum",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Rhythm",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown.",
+      "file": "players/ranger/skills/ran_survivalist.sval",
+      "id": "ran_survivalist",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Taken",
+              "-20%"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Effect Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Taken",
+              "-25%"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Effect Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Taken",
+              "-30%"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Effect Cooldown",
+              "7s"
+            ]
+          ],
+          "q": "common",
+          "text": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Taken",
+              "-35%"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Effect Cooldown",
+              "7s"
+            ]
+          ],
+          "q": "common",
+          "text": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage Taken",
+              "-40%"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Effect Cooldown",
+              "6s"
+            ]
+          ],
+          "q": "common",
+          "text": "Each time you get hit you gain a buff that reduces damage taken for a short period. This effect has a short cooldown."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Also grants Evasion for the duration of the buff.",
+          "id": "ran_survivalist_evasion",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Evasion",
+                  "15%"
+                ]
+              ],
+              "q": "common",
+              "text": "Also grants Evasion for the duration of the buff."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Evasion",
+                  "30%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Also grants Evasion for the duration of the buff."
+            }
+          ],
+          "name": "Evasive Maneuver",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain a Dash Charge when taking damage. This effect has a short cooldown.",
+          "id": "ran_survivalist_dash",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Effect Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a Dash Charge when taking damage. This effect has a short cooldown."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Effect Cooldown",
+                  "1s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a Dash Charge when taking damage. This effect has a short cooldown."
+            }
+          ],
+          "name": "Tactical Maneuver",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Increases your Health Regen for the duration of the buff.",
+          "id": "ran_survivalist_regen",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Regen",
+                  "+100%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases your Health Regen for the duration of the buff."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Regen",
+                  "+200%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases your Health Regen for the duration of the buff."
+            }
+          ],
+          "name": "Quick Recovery",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Survivalist",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A natural born hunter in tune with the woods that can harness the powers of nature.",
+  "gear": [
+    "chest_dex_t1a",
+    "feet_dex_t1a",
+    "twohanded_shortbow_01"
+  ],
+  "name": "Ranger",
+  "order": 3,
+  "specs": [
+    {
+      "id": "ranger_marksman",
+      "name": "Marksman",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage.",
+          "file": "players/ranger/skills/marksman_rain_of_arrows.sval",
+          "id": "marksman_rain_of_arrows",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "You launch a barrage of arrows into the air that strike the ground in a forward direction, dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Increases the impact area.",
+              "id": "ran_rain_of_arrows_size",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Size",
+                      "+50%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases the impact area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Size",
+                      "+100%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Increases the impact area."
+                }
+              ],
+              "name": "Storm of Arrows",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The arrows are followed by a sequence of lightning strikes, dealing Lightning damage.",
+              "id": "ran_rain_of_arrows_lightning",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The arrows are followed by a sequence of lightning strikes, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "200%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The arrows are followed by a sequence of lightning strikes, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "300%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The arrows are followed by a sequence of lightning strikes, dealing Lightning damage."
+                }
+              ],
+              "name": "Thundercaller",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "bow",
+                "lightning"
+              ]
+            }
+          ],
+          "name": "Rain of Arrows",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills.",
+          "file": "players/ranger/skills/marksman_archery.sval",
+          "id": "archery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+5%"
+                ],
+                [
+                  "Slow Effect",
+                  "-20%"
+                ]
+              ],
+              "q": "common",
+              "text": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Slow Effect",
+                  "-30%"
+                ]
+              ],
+              "q": "common",
+              "text": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+15%"
+                ],
+                [
+                  "Slow Effect",
+                  "-40%"
+                ]
+              ],
+              "q": "common",
+              "text": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Slow Effect",
+                  "-50%"
+                ]
+              ],
+              "q": "common",
+              "text": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+25%"
+                ],
+                [
+                  "Slow Effect",
+                  "-60%"
+                ]
+              ],
+              "q": "common",
+              "text": "The movement speed penalty for using Bow & Crossbow skills is reduced, and you deal increased damage with Bow & Crossbow skills."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You gain increased skill speed with Bow & Crossbow skills.",
+              "id": "archery_speed",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Skill Speed",
+                      "+10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain increased skill speed with Bow & Crossbow skills."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Skill Speed",
+                      "+20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain increased skill speed with Bow & Crossbow skills."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Skill Speed",
+                      "+30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain increased skill speed with Bow & Crossbow skills."
+                }
+              ],
+              "name": "Fast Shot",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your Bow & Crossbow skills gain a chance to trigger a frost explosion on hit, dealing Ice damage. This effect has a short cooldown.",
+              "id": "archery_frost_arrows",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "30%"
+                    ],
+                    [
+                      "Damage",
+                      "40"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Bow & Crossbow skills gain a chance to trigger a frost explosion on hit, dealing Ice damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Damage",
+                      "50"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Bow & Crossbow skills gain a chance to trigger a frost explosion on hit, dealing Ice damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Damage",
+                      "60"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your Bow & Crossbow skills gain a chance to trigger a frost explosion on hit, dealing Ice damage. This effect has a short cooldown."
+                }
+              ],
+              "name": "Frost Arrows",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Archery",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "ranger_beasts",
+      "name": "Beastmaster",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact.",
+          "file": "players/ranger/skills/beasts_spirit_wolves.sval",
+          "id": "beasts_spirit_wolves",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Spirit Wolves",
+                  "5"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Spirit Wolves",
+                  "5"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "160"
+                ],
+                [
+                  "Spirit Wolves",
+                  "6"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "180"
+                ],
+                [
+                  "Spirit Wolves",
+                  "6"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "200"
+                ],
+                [
+                  "Spirit Wolves",
+                  "7"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash spirit wolves that seek out nearby enemies, dealing Physical and Ice damage on impact."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The spirit wolves gain a chance to seek out a new target on hit.",
+              "id": "beasts_spirit_wolves_chain",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The spirit wolves gain a chance to seek out a new target on hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "60%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The spirit wolves gain a chance to seek out a new target on hit."
+                }
+              ],
+              "name": "Relentless Hunters",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain a chance to unleash a spirit wolf when killing enemies. This effect has a short cooldown.",
+              "id": "beasts_spirit_wolves_kills",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.4s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to unleash a spirit wolf when killing enemies. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.2s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a chance to unleash a spirit wolf when killing enemies. This effect has a short cooldown."
+                }
+              ],
+              "name": "Restless Spirits",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Spirit Wolves",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSummonSkill",
+          "desc": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage.",
+          "file": "players/ranger/skills/beasts_wolf_companion.sval",
+          "id": "beasts_wolf",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Health",
+                  "1000"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Health",
+                  "1200"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "110"
+                ],
+                [
+                  "Health",
+                  "1500"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "130"
+                ],
+                [
+                  "Health",
+                  "1800"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "160"
+                ],
+                [
+                  "Health",
+                  "2200"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon a wolf companion to fight by your side that attacks nearby enemies dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You summon additional wolves.",
+              "id": "beasts_wolf_pack",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Max Wolves Summoned",
+                      "2"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You summon additional wolves."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Max Wolves Summoned",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You summon additional wolves."
+                }
+              ],
+              "name": "Wolf Pack",
+              "quality": "rare",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your wolves deal additional Ice damage and inflict Slow.",
+              "id": "beasts_wolf_winter",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "25%"
+                    ],
+                    [
+                      "Status Effect",
+                      "Minor Slow"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your wolves deal additional Ice damage and inflict Slow."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "50%"
+                    ],
+                    [
+                      "Status Effect",
+                      "Slow"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your wolves deal additional Ice damage and inflict Slow."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100%"
+                    ],
+                    [
+                      "Status Effect",
+                      "Greater Slow"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your wolves deal additional Ice damage and inflict Slow."
+                }
+              ],
+              "name": "Winter Wolf",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "physical",
+                "ice"
+              ]
+            }
+          ],
+          "name": "Wolf Companion",
+          "summon": true,
+          "type": "Spell"
+        }
+      ]
+    },
+    {
+      "id": "ranger_nature",
+      "name": "Warden",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple.",
+          "file": "players/ranger/skills/nature_entangle.sval",
+          "id": "nature_entangle",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "7s"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "9s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "11s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "You conjure roots to sprout in a large area around you that lingers for a duration. Enemies in the area take Physical damage and are inflicted by Cripple."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [
+                "nature_entangle_poison"
+              ],
+              "desc": "The roots spawn wisps that attaches to allies entering the area, restoring Health for a period.",
+              "id": "nature_entangle_heal",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Heal",
+                      "3%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "1s"
+                    ],
+                    [
+                      "Duration",
+                      "6s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The roots spawn wisps that attaches to allies entering the area, restoring Health for a period."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Heal",
+                      "5%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "1s"
+                    ],
+                    [
+                      "Duration",
+                      "6s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The roots spawn wisps that attaches to allies entering the area, restoring Health for a period."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Heal",
+                      "7%"
+                    ],
+                    [
+                      "Tick Rate",
+                      "1s"
+                    ],
+                    [
+                      "Duration",
+                      "6s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The roots spawn wisps that attaches to allies entering the area, restoring Health for a period."
+                }
+              ],
+              "name": "Healing Wisps",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [
+                "nature_entangle_heal"
+              ],
+              "desc": "Deals additional Poison damage.",
+              "id": "nature_entangle_poison",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Poison damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "60%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Poison damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Deals additional Poison damage."
+                }
+              ],
+              "name": "Poison Ivy",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "spell",
+                "physical",
+                "poison"
+              ]
+            }
+          ],
+          "name": "Entangle",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown.",
+          "file": "players/ranger/skills/nature_wind_weaver.sval",
+          "id": "nature_wind_weaver",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "35%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60%"
+                ],
+                [
+                  "Effect Cooldown",
+                  "0.10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Weapon hits unleash a gusts of wind in a forward direction dealing Mainhand damage. This effect has a short cooldown."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The gusts of wind deal additional Ice damage.",
+              "id": "nature_wind_weaver_winter",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "50"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The gusts of wind deal additional Ice damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The gusts of wind deal additional Ice damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "200"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The gusts of wind deal additional Ice damage."
+                }
+              ],
+              "name": "Winter Winds",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "ice"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You unleash several gusts of wind in all directions when dashing.",
+              "id": "nature_wind_weaver_dash",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Projectiles",
+                      "3"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You unleash several gusts of wind in all directions when dashing."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Projectiles",
+                      "5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You unleash several gusts of wind in all directions when dashing."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Projectiles",
+                      "7"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You unleash several gusts of wind in all directions when dashing."
+                }
+              ],
+              "name": "Wind Runner",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Wind Weaver",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 5,
+    "dex": 10,
+    "foc": 4,
+    "health": 120,
+    "int": 4,
+    "mana": 80,
+    "str": 6,
+    "vit": 6
+  },
+  "vanilla": true
+}

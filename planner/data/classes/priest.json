@@ -1,0 +1,2494 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Emits a fiery nova of light that also applies Blindness.",
+      "file": "players/priest/skills/pri_inner_light.sval",
+      "id": "inner_light",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Emits a fiery nova of light that also applies Blindness."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "70"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Emits a fiery nova of light that also applies Blindness."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "90"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Emits a fiery nova of light that also applies Blindness."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "110"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Emits a fiery nova of light that also applies Blindness."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "140"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "2s"
+            ]
+          ],
+          "q": "common",
+          "text": "Emits a fiery nova of light that also applies Blindness."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases the size of the nova.",
+          "id": "inner_light_encompassing_light",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the size of the nova."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+50%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases the size of the nova."
+            }
+          ],
+          "name": "Encompassing Light",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Nova hits now have a chance to spawn orbs that shoot beams of light at enemies.",
+          "id": "inner_light_celestial_light",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Nova hits now have a chance to spawn orbs that shoot beams of light at enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Nova hits now have a chance to spawn orbs that shoot beams of light at enemies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Chance",
+                  "20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Nova hits now have a chance to spawn orbs that shoot beams of light at enemies."
+            }
+          ],
+          "name": "Celestial Light",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The nova also applies Vulnerability.",
+          "id": "inner_light_shattering_light",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Status Effect",
+                  "Minor Vulnerability"
+                ]
+              ],
+              "q": "common",
+              "text": "The nova also applies Vulnerability."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Status Effect",
+                  "Vulnerability"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The nova also applies Vulnerability."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Status Effect",
+                  "Greater Vulnerability"
+                ]
+              ],
+              "q": "rare",
+              "text": "The nova also applies Vulnerability."
+            }
+          ],
+          "name": "Shattering Light",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Inner Light",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within.",
+      "file": "players/priest/skills/pri_consecrated_ground.sval",
+      "id": "consecrated_ground",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "15"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "60"
+            ],
+            [
+              "Duration",
+              "5s"
+            ],
+            [
+              "Cooldown",
+              "15s"
+            ]
+          ],
+          "q": "common",
+          "text": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "20"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "60"
+            ],
+            [
+              "Duration",
+              "5.5s"
+            ],
+            [
+              "Cooldown",
+              "15s"
+            ]
+          ],
+          "q": "common",
+          "text": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "25"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "70"
+            ],
+            [
+              "Duration",
+              "6s"
+            ],
+            [
+              "Cooldown",
+              "15s"
+            ]
+          ],
+          "q": "common",
+          "text": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "30"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "70"
+            ],
+            [
+              "Duration",
+              "6.5s"
+            ],
+            [
+              "Cooldown",
+              "15s"
+            ]
+          ],
+          "q": "common",
+          "text": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "35"
+            ],
+            [
+              "Tick Rate",
+              "0.5s"
+            ],
+            [
+              "Heal",
+              "20%"
+            ],
+            [
+              "Mana Cost",
+              "80"
+            ],
+            [
+              "Duration",
+              "7s"
+            ],
+            [
+              "Cooldown",
+              "15s"
+            ]
+          ],
+          "q": "common",
+          "text": "Places a holy circle that saps Health from enemies and transfers it to yourself and any allies standing within."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases the size of the circle.",
+          "id": "consecrated_ground_encompassing_prayer",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the size of the circle."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Size",
+                  "+50%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases the size of the circle."
+            }
+          ],
+          "name": "Encompassing Prayer",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Standing in the circle now also reduces debuff duration for all allies.",
+          "id": "consecrated_ground_cleansing_prayer",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "-50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Standing in the circle now also reduces debuff duration for all allies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "-75%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Standing in the circle now also reduces debuff duration for all allies."
+            }
+          ],
+          "name": "Cleansing Prayer",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Allies in the circle are now continuously healed for a percentage of their max Health.",
+          "id": "consecrated_ground_restoration_prayer",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "3%"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Allies in the circle are now continuously healed for a percentage of their max Health."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "6%"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Allies in the circle are now continuously healed for a percentage of their max Health."
+            }
+          ],
+          "name": "Restoration Prayer",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Consecrated Ground",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::ManaShield",
+      "desc": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold.",
+      "file": "players/priest/skills/pri_divine_protection.sval",
+      "id": "divine_protection_priest",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Absorption",
+              "30%"
+            ],
+            [
+              "Mana per Damage",
+              "3.5"
+            ],
+            [
+              "Mana Threshold",
+              "50%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage Absorption",
+              "35%"
+            ],
+            [
+              "Mana per Damage",
+              "3"
+            ],
+            [
+              "Mana Threshold",
+              "50%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Absorption",
+              "40%"
+            ],
+            [
+              "Mana per Damage",
+              "2.5"
+            ],
+            [
+              "Mana Threshold",
+              "50%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage Absorption",
+              "45%"
+            ],
+            [
+              "Mana per Damage",
+              "2"
+            ],
+            [
+              "Mana Threshold",
+              "50%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage Absorption",
+              "50%"
+            ],
+            [
+              "Mana per Damage",
+              "1.5"
+            ],
+            [
+              "Mana Threshold",
+              "50%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants a Mana Shield effect, absorbing a portion of damage received to Mana as long as it's above a certain threshold."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Increases Mana Regen based on your missing Mana percentage.",
+          "id": "divine_protection_divine_sustain",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per missing Mana percent",
+                  "+0.25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases Mana Regen based on your missing Mana percentage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per missing Mana percent",
+                  "+0.50%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Increases Mana Regen based on your missing Mana percentage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per missing Mana percent",
+                  "+0.75%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Increases Mana Regen based on your missing Mana percentage."
+            }
+          ],
+          "name": "Divine Sustain",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Grants an aura that reduces damage received for all nearby allies.",
+          "id": "divine_protection_extended_protection",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "-10%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Grants an aura that reduces damage received for all nearby allies."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Amount",
+                  "-20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Grants an aura that reduces damage received for all nearby allies."
+            }
+          ],
+          "name": "Extended Protection",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Receive Healing when your Health drops below a certain threshold. This ability has some cooldown.",
+          "id": "divine_protection_divine_intervention",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "50%"
+                ],
+                [
+                  "Health Threshold",
+                  "35%"
+                ],
+                [
+                  "Cooldown",
+                  "300s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Receive Healing when your Health drops below a certain threshold. This ability has some cooldown."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Health Restored",
+                  "50%"
+                ],
+                [
+                  "Health Threshold",
+                  "35%"
+                ],
+                [
+                  "Cooldown",
+                  "150s"
+                ]
+              ],
+              "q": "rare",
+              "text": "Receive Healing when your Health drops below a certain threshold. This ability has some cooldown."
+            }
+          ],
+          "name": "Divine Intervention",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Divine Endurance",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt.",
+      "file": "players/priest/skills/pri_divine_favor.sval",
+      "id": "divine_favor",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Mana Lost",
+              "60"
+            ],
+            [
+              "Damage",
+              "5%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ]
+          ],
+          "q": "common",
+          "text": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Mana Lost",
+              "60"
+            ],
+            [
+              "Damage",
+              "7%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ]
+          ],
+          "q": "common",
+          "text": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Mana Lost",
+              "60"
+            ],
+            [
+              "Damage",
+              "9%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ]
+          ],
+          "q": "common",
+          "text": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Mana Lost",
+              "60"
+            ],
+            [
+              "Damage",
+              "11%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ]
+          ],
+          "q": "common",
+          "text": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Mana Lost",
+              "60"
+            ],
+            [
+              "Damage",
+              "13%"
+            ],
+            [
+              "Max Stacks",
+              "5"
+            ]
+          ],
+          "q": "common",
+          "text": "Spending or losing Mana gives a stack of Favor. Each stack increases your damage dealt."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "You gain an aura dealing Fire damage to nearby enemies when at max stacks.",
+          "id": "divine_favor_holy_flames",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "25"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain an aura dealing Fire damage to nearby enemies when at max stacks."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ]
+              ],
+              "q": "rare",
+              "text": "You gain an aura dealing Fire damage to nearby enemies when at max stacks."
+            }
+          ],
+          "name": "Holy Flames",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Each stack now also increases your Mana Regen.",
+          "id": "divine_favor_restoring_favor",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each stack now also increases your Mana Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "15%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each stack now also increases your Mana Regen."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana Regen per Stack",
+                  "20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Each stack now also increases your Mana Regen."
+            }
+          ],
+          "name": "Restoring Favor",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Damage you deal is increased by the percentage of your missing Mana.",
+          "id": "divine_favor_fanaticism",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage per missing Mana percent",
+                  "0.2%"
+                ]
+              ],
+              "q": "common",
+              "text": "Damage you deal is increased by the percentage of your missing Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage per missing Mana percent",
+                  "0.4%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Damage you deal is increased by the percentage of your missing Mana."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Damage per missing Mana percent",
+                  "0.6%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Damage you deal is increased by the percentage of your missing Mana."
+            }
+          ],
+          "name": "Fanaticism",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Divine Favor",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A holy mystic chosen by the gods to wield the power of divine light and healing.",
+  "gear": [
+    "chest_int_t1a",
+    "feet_int_t1a",
+    "mainhand_scepter_01",
+    "offhand_lantern_01"
+  ],
+  "name": "Priest",
+  "order": 2,
+  "specs": [
+    {
+      "id": "priest_divine_light",
+      "name": "Divine Light",
+      "skills": [
+        {
+          "class": "Skills::ShootChargedBeam",
+          "desc": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage.",
+          "file": "players/priest/skills/pri_holy_blast.sval",
+          "id": "holy_blast",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "400"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "450"
+                ],
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "550"
+                ],
+                [
+                  "Mana Cost",
+                  "90"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "650"
+                ],
+                [
+                  "Mana Cost",
+                  "90"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "800"
+                ],
+                [
+                  "Mana Cost",
+                  "100"
+                ],
+                [
+                  "Cooldown",
+                  "10s"
+                ]
+              ],
+              "q": "common",
+              "text": "Charges up and blasts a powerful beam of holy energy that deals mixed Fire and Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Deals additional Fire damage to enemies standing within Consecrated Ground.",
+              "id": "holy_blast_divine_blast",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "125"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Fire damage to enemies standing within Consecrated Ground."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "250"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Deals additional Fire damage to enemies standing within Consecrated Ground."
+                }
+              ],
+              "name": "Divine Blast",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Increases the range of the beam.",
+              "id": "holy_blast_massive_blast",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Range",
+                      "+25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Increases the range of the beam."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Range",
+                      "+50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Increases the range of the beam."
+                }
+              ],
+              "name": "Massive Blast",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Holy Blast",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::CelestialOrbs",
+          "desc": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire.",
+          "file": "players/priest/skills/pri_celestial_orbs.sval",
+          "id": "celestial_orbs",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "20"
+                ],
+                [
+                  "Number of Orbs",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "25"
+                ],
+                [
+                  "Number of Orbs",
+                  "1"
+                ]
+              ],
+              "q": "common",
+              "text": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Number of Orbs",
+                  "2"
+                ]
+              ],
+              "q": "common",
+              "text": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Number of Orbs",
+                  "2"
+                ]
+              ],
+              "q": "common",
+              "text": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Number of Orbs",
+                  "3"
+                ]
+              ],
+              "q": "common",
+              "text": "Orbs of light surround you and attack nearby enemies. Holy Blast can be used to focus their fire."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Hits from Holy Blast now have a chance to spawn additional orbs.",
+              "id": "celestial_orbs_plentiful_orbs",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "5%"
+                    ],
+                    [
+                      "Duration",
+                      "5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits from Holy Blast now have a chance to spawn additional orbs."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "10%"
+                    ],
+                    [
+                      "Duration",
+                      "5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Hits from Holy Blast now have a chance to spawn additional orbs."
+                }
+              ],
+              "name": "Plentiful Orbs",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Enemies killed by orbs have a chance to explode dealing Fire damage in an area.",
+              "id": "celestial_orbs_destructive_orbs",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "75"
+                    ],
+                    [
+                      "Chance",
+                      "50%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Enemies killed by orbs have a chance to explode dealing Fire damage in an area."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "150"
+                    ],
+                    [
+                      "Chance",
+                      "50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Enemies killed by orbs have a chance to explode dealing Fire damage in an area."
+                }
+              ],
+              "name": "Destructive Orbs",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Celestial Orbs",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "priest_crusader",
+      "name": "Crusader",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Places a banner that grants Invulnerability to you and all allies within its range.",
+          "file": "players/priest/skills/pri_holy_banner.sval",
+          "id": "holy_banner",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ],
+                [
+                  "Cooldown",
+                  "40s"
+                ]
+              ],
+              "q": "common",
+              "text": "Places a banner that grants Invulnerability to you and all allies within its range."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Mana Cost",
+                  "80"
+                ],
+                [
+                  "Duration",
+                  "4.5s"
+                ],
+                [
+                  "Cooldown",
+                  "40s"
+                ]
+              ],
+              "q": "common",
+              "text": "Places a banner that grants Invulnerability to you and all allies within its range."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana Cost",
+                  "90"
+                ],
+                [
+                  "Duration",
+                  "5.5s"
+                ],
+                [
+                  "Cooldown",
+                  "40s"
+                ]
+              ],
+              "q": "common",
+              "text": "Places a banner that grants Invulnerability to you and all allies within its range."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Mana Cost",
+                  "90"
+                ],
+                [
+                  "Duration",
+                  "6.5s"
+                ],
+                [
+                  "Cooldown",
+                  "40s"
+                ]
+              ],
+              "q": "common",
+              "text": "Places a banner that grants Invulnerability to you and all allies within its range."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Mana Cost",
+                  "100"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Cooldown",
+                  "40s"
+                ]
+              ],
+              "q": "common",
+              "text": "Places a banner that grants Invulnerability to you and all allies within its range."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Allies in range now also have increased Attack Speed.",
+              "id": "holy_banner_invigorating_banner",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Attack Speed",
+                      "+20%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Allies in range now also have increased Attack Speed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Attack Speed",
+                      "+40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Allies in range now also have increased Attack Speed."
+                }
+              ],
+              "name": "Invigorating Banner",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The banner now also applies Marked to all enemies in its range.",
+              "id": "holy_banner_war_banner",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Minor Marked"
+                    ]
+                  ],
+                  "q": "common",
+                  "text": "The banner now also applies Marked to all enemies in its range."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Marked"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The banner now also applies Marked to all enemies in its range."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Status Effect",
+                      "Greater Marked"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The banner now also applies Marked to all enemies in its range."
+                }
+              ],
+              "name": "War Banner",
+              "quality": "common",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Holy Banner",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSummonSkill",
+          "desc": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage.",
+          "file": "players/priest/skills/pri_call_crusaders.sval",
+          "id": "call_crusaders",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Health",
+                  "700"
+                ],
+                [
+                  "Crusader Max Summoned",
+                  "1"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Health",
+                  "900"
+                ],
+                [
+                  "Crusader Max Summoned",
+                  "2"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Health",
+                  "1200"
+                ],
+                [
+                  "Crusader Max Summoned",
+                  "3"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "110"
+                ],
+                [
+                  "Health",
+                  "1500"
+                ],
+                [
+                  "Crusader Max Summoned",
+                  "4"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Health",
+                  "1900"
+                ],
+                [
+                  "Crusader Max Summoned",
+                  "5"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "You passively summon an army of pikemen to fight by your side and attack nearby enemies dealing Physical damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You now also summon crossbowmen who attack enemies in range dealing Physical damage.",
+              "id": "call_crusaders_call_crossbowmen",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Crossbowman Max Summoned",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You now also summon crossbowmen who attack enemies in range dealing Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Crossbowman Max Summoned",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You now also summon crossbowmen who attack enemies in range dealing Physical damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Crossbowman Max Summoned",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You now also summon crossbowmen who attack enemies in range dealing Physical damage."
+                }
+              ],
+              "name": "Call Crossbowmen",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your crusaders now have a chance to immediately respawn when killed.",
+              "id": "call_crusaders_endless_crusaders",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your crusaders now have a chance to immediately respawn when killed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "80%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your crusaders now have a chance to immediately respawn when killed."
+                }
+              ],
+              "name": "Endless Crusaders",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Call Crusaders",
+          "summon": true,
+          "type": "Spell"
+        }
+      ]
+    },
+    {
+      "id": "priest_flaggelant",
+      "name": "Flagellant",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "A wide flail swing that deals Physical damage that's further increased based on your Thorns.",
+          "file": "players/priest/skills/pri_flagellate.sval",
+          "id": "flagellate",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2.5"
+                ],
+                [
+                  "Thorns Damage Bonus",
+                  "50%"
+                ]
+              ],
+              "q": "common",
+              "text": "A wide flail swing that deals Physical damage that's further increased based on your Thorns."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2.5"
+                ],
+                [
+                  "Thorns Damage Bonus",
+                  "50%"
+                ]
+              ],
+              "q": "common",
+              "text": "A wide flail swing that deals Physical damage that's further increased based on your Thorns."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2.5"
+                ],
+                [
+                  "Thorns Damage Bonus",
+                  "60%"
+                ]
+              ],
+              "q": "common",
+              "text": "A wide flail swing that deals Physical damage that's further increased based on your Thorns."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "140"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2.5"
+                ],
+                [
+                  "Thorns Damage Bonus",
+                  "60%"
+                ]
+              ],
+              "q": "common",
+              "text": "A wide flail swing that deals Physical damage that's further increased based on your Thorns."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "160"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "2.5"
+                ],
+                [
+                  "Thorns Damage Bonus",
+                  "70%"
+                ]
+              ],
+              "q": "common",
+              "text": "A wide flail swing that deals Physical damage that's further increased based on your Thorns."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Hits from the flail now inflict stacks of Bleeding with a chance to apply a stack to yourself.",
+              "id": "flagellate_jagged_flail",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Stacks",
+                      "2"
+                    ],
+                    [
+                      "Self Bleed Chance",
+                      "30%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits from the flail now inflict stacks of Bleeding with a chance to apply a stack to yourself."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Stacks",
+                      "4"
+                    ],
+                    [
+                      "Self Bleed Chance",
+                      "30%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Hits from the flail now inflict stacks of Bleeding with a chance to apply a stack to yourself."
+                }
+              ],
+              "name": "Jagged Flail",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Hits from the flail now add stacks of Ecstasy. Each stack increases your Thorns.",
+              "id": "flagellate_ecstasy",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Thorns per Stack",
+                      "2%"
+                    ],
+                    [
+                      "Max Stacks",
+                      "5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits from the flail now add stacks of Ecstasy. Each stack increases your Thorns."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Thorns per Stack",
+                      "3%"
+                    ],
+                    [
+                      "Max Stacks",
+                      "5"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Hits from the flail now add stacks of Ecstasy. Each stack increases your Thorns."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Thorns per Stack",
+                      "4%"
+                    ],
+                    [
+                      "Max Stacks",
+                      "5"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Hits from the flail now add stacks of Ecstasy. Each stack increases your Thorns."
+                }
+              ],
+              "name": "Ecstasy",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Flagellate",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You gain Thorns, plus additional Thorns based on your maximum Health.",
+          "file": "players/priest/skills/pri_retribution.sval",
+          "id": "retribution",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Thorns",
+                  "30"
+                ],
+                [
+                  "Thorns per Max Health",
+                  "6%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain Thorns, plus additional Thorns based on your maximum Health."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Thorns",
+                  "40"
+                ],
+                [
+                  "Thorns per Max Health",
+                  "7%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain Thorns, plus additional Thorns based on your maximum Health."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Thorns",
+                  "50"
+                ],
+                [
+                  "Thorns per Max Health",
+                  "8%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain Thorns, plus additional Thorns based on your maximum Health."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Thorns",
+                  "60"
+                ],
+                [
+                  "Thorns per Max Health",
+                  "9%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain Thorns, plus additional Thorns based on your maximum Health."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Thorns",
+                  "70"
+                ],
+                [
+                  "Thorns per Max Health",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain Thorns, plus additional Thorns based on your maximum Health."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You gain a chance to regenerate some Health when hit.",
+              "id": "retribution_masochism",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "25%"
+                    ],
+                    [
+                      "Health Restored",
+                      "1%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to regenerate some Health when hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Health Restored",
+                      "1%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to regenerate some Health when hit."
+                }
+              ],
+              "name": "Masochism",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "Your Thorns deal increased damage to Bosses and Elites.",
+              "id": "retribution_grand_retribution",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage to Bosses and Elites",
+                      "+100%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Thorns deal increased damage to Bosses and Elites."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage to Bosses and Elites",
+                      "+200%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Thorns deal increased damage to Bosses and Elites."
+                }
+              ],
+              "name": "Grand Retribution",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Retribution",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_priest_hoh1",
+      "name": "Smiter",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "The HoH1 priest's signature strike: a short holy thrust for # physical damage.",
+          "file": "players/hwp/hoh1specs/skills/smite.sval",
+          "id": "hwp_priest_hoh1_smite",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The HoH1 priest's signature strike: a short holy thrust for 60 physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "80"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The HoH1 priest's signature strike: a short holy thrust for 80 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The HoH1 priest's signature strike: a short holy thrust for 100 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "125"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The HoH1 priest's signature strike: a short holy thrust for 125 physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "150"
+                ],
+                [
+                  "Mana Cost",
+                  "10"
+                ],
+                [
+                  "Cooldown",
+                  "1.5s"
+                ]
+              ],
+              "q": "common",
+              "text": "The HoH1 priest's signature strike: a short holy thrust for 150 physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Smite",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Hurl a blessed hammer that spins out and back, hitting everything in its path for # physical damage.",
+          "file": "players/hwp/hoh1specs/skills/divine_hammer.sval",
+          "id": "hwp_priest_hoh1_divine_hammer",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Hurl a blessed hammer that spins out and back, hitting everything in its path for 35 physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Hurl a blessed hammer that spins out and back, hitting everything in its path for 45 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "55"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Hurl a blessed hammer that spins out and back, hitting everything in its path for 55 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Hurl a blessed hammer that spins out and back, hitting everything in its path for 70 physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "85"
+                ],
+                [
+                  "Mana Cost",
+                  "12"
+                ],
+                [
+                  "Cooldown",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "Hurl a blessed hammer that spins out and back, hitting everything in its path for 85 physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Divine Hammer",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Every kill heals you and allies within # for #.",
+          "file": "players/hwp/hoh1specs/skills/last_rites.sval",
+          "id": "hwp_priest_hoh1_last_rites",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Heal",
+                  "8"
+                ],
+                [
+                  "Range",
+                  "80"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you and allies within 80 for 8."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Heal",
+                  "12"
+                ],
+                [
+                  "Range",
+                  "90"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you and allies within 90 for 12."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Heal",
+                  "16"
+                ],
+                [
+                  "Range",
+                  "100"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you and allies within 100 for 16."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Heal",
+                  "20"
+                ],
+                [
+                  "Range",
+                  "110"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you and allies within 110 for 20."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Heal",
+                  "25"
+                ],
+                [
+                  "Range",
+                  "120"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you and allies within 120 for 25."
+            }
+          ],
+          "mods": [],
+          "name": "Last Rites",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 4,
+    "dex": 2,
+    "foc": 10,
+    "health": 100,
+    "int": 8,
+    "mana": 100,
+    "str": 2,
+    "vit": 8
+  },
+  "vanilla": true
+}

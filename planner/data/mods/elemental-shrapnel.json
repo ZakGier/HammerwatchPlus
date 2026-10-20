@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_hoarder_shrapnel",
+  "cls": "hwp_firearms",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+6% elemental penetration from explosives"
+    },
+    {
+      "q": "rare",
+      "text": "+12% elemental penetration from explosives"
+    }
+  ],
+  "name": "Elemental Shrapnel",
+  "notes": "Applies to grenades, grenade launcher, rocket launcher.",
+  "order": null,
+  "skill": "demo-passive",
+  "status": "built",
+  "summary": "Increased elemental penetration from explosives like grenades and rocket launchers."
+}

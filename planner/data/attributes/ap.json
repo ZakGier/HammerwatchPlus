@@ -1,0 +1,7 @@
+{
+  "name": "Armor piercing",
+  "notes": "AP rounds as an upgrade.",
+  "order": 3,
+  "stat": "Armor penetration / pierce",
+  "trinkets": ""
+}

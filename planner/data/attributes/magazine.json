@@ -1,0 +1,7 @@
+{
+  "name": "Magazine size",
+  "notes": "No vanilla item touches class stacks.",
+  "order": 4,
+  "stat": "Clip stack max (ModifyStack add-max)",
+  "trinkets": "Firearm trinkets (later)"
+}

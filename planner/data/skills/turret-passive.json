@@ -1,0 +1,21 @@
+{
+  "built": "hwp_fs_myturret",
+  "cooldown": "",
+  "group": "turrets",
+  "kind": "passive",
+  "levels": [
+    "+10 repair/second, +10% damage",
+    "+15 repair/second, +10% damage",
+    "+15 repair/second, +15% damage",
+    "+20 repair/second, +15% damage",
+    "+20 repair/second, +20% damage"
+  ],
+  "mana": "",
+  "name": "My Turret!",
+  "notes": "standing within 10 units of the turret will show a light glow to it to indicate the buff is in effect",
+  "order": 1,
+  "role": "",
+  "status": "built",
+  "summary": "Standing near your turret slowly repairs it over time and buffs it's damage.",
+  "unlock": "free"
+}

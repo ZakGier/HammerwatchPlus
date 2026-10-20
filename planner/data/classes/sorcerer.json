@@ -1,0 +1,2281 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc.",
+      "file": "players/sorcerer/skills/static_discharge.sval",
+      "id": "static_discharge",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "60"
+            ],
+            [
+              "Mana Cost",
+              "20"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "100"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "120"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "1s"
+            ]
+          ],
+          "q": "common",
+          "text": "You unleash several arcs of lightning in a cone, dealing Lightning damage. Each enemy can only be hit by one arc."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [
+            "static_discharge_fire",
+            "static_discharge_ice"
+          ],
+          "desc": "Each arc of lightning can chain to additional targets.",
+          "id": "static_discharge_chain",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chains",
+                  "2"
+                ],
+                [
+                  "Damage per Chain",
+                  "-20%"
+                ]
+              ],
+              "q": "common",
+              "text": "Each arc of lightning can chain to additional targets."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Chains",
+                  "3"
+                ],
+                [
+                  "Damage per Chain",
+                  "-20%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Each arc of lightning can chain to additional targets."
+            }
+          ],
+          "name": "Chain Lightning",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Increases the range of the spell.",
+          "id": "static_discharge_range",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Range",
+                  "+25%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the range of the spell."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Range",
+                  "+50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Increases the range of the spell."
+            }
+          ],
+          "name": "Extended Discharge",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [
+            "static_discharge_chain",
+            "static_discharge_ice"
+          ],
+          "desc": "Changes damage type to Fire and the rays now pierce targets.",
+          "id": "static_discharge_fire",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "common",
+              "text": "Changes damage type to Fire and the rays now pierce targets."
+            }
+          ],
+          "name": "Scorching Rays",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "fire"
+          ]
+        },
+        {
+          "blockedBy": [
+            "static_discharge_chain",
+            "static_discharge_fire"
+          ],
+          "desc": "Unleashes fewer rays in a tighter cone, but enemies can now be hit by multiple rays. Changes damage type to Ice.",
+          "id": "static_discharge_ice",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "common",
+              "text": "Unleashes fewer rays in a tighter cone, but enemies can now be hit by multiple rays. Changes damage type to Ice."
+            }
+          ],
+          "name": "Rays of Frost",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": [
+            "spell",
+            "ice"
+          ]
+        }
+      ],
+      "name": "Discharge",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies.",
+      "file": "players/sorcerer/skills/elemental_orb.sval",
+      "id": "elemental_orb",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "30"
+            ],
+            [
+              "Tick Rate",
+              "0.25s"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "36"
+            ],
+            [
+              "Tick Rate",
+              "0.25s"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Mana Cost",
+              "30"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "45"
+            ],
+            [
+              "Tick Rate",
+              "0.25s"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "54"
+            ],
+            [
+              "Tick Rate",
+              "0.25s"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Mana Cost",
+              "40"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "66"
+            ],
+            [
+              "Tick Rate",
+              "0.25s"
+            ],
+            [
+              "Duration",
+              "3s"
+            ],
+            [
+              "Mana Cost",
+              "50"
+            ],
+            [
+              "Cooldown",
+              "5s"
+            ]
+          ],
+          "q": "common",
+          "text": "You conjure a slow moving orb that continuously deals damage of all elements to nearby enemies."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "If you have Elemental Affinity when casting the spell the orb will only deal damage of the corresponding element.",
+          "id": "elemental_orb_affinity",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "common",
+              "text": "If you have Elemental Affinity when casting the spell the orb will only deal damage of the corresponding element."
+            }
+          ],
+          "name": "Adaptive Orb",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Extends the lifetime of the orb.",
+          "id": "elemental_orb_duration",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "+50%"
+                ]
+              ],
+              "q": "common",
+              "text": "Extends the lifetime of the orb."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "+100%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Extends the lifetime of the orb."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Duration",
+                  "+150%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Extends the lifetime of the orb."
+            }
+          ],
+          "name": "Stable Orb",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "The orb now starts spewing smaller projectiles in all directions. These projectiles deal less damage.",
+          "id": "elemental_orb_spew",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "3"
+                ],
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "The orb now starts spewing smaller projectiles in all directions. These projectiles deal less damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "4"
+                ],
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "rare",
+              "text": "The orb now starts spewing smaller projectiles in all directions. These projectiles deal less damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Projectiles",
+                  "5"
+                ],
+                [
+                  "Damage",
+                  "25%"
+                ]
+              ],
+              "q": "rare",
+              "text": "The orb now starts spewing smaller projectiles in all directions. These projectiles deal less damage."
+            }
+          ],
+          "name": "Elemental Torrent",
+          "quality": "uncommon",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Elemental Orb",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Grants Spell Crit Chance.",
+      "file": "players/sorcerer/skills/innate_power.sval",
+      "id": "innate_power",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Spell Crit Chance",
+              "4%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Spell Crit Chance."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Spell Crit Chance",
+              "5%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Spell Crit Chance."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Spell Crit Chance",
+              "6.5%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Spell Crit Chance."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Spell Crit Chance",
+              "8%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Spell Crit Chance."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Spell Crit Chance",
+              "10%"
+            ]
+          ],
+          "q": "common",
+          "text": "Grants Spell Crit Chance."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "You deal increased Spell Crit Damage.",
+          "id": "innate_power_critdamage",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Spell Crit Damage",
+                  "+20%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Spell Crit Damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Spell Crit Damage",
+                  "+40%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You deal increased Spell Crit Damage."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Spell Crit Damage",
+                  "+80%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You deal increased Spell Crit Damage."
+            }
+          ],
+          "name": "Uncontrolled Power",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You gain a buff of increased Weapon, Cast and Movement Speed when scoring a Spell Crit.",
+          "id": "innate_power_surge",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Weapon Speed",
+                  "10%"
+                ],
+                [
+                  "Cast Speed",
+                  "10%"
+                ],
+                [
+                  "Movement Speed",
+                  "10%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "common",
+              "text": "You gain a buff of increased Weapon, Cast and Movement Speed when scoring a Spell Crit."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Weapon Speed",
+                  "20%"
+                ],
+                [
+                  "Cast Speed",
+                  "20%"
+                ],
+                [
+                  "Movement Speed",
+                  "10%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You gain a buff of increased Weapon, Cast and Movement Speed when scoring a Spell Crit."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Weapon Speed",
+                  "30%"
+                ],
+                [
+                  "Cast Speed",
+                  "30%"
+                ],
+                [
+                  "Movement Speed",
+                  "10%"
+                ],
+                [
+                  "Duration",
+                  "4s"
+                ]
+              ],
+              "q": "rare",
+              "text": "You gain a buff of increased Weapon, Cast and Movement Speed when scoring a Spell Crit."
+            }
+          ],
+          "name": "Power Surge",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "You restore some of your Mana when scoring a Spell Crit.",
+          "id": "innate_power_mana",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "1.5%"
+                ]
+              ],
+              "q": "common",
+              "text": "You restore some of your Mana when scoring a Spell Crit."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "3%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "You restore some of your Mana when scoring a Spell Crit."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Mana",
+                  "5%"
+                ]
+              ],
+              "q": "rare",
+              "text": "You restore some of your Mana when scoring a Spell Crit."
+            }
+          ],
+          "name": "Mana Surge",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Innate Power",
+      "summon": false,
+      "type": "Passive"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time.",
+      "file": "players/sorcerer/skills/elemental_affinity.sval",
+      "id": "elemental_affinity",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "+10%"
+            ],
+            [
+              "Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "+15%"
+            ],
+            [
+              "Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "+20%"
+            ],
+            [
+              "Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "+25%"
+            ],
+            [
+              "Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "+30%"
+            ],
+            [
+              "Duration",
+              "4s"
+            ]
+          ],
+          "q": "common",
+          "text": "When casting a Spell you gain Elemental Affinity of the same element as the spell cast. You deal more damage of the corresponding element as long as you have Elemental Affinity. You can only have one type of element active at a time."
+        }
+      ],
+      "mods": [
+        {
+          "blockedBy": [],
+          "desc": "Grants additional Fire, Ice and Lightning Resistance per character level.",
+          "id": "elemental_affinity_ward",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Elemental Resistances per Level",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants additional Fire, Ice and Lightning Resistance per character level."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Elemental Resistances per Level",
+                  "+3"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Grants additional Fire, Ice and Lightning Resistance per character level."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Elemental Resistances per Level",
+                  "+4"
+                ]
+              ],
+              "q": "rare",
+              "text": "Grants additional Fire, Ice and Lightning Resistance per character level."
+            }
+          ],
+          "name": "Elemental Ward",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "Grants Fire, Ice and Lightning Penetration.",
+          "id": "elemental_affinity_penetration",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire/Ice/Lightning Penetration",
+                  "+10%"
+                ]
+              ],
+              "q": "common",
+              "text": "Grants Fire, Ice and Lightning Penetration."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire/Ice/Lightning Penetration",
+                  "+15%"
+                ]
+              ],
+              "q": "uncommon",
+              "text": "Grants Fire, Ice and Lightning Penetration."
+            },
+            {
+              "cost": 1,
+              "params": [
+                [
+                  "Fire/Ice/Lightning Penetration",
+                  "+20%"
+                ]
+              ],
+              "q": "rare",
+              "text": "Grants Fire, Ice and Lightning Penetration."
+            }
+          ],
+          "name": "Elemental Penetration",
+          "quality": "common",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        },
+        {
+          "blockedBy": [],
+          "desc": "As long as you have Elemental Affinity your damage bonus is doubled for the other elements.",
+          "id": "elemental_affinity_equilibrium",
+          "levels": [
+            {
+              "cost": 1,
+              "params": [],
+              "q": "rare",
+              "text": "As long as you have Elemental Affinity your damage bonus is doubled for the other elements."
+            }
+          ],
+          "name": "Elemental Equilibrium",
+          "quality": "rare",
+          "requires": [],
+          "start": 0,
+          "tags": []
+        }
+      ],
+      "name": "Elemental Affinity",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [
+    {
+      "desc": "",
+      "file": "players/sorcerer/skills/flame_step.sval",
+      "name": "Flame Step"
+    },
+    {
+      "desc": "",
+      "file": "players/sorcerer/skills/flame_step_dash.sval",
+      "name": "Flame Step"
+    }
+  ],
+  "cutNote": "In the game data, listed by no class; may be unfinished (not tested).",
+  "desc": "A master of arts that can devastate their opponents with elemental forces.",
+  "gear": [
+    "chest_int_t1a",
+    "feet_int_t1a",
+    "twohanded_staff_lightning_01"
+  ],
+  "name": "Sorcerer",
+  "order": 5,
+  "specs": [
+    {
+      "id": "sorcerer_fire",
+      "name": "Fire",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it.",
+          "file": "players/sorcerer/skills/fire_wall.sval",
+          "id": "fire_wall",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "8s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "35"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "9s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "10s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "11s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Tick Rate",
+                  "0.5s"
+                ],
+                [
+                  "Duration",
+                  "12s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "You produce a blazing wall of flames in front of you, dealing Fire damage to all enemies near it."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "You and your allies entering the wall are ignited with a temporary aura that deals Fire damage to nearby enemies.",
+              "id": "fire_wall_flamewalker",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Damage",
+                      "15"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You and your allies entering the wall are ignited with a temporary aura that deals Fire damage to nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Damage",
+                      "30"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You and your allies entering the wall are ignited with a temporary aura that deals Fire damage to nearby enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Fire Damage",
+                      "45"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You and your allies entering the wall are ignited with a temporary aura that deals Fire damage to nearby enemies."
+                }
+              ],
+              "name": "Flamewalker",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You spawn a single wall instance when dashing.",
+              "id": "fire_wall_dash",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [],
+                  "q": "rare",
+                  "text": "You spawn a single wall instance when dashing."
+                }
+              ],
+              "name": "Flamestep",
+              "quality": "rare",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The placement of the wall can now be targeted.",
+              "id": "fire_wall_targeted",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [],
+                  "q": "uncommon",
+                  "text": "The placement of the wall can now be targeted."
+                }
+              ],
+              "name": "Wall Placement",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Flame Wall",
+          "summon": false,
+          "type": "Spell Upgrade"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness.",
+          "file": "players/sorcerer/skills/fire_mastery.sval",
+          "id": "fire_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Fire damage, and your Fire skills gain a chance to inflict Weakness."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Your Fire skills gain a chance to trigger an explosion dealing additional Fire damage. This effect has a short cooldown.",
+              "id": "fire_mastery_volatile",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "30"
+                    ],
+                    [
+                      "Chance",
+                      "10%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Fire skills gain a chance to trigger an explosion dealing additional Fire damage. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "60"
+                    ],
+                    [
+                      "Chance",
+                      "20%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your Fire skills gain a chance to trigger an explosion dealing additional Fire damage. This effect has a short cooldown."
+                }
+              ],
+              "name": "Volatile Flames",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "fire"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You restore some of your Health when scoring a Spell Crit.",
+              "id": "fire_mastery_heal",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Health",
+                      "1%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You restore some of your Health when scoring a Spell Crit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Health",
+                      "2%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You restore some of your Health when scoring a Spell Crit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Health",
+                      "4%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You restore some of your Health when scoring a Spell Crit."
+                }
+              ],
+              "name": "Healing Flames",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Fire Mastery",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "sorcerer_ice",
+      "name": "Ice",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "You unleash multiple frost shards in all directions, dealing Ice damage.",
+          "file": "players/sorcerer/skills/ice_frost_nova.sval",
+          "id": "ice_frost_nova",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Frost Shards",
+                  "12"
+                ],
+                [
+                  "Damage",
+                  "50"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash multiple frost shards in all directions, dealing Ice damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Frost Shards",
+                  "12"
+                ],
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Mana Cost",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash multiple frost shards in all directions, dealing Ice damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Frost Shards",
+                  "12"
+                ],
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash multiple frost shards in all directions, dealing Ice damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Frost Shards",
+                  "12"
+                ],
+                [
+                  "Damage",
+                  "110"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash multiple frost shards in all directions, dealing Ice damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Frost Shards",
+                  "12"
+                ],
+                [
+                  "Damage",
+                  "130"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "2s"
+                ]
+              ],
+              "q": "common",
+              "text": "You unleash multiple frost shards in all directions, dealing Ice damage."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "The projectiles gain the chance to seek out new targets on hit.",
+              "id": "ice_frost_nova_retarget",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "33%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles gain the chance to seek out new targets on hit."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "66%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The projectiles gain the chance to seek out new targets on hit."
+                }
+              ],
+              "name": "Frost Seekers",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "The projectiles gain a chance to unleash a new smaller nova of projectiles when killing enemies.",
+              "id": "ice_frost_nova_kill",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "20%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "The projectiles gain a chance to unleash a new smaller nova of projectiles when killing enemies."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "The projectiles gain a chance to unleash a new smaller nova of projectiles when killing enemies."
+                }
+              ],
+              "name": "Frost Splinters",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Frost Nova",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze.",
+          "file": "players/sorcerer/skills/ice_mastery.sval",
+          "id": "ice_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Ice damage and your Ice skills gain a chance to inflict Freeze."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Killing enemies with Ice skills have a chance to trigger an explosion dealing Ice damage.",
+              "id": "ice_mastery_shatter",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "100"
+                    ],
+                    [
+                      "Chance",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing enemies with Ice skills have a chance to trigger an explosion dealing Ice damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "150"
+                    ],
+                    [
+                      "Chance",
+                      "10%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Killing enemies with Ice skills have a chance to trigger an explosion dealing Ice damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "250"
+                    ],
+                    [
+                      "Chance",
+                      "10%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Killing enemies with Ice skills have a chance to trigger an explosion dealing Ice damage."
+                }
+              ],
+              "name": "Shatter",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "ice"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain a chance to block Physical and Ice damage, when blocking a single shard from your frost nova is unleashed.",
+              "id": "ice_mastery_block",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "10%"
+                    ],
+                    [
+                      "Block Amount",
+                      "75%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to block Physical and Ice damage, when blocking a single shard from your frost nova is unleashed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "20%"
+                    ],
+                    [
+                      "Block Amount",
+                      "75%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to block Physical and Ice damage, when blocking a single shard from your frost nova is unleashed."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Block Amount",
+                      "75%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a chance to block Physical and Ice damage, when blocking a single shard from your frost nova is unleashed."
+                }
+              ],
+              "name": "Ice Block",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Ice Mastery",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "sorcerer_lightning",
+      "name": "Lightning",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillDirectionalCharged",
+          "desc": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell.",
+          "file": "players/sorcerer/skills/lightning_ball.sval",
+          "id": "lightning_ball",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Max Charge Time",
+                  "1s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "120"
+                ],
+                [
+                  "Max Charge Time",
+                  "1s"
+                ],
+                [
+                  "Mana Cost",
+                  "50"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "150"
+                ],
+                [
+                  "Max Charge Time",
+                  "1s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "180"
+                ],
+                [
+                  "Max Charge Time",
+                  "1s"
+                ],
+                [
+                  "Mana Cost",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "220"
+                ],
+                [
+                  "Max Charge Time",
+                  "1s"
+                ],
+                [
+                  "Mana Cost",
+                  "70"
+                ],
+                [
+                  "Cooldown",
+                  "7s"
+                ]
+              ],
+              "q": "common",
+              "text": "You charge up a ball of lightning that is unleashed when cast, dealing Lightning damage to all enemies in its path. The damage of the projectile is based on how long you charge the spell."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Each enemy hit extends the lifetime of the projectile.",
+              "id": "lightning_ball_ttl",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Projectile Lifetime",
+                      "+25%"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Each enemy hit extends the lifetime of the projectile."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Projectile Lifetime",
+                      "+50%"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Each enemy hit extends the lifetime of the projectile."
+                }
+              ],
+              "name": "Energized Ball",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            },
+            {
+              "blockedBy": [],
+              "desc": "You leave behind a field of electricity that lingers for a period, dealing additional Lightning damage.",
+              "id": "lightning_ball_static",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Duration",
+                      "4s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You leave behind a field of electricity that lingers for a period, dealing additional Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Damage",
+                      "20%"
+                    ],
+                    [
+                      "Duration",
+                      "8s"
+                    ],
+                    [
+                      "Tick Rate",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You leave behind a field of electricity that lingers for a period, dealing additional Lightning damage."
+                }
+              ],
+              "name": "Static Field",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Lightning Ball",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun.",
+          "file": "players/sorcerer/skills/lightning_mastery.sval",
+          "id": "lightning_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+10%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "+20%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+30%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "+40%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "+50%"
+                ],
+                [
+                  "Chance",
+                  "10%"
+                ]
+              ],
+              "q": "common",
+              "text": "You deal increased Lightning damage and your Lightning skills gain a chance to inflict Stun."
+            }
+          ],
+          "mods": [
+            {
+              "blockedBy": [],
+              "desc": "Your Lightning skills gain a chance to trigger an arc of electricity that chain between enemies, dealing Lightning damage.",
+              "id": "lightning_mastery_arc",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Damage",
+                      "50"
+                    ],
+                    [
+                      "Chains",
+                      "1"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Lightning skills gain a chance to trigger an arc of electricity that chain between enemies, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Damage",
+                      "70"
+                    ],
+                    [
+                      "Chains",
+                      "2"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "Your Lightning skills gain a chance to trigger an arc of electricity that chain between enemies, dealing Lightning damage."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "15%"
+                    ],
+                    [
+                      "Damage",
+                      "90"
+                    ],
+                    [
+                      "Chains",
+                      "3"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "Your Lightning skills gain a chance to trigger an arc of electricity that chain between enemies, dealing Lightning damage."
+                }
+              ],
+              "name": "Arc Lightning",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": [
+                "passive",
+                "lightning"
+              ]
+            },
+            {
+              "blockedBy": [],
+              "desc": "You gain a chance to block most projectiles. This effect has a short cooldown.",
+              "id": "lightning_mastery_block",
+              "levels": [
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "30%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "1s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to block most projectiles. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "40%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.5s"
+                    ]
+                  ],
+                  "q": "uncommon",
+                  "text": "You gain a chance to block most projectiles. This effect has a short cooldown."
+                },
+                {
+                  "cost": 1,
+                  "params": [
+                    [
+                      "Chance",
+                      "50%"
+                    ],
+                    [
+                      "Effect Cooldown",
+                      "0.25s"
+                    ]
+                  ],
+                  "q": "rare",
+                  "text": "You gain a chance to block most projectiles. This effect has a short cooldown."
+                }
+              ],
+              "name": "Null Field",
+              "quality": "uncommon",
+              "requires": [],
+              "start": 0,
+              "tags": []
+            }
+          ],
+          "name": "Lightning Mastery",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 0,
+    "dex": 2,
+    "foc": 10,
+    "health": 80,
+    "int": 10,
+    "mana": 120,
+    "str": 2,
+    "vit": 6
+  },
+  "vanilla": true
+}

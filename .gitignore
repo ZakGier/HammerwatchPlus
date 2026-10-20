@@ -34,3 +34,5 @@ saves-backup/
 /modules/
 # icon idea renders (tools/icon_art/README.md)
 tools/icon_art/out/
+# the class planner's icons cut from the local HoH1 art (tools/icon_art/planner_icons.py)
+planner/web/icons.local.png

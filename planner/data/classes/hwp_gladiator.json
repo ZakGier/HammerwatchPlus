@@ -1,0 +1,1225 @@
+{
+  "base": [
+    {
+      "class": "Skills::PlayerSkillPosition",
+      "desc": "Cast a weighted net over the target spot: enemies in a # radius are immobilized for #.",
+      "file": "players/hwp/gladiator/skills/net.sval",
+      "id": "hwp_gladiator_net",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Range",
+              "40"
+            ],
+            [
+              "Duration",
+              "2s"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Cast a weighted net over the target spot: enemies in a 40 radius are immobilized for 2s."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Range",
+              "44"
+            ],
+            [
+              "Duration",
+              "2s"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Cast a weighted net over the target spot: enemies in a 44 radius are immobilized for 2s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Range",
+              "48"
+            ],
+            [
+              "Duration",
+              "2s"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Cast a weighted net over the target spot: enemies in a 48 radius are immobilized for 2s."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Range",
+              "52"
+            ],
+            [
+              "Duration",
+              "2s"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Cast a weighted net over the target spot: enemies in a 52 radius are immobilized for 2s."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Range",
+              "56"
+            ],
+            [
+              "Duration",
+              "2s"
+            ],
+            [
+              "Cooldown",
+              "8s"
+            ]
+          ],
+          "q": "common",
+          "text": "Cast a weighted net over the target spot: enemies in a 56 radius are immobilized for 2s."
+        }
+      ],
+      "mods": [],
+      "name": "Net",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PlayerSkillDirectional",
+      "desc": "Hurl a spinning blade that returns to you, hitting everything on the way for # weapon damage.",
+      "file": "players/hwp/gladiator/skills/gladius.sval",
+      "id": "hwp_gladiator_gladius",
+      "kind": "active",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "120%"
+            ],
+            [
+              "Mana Cost",
+              "8"
+            ],
+            [
+              "Cooldown",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hurl a spinning blade that returns to you, hitting everything on the way for 120% weapon damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "140%"
+            ],
+            [
+              "Mana Cost",
+              "8"
+            ],
+            [
+              "Cooldown",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hurl a spinning blade that returns to you, hitting everything on the way for 140% weapon damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "160%"
+            ],
+            [
+              "Mana Cost",
+              "8"
+            ],
+            [
+              "Cooldown",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hurl a spinning blade that returns to you, hitting everything on the way for 160% weapon damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "180%"
+            ],
+            [
+              "Mana Cost",
+              "8"
+            ],
+            [
+              "Cooldown",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hurl a spinning blade that returns to you, hitting everything on the way for 180% weapon damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "200%"
+            ],
+            [
+              "Mana Cost",
+              "8"
+            ],
+            [
+              "Cooldown",
+              "3s"
+            ]
+          ],
+          "q": "common",
+          "text": "Hurl a spinning blade that returns to you, hitting everything on the way for 200% weapon damage."
+        }
+      ],
+      "mods": [],
+      "name": "Gladius Throw",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSummonSkill",
+      "desc": "A fellow pit fighter with # health follows you and thrusts for # damage. A new one steps in every # when the last falls.",
+      "file": "players/hwp/gladiator/skills/pit_fighters.sval",
+      "id": "hwp_gladiator_pit_fighters",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "50"
+            ],
+            [
+              "Health",
+              "600"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "A fellow pit fighter with 600 health follows you and thrusts for 50 damage. A new one steps in every 20s when the last falls."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "65"
+            ],
+            [
+              "Health",
+              "800"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "A fellow pit fighter with 800 health follows you and thrusts for 65 damage. A new one steps in every 20s when the last falls."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "80"
+            ],
+            [
+              "Health",
+              "1000"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "A fellow pit fighter with 1000 health follows you and thrusts for 80 damage. A new one steps in every 20s when the last falls."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "95"
+            ],
+            [
+              "Health",
+              "1200"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "A fellow pit fighter with 1200 health follows you and thrusts for 95 damage. A new one steps in every 20s when the last falls."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "110"
+            ],
+            [
+              "Health",
+              "1400"
+            ],
+            [
+              "Cooldown",
+              "20s"
+            ]
+          ],
+          "q": "common",
+          "text": "A fellow pit fighter with 1400 health follows you and thrusts for 110 damage. A new one steps in every 20s when the last falls."
+        }
+      ],
+      "mods": [],
+      "name": "Pit Fighters",
+      "port": "HoH1",
+      "summon": true,
+      "type": "Spell"
+    },
+    {
+      "class": "Skills::PassiveSkill",
+      "desc": "Weapon attacks deal # more damage.",
+      "file": "players/hwp/gladiator/skills/planned_attack.sval",
+      "id": "hwp_gladiator_planned_attack",
+      "kind": "passive",
+      "levels": [
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "+6%"
+            ]
+          ],
+          "q": "common",
+          "text": "Weapon attacks deal +6% more damage."
+        },
+        {
+          "cost": 3,
+          "params": [
+            [
+              "Damage",
+              "+12%"
+            ]
+          ],
+          "q": "common",
+          "text": "Weapon attacks deal +12% more damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "+18%"
+            ]
+          ],
+          "q": "common",
+          "text": "Weapon attacks deal +18% more damage."
+        },
+        {
+          "cost": 5,
+          "params": [
+            [
+              "Damage",
+              "+24%"
+            ]
+          ],
+          "q": "common",
+          "text": "Weapon attacks deal +24% more damage."
+        },
+        {
+          "cost": 7,
+          "params": [
+            [
+              "Damage",
+              "+30%"
+            ]
+          ],
+          "q": "common",
+          "text": "Weapon attacks deal +30% more damage."
+        }
+      ],
+      "mods": [],
+      "name": "Planned Attack",
+      "port": "HoH1",
+      "summon": false,
+      "type": "Passive"
+    }
+  ],
+  "cut": [],
+  "desc": "The HoH1 arena fighter: trident, net and a crowd of pit fighters. Masters as Champion (riposte, armor), Beastmaster (war hounds) or Retiarius (barbed nets and whirling tridents). HoH1 kit: Trident (attack); Net, Gladius, Pit Fighters (actives); Planned Attack, Riposte, Arena Mastery (passives). Here the Arena Trident is the starting weapon; Net, Gladius Throw, Pit Fighters (now a passive summon) and Planned Attack are the base kit; Riposte and Arena Mastery are the Champion's.",
+  "gear": [
+    "chest_str_t1a",
+    "feet_str_t1a",
+    "hwp_trident_01"
+  ],
+  "name": "Gladiator",
+  "order": 10,
+  "port": "HoH1",
+  "specs": [
+    {
+      "id": "hwp_gladiator_champion",
+      "name": "Champion",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Enemies that hit you in melee take # physical damage.",
+          "file": "players/hwp/gladiator/skills/riposte.sval",
+          "id": "hwp_gladiator_riposte",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Thorns damage",
+                  "10"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies that hit you in melee take 10 physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Thorns damage",
+                  "20"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies that hit you in melee take 20 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Thorns damage",
+                  "30"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies that hit you in melee take 30 physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Thorns damage",
+                  "40"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies that hit you in melee take 40 physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Thorns damage",
+                  "50"
+                ]
+              ],
+              "q": "common",
+              "text": "Enemies that hit you in melee take 50 physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Riposte",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Armor up by # and health by #.",
+          "file": "players/hwp/gladiator/skills/arena_mastery.sval",
+          "id": "hwp_gladiator_arena_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Armor",
+                  "+5"
+                ],
+                [
+                  "Health",
+                  "+20"
+                ]
+              ],
+              "q": "common",
+              "text": "Armor up by +5 and health by +20."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Armor",
+                  "+10"
+                ],
+                [
+                  "Health",
+                  "+40"
+                ]
+              ],
+              "q": "common",
+              "text": "Armor up by +10 and health by +40."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Armor",
+                  "+15"
+                ],
+                [
+                  "Health",
+                  "+60"
+                ]
+              ],
+              "q": "common",
+              "text": "Armor up by +15 and health by +60."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Armor",
+                  "+20"
+                ],
+                [
+                  "Health",
+                  "+80"
+                ]
+              ],
+              "q": "common",
+              "text": "Armor up by +20 and health by +80."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Armor",
+                  "+25"
+                ],
+                [
+                  "Health",
+                  "+100"
+                ]
+              ],
+              "q": "common",
+              "text": "Armor up by +25 and health by +100."
+            }
+          ],
+          "mods": [],
+          "name": "Arena Mastery",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Brace behind your shield: armor and resistance up by 50% for #.",
+          "file": "players/hwp/gladiator/skills/shield_wall.sval",
+          "id": "hwp_gladiator_shield_wall",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "15s"
+                ]
+              ],
+              "q": "common",
+              "text": "Brace behind your shield: armor and resistance up by 50% for 5s."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "14s"
+                ]
+              ],
+              "q": "common",
+              "text": "Brace behind your shield: armor and resistance up by 50% for 5s."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "13s"
+                ]
+              ],
+              "q": "common",
+              "text": "Brace behind your shield: armor and resistance up by 50% for 5s."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "12s"
+                ]
+              ],
+              "q": "common",
+              "text": "Brace behind your shield: armor and resistance up by 50% for 5s."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Duration",
+                  "5s"
+                ],
+                [
+                  "Cooldown",
+                  "11s"
+                ]
+              ],
+              "q": "common",
+              "text": "Brace behind your shield: armor and resistance up by 50% for 5s."
+            }
+          ],
+          "mods": [],
+          "name": "Shield Wall",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        }
+      ]
+    },
+    {
+      "id": "hwp_gladiator_beastmaster",
+      "name": "Beastmaster",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PassiveSummonSkill",
+          "desc": "A war hound with # health fights at your side for # damage per bite; a new one arrives every # when the last dies.",
+          "file": "players/hwp/gladiator/skills/beast.sval",
+          "id": "hwp_gladiator_beast",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "40"
+                ],
+                [
+                  "Health",
+                  "600"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "A war hound with 600 health fights at your side for 40 damage per bite; a new one arrives every 20s when the last dies."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "55"
+                ],
+                [
+                  "Health",
+                  "850"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "A war hound with 850 health fights at your side for 55 damage per bite; a new one arrives every 20s when the last dies."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "70"
+                ],
+                [
+                  "Health",
+                  "1100"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "A war hound with 1100 health fights at your side for 70 damage per bite; a new one arrives every 20s when the last dies."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "85"
+                ],
+                [
+                  "Health",
+                  "1350"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "A war hound with 1350 health fights at your side for 85 damage per bite; a new one arrives every 20s when the last dies."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "100"
+                ],
+                [
+                  "Health",
+                  "1600"
+                ],
+                [
+                  "Cooldown",
+                  "20s"
+                ]
+              ],
+              "q": "common",
+              "text": "A war hound with 1600 health fights at your side for 100 damage per bite; a new one arrives every 20s when the last dies."
+            }
+          ],
+          "mods": [],
+          "name": "Arena Beast",
+          "port": "HoH1",
+          "summon": true,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "You can keep # more beasts.",
+          "file": "players/hwp/gladiator/skills/pack_leader.sval",
+          "id": "hwp_gladiator_pack_leader",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more beasts."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more beasts."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Max summons",
+                  "+1"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +1 more beasts."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Max summons",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +2 more beasts."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Max summons",
+                  "+2"
+                ]
+              ],
+              "q": "common",
+              "text": "You can keep +2 more beasts."
+            }
+          ],
+          "mods": [],
+          "name": "Pack Leader",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Every kill heals you for #.",
+          "file": "players/hwp/gladiator/skills/bloodlust.sval",
+          "id": "hwp_gladiator_bloodlust",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Heal",
+                  "10"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you for 10."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Heal",
+                  "20"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you for 20."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Heal",
+                  "30"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you for 30."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Heal",
+                  "40"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you for 40."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Heal",
+                  "50"
+                ]
+              ],
+              "q": "common",
+              "text": "Every kill heals you for 50."
+            }
+          ],
+          "mods": [],
+          "name": "Bloodlust",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    },
+    {
+      "id": "hwp_gladiator_retiarius",
+      "name": "Retiarius",
+      "port": "HoH1",
+      "skills": [
+        {
+          "class": "Skills::PlayerSkillPosition",
+          "desc": "A net of hooks: enemies in a # radius take # physical damage, bleed and are immobilized.",
+          "file": "players/hwp/gladiator/skills/barbed_net.sval",
+          "id": "hwp_gladiator_barbed_net",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "30"
+                ],
+                [
+                  "Range",
+                  "40"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "A net of hooks: enemies in a 40 radius take 30 physical damage, bleed and are immobilized."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "45"
+                ],
+                [
+                  "Range",
+                  "44"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "A net of hooks: enemies in a 44 radius take 45 physical damage, bleed and are immobilized."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "60"
+                ],
+                [
+                  "Range",
+                  "48"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "A net of hooks: enemies in a 48 radius take 60 physical damage, bleed and are immobilized."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "75"
+                ],
+                [
+                  "Range",
+                  "52"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "A net of hooks: enemies in a 52 radius take 75 physical damage, bleed and are immobilized."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "90"
+                ],
+                [
+                  "Range",
+                  "56"
+                ],
+                [
+                  "Cooldown",
+                  "9s"
+                ]
+              ],
+              "q": "common",
+              "text": "A net of hooks: enemies in a 56 radius take 90 physical damage, bleed and are immobilized."
+            }
+          ],
+          "mods": [],
+          "name": "Barbed Net",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PlayerSkillDirectional",
+          "desc": "Spin your trident around you, hitting everything within # for # weapon damage.",
+          "file": "players/hwp/gladiator/skills/whirl.sval",
+          "id": "hwp_gladiator_whirl",
+          "kind": "active",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "150%"
+                ],
+                [
+                  "Range",
+                  "48"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Spin your trident around you, hitting everything within 48 for 150% weapon damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Damage",
+                  "175%"
+                ],
+                [
+                  "Range",
+                  "52"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Spin your trident around you, hitting everything within 52 for 175% weapon damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "200%"
+                ],
+                [
+                  "Range",
+                  "56"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Spin your trident around you, hitting everything within 56 for 200% weapon damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Damage",
+                  "225%"
+                ],
+                [
+                  "Range",
+                  "60"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Spin your trident around you, hitting everything within 60 for 225% weapon damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Damage",
+                  "250%"
+                ],
+                [
+                  "Range",
+                  "64"
+                ],
+                [
+                  "Cooldown",
+                  "5s"
+                ]
+              ],
+              "q": "common",
+              "text": "Spin your trident around you, hitting everything within 64 for 250% weapon damage."
+            }
+          ],
+          "mods": [],
+          "name": "Trident Whirl",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Spell"
+        },
+        {
+          "class": "Skills::PassiveSkill",
+          "desc": "Attacks deal # extra physical damage.",
+          "file": "players/hwp/gladiator/skills/trident_mastery.sval",
+          "id": "hwp_gladiator_trident_mastery",
+          "kind": "passive",
+          "levels": [
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Physical damage",
+                  "+4-6"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +4-6 extra physical damage."
+            },
+            {
+              "cost": 5,
+              "params": [
+                [
+                  "Physical damage",
+                  "+8-12"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +8-12 extra physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Physical damage",
+                  "+12-18"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +12-18 extra physical damage."
+            },
+            {
+              "cost": 7,
+              "params": [
+                [
+                  "Physical damage",
+                  "+16-24"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +16-24 extra physical damage."
+            },
+            {
+              "cost": 9,
+              "params": [
+                [
+                  "Physical damage",
+                  "+20-30"
+                ]
+              ],
+              "q": "common",
+              "text": "Attacks deal +20-30 extra physical damage."
+            }
+          ],
+          "mods": [],
+          "name": "Trident Mastery",
+          "port": "HoH1",
+          "summon": false,
+          "type": "Passive"
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "armor": 6,
+    "dex": 6,
+    "foc": 4,
+    "health": 130,
+    "int": 2,
+    "mana": 40,
+    "str": 10,
+    "vit": 8
+  },
+  "vanilla": true
+}
