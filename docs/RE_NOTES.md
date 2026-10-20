@@ -1689,3 +1689,16 @@ Status: measured where a run is cited; the rest says which run checks it.
 - **mod-abyss-tiers 20261020-003934 PASS:** Dark Citadel floor 1 (`hwp abyss`: "reward tier 1
   here") logged `payout hwp_abyss_reward_1`; the same floor in new game+ (`mission dark_citadel
   0 1`) logged `payout hwp_abyss_reward_3`. Each payout dropped gold and three items.
+
+## Valuables at double gold (2026-10-20)
+
+- **A valuable pays its price, once, at pickup:** PlayerRecord.as:2141-2146 casts the picked item
+  to `Item::Valuable` and gives `GiveMaterial(Gold, valuable.GetPrice())`; `GetPrice()` is the
+  item's `m_price` (`tweak/items/items_valuables.sval`, 26 valuables, 30 to 800 gold). The pickup
+  is paid by the picker's own record, so every machine needs the change, not just the host.
+- **Setting `m_price` is enough:** mods/valuables keeps each valuable's vanilla price and sets
+  `m_price = vanilla × valuables.gold_mult`, so changing the setting never compounds.
+- **mod-valuables 20261020-021120 PASS:** boot self-check "26 valuables at 2x"; `hwp valuables`
+  "150 -> 300" for the ceramic vase; a dropped vase is "worth 300"; picking it up took the
+  character's gold from 0 (`gl inv` c6) to 300 (c9), asserted in the rerun 20261020-021931 PASS; `gold_mult 1` gives 150 -> 150 and 2 gives
+  300 again.

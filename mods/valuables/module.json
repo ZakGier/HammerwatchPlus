@@ -1,0 +1,6 @@
+{
+  "id": "valuables",
+  "requires": ["core"],
+  "overrides": [],
+  "exclude": []
+}

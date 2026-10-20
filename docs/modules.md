@@ -116,6 +116,7 @@ in a 2-player lobby for anything networked.
 | `weapons` | 12 new weapons via `Equipment::BaseItem::LoadMultiple` | `tweak/hwp/equipment_weapons_hwp.sval`; `hwp weapons` |
 | `strongbox` | strongbox chests: pack spawns on open, loot on clear | `HWPStrongbox : Chest`, `HWP::Spawner` (core); `tweak/hwp/loot_strongbox.sval`; `hwp strongbox` |
 | `abyss` | abyss cracks: waves + elites by party size, reward on clear by floor diff-level (3 tiers) | `HWP::Spawner`; `tweak/hwp/loot_abyss.sval`; `hwp abyss` |
+| `valuables` | valuables pay `valuables.gold_mult` (2) x their vanilla gold | sets `Item::Valuable.m_price` from the kept vanilla price; `hwp valuables [drop <id>]` |
 | `maps` | 3 extra `equipment_map` missions | `tweak/hwp/missions/*.sval` (`MissionDef::LoadSingle`); `hwp maps` |
 | `mercenary` | HoH1 mercenary mode: `hwp merc enlist` (fresh level-1 character, a level-20 veteran of the class; starts at `mercenary.start_level`, default 10), HoH1 prestige (floors, boss floors, NG+²) and ranks (+15% gold and XP per rank), permadeath (on death, or on a failed run with `mercenary.revivable`), ledger of the fallen | `PlayerRecordRefreshModifiers` hook adds `Modifiers::MaterialGain` + `Modifiers::Experience`; fallen check in `ModuleStart`/`UpdateFrame`; picker via `GlobalCache main_pick_character`; `merc.fallen`/`merc.boss` host relays |
 | `summons` | Crusaders persist across floors (snapshot `SaveUnit()`, re-produce on `GameModeSpawnPlayer`) | hooks `GameModeSpawnPlayer`; settings `summons.enabled/all`; `hwp summons` |
