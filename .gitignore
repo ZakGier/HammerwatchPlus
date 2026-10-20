@@ -32,3 +32,5 @@ saves-backup/
 .base/
 .base-hoh1/
 /modules/
+# icon idea renders (tools/icon_art/README.md)
+tools/icon_art/out/

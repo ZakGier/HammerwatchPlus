@@ -134,6 +134,10 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   as `art/firearms/override/<name>.png` (Aseprite, LibreSprite or Pixelorama)
   and re-run the tool. Atlases must be power-of-two sized: the game hangs on
   load otherwise.
+  - `tools/icon_art/` paints icon ideas in the vanilla skill-icon style, three
+    for each skill, orb, attack and HUD icon here and for the vanilla classes'
+    orbs, plus a picker page that shows them beside the current icon. A picked
+    one goes into `art/firearms/override/` (tools/icon_art/README.md).
 
 Next, from the planner
 (https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3): the two base passives,

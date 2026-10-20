@@ -137,6 +137,7 @@ python -m gamelab doctor --no-hoh1    # you don't own HoH1: skip its content, st
 python -m gamelab doctor --smoke      # boot null-payload again; a failure names its cause (antivirus, GPU, cores)
 python tools/build.py                 # pack dist/HWP-<module>.bin + dist/HammerwatchPlus-All.bin
 python tools/hwr_archive.py --help    # low-level archive tool (list/extract/pack HW2R and HWRR)
+python tools/icon_art/render.py all   # skill icon ideas in the vanilla style (tools/icon_art/README.md)
 python tools/import_hoh1.py pets|levels|campaign|classes   # HoH1 content by hand (doctor --fix runs all four)
 ```
 

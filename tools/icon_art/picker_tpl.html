@@ -1,0 +1,200 @@
+<title>Skill Icon Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: a slim sticky tally bar over a wrapping grid of icon cards, one card per skill, the
+   three takes and the current icon side by side at 4x. Dark like the game's own skill panels. */
+:root {
+  --bg: #15131a; --panel: #1f1c26; --line: #3a3444; --fg: #e8e2d4; --muted: #9a92a6;
+  --gold: #e8b84a; --gold-ink: #1a1408; --keep: #7aa0c8; --focus: #f2d27a;
+  --display: "Silkscreen", "Courier New", monospace;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #efeae0; --panel: #faf7f0; --line: #d6cdbd; --fg: #241f2a; --muted: #6a6274;
+  --gold: #b8841a; --gold-ink: #fffaf0; --keep: #3a6a9a; --focus: #8a5a00; color-scheme: light } }
+:root[data-theme="light"] {
+  --bg: #efeae0; --panel: #faf7f0; --line: #d6cdbd; --fg: #241f2a; --muted: #6a6274;
+  --gold: #b8841a; --gold-ink: #fffaf0; --keep: #3a6a9a; --focus: #8a5a00; color-scheme: light }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 14px; line-height: 1.45 }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel) }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; max-width: 1280px; margin: 0 auto }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line) }
+header .wrap { padding-block: 12px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center }
+h1 { font-family: var(--display); font-weight: 400; font-size: 20px; margin: 0; letter-spacing: .02em; text-wrap: balance }
+.tally { font-variant-numeric: tabular-nums; color: var(--muted) }
+.tally b { color: var(--gold); font-weight: 600 }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto }
+.controls select, .controls label { font: inherit; color: var(--fg) }
+select { background: var(--bg); border: 1px solid var(--line); padding: 4px 8px; border-radius: 4px }
+.status { font-size: 12px; color: var(--muted); width: 100% }
+.intro { max-width: 68ch; color: var(--muted); margin: 16px 0 8px }
+h2 { font-family: var(--display); font-weight: 400; font-size: 16px; margin: 28px 0 12px; letter-spacing: .03em; text-transform: uppercase }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 470px), 1fr)); gap: 12px }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; display: grid; gap: 10px; min-width: 0 }
+.card.done { border-color: color-mix(in srgb, var(--gold) 55%, var(--line)) }
+.card h3 { margin: 0; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap }
+.card h3 code { font-size: 11px; color: var(--muted); font-weight: 400 }
+.card .desc { color: var(--muted); font-size: 12px; margin: -6px 0 0 }
+.opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px }
+.opt { appearance: none; background: var(--bg); border: 2px solid var(--line); border-radius: 5px; padding: 6px 4px 4px; cursor: pointer;
+  display: grid; justify-items: center; gap: 4px; color: var(--muted); font: 600 11px var(--body); letter-spacing: .06em }
+.opt img { width: 96px; max-width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block }
+.opt:hover { border-color: var(--muted) }
+.opt:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px }
+.opt[aria-pressed="true"] { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, var(--bg)); color: var(--fg) }
+.opt.now[aria-pressed="true"] { border-color: var(--keep); background: color-mix(in srgb, var(--keep) 14%, var(--bg)) }
+.opt.empty { cursor: default; opacity: .5 }
+.note { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px }
+.note:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px }
+.nodb { border: 1px dashed var(--line); padding: 8px 12px; border-radius: 4px; color: var(--muted) }
+@media (prefers-reduced-motion: no-preference) { .opt { transition: border-color .12s, background .12s } }
+</style>
+
+<header><div class="wrap">
+  <h1>Skill Icon Picks</h1>
+  <span class="tally" id="tally">loading picks…</span>
+  <div class="controls">
+    <select id="grp" aria-label="Class"></select>
+    <select id="flt" aria-label="Show">
+      <option value="all">All icons</option>
+      <option value="open">Not picked yet</option>
+      <option value="done">Picked</option>
+    </select>
+  </div>
+  <div class="status" id="status" aria-live="polite"></div>
+</div></header>
+
+<main class="wrap">
+  <p class="intro">Each skill has three new takes in the vanilla skill-icon style (A: the gear up close, B: the moment it happens, C: an abstract mark) and the icon it uses now. Tap one per skill; <b>Now</b> keeps the current icon. Add a note if a take is close but needs a change. Picks save for everyone who opens this page, and Claude reads them back to build the atlases.</p>
+  <div id="groups"></div>
+</main>
+
+<script>
+const GROUPS = /*DATA*/null;
+const picks = {};          // id -> {choice, note}
+let db = null, col = null;
+const $ = s => document.querySelector(s);
+const statusEl = $("#status");
+
+function setStatus(t) { statusEl.textContent = t; }
+
+function render() {
+  const g = $("#grp").value, f = $("#flt").value;
+  const root = $("#groups");
+  root.textContent = "";
+  for (const grp of GROUPS) {
+    if (g !== "all" && grp.id !== g) continue;
+    const items = grp.items.filter(it => f === "all" || (f === "done") === !!(picks[it.id] && picks[it.id].choice));
+    if (!items.length) continue;
+    const h = document.createElement("h2");
+    const n = grp.items.filter(it => picks[it.id] && picks[it.id].choice).length;
+    h.textContent = `${grp.title} · ${n}/${grp.items.length}`;
+    root.append(h);
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    for (const it of items) grid.append(card(it));
+    root.append(grid);
+  }
+  tally();
+}
+
+function card(it) {
+  const p = picks[it.id] || {};
+  const c = document.createElement("section");
+  c.className = "card" + (p.choice ? " done" : "");
+  c.id = "card-" + it.id.replace(/[^A-Za-z0-9_-]/g, "_");
+  const h = document.createElement("h3");
+  h.textContent = it.name + " ";
+  const code = document.createElement("code");
+  code.textContent = it.key;
+  h.append(code);
+  c.append(h);
+  if (it.desc) { const d = document.createElement("p"); d.className = "desc"; d.textContent = it.desc; c.append(d); }
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  for (const [k, label] of [["a", "A"], ["b", "B"], ["c", "C"], ["now", "Now"]]) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opt" + (k === "now" ? " now" : "");
+    const src = it.imgs[k];
+    if (src) {
+      const im = document.createElement("img");
+      im.src = src; im.alt = `${it.name}, ${k === "now" ? "current icon" : "take " + label}`;
+      b.append(im);
+      b.setAttribute("aria-pressed", p.choice === (k === "now" ? "keep" : k) ? "true" : "false");
+      b.addEventListener("click", () => choose(it, k === "now" ? "keep" : k));
+    } else {
+      b.classList.add("empty"); b.disabled = true;
+      const sp = document.createElement("span"); sp.style.height = "96px"; sp.style.display = "grid"; sp.style.placeItems = "center"; sp.textContent = "none";
+      b.append(sp);
+    }
+    b.append(label);
+    opts.append(b);
+  }
+  c.append(opts);
+  const note = document.createElement("input");
+  note.className = "note"; note.id = "note-" + it.id; note.placeholder = "Note (optional)"; note.value = p.note || "";
+  note.setAttribute("aria-label", `Note for ${it.name}`);
+  note.addEventListener("change", () => save(it, { note: note.value }));
+  c.append(note);
+  return c;
+}
+
+function tally() {
+  let n = 0, t = 0;
+  for (const g of GROUPS) for (const it of g.items) { t++; if (picks[it.id] && picks[it.id].choice) n++; }
+  $("#tally").innerHTML = `<b>${n}</b> of ${t} picked`;
+}
+
+async function save(it, patch) {
+  picks[it.id] = Object.assign({}, picks[it.id], patch);
+  if (!col) { setStatus("Not saved: the shared store isn't available in this view."); return; }
+  try {
+    await col.doc(it.id).set(Object.assign({ choice: "", note: "" }, picks[it.id], { at: new Date().toISOString() }));
+    setStatus(`Saved ${it.name}.`);
+  } catch (e) {
+    setStatus(`Couldn't save ${it.name}: ${(e && e.message) || e}. Viewers with view-only access can't pick.`);
+  }
+}
+
+function choose(it, choice) {
+  save(it, { choice });
+  render();
+  const el = document.getElementById("card-" + it.id.replace(/[^A-Za-z0-9_-]/g, "_"));
+  if (el) el.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
+}
+
+(function init() {
+  const sel = $("#grp");
+  const all = document.createElement("option"); all.value = "all"; all.textContent = "All classes"; sel.append(all);
+  for (const g of GROUPS) { const o = document.createElement("option"); o.value = g.id; o.textContent = g.title; sel.append(o); }
+  try { const v = localStorage.getItem("pick.grp"); if (v && [...sel.options].some(o => o.value === v)) sel.value = v; } catch (e) {}
+  try { const v = localStorage.getItem("pick.flt"); if (v) $("#flt").value = v; } catch (e) {}
+  sel.addEventListener("change", () => { try { localStorage.setItem("pick.grp", sel.value); } catch (e) {} render(); });
+  $("#flt").addEventListener("change", () => { try { localStorage.setItem("pick.flt", $("#flt").value); } catch (e) {} render(); });
+  render();
+  $("#tally").textContent = "connecting…";
+  let tries = 0;
+  (function wait() {
+    if (window.claude && window.claude.use) return connect();
+    if (++tries > 40) { setStatus("Picks can't be saved here: open this page on claude.ai."); tally(); return; }
+    setTimeout(wait, 250);
+  })();
+})();
+
+function connect() {
+  window.claude.use("db").then(d => {
+    if (!d) { setStatus("Picks can't be saved in this view (sign in on claude.ai)."); tally(); return; }
+    db = d; col = db.collection("picks");
+    col.onSnapshot(snap => {
+      for (const doc of snap.docs) { const v = doc.data() || {}; picks[doc.id] = { choice: v.choice || "", note: v.note || "" }; }
+      const active = document.activeElement && document.activeElement.classList.contains("note") ? document.activeElement.id : null;
+      render();
+      if (active) document.getElementById(active)?.focus();
+    }, e => setStatus("Lost the connection to saved picks: " + ((e && e.message) || e)));
+  });
+}
+</script>
