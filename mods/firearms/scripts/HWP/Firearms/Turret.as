@@ -42,7 +42,7 @@ class HWPFirearmsTurret : PlayerOwnedActor
 		m_hpPct = GetParamFloat(m_unit, m_params, "hp-pct", false, 0);
 		m_decay = max(1, GetParamInt(m_unit, m_params, "decay", false, 30000));
 		@m_glow = LoadActorBuff(HWP::Firearms::BUFFS + "turret_glow");
-		int rate = 0;
+		string rate = "unknown";
 		if (m_skills.length() > 0)
 		{
 			auto skill = cast<CompositeActorSkill>(m_skills[0]);
@@ -52,7 +52,8 @@ class HWPFirearmsTurret : PlayerOwnedActor
 			if (skill !is null && skill.m_anims.length() > 0)
 			{
 				auto scene = m_unit.GetUnitProducer().GetUnitScene(skill.m_anims[0].GetSceneName(0));
-				rate = skill.m_cooldown.x + (scene is null ? 0 : scene.Length());
+				rate = scene is null ? "unknown (no scene " + skill.m_anims[0].GetSceneName(0) + ")"
+					: "" + (skill.m_cooldown.x + scene.Length());
 			}
 		}
 		HWP::Log("firearms", "turret: placed, " + GetMaxHp() + " hp (+" + int(m_hpPct * 100)
