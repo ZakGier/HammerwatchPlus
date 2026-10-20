@@ -125,6 +125,11 @@ namespace HWP
 		const int DROP_WINDOW = 10000;
 		array<int> g_dropPeer;
 		array<int> g_dropTime;
+		// host: recent pool adds (keys picked up, imp keys), a guard of their own: a
+		// boss floor's drop requests must not use up the limit and lose a picked-up key
+		const int ADD_LIMIT = 30;
+		array<int> g_addPeer;
+		array<int> g_addTime;
 
 		void RefreshSettings()
 		{
@@ -499,8 +504,15 @@ namespace HWP
 
 		void OnPoolAddRequest(uint8 peer, SValue@ data)
 		{
-			if (!Network::IsServer() || !g_enabled || RateLimited(peer))
+			// no g_enabled check: the key was already picked up (or bought from the imp,
+			// which offers it only while keys are on), so refusing it would just lose it
+			if (!Network::IsServer())
 				return;
+			if (RateLimited(peer, g_addPeer, g_addTime, ADD_LIMIT))
+			{
+				HWP::Log("keys", "pool add from peer " + peer + " rate limited (" + ADD_LIMIT + " per " + (DROP_WINDOW / 1000) + " s)");
+				return;
+			}
 			PoolAdd(HWP::SV::Int(data, "tier", 0), min(5, HWP::SV::Int(data, "n", 1)));
 		}
 
@@ -568,25 +580,25 @@ namespace HWP
 
 		// host: a flood guard, not a fairness rule - honest play stays far
 		// below DROP_LIMIT requests per DROP_WINDOW even on a boss kill
-		bool RateLimited(uint8 peer)
+		bool RateLimited(uint8 peer, array<int>@ peers, array<int>@ times, int limit)
 		{
 			int now = g_scene.GetTime();
-			for (int i = int(g_dropTime.length()) - 1; i >= 0; i--)
+			for (int i = int(times.length()) - 1; i >= 0; i--)
 			{
-				if (now - g_dropTime[i] > DROP_WINDOW)
+				if (now - times[i] > DROP_WINDOW)
 				{
-					g_dropTime.removeAt(i);
-					g_dropPeer.removeAt(i);
+					times.removeAt(i);
+					peers.removeAt(i);
 				}
 			}
 			int n = 0;
-			for (uint i = 0; i < g_dropPeer.length(); i++)
-				if (g_dropPeer[i] == int(peer))
+			for (uint i = 0; i < peers.length(); i++)
+				if (peers[i] == int(peer))
 					n++;
-			if (n >= DROP_LIMIT)
+			if (n >= limit)
 				return true;
-			g_dropPeer.insertLast(int(peer));
-			g_dropTime.insertLast(now);
+			peers.insertLast(int(peer));
+			times.insertLast(now);
 			return false;
 		}
 
@@ -599,7 +611,7 @@ namespace HWP
 			bool debug = HWP::SV::Int(data, "debug", 0) != 0;
 			if ((boss || debug) ? !ValidTier(tier) : tier != 0)
 				return;
-			if (RateLimited(peer))
+			if (RateLimited(peer, g_dropPeer, g_dropTime, DROP_LIMIT))
 			{
 				HWP::Log("keys", "drop request from peer " + peer + " rate limited (" + DROP_LIMIT + " per " + (DROP_WINDOW / 1000) + " s)");
 				return;
@@ -913,6 +925,8 @@ namespace Modules
 			HWP::Keys::ResetKeyCounts();
 			HWP::Keys::g_dropPeer.removeRange(0, HWP::Keys::g_dropPeer.length());
 			HWP::Keys::g_dropTime.removeRange(0, HWP::Keys::g_dropTime.length());
+			HWP::Keys::g_addPeer.removeRange(0, HWP::Keys::g_addPeer.length());
+			HWP::Keys::g_addTime.removeRange(0, HWP::Keys::g_addTime.length());
 			HWP::Keys::SelfCheck();
 			HWP::Keys::TrinketsLevelStart();
 			if (Network::IsServer())

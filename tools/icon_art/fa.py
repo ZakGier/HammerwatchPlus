@@ -155,18 +155,25 @@ def gas():
 FA = {"frag": frag, "stun_grenade": stun_grenade, "incendiary": incendiary, "gas": gas}
 
 
+_now = {}
+
+
 def current(name):
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("m", REPO / "tools/make_firearms_icons.py")
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    if name not in m.ICONS:
+    """The icon the game shows for name now (tools/make_firearms_icons.py's ICONS cell in the
+    skills atlas), or None; the tool's table and the atlas are loaded once."""
+    if not _now:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("m", REPO / "tools/make_firearms_icons.py")
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        _now["icons"] = m.ICONS
+        _now["atlas"] = Image.open(CUR).convert("RGBA")
+    if name not in _now["icons"]:
         return None
-    atlas, col, row = m.ICONS[name][:3]
+    atlas, col, row = _now["icons"][name][:3]
     if atlas != "skills":
         return None
-    im = Image.open(CUR).convert("RGBA")
-    return im.crop((col * 24, row * 24, col * 24 + 24, row * 24 + 24))
+    return _now["atlas"].crop((col * 24, row * 24, col * 24 + 24, row * 24 + 24))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 {
  "name": "bench-smoke",
- "about": "Check of the class damage bench itself (bench, kit, benchstats verbs; gamelab/bots/bench.py): Firearms at level 1 and 12 with 4 s benches. Not a balance measurement. Then the pierce falloff check (gamelab/bots/pierce_check.py) on the bench character.",
+ "about": "Check of the class damage bench itself (bench, kit, benchstats verbs; gamelab/bots/bench.py): Firearms at level 1 and 12 with 4 s benches. Not a balance measurement. Then the pierce check (gamelab/bots/pierce_check.py: neither gun pierces) on the bench character.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -27,7 +27,7 @@
    "bot": "pierce_check",
    "save_as": "pierce",
    "expect": {
-    "rifle_falloff": true,
+    "rifle_no_pierce": true,
     "glock_no_pierce": true
    }
   },

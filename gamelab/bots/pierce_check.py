@@ -1,7 +1,8 @@
-"""Pierce falloff check: a single gun round fired down a row of four target dummies (bench
-verb, one trigger pull, no skills). The rifle round hits the first at full damage, the second
-at 50%, the third at 25% and stops (the fourth takes nothing); a Glock round stops at the
-first. Flags: rifle_falloff, glock_no_pierce."""
+"""Pierce check: one trigger pull fired down a row of four target dummies (bench verb, no
+skills). Neither gun pierces: the rifle's three-round burst and a Glock round all stop at the
+first dummy (penetration 0 since 4b528ea; before it the rifle hit the second at 50% and the
+third at 25%). Only Snipe's Piercing Bullet orb goes through enemies. Flags: rifle_no_pierce,
+glock_no_pierce."""
 import time
 
 DUMMY = "doodads/generic/target_dummy_normal.unit"
@@ -29,8 +30,8 @@ def run(p, **kw):
     g.gl_cmd("equip", "hwp_rifle_01", 1, 1)
     time.sleep(1.5)
     r = shot(g, "pierce_rifle")
-    ok = len(r) == 4 and r[0] > 0 and r[3] == 0 and abs(r[1] / r[0] - 0.5) < 0.12 and abs(r[2] / r[0] - 0.25) < 0.08
-    flags["rifle_falloff"] = {"ok": ok, "detail": f"damage by distance 22/40/58/76: {r}"}
+    ok = len(r) == 4 and r[0] > 0 and r[1] == 0 and r[2] == 0 and r[3] == 0
+    flags["rifle_no_pierce"] = {"ok": ok, "detail": f"damage by distance 22/40/58/76: {r}"}
     g.gl_cmd("equip", "hwp_glock_mh_01", 1, 1)
     g.gl_cmd("equip", "hwp_glock_oh_01", 1, 1)
     time.sleep(1.5)

@@ -174,10 +174,14 @@ namespace HWP
 		// the vanilla spot search found nothing
 		bool Available(MissionPrefabDef@ def)
 		{
+			// CanGet clears the flag itself on a def's first look in a new generation
+			// (MissionPrefabDef.as:71-76); a flag from an earlier level must not come back
+			bool current = def.m_currGenNumId == g_genNumId;
 			bool none = def.m_foundNoPlacement;
 			def.m_foundNoPlacement = false;
 			bool ok = def.CanGet();
-			def.m_foundNoPlacement = none;
+			if (current)
+				def.m_foundNoPlacement = none;
 			return ok;
 		}
 
@@ -188,6 +192,45 @@ namespace HWP
 			Door m_door;
 			int m_len;
 			float m_score;
+		}
+
+		// a def's best spot on the grid: the farthest from the middle, a short corridor
+		// breaking ties; null if none fits
+		Spot@ BestSpot(CellGrid@ grid, array<array<int>>@ sums, MissionPrefabDef@ def)
+		{
+			def.UnpackGrid();
+			Door door;
+			if (def.m_gridPattern is null || !GetDoor(def, door))
+				return null;
+			float cx = grid.m_width / 2.0f;
+			float cy = grid.m_height / 2.0f;
+			Spot@ best = null;
+			ivec2 sz = def.m_gridSz;
+			for (int y = 1; y + sz.y < grid.m_height - 1; y++)
+			{
+				for (int x = 1; x + sz.x < grid.m_width - 1; x++)
+				{
+					if (Blocked(sums, x, y, sz.x, sz.y) > 0)
+						continue;
+					int len = CorridorLength(grid, ivec2(x, y), door);
+					if (len < 0)
+						continue;
+					float dx = (x + sz.x / 2.0f - cx) / cx;
+					float dy = (y + sz.y / 2.0f - cy) / cy;
+					float score = dx * dx + dy * dy - len * 0.01f;
+					if (best is null || score > best.m_score)
+					{
+						if (best is null)
+							@best = Spot();
+						@best.m_def = def;
+						best.m_pos = ivec2(x, y);
+						best.m_door = door;
+						best.m_len = len;
+						best.m_score = score;
+					}
+				}
+			}
+			return best;
 		}
 
 		// the vanilla way failed: put the room on the outskirts and carve its corridor
@@ -205,45 +248,20 @@ namespace HWP
 				return "no rooms left in " + set;
 
 			auto sums = BlockedSums(grid);
-			float cx = grid.m_width / 2.0f;
-			float cy = grid.m_height / 2.0f;
 
-			// each def's best spot: the farthest from the middle, a short corridor breaking ties
+			// each def's best spot. UsePrefab may hand back any of the def's variations, whose
+			// size or door can differ, and it uses the room up (count, run flags) as it does: a
+			// def is only a candidate when every variation has a spot of its own too
 			array<Spot@> spots;
 			for (uint i = 0; i < defs.length(); i++)
 			{
-				auto def = defs[i];
-				def.UnpackGrid();
-				Door door;
-				if (def.m_gridPattern is null || !GetDoor(def, door))
+				auto best = BestSpot(grid, sums, defs[i]);
+				if (best is null)
 					continue;
-				Spot@ best = null;
-				ivec2 sz = def.m_gridSz;
-				for (int y = 1; y + sz.y < grid.m_height - 1; y++)
-				{
-					for (int x = 1; x + sz.x < grid.m_width - 1; x++)
-					{
-						if (Blocked(sums, x, y, sz.x, sz.y) > 0)
-							continue;
-						int len = CorridorLength(grid, ivec2(x, y), door);
-						if (len < 0)
-							continue;
-						float dx = (x + sz.x / 2.0f - cx) / cx;
-						float dy = (y + sz.y / 2.0f - cy) / cy;
-						float score = dx * dx + dy * dy - len * 0.01f;
-						if (best is null || score > best.m_score)
-						{
-							if (best is null)
-								@best = Spot();
-							@best.m_def = def;
-							best.m_pos = ivec2(x, y);
-							best.m_door = door;
-							best.m_len = len;
-							best.m_score = score;
-						}
-					}
-				}
-				if (best !is null)
+				bool all = true;
+				for (uint v = 0; v < defs[i].m_variations.length() && all; v++)
+					all = BestSpot(grid, sums, defs[i].m_variations[v]) !is null;
+				if (all)
 					spots.insertLast(best);
 			}
 			if (spots.length() == 0)
@@ -264,6 +282,14 @@ namespace HWP
 			}
 			if (room is null)
 				return "every fitting room used up";
+			// a variation gets its own spot (the def's could overlap or face a wall); the
+			// candidate check above made sure it has one
+			if (room !is spot.m_def)
+			{
+				@spot = BestSpot(grid, sums, room);
+				if (spot is null)
+					return "variation " + room.m_id + " has no free wall block on the outskirts";
+			}
 			ivec2 bestPos = spot.m_pos;
 			Door@ bestDoor = spot.m_door;
 			int bestLen = spot.m_len;

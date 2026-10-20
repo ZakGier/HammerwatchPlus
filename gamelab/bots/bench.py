@@ -262,6 +262,20 @@ class Bench:
         return row
 
 
+def save(b, cls, partial):
+    """writes gamelab/results/bench/<cls>.json. A partial bench replaces only its own rows (its
+    builds of its specs at its levels) in the file there."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    rows = b.rows
+    out = OUT / f"{cls}.json"
+    if partial and out.exists():
+        mine = {(r["spec"], r["build"], r["level"], r["stage"]) for r in b.rows}
+        keep = [r for r in json.loads(out.read_text(encoding="utf-8"))
+                if (r.get("spec"), r.get("build"), r.get("level"), r.get("stage")) not in mine]
+        rows = keep + b.rows
+    out.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+
+
 def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None, specs=None):
     b = Bench(p, cls, ms)
     g = b.g
@@ -276,47 +290,48 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None, specs=No
     if "x" in plr:
         b.home = (round(plr["x"], 1), round(plr["y"], 1))
     cfg = CLASSES[cls]
-    have = 1
-    for level in levels:
-        quality, tier, ngp, stages = CHECKPOINTS[level]
-        if ngp:
-            # the level cap is 20 + 5 per NG+ (PlayerRecord.GetLevelCap): before the ngp verb
-            # every "level 25" row was a level 20 character in ilvl 25 gear
-            b.gl("ngp", ngp)
-        if level > have:
-            got = b.gl("levelup", level - have, timeout=30).get("level")
-            if got != level:
-                raise RuntimeError(f"bench: levelup reached {got}, not {level}")
-            have = level
-            time.sleep(1)
-        b.gl("assign", cfg["attr"], "all")
-        b.gl("kit", level, quality, seed(f"L{level}:armour"))
-        here = [cls] if level < 10 else cfg["specs"]
-        for spec in here:
-            if specs and spec not in specs:
-                continue
-            if spec != cls:
-                b.gl("subclass", cls)
-                b.gl("subclass", spec)
-            skills = b.spend_skills(spec)
-            for build, weapons in cfg["builds"].items():
-                if builds and build not in builds:
+    try:
+        have = 1
+        for level in levels:
+            quality, tier, ngp, stages = CHECKPOINTS[level]
+            if ngp:
+                # the level cap is 20 + 5 per NG+ (PlayerRecord.GetLevelCap): before the ngp verb
+                # every "level 25" row was a level 20 character in ilvl 25 gear
+                b.gl("ngp", ngp)
+            if level > have:
+                got = b.gl("levelup", level - have, timeout=30).get("level")
+                if got != level:
+                    raise RuntimeError(f"bench: levelup reached {got}, not {level}")
+                have = level
+                time.sleep(1)
+            b.gl("assign", cfg["attr"], "all")
+            b.gl("kit", level, quality, seed(f"L{level}:armour"))
+            here = [cls] if level < 10 else cfg["specs"]
+            for spec in here:
+                if specs and spec not in specs:
                     continue
-                for stage, orbs, trinkets in stages:
-                    row = b.checkpoint(level, spec, build, weapons, quality, tier, stage, orbs, trinkets)
-                    row["skills"] = skills
-                    row["ngp"] = ngp
-        if level >= 10:
-            b.gl("subclass", cls)
-    OUT.mkdir(parents=True, exist_ok=True)
-    rows = b.rows
-    out = OUT / f"{cls}.json"
-    if (builds or specs or set(levels) != set(CHECKPOINTS)) and out.exists():
-        # a partial bench replaces only its own rows (its builds of its specs at its levels)
-        mine = {(r["spec"], r["build"], r["level"], r["stage"]) for r in b.rows}
-        keep = [r for r in json.loads(out.read_text(encoding="utf-8"))
-                if (r.get("spec"), r.get("build"), r.get("level"), r.get("stage")) not in mine]
-        rows = keep + b.rows
-    out.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                if spec != cls:
+                    b.gl("subclass", cls)
+                    b.gl("subclass", spec)
+                skills = b.spend_skills(spec)
+                for build, weapons in cfg["builds"].items():
+                    if builds and build not in builds:
+                        continue
+                    for stage, orbs, trinkets in stages:
+                        row = b.checkpoint(level, spec, build, weapons, quality, tier, stage, orbs, trinkets)
+                        row["skills"] = skills
+                        row["ngp"] = ngp
+            if level >= 10:
+                b.gl("subclass", cls)
+    except Exception:
+        # keep the rows already benched (a bench is ~40 min): written as a partial bench, so they
+        # replace only their own rows in the file, then the error ends the run. A save that
+        # fails too (a truncated results file) is printed, never raised over the bench's error
+        try:
+            save(b, cls, partial=True)
+        except Exception as e:
+            print(f"bench: the partial save failed too: {type(e).__name__}: {e}")
+        raise
+    save(b, cls, partial=bool(builds or specs or set(levels) != set(CHECKPOINTS)))
     return {"rows": [{k: r[k] for k in ("spec", "build", "level", "stage", "single", "pack", "off")} for r in b.rows],
             "count": len(b.rows)}

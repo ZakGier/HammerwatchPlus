@@ -8,7 +8,9 @@ namespace GameLab
 	const string BENCH_FILTER = "target_dummy";
 
 	const uint BENCH_RELOAD = HashString("hwp_fs_reload");
-	// Firearms Deploy Turret goes down beside the player, as My Turret! (60 px) asks of an Engineer
+	// Firearms Deploy Turret goes down beside the player, not at the pack: its passive My Turret!
+	// boosts it only within 60 px of the player, which is how an Engineer plays it. The one
+	// placement exception (with Reload's above); at the pack (80+ px) the passive never applied.
 	const uint BENCH_TURRET = HashString("hwp_fs_turret");
 	const string BENCH_CLIP = "players/hwp/firearms/stacks_firearms.sval:clip";
 
@@ -363,6 +365,9 @@ namespace GameLab
 	// both forms, and GenerateItemMods, with no tags) on a seeded generator instead of randf, so a
 	// bench gets the same gear every run. Unseeded, two runs of one build differed by up to 20%
 	// on the rolled modifiers alone (hwp_firearms 20261020-055513 against 20261020-065256).
+	// A hand-rolled LCG, not the engine's RandomSequence (as MissionDef.GetReward seeds one): the
+	// bench results in gamelab/results/bench are compared across runs and game updates, and
+	// RandomSequence is native, so a patch could change what a seed rolls without notice.
 	class KitRng
 	{
 		uint m_state;
