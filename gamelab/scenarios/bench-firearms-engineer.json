@@ -1,0 +1,32 @@
+{
+ "name": "bench-firearms-engineer",
+ "about": "Measurement (balance): bench-firearms for the Engineer only, levels 12/20/25, both builds; its rows replace the Engineer rows in gamelab/results/bench/hwp_firearms.json.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 1500,
+ "steps": [
+  {
+   "do": "bot",
+   "bot": "bench",
+   "save_as": "bench",
+   "kwargs": {
+    "cls": "hwp_firearms",
+    "specs": [
+     "hwp_firearms_engineer"
+    ],
+    "levels": [
+     12,
+     20,
+     25
+    ]
+   },
+   "expect": {}
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -22,7 +22,8 @@ the off hand, and the better of the two counts. Every bench starts fresh (bench 
 cooldowns and fills mana; the Firearms clip is refilled first).
 
 run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000) -> {"rows": [...]} and writes
-gamelab/results/bench/<cls>.json."""
+gamelab/results/bench/<cls>.json. builds=[...] and specs=[...] bench only those (a spec list
+skips the level 1 class rows unless it names the class) and swap their rows into the file."""
 import json
 import re
 import time
@@ -234,7 +235,7 @@ class Bench:
         return row
 
 
-def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None):
+def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None, specs=None):
     b = Bench(p, cls, ms)
     g = b.g
     g.console("e_cheats 1")
@@ -257,8 +258,10 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None):
             time.sleep(1)
         b.gl("assign", cfg["attr"], "all")
         b.gl("kit", level, quality)
-        specs = [cls] if level < 10 else cfg["specs"]
-        for spec in specs:
+        here = [cls] if level < 10 else cfg["specs"]
+        for spec in here:
+            if specs and spec not in specs:
+                continue
             if spec != cls:
                 b.gl("subclass", cls)
                 b.gl("subclass", spec)
@@ -275,9 +278,11 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None):
     OUT.mkdir(parents=True, exist_ok=True)
     rows = b.rows
     out = OUT / f"{cls}.json"
-    if builds and out.exists():
-        # a partial bench replaces only its own builds' rows
-        keep = [r for r in json.loads(out.read_text(encoding="utf-8")) if r.get("build") not in builds]
+    if (builds or specs) and out.exists():
+        # a partial bench replaces only its own rows (its builds of its specs)
+        mine = {(r["spec"], r["build"], r["level"], r["stage"]) for r in b.rows}
+        keep = [r for r in json.loads(out.read_text(encoding="utf-8"))
+                if (r.get("spec"), r.get("build"), r.get("level"), r.get("stage")) not in mine]
         rows = keep + b.rows
     out.write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return {"rows": [{k: r[k] for k in ("spec", "build", "level", "stage", "single", "pack", "off")} for r in b.rows],
