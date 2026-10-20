@@ -231,8 +231,11 @@ namespace HWP
 
 		// ---- puffing --------------------------------------------------------------
 
-		// the smoker's own machine: the joint to burn down once its tip cools
-		PlayerBase@ g_burnPlayer;
+		// the smoker's own machine: the joint to burn down once its tip cools. Globals reset
+		// with every level, so the pending burn is also kept in the player's save bag
+		// (KEY_BURN, the puffed joint's id) and Start finishes it after a level change.
+		const string KEY_BURN = "farm.joint_burn";
+		PlayerRecord@ g_burnRec;
 		Equipment::Equipment@ g_burnItem;
 		int g_burnMs = 0;
 
@@ -242,6 +245,9 @@ namespace HWP
 			SpawnHaze(player);
 			if (player is null || player.m_record is null || !player.m_record.local)
 				return;
+			// a puff before the last one burned (a short cooldown): that stage burns first
+			if (g_burnItem !is null)
+				BurnDown();
 			auto rec = player.m_record;
 			auto off = OffHand(rec);
 			string strain;
@@ -250,26 +256,52 @@ namespace HWP
 				return;
 			g_puffs++;
 			ApplyHerb(rec, strain);
-			@g_burnPlayer = player;
+			@g_burnRec = rec;
 			@g_burnItem = off;
 			g_burnMs = LIT_MS;
+			HWP::SaveData::Player(rec).SetString(KEY_BURN, JointId(strain, uses));
 			HWP::Log("farming", "puffed a " + strain + " joint (" + uses + " -> " + (uses - 1) + " puffs)");
 		}
 
 		void BurnDown()
 		{
-			auto player = g_burnPlayer;
+			auto rec = g_burnRec;
 			auto item = g_burnItem;
-			@g_burnPlayer = null;
+			@g_burnRec = null;
 			@g_burnItem = null;
-			if (player is null || player.m_record is null)
+			if (rec is null)
 				return;
-			auto rec = player.m_record;
+			HWP::SaveData::Player(rec).Remove(KEY_BURN);
+			auto off = OffHand(rec);
+			// taken, swapped or dropped meanwhile: it is someone else's now
+			if (off !is item)
+				return;
+			BurnStage(rec, off);
+		}
+
+		// a level change before the tip cooled: the joint still in hand burns its stage now
+		void BurnPending()
+		{
+			auto rec = GetLocalPlayerRecord();
+			if (rec is null)
+				return;
+			auto bag = HWP::SaveData::Player(rec);
+			string id = bag.GetString(KEY_BURN);
+			if (id == "")
+				return;
+			bag.Remove(KEY_BURN);
 			auto off = OffHand(rec);
 			string strain;
 			int uses;
-			// taken, swapped or dropped meanwhile: it is someone else's now
-			if (off !is item || !ParseJoint(off, strain, uses))
+			if (ParseJoint(off, strain, uses) && JointId(strain, uses) == id)
+				BurnStage(rec, off);
+		}
+
+		void BurnStage(PlayerRecord@ rec, Equipment::Equipment@ off)
+		{
+			string strain;
+			int uses;
+			if (!ParseJoint(off, strain, uses))
 				return;
 			if (uses <= 1)
 			{
@@ -310,9 +342,10 @@ namespace HWP
 			for (uint i = 0; i < g_lit.length(); i++)
 				Unlight(g_lit[i]);
 			g_lit.removeRange(0, g_lit.length());
-			// a level change mid-puff: the stage still burns
 			if (g_burnItem !is null)
 				BurnDown();
+			else
+				BurnPending();
 		}
 
 		// ---- passing it on --------------------------------------------------------
@@ -382,12 +415,41 @@ namespace HWP
 			HWP::Log("farming", "asked " + holder.GetName() + " for the joint");
 		}
 
+		// host: the hand-overs it asked a holder for (holder peer -> taker peer), so a
+		// JOINT_GIVE is relayed only for a take it checked, never made up by a peer
+		array<int> g_handHolders;
+		array<int> g_handTakers;
+
+		// host: within reach (a little slack for the lag between the two machines)?
+		bool CanTake(PlayerRecord@ taker, PlayerRecord@ holder)
+		{
+			if (taker is null || holder is null || !IsJoint(OffHand(holder)))
+				return false;
+			auto tp = cast<PlayerBase>(taker.actor);
+			auto hp = cast<PlayerBase>(holder.actor);
+			return tp !is null && hp !is null && tp.m_unit.IsValid() && hp.m_unit.IsValid()
+				&& dist(xy(tp.m_unit.GetPosition()), xy(hp.m_unit.GetPosition())) <= TAKE_RANGE * 2.0f;
+		}
+
 		// host
 		void OnJointTake(uint8 peer, SValue@ data)
 		{
 			int holder = HWP::SV::Int(data, "holder", -1);
-			if (holder < 0 || holder == int(peer))
+			if (holder < 0 || holder > 255 || holder == int(peer))
 				return;
+			if (!CanTake(GetPlayerRecordByPeer(peer), GetPlayerRecordByPeer(uint8(holder))))
+			{
+				HWP::Log("farming", "refused peer " + peer + "'s take from peer " + holder + " (no joint or out of reach)");
+				return;
+			}
+			int at = g_handHolders.find(holder);
+			if (at < 0)
+			{
+				g_handHolders.insertLast(holder);
+				g_handTakers.insertLast(int(peer));
+			}
+			else
+				g_handTakers[at] = int(peer);
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushInteger("taker", peer);
@@ -432,8 +494,16 @@ namespace HWP
 		{
 			int taker = HWP::SV::Int(data, "taker", -1);
 			string id = HWP::SV::Str(data, "id");
-			if (taker < 0 || id.isEmpty())
+			string strain;
+			int uses;
+			int at = g_handHolders.find(int(peer));
+			if (at < 0 || g_handTakers[at] != taker || !ParseJointId(id, strain, uses) || uses < 1 || uses > JOINT_USES)
+			{
+				HWP::Log("farming", "refused peer " + peer + "'s joint for peer " + taker + " (no take asked for it)");
 				return;
+			}
+			g_handHolders.removeAt(at);
+			g_handTakers.removeAt(at);
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushString("id", id);

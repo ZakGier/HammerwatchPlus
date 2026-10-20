@@ -1843,3 +1843,32 @@ runs after the fixes: mod-keys 20261020-041212, mod-keys-pool 041225, mod-puzzle
   allows them (max count, conditionals, run-unique flags), with the failed PlacePrefabs'
   `m_foundNoPlacement` cleared just for that check, and tries the defs' best spots best first,
   so a def `UsePrefab()` turns down passes to the next.
+
+### Review fixes: joints across levels, the relay, buff lists, dual spread (2026-10-20)
+
+/code-review high over 7555534..HEAD found ten issues. The five in keys and puzzles are fixed in
+898b1f8 (section above). The five in this section's code:
+
+- **A puff just before a level change lost its stage.** Script globals reset with every level
+  (docs/modules.md:44-48), so the pending burn in `g_burnPlayer` vanished and the joint kept its
+  puff. The pending burn is now also kept in the player's save bag (`farm.joint_burn`, the puffed
+  joint's id), and `Start` burns that stage if the same joint is still in hand. A second puff
+  before the tip cooled now burns the first stage before it starts the next one. plan-farming-a
+  20261020-041947 `s7_joint_burns_across_levels`: puffed 5/5, a floor started within 0.4 s, 4/5
+  in the run.
+- **The host relayed any joint hand-over a peer sent.** The host now relays a take only when the
+  holder has a joint and is within 2× the take range (equipment syncs to every machine:
+  EquippedItems.as:152, PlayerHandler.as:771). It relays a give only for a take it checked, with a
+  valid joint id and 1-5 puffs. Assumed from the code: one machine can't send another peer's
+  messages.
+- **`auto buffs = plr.m_buffs.m_buffs` copies the array**, so `removeAt` took the cleared buff out
+  of the copy only and left it in the player's real list. Now `auto@` in WeaponSwapModule.as and firearms Combat.as
+  `ClearPerfect`. Re-run: mod-weaponswap 20261020-041528, plan-t8 20261020-041540,
+  plan-firearms-guns 20261020-042359.
+- **Materials' compact boxes could read past their source sprite** when a box was bigger than the
+  sprite. The source rects are now clamped (mod-all 20261020-041515).
+- **Dual pistols missed with their spread.** A spread dict's `min` is added to every round with
+  a random sign (ShootProjectile.as:56-67 `GetShootDir`; the `time` ramp at :100-103 only moves it
+  toward `max`), so every dual round left at least 4° off the aim line. A plain `spread` of 5 (±2.5°)
+  takes dual pistols on left click from 38/75 to 87/129 per second at L1/L12, the rifle's 88/129 and
+  inside the bows' 83-99/119-142 (bench-weapons 20261020-042519 against 20261020-003538).

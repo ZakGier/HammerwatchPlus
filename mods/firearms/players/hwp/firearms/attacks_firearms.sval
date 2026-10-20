@@ -424,7 +424,9 @@
 						<vec2 name="offset">0 6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<int name="converge">100</int>
-						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
+						<!-- a plain spread (±2.5°): a spread dict's "min" is the least every round is thrown off
+						     (ShootProjectile.as GetShootDir), so 4 sent both pistols wide of anything small -->
+						<int name="spread">5</int>
 					</dict>
 					<dict>
 						<string name="class">HWPFirearmsSound</string>
@@ -454,7 +456,9 @@
 						<vec2 name="offset">0 -6</vec2>
 						<bool name="rotate-offset">true</bool>
 						<int name="converge">100</int>
-						<dict name="spread"><int name="min">4</int><int name="max">12</int><int name="time">1500</int></dict>
+						<!-- a plain spread (±2.5°): a spread dict's "min" is the least every round is thrown off
+						     (ShootProjectile.as GetShootDir), so 4 sent both pistols wide of anything small -->
+						<int name="spread">5</int>
 					</dict>
 					<dict>
 						<string name="class">HWPFirearmsSound</string>

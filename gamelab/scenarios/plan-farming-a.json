@@ -1,6 +1,6 @@
 {
  "name": "plan-farming-a",
- "about": "Test plan through the plan_farming bot (town grown to farm_2 with build + the Verbs_farming buildup verb; can slot read with the Verbs_farming tooltip verb): farming s8 the can slot before and after a can, watering lowers its water; s1 the onion/wheat crops hidden, grooves are plots, the apple tree above the wheat field; s2 the farmer between the fields, can and seed, sprouts along a whole groove; s7 Lucky Leaf planted, grown (hwp farm grow), harvested (one herb a plant drawn), rolled into a joint from the Plants & Herbs cell (Roll J? -> Huzzah!), held and puffed five times (a stage a puff, the buff for 10 floors), kept through the mission board's loadout, in the run, 9 floors left after it. Shots: plants-herbs (the materials tab's Plants & Herbs section, 8 across), can-slot-dim (the bottom right gear slot greyed), fields (no vanilla crops, grooves, tree above the wheat), sprouts (one groove sprouted end to end).",
+ "about": "Test plan through the plan_farming bot (town grown to farm_2 with build + the Verbs_farming buildup verb; can slot read with the Verbs_farming tooltip verb): farming s8 the can slot before and after a can, watering lowers its water; s1 the onion/wheat crops hidden, grooves are plots, the apple tree above the wheat field; s2 the farmer between the fields, can and seed, sprouts along a whole groove; s7 Lucky Leaf planted, grown (hwp farm grow), harvested (one herb a plant drawn), rolled into a joint from the Plants & Herbs cell (Roll J? -> Huzzah!), held and puffed five times (a stage a puff, the buff for 10 floors), kept through the mission board's loadout, in the run, 9 floors left after it; a puff right before a level change still burns its stage. Shots: plants-herbs (the materials tab's Plants & Herbs section, 8 across), can-slot-dim (the bottom right gear slot greyed), fields (no vanilla crops, grooves, tree above the wheat), sprouts (one groove sprouted end to end).",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -199,6 +199,17 @@
     "s7_herb_in_run": true,
     "s7_herb_counts_floors": true,
     "s7_loadout_lists_herb": true
+   }
+  },
+  {
+   "do": "bot",
+   "bot": "plan_farming",
+   "kwargs": {
+    "sections": "joint_level_burn"
+   },
+   "name": "s7 a puff just before a level change still burns",
+   "expect": {
+    "s7_joint_burns_across_levels": true
    }
   },
   {

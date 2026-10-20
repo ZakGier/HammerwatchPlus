@@ -105,7 +105,10 @@ Dual pistols fire every 300 ms with even gaps, My Turret! boosts only within 10 
 On 2026-10-20 the play-test list was worked through: rifle bursts, single pistol shots, the
 Over-Reload bar, a rooted weapon swap, joints, eating fish, fish spots in the wells' water, the
 pirate in the boat, a party key pool, abyss rewards by depth, double valuables and puzzle rooms
-on most floors (`docs/RE_NOTES.md`, every run cited there).
+on most floors (`docs/RE_NOTES.md`, every run cited there). A code review of that work fixed
+ten issues, among them co-op keys, a joint puff lost to a level change, and dual pistols
+whose spread threw every round off the aim line (they now match the rifle,
+`bench-weapons`).
 A later code review fixed 15 smaller issues: town units tracked after a
 town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
 walking around a wall, and the wave statue's spot differing between machines

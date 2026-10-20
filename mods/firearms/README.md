@@ -37,7 +37,7 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   - A main-hand pistol with any other off hand fires one accurate round every
     300 ms (`hwp-solo-length`), 80 % weapon damage.
   - Dual pistols share a 20-round clip. Left click alternates muzzles with a
-    blooming spread, one round every 300 ms (a 600 ms cycle; a held trigger
+    small spread (±2.5°), one round every 300 ms (a 600 ms cycle; a held trigger
     restarts it in the same frame, so the gaps are even); right click fires both at once with a wide spread (2
     rounds, not on 1). Every round is 80 % of its own gun's damage.
   - Pistol rounds leave the gun 6 px off the aim line and are angled to cross it
@@ -49,10 +49,13 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   longbow 99/144, crossbow 96/115 (bench-weapons 20261020-003002). After:
   rifle 87/127, lone pistol 61/87, bows 85-99/123-149 (bench-weapons
   20261020-003538): the rifle is about a bow, a pistol about two thirds of one
-  (the off hand stays free). Dual pistols on left click measure 38/75 there, but
-  their blooming spread misses the dummy (radius 4) with a third of the rounds;
-  every round landing they come to about a lone pistol's rate over a longer
-  clip, with two guns' affixes, and right click fires about 15 % more.
+  (the off hand stays free). Dual pistols on left click measured 38/75 there:
+  their spread dict's `min` of 4° is added to every round (ShootProjectile.as
+  `GetShootDir`), so each one left at least 4° off the aim line and many missed
+  the dummy (radius 4). With a plain ±2.5° spread they measure 87/129, the
+  rifle's rate (88/129) with two guns' affixes (bench-weapons
+  20261020-042519, where the rifle and lone pistol repeat their 003538 numbers);
+  right click fires about 15 % more.
   - An off-hand pistol with another main-hand weapon fires one round on right
     click.
   - After a rifle or pistol shot the arm stays raised until 1 s without a shot

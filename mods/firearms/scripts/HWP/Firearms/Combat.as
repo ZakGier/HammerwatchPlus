@@ -227,7 +227,7 @@ namespace HWP
 			void ClearPerfect(PlayerBase@ plr)
 			{
 				bool removed = false;
-				auto buffs = plr.m_buffs.m_buffs;
+				auto@ buffs = plr.m_buffs.m_buffs; // a handle: plain auto copies the array
 				for (uint i = 0; i < buffs.length(); i++)
 				{
 					if (PERFECT.find(buffs[i].m_def.m_pathHash) >= 0)

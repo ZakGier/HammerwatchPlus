@@ -546,6 +546,27 @@ class Checks(Base):
         self.flag("s7_herb_counts_floors", home and after and "lucky_leaf, 9 floor" in herb,
                   f"town {home}, buff {after} ({n} mission buffs), {herb!r}")
 
+    def joint_level_burn(self):
+        """s7 (review fix): a puff right before a level change still burns its stage. Globals
+        reset with every level, so the pending burn is kept in the save bag (Joint.as KEY_BURN)
+        and Start finishes it: puffed in town and straight into a run, the joint is 4/5 there."""
+        self.close_windows()
+        r = self.hwp("joint roll lucky_leaf", 0.8, until="farming")
+        self.gl("wield", "hwp_joint_lucky_leaf_5")
+        time.sleep(0.5)
+        held0 = self.joint_status()[0]
+        mark = len(self.g.read_log())
+        self.gl("input", 300, 0, 0, 1, 0, "off")
+        time.sleep(0.4)  # puffed (castpoint) but still lit: the stage burns after LIT_MS 1500
+        held1 = self.joint_status()[0]
+        puffed = "puffed a lucky_leaf joint (5 -> 4 puffs)" in self.g.read_log()[mark:]
+        ok = self.start_floor(0)
+        held2 = self.joint_status()[0]
+        self.flag("s7_joint_burns_across_levels", held0 == "lucky_leaf 5/5" and puffed and held1 == "lucky_leaf 5/5"
+                  and ok and held2 == "lucky_leaf 4/5",
+                  f"rolled {plain(r)[-80:]!r}; held {held0} -> {held1} (puffed {puffed}) -> run {ok}: {held2}")
+        self.to_town()
+
     # --- plan-farming-b / -c
     def wild_char(self):
         """A saved town (a fixture boot has none, and a run loads the town's HWP settings from

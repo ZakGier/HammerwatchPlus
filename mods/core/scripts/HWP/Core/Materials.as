@@ -108,7 +108,9 @@ class HWPMaterialWidget : AInteractableWidget
 	}
 
 	// the vanilla small material box (gui/gui.png 297 134 29 26, playermenu/character.gui);
-	// a smaller cell gets its top left and the last 3 px of its right and bottom edges
+	// a smaller cell gets its top left and the last 3 px of its right and bottom edges; a side
+	// longer than the box's (a wide but short cell) stretches the box's part instead of reading
+	// past it in gui.png
 	void DrawCompactBackground(SpriteBatch& sb, vec2 pos)
 	{
 		auto tex = Resources::GetTexture2D("gui/gui.png");
@@ -116,9 +118,10 @@ class HWPMaterialWidget : AInteractableWidget
 			return;
 		const int bx = 297, by = 134, bw = 29, bh = 26, e = 3;
 		int w = m_width, h = m_height;
-		sb.DrawSprite(tex, vec4(pos.x, pos.y, w - e, h - e), vec4(bx, by, w - e, h - e));
-		sb.DrawSprite(tex, vec4(pos.x + w - e, pos.y, e, h - e), vec4(bx + bw - e, by, e, h - e));
-		sb.DrawSprite(tex, vec4(pos.x, pos.y + h - e, w - e, e), vec4(bx, by + bh - e, w - e, e));
+		int sw = min(w, bw) - e, sh = min(h, bh) - e;
+		sb.DrawSprite(tex, vec4(pos.x, pos.y, w - e, h - e), vec4(bx, by, sw, sh));
+		sb.DrawSprite(tex, vec4(pos.x + w - e, pos.y, e, h - e), vec4(bx + bw - e, by, e, sh));
+		sb.DrawSprite(tex, vec4(pos.x, pos.y + h - e, w - e, e), vec4(bx, by + bh - e, sw, e));
 		sb.DrawSprite(tex, vec4(pos.x + w - e, pos.y + h - e, e, e), vec4(bx + bw - e, by + bh - e, e, e));
 	}
 
