@@ -415,10 +415,15 @@ namespace HWP
 			HWP::Log("farming", "asked " + holder.GetName() + " for the joint");
 		}
 
-		// host: the hand-overs it asked a holder for (holder peer -> taker peer), so a
-		// JOINT_GIVE is relayed only for a take it checked, never made up by a peer
+		// host: the hand-overs it asked a holder for (holder peer -> taker peer, and when), so a
+		// JOINT_GIVE is relayed only for a take it checked, never made up by a peer. The first
+		// take wins: a second one while the first is pending is refused, since the holder lets
+		// go of the joint before the host sees its give. A take that got no give for
+		// HAND_EXPIRE ms (the holder put it away, or left) no longer blocks the next.
 		array<int> g_handHolders;
 		array<int> g_handTakers;
+		array<int> g_handTimes;
+		const int HAND_EXPIRE = 5000;
 
 		// host: within reach (a little slack for the lag between the two machines)?
 		bool CanTake(PlayerRecord@ taker, PlayerRecord@ holder)
@@ -442,14 +447,27 @@ namespace HWP
 				HWP::Log("farming", "refused peer " + peer + "'s take from peer " + holder + " (no joint or out of reach)");
 				return;
 			}
+			int now = g_scene.GetTime();
 			int at = g_handHolders.find(holder);
 			if (at < 0)
 			{
 				g_handHolders.insertLast(holder);
 				g_handTakers.insertLast(int(peer));
+				g_handTimes.insertLast(now);
 			}
 			else
+			{
+				// a scene time before the entry's is a new level's clock: the entry is stale
+				int age = now - g_handTimes[at];
+				if (g_handTakers[at] != int(peer) && age >= 0 && age < HAND_EXPIRE)
+				{
+					HWP::Log("farming", "refused peer " + peer + "'s take from peer " + holder + " (peer "
+						+ g_handTakers[at] + " asked first)");
+					return;
+				}
 				g_handTakers[at] = int(peer);
+				g_handTimes[at] = now;
+			}
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushInteger("taker", peer);
@@ -497,18 +515,25 @@ namespace HWP
 			string strain;
 			int uses;
 			int at = g_handHolders.find(int(peer));
-			if (at < 0 || g_handTakers[at] != taker || !ParseJointId(id, strain, uses) || uses < 1 || uses > JOINT_USES)
+			if (at < 0 || !ParseJointId(id, strain, uses) || uses < 1 || uses > JOINT_USES)
 			{
 				HWP::Log("farming", "refused peer " + peer + "'s joint for peer " + taker + " (no take asked for it)");
 				return;
 			}
+			// a take was checked for this holder, but for someone else (its first take expired
+			// and another replaced it): the holder has already let go, so it gets the joint back
+			int to = g_handTakers[at] == taker ? taker : int(peer);
+			if (to != taker)
+				HWP::Log("farming", "peer " + peer + "'s joint for peer " + taker + " goes back to it (peer "
+					+ g_handTakers[at] + "'s take is the one pending)");
 			g_handHolders.removeAt(at);
 			g_handTakers.removeAt(at);
+			g_handTimes.removeAt(at);
 			SValueBuilder b;
 			b.PushDictionary();
 			b.PushString("id", id);
 			b.PopDictionary();
-			HWP::Net::Send(uint8(taker), JOINT_GET, b.Build());
+			HWP::Net::Send(uint8(to), JOINT_GET, b.Build());
 		}
 
 		// the taker: into the off hand, or the bag if it was filled meanwhile
