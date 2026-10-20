@@ -176,23 +176,28 @@ class HWPChest : Chest
 		if (m_tier > 0)
 			HWP::Keys::OnUnlocked(player, m_tier);
 
-		// A party key goes first: the host takes it from the pool (the opener's
-		// client asks it to), and every machine decides the same way from its
-		// copy of the pool. Else the opener's own key is spent. Chest::Use
-		// spends one with vanilla AddKeys, which corrupts the count: the count
-		// from before is put back, minus one when it was the opener's own key.
-		bool party = !m_key.isEmpty() && HWP::Keys::PoolCount(m_tier) > 0;
-		if (party)
+		// A party key goes first. The host takes it from the pool when it runs
+		// Use, for itself or (NetUse) for a client, and tells a remote opener
+		// which key it took. The opener's own Use (the UseUnit echo) guesses
+		// from its copy of the pool and is corrected if the host differs
+		// (HWP::Keys::OnChestPaidEvent). Chest::Use spends one key with vanilla
+		// AddKeys, which corrupts the count: the count from before is put
+		// back, minus one when it was the opener's own key.
+		bool party = false;
+		if (!m_key.isEmpty())
 		{
 			if (Network::IsServer())
-				HWP::Keys::PoolTake(m_tier);
-			else if (player.m_record.local)
 			{
-				SValueBuilder b;
-				b.PushDictionary();
-				b.PushInteger("tier", m_tier);
-				b.PopDictionary();
-				HWP::Net::Request(HWP::Keys::POOL_SPEND, b.Build());
+				party = HWP::Keys::PoolTake(m_tier);
+				auto husk = cast<PlayerHusk>(player);
+				if (husk !is null && husk.m_record !is null)
+					HWP::Keys::TellChestPaid(husk.m_record.peer, m_tier, party);
+			}
+			else
+			{
+				party = HWP::Keys::PoolCount(m_tier) > 0;
+				if (player.m_record.local)
+					HWP::Keys::g_assumed.insertLast(m_tier * 2 + (party ? 1 : 0));
 			}
 		}
 		int before = m_key.isEmpty() ? 0 : player.m_record.GetKeys(m_key);

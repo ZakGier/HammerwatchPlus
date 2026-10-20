@@ -2,9 +2,9 @@
 // enemies, the exit guard's key shop (GeneralMerchant.as), key counts in the
 // bottom HUD and the ace chest's legendary payout.
 //
-//   keys.drop        client -> host   { x, y, tier, elite, boss }   a kill that may drop a key
+//   keys.drop        client -> host   { x, y, tier, elite, boss, debug }   a kill that may drop a key
 //   keys.pool_add    client -> host   { tier, n }    a key found (the imp's offer)
-//   keys.pool_spend  client -> host   { tier }       a chest opened with a party key
+//   keys.chest_paid  host -> opener   { tier, party }   which key a client's chest took
 //   keys.pool_get    client -> host   {}             send me the pool
 //   keys.pool        host -> all      { bronze, silver, gold, ace }
 //
@@ -277,8 +277,9 @@ namespace HWP
 			return (actor.Tags & ApplyTag(0, g_actorTags.GetTag(tag))) != 0;
 		}
 
-		// tier 0: a budget candidate (the host picks the tier); with boss, the boss key's tier
-		void RequestDrop(vec2 pos, int tier, bool elite, bool boss)
+		// tier 0: a budget candidate (the host picks the tier); with boss, the boss key's tier;
+		// with debug (hwp keydrop), that tier outside the budget and the boss key
+		void RequestDrop(vec2 pos, int tier, bool elite, bool boss, bool debug = false)
 		{
 			SValueBuilder b;
 			b.PushDictionary();
@@ -287,6 +288,7 @@ namespace HWP
 			b.PushInteger("tier", tier);
 			b.PushInteger("elite", elite ? 1 : 0);
 			b.PushInteger("boss", boss ? 1 : 0);
+			b.PushInteger("debug", debug ? 1 : 0);
 			b.PopDictionary();
 			HWP::Net::Request(DROP, b.Build());
 		}
@@ -388,7 +390,7 @@ namespace HWP
 
 		const string POOL = "keys.pool";
 		const string POOL_ADD = "keys.pool_add";
-		const string POOL_SPEND = "keys.pool_spend";
+		const string CHEST_PAID = "keys.chest_paid";
 		const string POOL_GET = "keys.pool_get";
 		const string BAG_POOL = "keys.pool";
 		const string BAG_POOL_RUN = "keys.pool_run";
@@ -502,10 +504,44 @@ namespace HWP
 			PoolAdd(HWP::SV::Int(data, "tier", 0), min(5, HWP::SV::Int(data, "n", 1)));
 		}
 
-		void OnPoolSpendRequest(uint8 peer, SValue@ data)
+		// A chest takes a party key first. The host decides (PoolTake) when it
+		// runs Use for the opener; the opener's own Use, from the UseUnit echo,
+		// guesses from its copy of the pool, which the host's broadcasts keep
+		// in step. The host still tells a remote opener what it took, and the
+		// opener corrects its own (bought) key count if the guess was wrong.
+		array<int> g_assumed; // opener: tier * 2 + (party ? 1 : 0), oldest first
+
+		void TellChestPaid(uint8 peer, int tier, bool party)
+		{
+			SValueBuilder b;
+			b.PushDictionary();
+			b.PushInteger("tier", tier);
+			b.PushInteger("party", party ? 1 : 0);
+			b.PopDictionary();
+			HWP::Net::Send(peer, CHEST_PAID, b.Build());
+		}
+
+		void OnChestPaidEvent(SValue@ data)
 		{
 			if (Network::IsServer())
-				PoolTake(HWP::SV::Int(data, "tier", 0));
+				return;
+			int tier = HWP::SV::Int(data, "tier", 0);
+			bool party = HWP::SV::Int(data, "party", 0) != 0;
+			for (uint i = 0; i < g_assumed.length(); i++)
+			{
+				if (g_assumed[i] / 2 != tier)
+					continue;
+				bool guessed = g_assumed[i] % 2 == 1;
+				g_assumed.removeAt(i);
+				auto rec = GetLocalPlayerRecord();
+				if (guessed == party || rec is null || !ValidTier(tier))
+					return;
+				string key = TIERS[tier - 1];
+				SetKeys(rec, key, max(0, rec.GetKeys(key) + (party ? 1 : -1)));
+				RefreshHUD();
+				HWP::Log("keys", "chest key corrected by the host: " + (party ? "party" : "own") + " " + key + " key");
+				return;
+			}
 		}
 
 		void OnPoolGetRequest(uint8 peer, SValue@ data)
@@ -514,8 +550,11 @@ namespace HWP
 				HWP::Net::Send(peer, POOL, PoolData());
 		}
 
-		// A key picked up or given in a run goes to the pool (only the host
-		// adds: a secure pickup is applied there), in town to the record.
+		// A key picked up or given in a run goes to the pool, in town to the
+		// record. A secure pickup applies its effects on the picker's machine
+		// only (Pickup.Picked skips them for a husk; UnitPickSecure echoes
+		// UnitPicked and the picker's NetPicked runs them), so this runs once,
+		// on the host or a client, and PoolAdd forwards a client's add.
 		void GiveFoundKey(PlayerRecord@ rec, int tier, int n)
 		{
 			if (g_inTown)
@@ -524,8 +563,7 @@ namespace HWP
 					AddKeys(rec, TIERS[tier - 1], n);
 				return;
 			}
-			if (Network::IsServer())
-				PoolAdd(tier, n);
+			PoolAdd(tier, n);
 		}
 
 		// host: a flood guard, not a fairness rule - honest play stays far
@@ -558,11 +596,20 @@ namespace HWP
 				return;
 			int tier = HWP::SV::Int(data, "tier", 0);
 			bool boss = HWP::SV::Int(data, "boss", 0) != 0;
-			if (boss ? !ValidTier(tier) : tier != 0)
+			bool debug = HWP::SV::Int(data, "debug", 0) != 0;
+			if ((boss || debug) ? !ValidTier(tier) : tier != 0)
 				return;
 			if (RateLimited(peer))
 			{
 				HWP::Log("keys", "drop request from peer " + peer + " rate limited (" + DROP_LIMIT + " per " + (DROP_WINDOW / 1000) + " s)");
+				return;
+			}
+			// hwp keydrop on a client: only with the host's keys.debug, and it
+			// leaves the floor's boss key and budget alone
+			if (debug)
+			{
+				if (g_debug)
+					SpawnKey(vec2(HWP::SV::Float(data, "x"), HWP::SV::Float(data, "y")), tier);
 				return;
 			}
 			// the boss drops are once per level for the whole lobby, whoever
@@ -749,7 +796,7 @@ namespace HWP
 			if (Network::IsServer())
 				SpawnKey(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier);
 			else
-				RequestDrop(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier, false, true);
+				RequestDrop(xy(rec.actor.m_unit.GetPosition()) + vec2(0, 20), tier, false, false, true);
 		}
 	}
 }
@@ -846,9 +893,9 @@ namespace Modules
 			HWP::Net::OnRequest(HWP::Keys::DROP, HWP::Net::RequestHandler(HWP::Keys::OnDropRequest));
 			HWP::Net::OnRequest(HWP::Keys::COUNT, HWP::Net::RequestHandler(HWP::Keys::OnCountRequest));
 			HWP::Net::OnRequest(HWP::Keys::POOL_ADD, HWP::Net::RequestHandler(HWP::Keys::OnPoolAddRequest));
-			HWP::Net::OnRequest(HWP::Keys::POOL_SPEND, HWP::Net::RequestHandler(HWP::Keys::OnPoolSpendRequest));
 			HWP::Net::OnRequest(HWP::Keys::POOL_GET, HWP::Net::RequestHandler(HWP::Keys::OnPoolGetRequest));
 			HWP::Net::OnEvent(HWP::Keys::POOL, HWP::Net::EventHandler(HWP::Keys::OnPoolEvent));
+			HWP::Net::OnEvent(HWP::Keys::CHEST_PAID, HWP::Net::EventHandler(HWP::Keys::OnChestPaidEvent));
 			HWP::Commands::Register("keys", " show your keys and the chest lock settings", HWP::Commands::Handler(HWP::Keys::CmdKeys));
 			HWP::Commands::Register("keygive", "<tier> [n]  (debug) give yourself keys", HWP::Commands::Handler(HWP::Keys::CmdKeyGive));
 			HWP::Commands::Register("keydrop", "<tier>  (debug) drop a key at your feet", HWP::Commands::Handler(HWP::Keys::CmdKeyDrop));
@@ -860,6 +907,7 @@ namespace Modules
 			HWP::Keys::RefreshSettings();
 			HWP::Keys::SanitizeKeys(GetLocalPlayerRecord());
 			HWP::Keys::g_bossKeyLevel = -1;
+			HWP::Keys::g_assumed.resize(0);
 			HWP::Keys::g_hostBossLevel = -1;
 			HWP::Keys::g_hostBossMask = 0;
 			HWP::Keys::ResetKeyCounts();

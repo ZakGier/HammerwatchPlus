@@ -1814,3 +1814,32 @@ are above). Measured on build 25932569 unless marked assumed.
   other machines (one game, muted); per-machine run spots in co-op; whether the Ember Kush
   flicker is gone (the fix gives each sprite its own ulayer; the flicker was not reproduced in a
   shot).
+
+## Review fixes: keys in co-op, forced puzzle rooms' limits (2026-10-20)
+
+From the peer's /code-review high of 20c32a1 and a8d146e (read from source; GameLab runs one
+machine, so the client paths below are checked against the vanilla code, not in a run). Single-player
+runs after the fixes: mod-keys 20261020-041212, mod-keys-pool 041225, mod-puzzle-rooms-forced
+041304, mod-puzzle-rooms 041408, all PASS.
+- **A secure pickup's effects run on the picker's machine only:** Pickup.Collide on a client
+  sends `UnitPickSecure`; the host's UnitHandler.UnitPickSecure echoes `UnitPicked` to all and
+  calls NetPicked, whose Picked() sees the client's actor as a husk and skips ApplyEffects
+  (Pickup.as:88-93); the client's own NetPicked runs them. So a key a client picked up reached
+  `GiveFoundKey` on the client only, where the old host-only check dropped it. It now calls
+  `PoolAdd` on any machine (a client's add is a `keys.pool_add` request).
+- **A client's chest open runs Use twice, once per side:** Player.Update sends `UseUnitSecure`;
+  the host's PlayerHandler.UseUnitSecure checks CanUse(husk), echoes `UseUnit` to all and runs
+  NetUse(husk) -> Use (PlayerHandler.as:519-536), and the client's UseUnit handler runs Use for
+  its local player. The host's Use already took the party key, and the client's
+  `keys.pool_spend` request took a second. Now only the host takes it (`PoolTake`, which also
+  decides party vs. own key) and sends `keys.chest_paid { tier, party }` to a remote opener; the
+  opener guesses from its copy of the pool (the host's `keys.pool` broadcasts are sent before
+  the `UseUnit` echo) and corrects its own key count if the host's answer differs.
+  `keys.pool_spend` is gone (the 2026-10-20 pool notes above still name it).
+- **`hwp keydrop` on a client** sent `boss=1`, which used up the floor's once-per-lobby boss key.
+  It now sends `debug=1`: the host drops that tier only with its own `keys.debug` on, outside the
+  budget and the boss key.
+- **Forced puzzle rooms respect the set's limits:** `ForcePlace` takes only defs whose `CanGet()`
+  allows them (max count, conditionals, run-unique flags), with the failed PlacePrefabs'
+  `m_foundNoPlacement` cleared just for that check, and tries the defs' best spots best first,
+  so a def `UsePrefab()` turns down passes to the next.

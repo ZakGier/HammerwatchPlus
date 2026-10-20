@@ -1,5 +1,5 @@
 // The key pickups' effect: vanilla GiveKey, but in a run the key goes to the
-// party pool (HWP::Keys::GiveFoundKey; the host adds it), in town through
+// party pool (HWP::Keys::GiveFoundKey; a client's add goes to the host), in town through
 // HWP::Keys::AddKeys (vanilla PlayerRecord.AddKeys corrupts it, KeysModule.as).
 class HWPGiveKey : GiveKey
 {

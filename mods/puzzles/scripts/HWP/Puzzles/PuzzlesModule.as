@@ -169,6 +169,27 @@ namespace HWP
 			return s[x + w][y + h] - s[x][y + h] - s[x + w][y] + s[x][y];
 		}
 
+		// a def the set may still give out: CanGet (max count, conditionals, run-unique
+		// flags), minus the failed PlacePrefabs' m_foundNoPlacement, which only says
+		// the vanilla spot search found nothing
+		bool Available(MissionPrefabDef@ def)
+		{
+			bool none = def.m_foundNoPlacement;
+			def.m_foundNoPlacement = false;
+			bool ok = def.CanGet();
+			def.m_foundNoPlacement = none;
+			return ok;
+		}
+
+		class Spot
+		{
+			MissionPrefabDef@ m_def;
+			ivec2 m_pos;
+			Door m_door;
+			int m_len;
+			float m_score;
+		}
+
 		// the vanilla way failed: put the room on the outskirts and carve its corridor
 		string ForcePlace(CellGrid@ grid, PrefabPlacement@ placer, const string &in set)
 		{
@@ -177,21 +198,18 @@ namespace HWP
 			for (uint i = 0; i < MissionPrefabDef::Instances.length(); i++)
 			{
 				auto def = MissionPrefabDef::Instances[i];
-				if (def.m_set == setHash && def.m_prefab !is null)
+				if (def.m_set == setHash && def.m_prefab !is null && Available(def))
 					defs.insertAt(randi(defs.length() + 1), def);
 			}
 			if (defs.length() == 0)
-				return "no rooms in " + set;
+				return "no rooms left in " + set;
 
 			auto sums = BlockedSums(grid);
 			float cx = grid.m_width / 2.0f;
 			float cy = grid.m_height / 2.0f;
 
-			MissionPrefabDef@ best = null;
-			ivec2 bestPos;
-			Door bestDoor;
-			int bestLen = 0;
-			float bestScore = -1e9f;
+			// each def's best spot: the farthest from the middle, a short corridor breaking ties
+			array<Spot@> spots;
 			for (uint i = 0; i < defs.length(); i++)
 			{
 				auto def = defs[i];
@@ -199,6 +217,7 @@ namespace HWP
 				Door door;
 				if (def.m_gridPattern is null || !GetDoor(def, door))
 					continue;
+				Spot@ best = null;
 				ivec2 sz = def.m_gridSz;
 				for (int y = 1; y + sz.y < grid.m_height - 1; y++)
 				{
@@ -212,23 +231,42 @@ namespace HWP
 						float dx = (x + sz.x / 2.0f - cx) / cx;
 						float dy = (y + sz.y / 2.0f - cy) / cy;
 						float score = dx * dx + dy * dy - len * 0.01f;
-						if (score > bestScore)
+						if (best is null || score > best.m_score)
 						{
-							bestScore = score;
-							@best = def;
-							bestPos = ivec2(x, y);
-							bestDoor = door;
-							bestLen = len;
+							if (best is null)
+								@best = Spot();
+							@best.m_def = def;
+							best.m_pos = ivec2(x, y);
+							best.m_door = door;
+							best.m_len = len;
+							best.m_score = score;
 						}
 					}
 				}
+				if (best !is null)
+					spots.insertLast(best);
 			}
-			if (best is null)
+			if (spots.length() == 0)
 				return "no free wall block on the outskirts";
 
-			auto room = best.UsePrefab();
+			// best first; a def UsePrefab turns down (used up meanwhile) passes to the next
+			MissionPrefabDef@ room = null;
+			Spot@ spot = null;
+			while (room is null && spots.length() > 0)
+			{
+				uint top = 0;
+				for (uint i = 1; i < spots.length(); i++)
+					if (spots[i].m_score > spots[top].m_score)
+						top = i;
+				@spot = spots[top];
+				spots.removeAt(top);
+				@room = spot.m_def.UsePrefab();
+			}
 			if (room is null)
-				return "room used up";
+				return "every fitting room used up";
+			ivec2 bestPos = spot.m_pos;
+			Door@ bestDoor = spot.m_door;
+			int bestLen = spot.m_len;
 			room.UnpackGrid();
 			placer.PlacePrefabAt(room, bestPos);
 
