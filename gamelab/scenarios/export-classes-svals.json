@@ -1,0 +1,282 @@
+{
+ "name": "export-classes-svals",
+ "about": "Exports the classes mod's class and skill svals as the engine parsed them (for the class planner's HoH1 class records), into gamelab/results/export-classes-svals/.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss",
+  "architect",
+  "bufftips",
+  "campaign",
+  "chatlinks",
+  "classes",
+  "colors",
+  "deathrecap",
+  "droptrade",
+  "farming",
+  "firearms",
+  "fishing",
+  "gambler",
+  "goldpet",
+  "groupcombo",
+  "keys",
+  "laststats",
+  "legacy",
+  "maps",
+  "mercenary",
+  "pets",
+  "puzzles",
+  "stash",
+  "strongbox",
+  "summons",
+  "wavemode",
+  "weapons",
+  "weaponswap"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/arena_mastery.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/barbed_net.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/beast.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/bloodlust.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/gladius.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/net.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/pack_leader.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/pit_fighters.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/planned_attack.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/riposte.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/shield_wall.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/trident_mastery.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/skills/whirl.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/divine_hammer.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/holy_storm.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/last_rites.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/shield_of_faith.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/smite.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/skills/zealous_charge.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/backstab.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/caltrops.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/cloak.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/knives.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/poisoned_blades.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/quick_hands.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/shadow_strike.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/sidestep.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/slice.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/smoke.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/vanish.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/skills/vicious_cuts.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/brand.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/cinders.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/crows.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/hound.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/immolation.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/judgement.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/pack.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/pyre.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/silver_bolts.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/torch.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/tracker.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/ward.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/skills/zeal.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/gladiator/class_gladiator.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/hoh1specs/class_hoh1_specs.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/thief/class_thief.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "sval",
+   "file": "players/hwp/witchhunter/class_witchhunter.sval",
+   "dest": "gamelab/results/export-classes-svals"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

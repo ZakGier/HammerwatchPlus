@@ -346,6 +346,10 @@ namespace HWP
 				BurnDown();
 			else
 				BurnPending();
+			// a level start: the takes pending on the last level are gone with its scene clock
+			g_handHolders.removeRange(0, g_handHolders.length());
+			g_handTakers.removeRange(0, g_handTakers.length());
+			g_handTimes.removeRange(0, g_handTimes.length());
 		}
 
 		// ---- passing it on --------------------------------------------------------
@@ -419,7 +423,8 @@ namespace HWP
 		// JOINT_GIVE is relayed only for a take it checked, never made up by a peer. The first
 		// take wins: a second one while the first is pending is refused, since the holder lets
 		// go of the joint before the host sees its give. A take that got no give for
-		// HAND_EXPIRE ms (the holder put it away, or left) no longer blocks the next.
+		// HAND_EXPIRE ms (the holder put it away, or left) no longer blocks the next. A level
+		// start clears them all (ClearJoints).
 		array<int> g_handHolders;
 		array<int> g_handTakers;
 		array<int> g_handTimes;
@@ -457,9 +462,8 @@ namespace HWP
 			}
 			else
 			{
-				// a scene time before the entry's is a new level's clock: the entry is stale
 				int age = now - g_handTimes[at];
-				if (g_handTakers[at] != int(peer) && age >= 0 && age < HAND_EXPIRE)
+				if (g_handTakers[at] != int(peer) && age < HAND_EXPIRE)
 				{
 					HWP::Log("farming", "refused peer " + peer + "'s take from peer " + holder + " (peer "
 						+ g_handTakers[at] + " asked first)");

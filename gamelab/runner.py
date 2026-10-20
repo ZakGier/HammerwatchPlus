@@ -468,7 +468,7 @@ class Run:
                 data = json.loads(reply["chunk"]) if ok else None
                 error = reply.get("error")
             if ok:
-                out = Path(s["dest"]) / (s["file"] + ".json")
+                out = REPO / s["dest"] / (s["file"] + ".json")  # a relative dest is under the repo
                 out.parent.mkdir(parents=True, exist_ok=True)
                 out.write_text(json.dumps(data, indent=1, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
             saved.setdefault("sval", {})[s["file"]] = "ok" if ok else error

@@ -1005,47 +1005,54 @@ class Checks(Base):
         self.to_town()
 
     def firearms_start_ranks(self):
-        """A save from before Frag and the doctrine skills started at rank 1 (499f1d7) holds
-        their ranks relative to 0, so it would load each one rank up. FirearmsModule.as
-        MigrateStartRanks takes that rank off once per character, at a level start: a new
-        character only gets the mark. `gl char` swaps the character in place, with no level
-        start, so a floor stands in for the town load that follows character creation. Old
-        save made by hand: a Frag rank picked (saved 1, loaded 2), the mark taken off; then
-        a floor start moves it back to 1, and a second pass changes nothing."""
+        """Frag and the doctrine skills start at rank 1 since 499f1d7. A save keeps a picked
+        rank relative to the starting level and counts its points from there, so an older
+        save loads as a new character that picked the same ranks; only one at the old max
+        goes over. FirearmsModule.as ClampStartRanks pulls that back to the max at each level
+        start and leaves every rank within the max alone, older or newer. `gl char` swaps the
+        character with no level start, so floors stand in for one. A new character (0, loaded
+        1) and a picked Frag (1, loaded 2) are kept; a save written past the max, as an old
+        one at max is, is pulled back to it; a second pass changes nothing."""
         self.gl("char", "hwp_firearms", "LabStartRanks")
         self.wait_phase("town", 60)
         time.sleep(2)
 
         def ranks():
             log = self.hwp("firearms startranks", 0.4, until="start ranks:")
-            m = re.findall(r"start ranks: marked (\w+), .*?hwp_fs_frag (\d+)/(\d+)", log)
-            return (m[-1][0], int(m[-1][1]), int(m[-1][2])) if m else (None, -1, -1)
+            m = re.findall(r"start ranks: saved/loaded/max .*?hwp_fs_frag (\d+)/(\d+)/(-?\d+)", log)
+            return tuple(int(x) for x in m[-1]) if m else (-1, -1, -1)
 
-        unmarked = ranks()
+        new = ranks()
         mark = self.log_pos()
         if not self.enter_floor("startranks_new"):
             return
-        fresh = ranks()
-        self.flag("start_ranks_new_char", unmarked == ("no", 0, 1) and fresh == ("yes", 0, 1)
-                  and "saved ranks moved" not in self.log_from(mark),
-                  f"new character {unmarked}, after its first level start {fresh}")
+        new_after = ranks()
         self.to_town()
         self.hwp("skillpoints 10", 0.6, until="skill points")
         self.gl("skill", "hwp_fs_frag", 1)
         time.sleep(0.6)
-        self.hwp("firearms startranks clear", 0.4, until="start ranks:")
+        picked = ranks()
+        if not self.enter_floor("startranks_picked"):
+            return
+        picked_after = ranks()
+        self.flag("start_ranks_kept", new[:2] == (0, 1) and new_after == new and picked[:2] == (1, 2)
+                  and picked_after == picked and "saved ranks over the max" not in self.log_from(mark),
+                  f"new character {new} -> {new_after} after a level start; Frag picked {picked} -> {picked_after}")
+        self.to_town()
+        top = picked[2]
+        self.hwp(f"firearms startranks set hwp_fs_frag {top + 1}", 0.4, until="start ranks:")
         old = ranks()
         mark = self.log_pos()
-        if not self.enter_floor("startranks"):
+        if not self.enter_floor("startranks_old"):
             return
-        moved = ranks()
+        clamped = ranks()
         log = self.log_from(mark)
-        self.flag("start_ranks_migrated", old == ("no", 1, 2) and moved == ("yes", 0, 1)
-                  and "saved ranks moved to the rank-1 start: hwp_fs_frag 1->0" in log,
-                  f"old save {old}, after the floor start {moved}")
+        self.flag("start_ranks_clamped", top > 0 and old[0] == top + 1 and clamped[:2] == (top, top + 1)
+                  and f"saved ranks over the max since the rank-1 start: hwp_fs_frag {top + 1}->{top}" in log,
+                  f"a save past the max {old}, after the level start {clamped}")
         self.hwp("firearms startranks run", 0.4, until="start ranks:")
         again = ranks()
-        self.flag("start_ranks_once", again == moved, f"a second pass: {again}")
+        self.flag("start_ranks_once", again == clamped, f"a second pass: {again}")
         self.to_town()
 
     def firearms_reload_cut(self):
