@@ -1,0 +1,70 @@
+<!--
+	GameLab only: the magic target dummy (doodads/generic/target_dummy_magic.unit) with 600 hp
+	and 1000 resistance to every element, so an explosion's elemental penetration (Firearms'
+	Elemental Shrapnel) shows in the hp it takes: ApplyArmor's a = res * (1 - pen) * 0.005
+	(Data/Misc.as ArmorApplyEfficiency) is 5 without penetration, 4.4 at 12%.
+-->
+<unit slot="doodad">
+	<behavior class="CompositeActorBehavior">
+		<int name="hp">600</int>
+		<string name="type"></string>
+		
+		<int name="res-fire">1000</int>
+		<int name="res-ice">1000</int>
+		<int name="res-lightning">1000</int>
+		<int name="res-poison">1000</int>
+		
+		<bool name="targeting">false</bool>
+		%//<bool name="targetable">false</bool>
+
+		<float name="mp-scale-fact">0</float>
+		<float name="ngp-scale">0</float>
+		<bool name="hide-health">false</bool>
+		<bool name="hide-damage-flash">false</bool>
+		<bool name="hide-damage-numbers">false</bool>
+
+		<array name="buffs-immune-tags">
+			<string>bleeding</string>
+		</array>
+
+		<array name="tags">
+			<string>target_dummy</string>
+		</array>
+
+		<dict name="movement">
+			<string name="class">PassiveMovement</string>
+			<string name="anim-idle">idle</string>
+		</dict>
+		
+		<array name="skills" />
+	</behavior>
+ 
+	<scenes outlook="outlook" pop="pop">
+		<scene name="outlook">
+			<sprite origin="12 20" looping="true" texture="doodads/generic/target_dummy.png" material="system/default.mats:default-noxray">
+				<frame>24 0 24 23</frame>
+			</sprite>
+			<shadow>
+				<sprite origin="3 9" texture="doodads/generic/target_dummy.png">
+					<frame>84 0 10 12</frame>
+				</sprite>
+			</shadow>		
+			<collision static="true">
+				<circle offset="0 0" radius="5" />
+			</collision>
+		</scene>
+		<scene name="pop">
+			<sprite origin="10 19" looping="true" texture="doodads/generic/target_dummy.png" material="system/default.mats:default-noxray">
+				<frame>21 23 21 22</frame>
+			</sprite>
+			<shadow>
+				<sprite origin="-1 8" texture="doodads/generic/target_dummy.png">
+					<frame>100 0 6  11</frame>
+				</sprite>
+			</shadow>		
+			<collision static="true">
+				<circle offset="0 -1" radius="4" />
+			</collision>
+		</scene>
+  </scenes>
+</unit>

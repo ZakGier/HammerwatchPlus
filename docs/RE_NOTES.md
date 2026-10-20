@@ -1329,7 +1329,8 @@ empty clip gives, and for dual pistols to throw their magazines one after the ot
   full for 1 s, faded to 0 by 2 s and stopped (`Combat.as` StartEpipenSound; the fuse runs 3.9 s);
   the Frag Grenade throws with `bandit_rogue_throw_bomb` (its old `throwing_knives_throw` is not
   in the bank's event list, so it was likely silent: assumed, from the list, not heard); placing
-  a turret plays `ui/build`. Unverified in game. Still Claude's picks, not the user's: the
+  a turret plays `ui/build`. The fade is measured: the hiss stopped at 2013 ms
+  (plan-firearms-orbs2 20261019-205713). All three events are in the bank's event list; none was heard in game. Still Claude's picks, not the user's: the
   grenade, Explosive Reload and shell blasts, the incendiary fire, the frag bounce, the gas loop,
   the turret's shot (the rifle's sound).
 

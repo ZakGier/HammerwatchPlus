@@ -988,7 +988,9 @@ class Checks(Base):
         # shoots an enemy beside it (god mode keeps the player up; the brute may hit the turret)
         tu = self.gl("near", 400, TURRET).get("units") or []
         if tu:
-            ex, ey = tu[0]["x"] - px + d[0] * 70, tu[0]["y"] - py + d[1] * 70
+            # 50 past it: 130 out, inside the line open_dirs checked (70 past, a brute landed in a
+            # wall out of the turret's sight, 20261019-210718 and -211402)
+            ex, ey = tu[0]["x"] - px + d[0] * 50, tu[0]["y"] - py + d[1] * 50
             e = self.gl("spawn", BRUTE, round(ex, 1), round(ey, 1)).get("unit")
             time.sleep(0.3)
             b0 = [u.get("hp", 1.0) for u in self.gl("near", 600, "bandit_brute").get("units") or []]

@@ -13,21 +13,20 @@ What each check reads:
   modifiers.Crit(player, target, skill) as a hit does (PlayerBase.as:855-900) many times, and
   reads the static crit stats, the skill's m_modCritChance / m_modCritDamage / m_modDamageMul
   and the custom stats.
-- Shrapnel and Elemental Shrapnel: the armor_break debuff on a frag-hit dummy; rocket damage
-  numbers on the magic dummy (100 elemental resistance) with and without the penetration.
+- Shrapnel and Elemental Shrapnel: the armor_break debuff on a frag-hit dummy; the hp a resist
+  dummy (gamelab-hands, 1000 elemental resistance) loses to rockets with and without the penetration.
 - Rocket Jump: its log line and how far the player moved; EpiPen: its log line and stacks.
 - Our Turret!: only its stat (hwp-turret-shared). Its effect needs a second player, which the
   lab doesn't have.
 Sections: orbs_base, orbs_marksman, orbs_demo, orbs_assault, orbs_engineer."""
 import re
-import statistics
 import time
 
 from gamelab.bots.plan_firearms import Checks as Base
 
 ELEMENTS = ("fire", "ice", "lightning", "poison")
 TOUGH = "doodads/generic/target_dummy_normal.unit"  # 10M hp: never dies under fire
-MAGIC = "doodads/generic/target_dummy_magic.unit"   # 10M hp, 100 fire/ice/lightning/poison resistance
+RESIST = "gamelab/target_dummy_resist.unit"  # 600 hp, 1000 resistance to every element (gamelab-hands)
 ROLLS = 20000
 
 
@@ -132,7 +131,16 @@ class Checks(Base):
             ok1, _ = self.orb(f"hwp_fs_scavenger_{bias}", 3)
             ok2, olv = self.orb(f"hwp_fs_scavenger_{rider}", lvl)
             dd, du = self.tough(d)
-            tags, shots = self.fire_at(dd, 3500)
+            # 2 in 5 of half the rounds: 7 rounds in a slow run carried no ice (20261019-211805),
+            # so burst again, up to 3 times, until the element and its rider both show
+            tags, shots = set(), {}
+            for _ in range(3):
+                t, s = self.fire_at(dd, 3500)
+                tags.update(t)
+                shots = {k: shots.get(k, 0) + v for k, v in s.items()}
+                if shots.get(bias, 0) >= 1 and any(want in x for x in tags):
+                    break
+            tags = sorted(tags)
             self.flag(f"bullets_{rider}_rider", ok1 and ok2 and shots.get(bias, 0) >= 1 and any(want in t for t in tags),
                       f"orb level {olv}: {shots.get(bias, 0)} {bias} rounds of {sum(shots.values())}, dummy tags {tags}")
             self.orb_off(f"hwp_fs_scavenger_{rider}")
@@ -195,9 +203,12 @@ class Checks(Base):
         ok, olv = self.orb("hwp_fs_focus_boom", 3)
         b1 = self.probe("hwp_fs_snipe", 1)
         delta = {k: round(b1.get(k, 0) - b0.get(k, 0), 3) for k in ("mainCrit", "mainCritDmg", "spellCrit", "spellCritDmg", "skillCrit", "skillCritDmg")}
-        want = {"mainCrit": 0.05, "mainCritDmg": 0.3, "spellCrit": 0.05, "spellCritDmg": 0.3, "skillCrit": 0.05, "skillCritDmg": 0.3}
+        # crit chances stack as independent rolls, 1 - (1 - a)(1 - b) (StatModifier.as CriticalHit),
+        # so +5% on a base b adds 0.05 * (1 - b); the skill's own and crit damage just add
+        want = {"mainCrit": 0.05 * (1 - b0.get("mainCrit", 0)), "mainCritDmg": 0.3,
+                "spellCrit": 0.05 * (1 - b0.get("spellCrit", 0)), "spellCritDmg": 0.3, "skillCrit": 0.05, "skillCritDmg": 0.3}
         self.flag("boom_headshot_crit", ok and all(abs(delta[k] - v) < 0.002 for k, v in want.items()),
-                  f"orb level {olv}: added {delta}")
+                  f"orb level {olv}: added {delta}, expected {({k: round(v, 3) for k, v in want.items()})}")
         self.orb_off("hwp_fs_focus_boom")
 
         ok, olv = self.orb("hwp_fs_focus_exposure", 3)
@@ -220,7 +231,7 @@ class Checks(Base):
     def orbs_demo(self):
         """Overpacked Explosives (level 2) multiplies the rocket's and the frag's damage by
         1.25; Elemental Shrapnel (level 2) gives explosions 12% elemental penetration, so
-        rockets hit the magic dummy (100 resistance) harder; Rocket Jump throws the player out
+        rockets take more hp from a resist dummy (1000 resistance); Rocket Jump throws the player out
         of their own rocket's blast (logged)."""
         self.new_char("LabOrbDemo", "hwp_firearms_demolitions")
         if not self.enter_floor("orbs_demo"):
@@ -237,21 +248,28 @@ class Checks(Base):
         self.orb_off("hwp_fs_hoarder_overpacked")
 
         def rockets(n=3):
-            dd, du = self.tough(d, 90, MAGIC)
+            """hp taken by a fresh resist dummy (600 hp, 1000 fire resistance) from n rockets at
+            the same spot (the blast scales with distance), and the damage numbers seen"""
+            dd, du = self.tough(d, 90, RESIST)
+            hp0 = self.hps([du])[du]
             out = []
             for _ in range(n):
                 self.top_up()
-                self.gl("castat", "hwp_fs_rpg", dd[0] * 90, dd[1] * 90, "nocd")
+                # a held aim, not castat: the rocket re-reads the aim (plan_firearms aimed_cast),
+                # and castat rockets hit nothing in 20261019-211805
+                self.aimed_cast("hwp_fs_rpg", dd, 720)
                 out += self.hits(1.4)
-            return out
-        bare = rockets()
+            return round((hp0 - self.hps([du])[du]) * 600), out
+        bare, tb = rockets()
         ok, olv = self.orb("hwp_fs_hoarder_shrapnel", 2)
         pen = self.custom(self.probe("hwp_fs_rpg", 1), "hwp-shrapnel")
-        more = rockets()
-        mb, mm = (statistics.mean(x) if x else 0 for x in (bare, more))
+        more, tm = rockets()
+        # ApplyArmor: damage x 1/(1 + res*(1-pen)*0.005): 1/6 without, 1/5.4 at 12% -> x1.11
+        ratio = more / bare if bare else 0
         self.flag("elemental_shrapnel_pen", ok and abs(pen - 0.12) < 1e-3, f"orb level {olv}: hwp-shrapnel {pen}")
-        self.flag("elemental_shrapnel_more_damage", bool(bare) and bool(more) and mm > mb * 1.02,
-                  f"rocket hits on the magic dummy {bare} (mean {round(mb, 1)}) -> {more} (mean {round(mm, 1)})")
+        self.flag("elemental_shrapnel_more_damage", bare > 0 and 1.05 < ratio < 1.18,
+                  f"3 rockets took {bare} hp of the resist dummy (texts {tb}) -> {more} with the orb (texts {tm}): "
+                  f"x{round(ratio, 3)} (6/5.4 = 1.111 expected)")
         self.orb_off("hwp_fs_hoarder_shrapnel")
 
         def jump():
@@ -264,10 +282,11 @@ class Checks(Base):
             time.sleep(0.8)
             p1 = self.pos()
             return m, round(((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5, 1)
+        # moved1 vs moved0, not a fixed 20: a wall behind cut a logged throw to 18.7 (20261019-211805)
         m0, moved0 = jump()
         ok, olv = self.orb("hwp_fs_rpg_jump")
         m1, moved1 = jump()
-        self.flag("rocket_jump_throws", ok and m0 is None and m1 is not None and moved1 > 20,
+        self.flag("rocket_jump_throws", ok and m0 is None and m1 is not None and moved1 > moved0 + 10,
                   f"without the orb: {m0 and m0.group(0)}, moved {moved0}; with it: {m1 and m1.group(0)}, moved {moved1}")
         self.orb_off("hwp_fs_rpg_jump")
         self.clear_dummies()
