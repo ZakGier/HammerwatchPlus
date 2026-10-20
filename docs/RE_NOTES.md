@@ -1730,3 +1730,87 @@ Status: measured where a run is cited; the rest says which run checks it.
   `gl goto` walked into it, the Constellation solved and its reward spawned. diag-puzzle-rooms
   20261020-021827 forced cave_dark rooms at 6,150 (corridor 35) and 1,25 (corridor 9) of 175x175
   and a temple room at 24,168 of 187x187. mod-puzzle-rooms 20261020-021747 PASS (unforced). Default chance is now 60 %.
+
+## Firearms, fishing, farming and core fixes from the play-test list (2026-10-20)
+
+The play-test list's bugs and features that are not keys, abyss, valuables or puzzles (those
+are above). Measured on build 25932569 unless marked assumed.
+
+- **Rifle and pistols.** The rifle fires a 3-round burst per pull and no longer pierces; a lone
+  pistol fires single rounds every 300 ms (only a dual pair alternates); the last 3 rounds (6
+  dual) click (`HWPFirearmsLowClick`, `event:/sfx/doodads/buttons/button_metal`; GameLab is muted, so the sound itself is unheard here). Damage was brought to the bow and crossbow's range with
+  the burst and the dual pair counted in: rifle ×0.52 (epic 0.65), pistols ×0.8, from
+  bench-weapons 20261020-003538 (a solo dummy; the dual DPS is measured on the small dummy only,
+  assumed to hold on bigger targets). Frag Grenade radius 64 (half). New characters start with
+  `hwp_glock_mh_01` (Service Pistol). Measured: plan-t14, plan-firearms-guns, mod-firearms-pistols
+  (runs listed at the end).
+- **Over-Reload is a bar above the health bar** (Combat.as `OverReloadState`), white sweep for
+  every reload, a gold window only with the orb. A miss turns the sweep red and greys the window,
+  with no second try; left click counts as well as the Reload key. Visually verified in
+  plan-firearms-orbs 20261020-025020 shots `reload-bar-missed`, `reload-bar-plain`,
+  `reload-bar-manual`: each shot is taken before the `bar()` read, since every `gl` command opens the console
+  over the frame.
+- **Weapon swap is a 2 s rooted channel** (`buffs_weaponswap.sval`), cancelled by X again or a
+  dodge. plan-t8 20261020-025317: `swap_channel_rooted` moved 0.0, `swap_cancel_key` and
+  `swap_cancel_dodge` logged their cancel, the swap lands after the channel.
+- **The generator picks the first base item when every weight is 0.** EquipmentGenerator.as
+  `GenerateBaseItem` (:216-227) does `r = randf() × sum` then `r -= rarity; if (r <= 0) return`,
+  so with a sum of 0 the first candidate always wins. Joints have spawn-chance 0, and chests in
+  plan-t8 20261020-023506 rolled them ("Generated 'hwp_joint_lucky_leaf_5' equipment with too few
+  modifiers"). `equipment_joints.sval` now carries a conditional on a flag nobody sets
+  (`hwp_joint_never_drops`), which `VerifyItem` (:367 `CheckGlobalConditionals`) refuses before
+  the pick, and `Joint.as MakeJointById` builds the item itself instead of `GenerateItem`. So
+  `gl equip` can't give a joint (it goes through VerifyItem); tests use `gl wield`. A spawn-chance
+  0 *modifier* is fine: EquipmentGenerator.as:445 skips 0-chance mods (the Mm-hmm! bonus).
+- **A duplicate NPC unit destroys itself.** `CompositeActorBehaviorNPC.CheckForExistance`
+  (NPCBehavior.as:283, run from :280) fetches every unit of its producer and destroys the newer
+  ones unless the editor-only `AllowDuplicates` is set, so the second fishing spot a floor spawned
+  removed the first. `HWPFishingHoleNPC` overrides it empty, as core Town.as:366 does.
+- **Unit and texture rules met on the way:** a GUI/doodad texture must be power-of-two
+  (`fish_small.png` is padded to 64×32 by `tools/make_small_fish.py`), and a scene can hold one
+  `<collision>`: UnitLoader refuses a second ("A scene can only contain a single collision
+  definition", the menu crashed), so the bucket's solid rect and sensor share one.
+- **Fish in the wells.** The spot sits on the potion well's water, one scene per well kind, and
+  greys on the map once this player has no casts left. mod-fishing-spots 20261020-024404: every
+  spot within 2 px of its well (well 96,-92, spot 96,-91), 8 of 8 greyed when fished out. The
+  vanilla pond fish are blue (54,122,221) and vanish in the wells' blue water, so the wells and the
+  bucket use a small orange koi (`make_small_fish.py`, hue 24°); placement in each well's basin
+  was checked on offline renders of the well unit with the spot over it (crypt moved to the
+  left pool, -12,-10).
+- **In a run the fishing window pauses the game,** and the pilot with it, so a pilot `use` that
+  opens it never reports done until the window closes. The test treats "window open" as reached.
+- **The trading post has three built tiers:** `tweak/town/buildings/trading_post.sval` has the
+  unbuilt prefab (tier 0) plus tiers 1 to 3 (`trading_post_tier_1..3.pfb`); the 4 and 5 prefabs
+  exist but are never used. The pirate sits on the wreck at tiers 0-2 and stands in the rowing
+  boat (272,-124 of the plot) at tier 3.
+- **A doodad hides a unit north of its origin.** `boat_small.unit`'s se sprite (origin 30 37 of a
+  58×61 frame) is drawn sorted by the boat's origin, so the pirate placed 6 px north of it was
+  logged in the boat (mod-fishing-spots 20261020-032028: -1269,125) yet the hull covered him
+  entirely (shot `coast-2`: an empty boat). He now stands 2 px south of the origin. The wreck's
+  sprite is `layer="-1"`, under everything, so it never hid him. From 40 px south of the wreck
+  the pilot's walk to him goes round the cliff and takes about 46 s (11 waypoints, 024404).
+- **Eating fish:** 100 HP per star, capped at max health, in town and in runs (plan-fishing-a
+  20261020-022944: town hp 33 -> 134; the run gain capped at the room left). No starting rod or
+  can; the empty slots draw nothing.
+- **Farming:** a plot yields as many as it draws (plan-farming-a 20261020-022552,
+  plan-farming-b 20261020-024058); Gambler's Gold is gone (saves holding it get Lucky Leaf); a
+  herb buff lasts 10 floors counting bosses. Joints: rolled from one herb, 5 puffs, each a stage
+  of art, taken by a player with a free off hand (relayed by the host; one machine here, so the
+  hand-over between two players is assumed from the code), a haze per puff in town buildings and
+  run rooms.
+- **Core:** Materials > Plants & Herbs, 8 boxes across; the orb warning ("Makes unavailable" plus
+  the closed-off orbs' icons) in the in-run orb picker (mod-orbwarn 20261020-020301); the Mm-hmm!
+  hat bonus on rare and better head items, 25 % of them, no cooldown, played for everyone through
+  a network event (mod-mmhmm 20261020-022353; GameLab is muted and solo, so whether others hear it
+  is assumed from the code).
+- **Runs for this section (all PASS):** mod-all 20261020-030139, plan-t14 20261020-030347,
+  plan-firearms-guns 20261020-030522, plan-firearms-a 20261020-030642, plan-firearms-orbs
+  20261020-031302, mod-firearms-clip 20261020-030152, mod-firearms-pistols 20261020-030247,
+  plan-t8 20261020-031550, mod-weaponswap 20261020-030334, mod-options-tab 20261020-030918,
+  mod-farming 20261020-022540, plan-farming-a 20261020-025744, plan-farming-b 20261020-024058,
+  plan-fishing-a 20261020-022944, mod-fishing-spots 20261020-032728, mod-fishing
+  20261020-030948, mod-droptrade 20261020-030906, plan-gear-a 20261020-023920.
+- **Not measurable solo, assumed from the code:** the joint hand-over and the Mm-hmm! sound on
+  other machines (one game, muted); per-machine run spots in co-op; whether the Ember Kush
+  flicker is gone (the fix gives each sprite its own ulayer; the flicker was not reproduced in a
+  shot).
