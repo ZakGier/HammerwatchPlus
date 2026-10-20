@@ -16,7 +16,10 @@ FIREARMS = "hwp_firearms"
 def load():
     rows = []
     for f in sorted(OUT.glob("*.json")):
-        rows += json.loads(f.read_text(encoding="utf-8"))
+        data = json.loads(f.read_text(encoding="utf-8"))
+        # probe.json and weapons.json share the folder but aren't class benches
+        if isinstance(data, list):
+            rows += [r for r in data if isinstance(r, dict) and "stage" in r]
     return rows
 
 
@@ -31,7 +34,8 @@ def table(rows):
         med_s = statistics.median(r["single"] for r in vanilla)
         med_p = statistics.median(r["pack"] for r in vanilla)
         top_s = max(r["single"] for r in vanilla)
-        lines.append(f"\n## Level {level}, {stage} of run  (vanilla median: single {med_s:.0f}, pack {med_p:.0f};"
+        when = "start of a run" if stage == "start" else "late in a run (orbs, trinkets)"
+        lines.append(f"\n## Level {level}, {when}  (vanilla median: single {med_s:.0f}, pack {med_p:.0f};"
                      f" vanilla best single {top_s:.0f})")
         lines.append(f"| build | single | x median | pack | x median |")
         lines.append("|---|---:|---:|---:|---:|")

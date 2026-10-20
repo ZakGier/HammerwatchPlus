@@ -121,6 +121,7 @@ class Bench:
         self.rows = []
         self.orbs_taken = []
         self.trinkets = 0
+        self.home = None
 
     def gl(self, *a, timeout=20):
         return self.g.gl_cmd(*a, timeout=timeout)
@@ -188,6 +189,11 @@ class Bench:
 
     def bench(self, tag, off):
         self.gl("kill", 600, "target_dummy")
+        # back to the spot of the first bench: a melee run chases the pack, and the next pack
+        # (placed around the player) drifted into a town wall where nothing hit it (rogue bench
+        # 20261020-010121: every stage after the first read 0)
+        if self.home:
+            self.gl("teleport", *self.home)
         time.sleep(0.3)
         for dx, dy in PACK:
             self.gl("spawn", DUMMY, dx, dy)
@@ -238,6 +244,9 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000):
     time.sleep(2)
     g.console("e_cheats 1")
     time.sleep(0.3)
+    plr = b.gl("state").get("player") or {}
+    if "x" in plr:
+        b.home = (round(plr["x"], 1), round(plr["y"], 1))
     cfg = CLASSES[cls]
     have = 1
     for level in levels:
