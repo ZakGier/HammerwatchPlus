@@ -2,7 +2,8 @@
 // level with abyss.chance at the position of a random enemy far from the
 // party. When a player comes close the crack "spreads": three waves of the
 // level's own enemies erupt along a line, each a little further away, the last
-// one with an elite. Clearing the final wave pays the hwp_abyss_reward table
+// one with elites (more in a bigger party). Clearing the final wave pays the
+// hwp_abyss_reward_<tier> table, the tier following the floor's diff-level,
 // and closes the crack. Units are netsynced (host spawns, clients receive);
 // wave announcements are broadcast as chat lines.
 namespace HWP
@@ -11,7 +12,7 @@ namespace HWP
 	{
 		const string UNIT = "doodads/hwp/abyss_crack.unit";
 		const string FISSURE_UNIT = "doodads/hwp/abyss_fissure.unit";
-		const string LOOT = "hwp_abyss_reward";
+		const string LOOT = "hwp_abyss_reward_"; // + RewardTier()
 		const string WAVE = "abyss.wave"; // host -> all: { n, total }
 		const string DONE = "abyss.done"; // host -> all
 
@@ -64,6 +65,30 @@ namespace HWP
 			HWP::Log("abyss", "placed a crack at " + int(pos.x) + "," + int(pos.y));
 		}
 
+		// The payout tier follows the floor's diff-level (g_diffLevel, which
+		// includes new game+), on the same breakpoints as the key tiers
+		// (mods/keys): the Dark Citadel's floors go 2..22, the side missions
+		// 10..15, new game+ floors 18 and up. Up to 7 the reward is about a
+		// silver chest, up to 13 a gold one, then more than a platinum one.
+		int RewardTier()
+		{
+			int diff = int(g_diffLevel + 0.5f);
+			if (diff <= 7)
+				return 1;
+			if (diff <= 13)
+				return 2;
+			return 3;
+		}
+
+		// Elites in the last wave: one per two players (1, 1, 2, 2); with
+		// three or more players the waves before it get one too.
+		int Elites(int wave, int players)
+		{
+			if (wave >= g_waves)
+				return (players + 1) / 2;
+			return (players >= 3 && wave > 1) ? 1 : 0;
+		}
+
 		void OnWave(SValue@ data)
 		{
 			HWP::Commands::Reply(Resources::GetString(".hwp.abyss.wave", {
@@ -92,12 +117,16 @@ namespace HWP
 			}
 			HWP::Commands::Reply(Resources::GetString(".hwp.abyss.status", {
 				{ "state", g_enabled ? "on" : "off" }, { "chance", g_chance }, { "waves", g_waves },
-				{ "base", g_waveBase }, { "per", g_wavePerPlayer }, { "placed", g_placed }, { "cleared", g_cleared } }));
+				{ "base", g_waveBase }, { "per", g_wavePerPlayer }, { "placed", g_placed }, { "cleared", g_cleared },
+				{ "tier", g_inTown ? 0 : RewardTier() } }));
 		}
 
 		void SelfCheck()
 		{
 			HWP::CheckUnits("abyss", { UNIT, FISSURE_UNIT });
+			for (int t = 1; t <= 3; t++)
+				if (Item::GetLootTable(LOOT + t) is null)
+					HWP::LogError("abyss", "missing loot table " + LOOT + t);
 			HWP::Log("abyss", "self-check done");
 		}
 	}
@@ -152,7 +181,8 @@ class HWPAbyssCrack
 			if (f.IsValid())
 				m_fissures.insertLast(f);
 		}
-		int count = HWP::Abyss::g_waveBase + HWP::Abyss::g_wavePerPlayer * HWP::Spawner::PlayerCount() + (n - 1);
+		int players = HWP::Spawner::PlayerCount();
+		int count = HWP::Abyss::g_waveBase + HWP::Abyss::g_wavePerPlayer * players + (n - 1);
 		m_pack = HWP::Spawner::SpawnPack(m_prods, at, count, 60.0f, true);
 		if (m_pack.length() == 0)
 		{
@@ -161,7 +191,8 @@ class HWPAbyssCrack
 			return;
 		}
 		string extraDesc;
-		if (n >= HWP::Abyss::g_waves)
+		int elites = HWP::Abyss::Elites(n, players);
+		for (int e = 0; e < elites; e++)
 		{
 			auto elite = HWP::Spawner::EliteVariant(m_prods[randi(m_prods.length())]);
 			array<UnitProducer@> extra;
@@ -177,7 +208,7 @@ class HWPAbyssCrack
 			for (uint i = 0; i < ids.length(); i++)
 				m_pack.insertLast(ids[i]);
 			if (ids.length() > 0)
-				extraDesc = elite !is null ? " (elite " + elite.GetResourceName() + ")" : " (+" + ids.length() + ", no elite variant)";
+				extraDesc += elite !is null ? " (elite " + elite.GetResourceName() + ")" : " (+" + ids.length() + ", no elite variant)";
 		}
 		m_state = 1;
 		m_elapsed = 0;
@@ -197,12 +228,16 @@ class HWPAbyssCrack
 		if (reward)
 		{
 			HWP::Abyss::g_cleared++;
-			auto table = Item::GetLootTable(HWP::Abyss::LOOT);
+			string id = HWP::Abyss::LOOT + HWP::Abyss::RewardTier();
+			auto table = Item::GetLootTable(id);
 			auto looter = HWP::Spawner::NearestPlayer(pos);
 			if (table is null)
-				HWP::LogError("abyss", "missing loot table " + HWP::Abyss::LOOT);
+				HWP::LogError("abyss", "missing loot table " + id);
 			else if (looter !is null)
+			{
 				table.SpawnLoot(looter, pos);
+				HWP::Log("abyss", "payout " + id);
+			}
 			HWP::Net::Broadcast(HWP::Abyss::DONE);
 		}
 		for (uint i = 0; i < m_fissures.length(); i++)

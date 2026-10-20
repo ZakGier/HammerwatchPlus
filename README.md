@@ -34,7 +34,7 @@ in a lobby should run the same version of the same modules.
 | `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a next-run buff. |
 | `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
 | `strongbox` | PoE-style strongboxes: open one, a biome-correct pack (elites possible) spawns, clear it for the box's loot. |
-| `abyss` | Abyss cracks: step close and waves crawl out, ending in an elite; clear them for a reward and the crack closes. |
+| `abyss` | Abyss cracks: step close and waves crawl out, ending in elites (more in a bigger party); clear them for a reward that grows as the run goes deeper, and the crack closes. |
 | `maps` | Three new layouts for the equipment map drops: Goblin Warrens, Sunken Dungeon, The High Court. |
 | `mercenary` | Heroes of Hammerwatch 1's mercenary mode: once a class has a level-20 hero, a fresh character of it can enlist, climb the ranks from Private to General for more gold and experience, and die for good. |
 | `summons` | Priest Crusaders (and optionally all summons) persist through the loading screen between floors. |

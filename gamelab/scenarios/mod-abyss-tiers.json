@@ -1,0 +1,304 @@
+{
+ "name": "mod-abyss-tiers",
+ "about": "mods/abyss reward tiers: a crack on Dark Citadel floor 1 (diff 2) pays hwp_abyss_reward_1, one on the new game+ floor 1 (diff 18) pays hwp_abyss_reward_3; README Test checklist step 5.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "abyss"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "dark_citadel",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss"
+  },
+  {
+   "do": "log_has",
+   "pattern": "reward tier 1 here",
+   "timeout": 5,
+   "name": "status shows tier 1"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_hunter.unit",
+    "200",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "200",
+    "40"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss here"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 1/",
+   "timeout": 20,
+   "name": "tier 1 wave 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 2/",
+   "timeout": 30,
+   "name": "tier 1 wave 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "wave 3/3: \\d+ enemies \\(elite ",
+   "timeout": 30,
+   "name": "tier 1 wave 3 has an elite"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] payout hwp_abyss_reward_1",
+   "timeout": 10,
+   "name": "pays the tier 1 table"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "loot1"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "150",
+    "items/"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "dark_citadel",
+    0,
+    1
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "sleep",
+   "seconds": 5
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "show_chat"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss"
+  },
+  {
+   "do": "log_has",
+   "pattern": "reward tier 3 here",
+   "timeout": 5,
+   "name": "status shows tier 3"
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/humans/bandits/bandit_hunter.unit",
+    "200",
+    "0"
+   ]
+  },
+  {
+   "do": "gl",
+   "verb": "spawn",
+   "args": [
+    "actors/beasts/wolves/wolf_grey.unit",
+    "200",
+    "40"
+   ]
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp abyss here"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 1/",
+   "timeout": 20,
+   "name": "tier 3 wave 1"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] wave 2/",
+   "timeout": 30,
+   "name": "tier 3 wave 2"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "wave 3/3: \\d+ enemies \\(elite ",
+   "timeout": 30,
+   "name": "tier 3 wave 3 has an elite"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "cull"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:abyss\\] payout hwp_abyss_reward_3",
+   "timeout": 10,
+   "name": "pays the tier 3 table"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "shot",
+   "name": "loot3"
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "150",
+    "items/"
+   ]
+  },
+  {
+   "do": "log_lacks",
+   "pattern": "missing loot table"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

@@ -1675,3 +1675,17 @@ Status: measured where a run is cited; the rest says which run checks it.
   and opening a bronze chest took the pool key and left the 2 bought gold keys alone. Shots
   `hud` and `hud_after` show the key icons left of the skill bar (bronze 1 and gold 2, then
   gold 2).
+
+## Abyss rewards by run progress, elites by party size (2026-10-20)
+
+- **`g_diffLevel` is the floor's level including new game+:** MissionGameMode.LoadDifficulty
+  (MissionGameMode.as:153-161) takes the level's `diff-level` (or `diff-level-ngp` in new game+)
+  and adds `g_ngp × Tweak::LevelCapNGPAdd` (5, Player.as:73). The Dark Citadel's floors are
+  2..22, the side missions 10..15, and new game+ floor 1 is 13 + 5 = 18.
+- **The old single payout beat a vanilla platinum chest** (chests.sval `chest_platinum`: 200-400
+  gold, an epic trinket, a rare item ilvl +1-3) on every floor. It is now three tables on the key
+  tiers' breakpoints (diff up to 7, up to 13, above), about a silver chest, a gold chest and a
+  little more than a platinum one.
+- **mod-abyss-tiers 20261020-003934 PASS:** Dark Citadel floor 1 (`hwp abyss`: "reward tier 1
+  here") logged `payout hwp_abyss_reward_1`; the same floor in new game+ (`mission dark_citadel
+  0 1`) logged `payout hwp_abyss_reward_3`. Each payout dropped gold and three items.
