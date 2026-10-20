@@ -1,0 +1,23 @@
+{
+ "name": "look-firearms-showcase",
+ "about": "Look only: a fresh Firearms Specialist in its starting gear (chest/feet dex t1a, Service Pistol), facing the camera, in town and on the character screen, as the source for class_showcase.png. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": ["core", "firearms"],
+ "timeout": 200,
+ "steps": [
+  {"do": "console", "line": "e_cheats 1"},
+  {"do": "gl", "verb": "char", "args": ["hwp_firearms", "Showcase"]},
+  {"do": "wait_phase", "phase": "town", "timeout": 60},
+  {"do": "sleep", "seconds": 3},
+  {"do": "gl", "verb": "inv", "args": [], "save_as": "inv"},
+  {"do": "gl", "verb": "input", "args": ["400", "0", "0", "0", "1"]},
+  {"do": "sleep", "seconds": 1},
+  {"do": "shot", "name": "town_down"},
+  {"do": "gl", "verb": "menu", "args": ["character"]},
+  {"do": "sleep", "seconds": 2},
+  {"do": "shot", "name": "charscreen"},
+  {"do": "key", "key": "escape"},
+  {"do": "sleep", "seconds": 1},
+  {"do": "log_clean"}
+ ]
+}

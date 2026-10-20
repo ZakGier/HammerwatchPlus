@@ -90,6 +90,11 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
     `_magic` and `_quad`. Edit the tool, not its output.
   - Ground sprites: `items/hwp/firearms_drops.unit`, one scene per gun and tier
     (`rifle_0N`, `glock_0N`), in `items/hwp/firearms_drops.png`.
+  - Class icon: `players/hwp/firearms/class_showcase.png`, 32x32 like a cell of
+    vanilla `players/class_showcase.png`: the starting outfit (chest and feet
+    dex t1a) facing the camera on vanilla's shadow disc, a Service Pistol in
+    hand. Taken from the character screen (look-firearms-showcase); the class
+    list shows it in look-class-list.
   - Icons are built by `tools/make_firearms_icons.py` into
     `players/hwp/firearms/icons.png` (skills, orbs, attacks) and
     `items/hwp/firearms_items.png`. The items atlas has the guns in row 0 and

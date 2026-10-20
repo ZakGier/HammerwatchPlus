@@ -382,6 +382,7 @@ namespace Modules
 			GameLab::RegisterVerb("drop", "<type> <amount> <dx> <dy>", GameLab::Verb(GameLab::VerbDrop));
 			GameLab::RegisterVerb("press", "<widgetId>", GameLab::Verb(GameLab::VerbPress));
 			GameLab::RegisterVerb("func", "<name...>", GameLab::Verb(GameLab::VerbFunc));
+			GameLab::RegisterVerb("charcreate", "", GameLab::Verb(GameLab::VerbCharCreate));
 			GameLab::RegisterVerb("use", "<filter>", GameLab::Verb(GameLab::VerbUse));
 			GameLab::RegisterVerb("shoplevel", "<filter> <level>", GameLab::Verb(GameLab::VerbShopLevel));
 			GameLab::RegisterVerb("shop", "[buy <index>]", GameLab::Verb(GameLab::VerbShop));

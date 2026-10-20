@@ -1642,3 +1642,18 @@ Status: measured where a run is cited; the rest says which run checks it.
   look-firearms-batch 20261019-190049); `gl setup`'s `cheats on` line is what the demo uses.
 - **The demo's watch run ends after its 3600 s sleep** (demo-firearms 20261019-170119, 3638 s).
   The game closes then, even mid-play.
+
+## Firearms class showcase (2026-10-20)
+
+- **The class list draws one 32x32 figure per class** from the class's `class_showcase.png`
+  (vanilla packs all classes in one 128x128 sheet of 32x32 cells, each a figure facing the
+  camera on a 16x16 shadow disc of (0,0,0,126), feet at y 30). The Firearms one was a gun in a
+  ring; it is now the starting outfit with a pistol.
+- **The character screen's paperdoll is close to 2x** in a 640x360 lab shot (2x2 blocks agree
+  about 80 %), so a 2x2 mode downsample gives a 12x23 figure, the size of vanilla's. The town
+  view is too small to use (look-firearms-showcase 20261020-001654, frames `charscreen`,
+  `town_down`).
+- **The create-character window opens from town** through `HWR2GameMode.OpenCreateCharWindow()`
+  (HWR2GameMode.as:260), what PickCharacterWindow's new-character button calls (:261). The new
+  gamelab-hands verb `charcreate` calls it. look-class-list 20261020-002117 frame `classlist`
+  shows the Firearms Specialist selected among the vanilla figures, the same size as theirs.

@@ -118,4 +118,18 @@ namespace GameLab
 		Emit(Reply(id, true).Str("window", Reflect::GetTypeName(wnd)).Str("func", name));
 		wnd.OnFunc(null, name);
 	}
+
+	// charcreate: open the create-character window (the class list), as PickCharacterWindow's
+	// "new character" button does
+	void VerbCharCreate(const string &in id, array<string>@ args)
+	{
+		auto gm = cast<HWR2GameMode>(g_gameMode);
+		if (gm is null)
+		{
+			Fail(id, "not in a gameplay mode");
+			return;
+		}
+		gm.OpenCreateCharWindow();
+		Emit(Reply(id, true));
+	}
 }

@@ -1,0 +1,18 @@
+{
+ "name": "look-class-list",
+ "about": "Look only: the create-character class list with the Firearms Specialist's class_showcase.png in it, then that class picked. Not evidence of play.",
+ "fixture": "town-paladin",
+ "mods": ["core", "firearms"],
+ "timeout": 200,
+ "steps": [
+  {"do": "wait_phase", "phase": "town", "timeout": 60},
+  {"do": "sleep", "seconds": 2},
+  {"do": "gl", "verb": "charcreate", "args": []},
+  {"do": "sleep", "seconds": 2},
+  {"do": "shot", "name": "classlist"},
+  {"do": "gl", "verb": "widgets", "args": ["9"], "save_as": "widgets"},
+  {"do": "key", "key": "escape"},
+  {"do": "sleep", "seconds": 1},
+  {"do": "log_clean"}
+ ]
+}
