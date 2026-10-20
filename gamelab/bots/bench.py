@@ -10,7 +10,8 @@ The build at a checkpoint is what a player of that level would plausibly have:
 - the weapons the class starts with, of the tier that drops at that level (ilvl inside the
   base item's ilvl..ilvl-max, the highest such tier), and generated armour (`gl kit`: drop
   generation weighted by the character's attributes), all at ilvl = level and the checkpoint's
-  quality, finalised mid-range;
+  quality, finalised mid-range, rolled on a seeded generator (the same luck every run and
+  class: seed());
 - late in a run: skill orbs (`gl orb`, picked one level at a time in the specialization's
   order, mutually exclusive orbs skipped once one of them is taken, orbs that only touch health,
   armour, mana or movement left out) and class-neutral trinkets (paired attack and spell ones).
@@ -22,11 +23,14 @@ the off hand, and the better of the two counts. Every bench starts fresh (bench 
 cooldowns and fills mana; the Firearms clip is refilled first).
 
 run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000) -> {"rows": [...]} and writes
-gamelab/results/bench/<cls>.json. builds=[...] and specs=[...] bench only those (a spec list
-skips the level 1 class rows unless it names the class) and swap their rows into the file."""
+gamelab/results/bench/<cls>.json. builds=[...], specs=[...] and levels=[...] short of all four
+bench only those (a spec list skips the level 1 class rows unless it names the class) and swap
+their rows into the file. The level 25 checkpoint is NG+ 1 (the `ngp` verb), as the level cap is
+20 + 5 per NG+."""
 import json
 import re
 import time
+import zlib
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -73,6 +77,12 @@ TRINKETS = ["crest_courage", "codex_power", "girdle_might", "pendant_prowess", "
 # an orb whose description parameters are all about these is no damage orb
 NON_DAMAGE = re.compile(r"health|heal|armor|armour|mana|regain|movement|mspeed|evade|block|resist|dash|potion|light",
                         re.I)
+
+
+def seed(key):
+    """the kit verb's seed=N: gear rolled on a seeded generator, the same for every run and class
+    (unseeded, two runs of one build differed by up to 20% on the rolled modifiers)"""
+    return f"seed={zlib.crc32(key.encode()) or 1}"
 
 
 def read(rel):
@@ -186,7 +196,7 @@ class Bench:
             self.console(f"cht_give_specific_trinket {t}")
         self.trinkets = n
         time.sleep(0.5)
-        return self.gl("trinkets").get("trinkets", [])
+        return self.gl("trinkets").get("ids", [])
 
     def bench(self, tag, off):
         self.gl("kill", 600, "target_dummy")
@@ -208,8 +218,25 @@ class Bench:
         self.gl("kill", 600, "target_dummy")
         return ev or {"error": "no bench event"}
 
+    def kit_weapons(self, level, quality, weapons):
+        """the weapons at ilvl = level; one whose requirements (which grow with ilvl, Equipment.as
+        GetRequirements) the character doesn't meet is made at the highest lower ilvl it does, as
+        a player wears the best gun they can (20261020-055513: hwp_rifle_03 needs ~73 dex at
+        ilvl 25, the bench character had 69, so the L25 rifle rows ran on the pistols left
+        equipped). Returns the lowest ilvl used."""
+        reply = self.gl("kit", level, quality, ",".join(weapons), seed(f"L{level}:weapons"))
+        failed = reply.get("failed") or []
+        ilvl = level
+        while failed and ilvl > 1:
+            ilvl -= 1
+            reply = self.gl("kit", ilvl, quality, ",".join(failed), seed(f"L{ilvl}:weapons"))
+            failed = reply.get("failed") or []
+        if failed:
+            raise RuntimeError(f"bench: no ilvl equips {failed}")
+        return ilvl
+
     def checkpoint(self, level, spec, build, weapons, quality, tier, stage, orbs, trinkets):
-        self.gl("kit", level, quality, ",".join(w.format(t=tier) for w in weapons))
+        wilvl = self.kit_weapons(level, quality, [w.format(t=tier) for w in weapons])
         taken = self.take_orbs(spec, orbs) if orbs else {}
         owned = self.give_trinkets(trinkets) if trinkets else []
         stats = self.gl("benchstats")
@@ -226,7 +253,7 @@ class Bench:
                 best = run
         self.clear_run()
         row = {"class": self.cls, "spec": spec, "build": build, "level": level, "stage": stage,
-               "quality": quality, "orbs": taken, "trinkets": owned,
+               "quality": quality, "weapon_ilvl": wilvl, "orbs": taken, "trinkets": owned,
                "single": round(best["single"], 1), "pack": round(best["dps"], 1), "off": best["off"],
                "stats": stats, "runs": runs}
         self.rows.append(row)
@@ -252,12 +279,18 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None, specs=No
     have = 1
     for level in levels:
         quality, tier, ngp, stages = CHECKPOINTS[level]
+        if ngp:
+            # the level cap is 20 + 5 per NG+ (PlayerRecord.GetLevelCap): before the ngp verb
+            # every "level 25" row was a level 20 character in ilvl 25 gear
+            b.gl("ngp", ngp)
         if level > have:
-            b.gl("levelup", level - have, timeout=30)
+            got = b.gl("levelup", level - have, timeout=30).get("level")
+            if got != level:
+                raise RuntimeError(f"bench: levelup reached {got}, not {level}")
             have = level
             time.sleep(1)
         b.gl("assign", cfg["attr"], "all")
-        b.gl("kit", level, quality)
+        b.gl("kit", level, quality, seed(f"L{level}:armour"))
         here = [cls] if level < 10 else cfg["specs"]
         for spec in here:
             if specs and spec not in specs:
@@ -278,8 +311,8 @@ def run(p, cls="ranger", levels=(1, 12, 20, 25), ms=15000, builds=None, specs=No
     OUT.mkdir(parents=True, exist_ok=True)
     rows = b.rows
     out = OUT / f"{cls}.json"
-    if (builds or specs) and out.exists():
-        # a partial bench replaces only its own rows (its builds of its specs)
+    if (builds or specs or set(levels) != set(CHECKPOINTS)) and out.exists():
+        # a partial bench replaces only its own rows (its builds of its specs at its levels)
         mine = {(r["spec"], r["build"], r["level"], r["stage"]) for r in b.rows}
         keep = [r for r in json.loads(out.read_text(encoding="utf-8"))
                 if (r.get("spec"), r.get("build"), r.get("level"), r.get("stage")) not in mine]

@@ -1,0 +1,34 @@
+{
+ "name": "bench-seed-check",
+ "about": "Check of the bench's seeded kit and NG+ level 25 (kit seed=, ngp verb): one short Firearms row at level 25; run it twice and compare the rows' stats. Not a balance measurement.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "firearms"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "bot",
+   "bot": "bench",
+   "save_as": "bench",
+   "kwargs": {
+    "cls": "hwp_firearms",
+    "levels": [
+     25
+    ],
+    "ms": 2000,
+    "specs": [
+     "hwp_firearms_assault"
+    ],
+    "builds": [
+     "rifle"
+    ]
+   },
+   "expect": {}
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

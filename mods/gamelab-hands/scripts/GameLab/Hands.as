@@ -360,6 +360,7 @@ namespace Modules
 			GameLab::RegisterVerb("cheats", "[on|off]", GameLab::Verb(GameLab::VerbCheats));
 			GameLab::RegisterVerb("levelup", "<n>", GameLab::Verb(GameLab::VerbLevelup));
 			GameLab::RegisterVerb("points", "<skill|stat> <n>", GameLab::Verb(GameLab::VerbPoints));
+			GameLab::RegisterVerb("ngp", "<n>", GameLab::Verb(GameLab::VerbNgp));
 			GameLab::RegisterVerb("setup", "<file>", GameLab::Verb(GameLab::VerbSetup));
 			GameLab::RegisterVerb("charflag", "<name>", GameLab::Verb(GameLab::VerbCharFlag));
 			GameLab::RegisterVerb("subclass", "<classId>", GameLab::Verb(GameLab::VerbSubclass));

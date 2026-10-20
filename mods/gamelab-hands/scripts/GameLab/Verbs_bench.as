@@ -348,23 +348,182 @@ namespace GameLab
 	// quality's modifiers and is finalised at the middle of its value ranges (intensity 0.5)
 	// so two kits differ only in which modifiers they rolled, then equipped as equip does. An
 	// item the character may not wear (MayEquip) is rerolled, up to KIT_TRIES times.
+	// A last argument seed=N rolls on a seeded generator (KitRng): the same seed, the same kit.
 	const int KIT_TRIES = 12;
 
+	// kit's seed=N: the drop rolls of Equipment::Generator (EquipmentGenerator.as GenerateBaseItem,
+	// both forms, and GenerateItemMods, with no tags) on a seeded generator instead of randf, so a
+	// bench gets the same gear every run. Unseeded, two runs of one build differed by up to 20%
+	// on the rolled modifiers alone (hwp_firearms 20261020-055513 against 20261020-065256).
+	class KitRng
+	{
+		uint m_state;
+
+		KitRng(uint seed) { m_state = seed == 0 ? 1 : seed; }
+
+		float Next()
+		{
+			m_state = m_state * 1664525 + 1013904223;
+			return float(m_state >> 8) / 16777216.0f;
+		}
+
+		uint Index(uint n)
+		{
+			uint k = uint(Next() * n);
+			return k < n ? k : n - 1;
+		}
+	}
+
+	Equipment::BaseItem@ SeededBaseItemOf(Equipment::Generator@ gen, KitRng@ rng, Modifiers::ConvertableStat primStat,
+		Equipment::Slot slot, Item::Quality quality, int ilvl)
+	{
+		array<Equipment::BaseItemRarity@> baseItems;
+		float sum = 0;
+		for (uint i = 0; i < Equipment::BaseItem::Instances.length(); i++)
+		{
+			auto baseItem = Equipment::BaseItem::Instances[i];
+			if (quality != Item::Quality::None && baseItem.quality > quality)
+				continue;
+			if (ilvl < baseItem.ilvl || ilvl > baseItem.ilvlMax)
+				continue;
+			if (slot != Equipment::Slot::None && baseItem.slot != slot)
+				continue;
+			if (primStat != baseItem.primaryStat)
+				continue;
+			if (!gen.VerifyItem(baseItem, quality))
+				continue;
+			sum += baseItem.spawnChance;
+			baseItems.insertLast(Equipment::BaseItemRarity(baseItem, baseItem.spawnChance));
+		}
+		if (baseItems.length() == 0)
+			return null;
+		float r = rng.Next() * sum;
+		for (uint i = 0; i < baseItems.length(); i++)
+		{
+			r -= baseItems[i].rarity;
+			if (r <= 0)
+				return baseItems[i].baseItem;
+		}
+		return baseItems[rng.Index(baseItems.length())].baseItem;
+	}
+
+	Equipment::BaseItem@ SeededBaseItem(Equipment::Generator@ gen, KitRng@ rng, Equipment::Slot slot, Item::Quality quality,
+		int ilvl, PlayerRecord@ player)
+	{
+		auto pc = player.playerClass;
+		int lvl = player.level - 1;
+		int pStr = pc.base_str + lvl * pc.level_str + player.pickedStr + 10 * pc.str_spellpwr;
+		int pDex = pc.base_dex + lvl * pc.level_dex + player.pickedDex + 10 * pc.dex_spellpwr;
+		int pInt = pc.base_int + lvl * pc.level_int + player.pickedInt + 10 * pc.int_spellpwr;
+		int pVit = pc.base_vit + lvl * pc.level_vit + player.pickedVit + 10 * pc.vit_spellpwr;
+		int pFoc = pc.base_foc + lvl * pc.level_foc + player.pickedFoc + 10 * pc.foc_spellpwr;
+		if (slot == Equipment::Slot::Back)
+		{
+			pVit = int(pVit * 0.4 + pDex * 0.6);
+			pFoc = int(pFoc * 0.4 + pInt * 0.6);
+		}
+		array<Modifiers::ConvertableStat> stats = { Modifiers::ConvertableStat::Str, Modifiers::ConvertableStat::Dex,
+			Modifiers::ConvertableStat::Int, Modifiers::ConvertableStat::Vit, Modifiers::ConvertableStat::Foc,
+			Modifiers::ConvertableStat::Num };
+		array<float> weights = { float(pStr), float(pDex), float(pInt), float(pVit), float(pFoc),
+			(pStr + pDex + pInt + pVit + pFoc) / 5.0f };
+		array<Equipment::BaseItem@> picks;
+		float sum = 0;
+		for (uint i = 0; i < stats.length(); i++)
+		{
+			picks.insertLast(SeededBaseItemOf(gen, rng, stats[i], slot, quality, ilvl));
+			if (picks[i] !is null)
+				sum += weights[i];
+		}
+		if (sum <= 0)
+			return null;
+		float r = rng.Next() * sum;
+		for (uint i = 0; i < picks.length(); i++)
+		{
+			if (picks[i] is null)
+				continue;
+			r -= weights[i];
+			if (r <= 0)
+				return picks[i];
+		}
+		for (uint i = picks.length(); i > 0; i--)
+		{
+			if (picks[i - 1] !is null)
+				return picks[i - 1];
+		}
+		return null;
+	}
+
+	void SeededMods(Equipment::Generator@ gen, KitRng@ rng, Equipment::Item@ item, int ilvl)
+	{
+		auto baseItem = item.baseItem;
+		int numMods = Equipment::EquipmentModifiersPerQuality(item.quality);
+		bool hasSkill = baseItem.skill !is null;
+		for (int n = int(item.mods.length()); n < numMods; n++)
+		{
+			array<Equipment::ItemModRarity@>@ itemMods;
+			if (n == 0)
+			{
+				@itemMods = gen.GetAllPossibleItemModifiers(baseItem, Item::Quality::Uncommon, ilvl, item.mods, null);
+				itemMods.insertAt(0, gen.GetAllPossibleItemModifiers(baseItem, Item::Quality::Common, ilvl, item.mods, null));
+			}
+			else
+				@itemMods = gen.GetAllPossibleItemModifiers(baseItem, Item::IndexToQuality(n + 2), ilvl, item.mods, null);
+			float sum = 0;
+			for (uint i = 0; i < itemMods.length(); i++)
+				sum += itemMods[i].rarity;
+			while (itemMods.length() > 0)
+			{
+				float r = rng.Next() * sum;
+				uint idx = itemMods.length() - 1;
+				for (uint i = 0; i < itemMods.length(); i++)
+				{
+					r -= itemMods[i].rarity;
+					if (r <= 0)
+					{
+						idx = i;
+						break;
+					}
+				}
+				auto itemMod = itemMods[idx].itemMod;
+				if (itemMod.skill !is null)
+				{
+					if (hasSkill)
+					{
+						sum -= itemMods[idx].rarity;
+						itemMods.removeAt(idx);
+						continue;
+					}
+					hasSkill = true;
+				}
+				item.mods.insertLast(itemMod);
+				break;
+			}
+		}
+	}
+
 	Equipment::Item@ KitItem(Equipment::Generator@ gen, const string &in entry, Equipment::Slot slot, Item::Quality quality,
-		int ilvl, PlayerRecord@ rec)
+		int ilvl, PlayerRecord@ rec, KitRng@ rng)
 	{
 		Equipment::Item@ item = null;
-		if (slot != Equipment::Slot::None)
+		if (slot != Equipment::Slot::None && rng is null)
 			@item = cast<Equipment::Item>(gen.GenerateItem(slot, quality, ilvl, null, null, rec));
 		else
 		{
-			auto baseItem = Equipment::BaseItem::Get(entry);
+			Equipment::BaseItem@ baseItem = null;
+			if (slot != Equipment::Slot::None)
+				@baseItem = SeededBaseItem(gen, rng, slot, quality, ilvl, rec);
+			else
+				@baseItem = Equipment::BaseItem::Get(entry);
 			if (baseItem is null || !gen.VerifyItem(baseItem, quality))
 				return null;
 			@item = Equipment::Item();
 			item.quality = quality;
 			@item.baseItem = baseItem;
-			gen.GenerateItemMods(item, ilvl, null);
+			if (rng is null)
+				gen.GenerateItemMods(item, ilvl, null);
+			else
+				SeededMods(gen, rng, item, ilvl);
 		}
 		if (item !is null)
 			item.Finalize(0.5f, ilvl, 0, null, null);
@@ -380,6 +539,16 @@ namespace GameLab
 		{
 			Fail(id, "usage: kit <ilvl> <quality> [entry,entry]");
 			return;
+		}
+		KitRng@ rng = null;
+		for (uint i = 2; i < args.length(); i++)
+		{
+			if (args[i].substr(0, 5) == "seed=")
+			{
+				@rng = KitRng(uint(parseInt(args[i].substr(5))));
+				args.removeAt(i);
+				break;
+			}
 		}
 		int ilvl = int(parseInt(args[0]));
 		auto quality = Item::ParseQuality(args[1]);
@@ -398,7 +567,7 @@ namespace GameLab
 			bool done = false;
 			for (int t = 0; t < KIT_TRIES && !done; t++)
 			{
-				auto item = KitItem(gen, want[i], slot, quality, ilvl, rec);
+				auto item = KitItem(gen, want[i], slot, quality, ilvl, rec, rng);
 				if (item is null)
 				{
 					if (k < 0)

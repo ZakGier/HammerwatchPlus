@@ -90,6 +90,29 @@ namespace GameLab
 		Emit(Reply(id, true).Int("level", rec.level));
 	}
 
+	// ngp <n>: the character's New Game+ level (PlayerRecord.ngp), as clearing the final floor
+	// raises it: the level cap becomes Tweak::LevelCap + n * LevelCapNGPAdd (GetLevelCap) and
+	// every attribute gains n * Tweak::AttributesPerNGP (Modifiers.as stats). levelup stops at
+	// the cap, so a level 25 build needs ngp 1 first.
+	void VerbNgp(const string &in id, array<string>@ args)
+	{
+		auto rec = FixtureRecord(id);
+		if (rec is null)
+			return;
+		if (args.length() < 1)
+		{
+			Fail(id, "usage: ngp <n>");
+			return;
+		}
+		rec.ngp = max(0, int(parseInt(args[0])));
+		rec.RefreshStats();
+		auto plr = cast<PlayerBase>(rec.actor);
+		if (plr !is null)
+			plr.RefreshModifiers();
+		int now = rec.ngp;
+		Emit(Reply(id, true).Int("ngp", now).Int("cap", rec.GetLevelCap()));
+	}
+
 	// points <skill|stat> <n>: bonus skill or attribute points (PlayerRecord.bonusSkillPts /
 	// bonusStatPts, then SyncStatPoints), as core's "hwp skillpoints" and "hwp statpoints"
 	// (mods/core/scripts/HWP/Core/Cheats.as:119-146)
