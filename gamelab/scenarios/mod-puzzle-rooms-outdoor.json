@@ -1,0 +1,930 @@
+{
+ "name": "mod-puzzle-rooms-outdoor",
+ "about": "mods/puzzles on outdoor floors (ForestBrush: forest and heaven), where no walled room can be carved: with puzzles.room_chance 100 a forest floor (dark_citadel) and a heaven floor (heaven_test) each get the Constellation in an open clearing (set hwp_puzzle_open, tweak/missions/hwp_puzzles_open.sval). The bot walks to it, solves it and gets the reward on both.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "puzzles"
+ ],
+ "timeout": 420,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "story_intro_find_npcs",
+    0
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "a first run (a new profile saves no town before one)"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 120
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 120
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.room_chance 100"
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.debug_force 0"
+  },
+  {
+   "do": "gl",
+   "verb": "save",
+   "expect": {
+    "ok": true
+   },
+   "name": "town saved with the settings"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "dark_citadel",
+    0
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "a forest floor"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:puzzles\\] hwp_puzzle_open rolled \\(100%\\): placed in a clearing",
+   "timeout": 5,
+   "name": "the forest floor gets the Constellation in a clearing"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "gl",
+   "verb": "goto",
+   "args": [
+    "RewardSpot",
+    "constellation",
+    "0",
+    "0"
+   ],
+   "expect": {
+    "found": 1
+   },
+   "name": "walked to the generated room's constellation"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "items/"
+   ],
+   "save_as": "forest_before"
+  },
+  {
+   "do": "gl",
+   "verb": "ws",
+   "args": [
+    "Variable",
+    "hwp_remaining"
+   ],
+   "expect": {
+    "count": 1,
+    "scripts.0.v": {
+     "between": [
+      7,
+      12
+     ]
+    }
+   },
+   "name": "one constellation, a pattern picked"
+  },
+  {
+   "do": "shot",
+   "name": "forest_room"
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_0",
+    "ScriptLink",
+    "hwp_correct_0_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_1",
+    "ScriptLink",
+    "hwp_correct_0_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_2",
+    "ScriptLink",
+    "hwp_correct_0_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_3",
+    "ScriptLink",
+    "hwp_correct_0_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_4",
+    "ScriptLink",
+    "hwp_correct_0_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_0",
+    "ScriptLink",
+    "hwp_correct_1_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_1",
+    "ScriptLink",
+    "hwp_correct_1_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_2",
+    "ScriptLink",
+    "hwp_correct_1_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_3",
+    "ScriptLink",
+    "hwp_correct_1_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_4",
+    "ScriptLink",
+    "hwp_correct_1_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_0",
+    "ScriptLink",
+    "hwp_correct_2_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_1",
+    "ScriptLink",
+    "hwp_correct_2_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_2",
+    "ScriptLink",
+    "hwp_correct_2_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_3",
+    "ScriptLink",
+    "hwp_correct_2_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_4",
+    "ScriptLink",
+    "hwp_correct_2_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_0",
+    "ScriptLink",
+    "hwp_correct_3_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_1",
+    "ScriptLink",
+    "hwp_correct_3_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_2",
+    "ScriptLink",
+    "hwp_correct_3_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_3",
+    "ScriptLink",
+    "hwp_correct_3_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_4",
+    "ScriptLink",
+    "hwp_correct_3_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_0",
+    "ScriptLink",
+    "hwp_correct_4_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_1",
+    "ScriptLink",
+    "hwp_correct_4_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_2",
+    "ScriptLink",
+    "hwp_correct_4_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_3",
+    "ScriptLink",
+    "hwp_correct_4_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_4",
+    "ScriptLink",
+    "hwp_correct_4_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "ws",
+   "args": [
+    "Variable",
+    "hwp_remaining"
+   ],
+   "expect": {
+    "scripts.0.v": 0
+   },
+   "name": "solved"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "items/"
+   ],
+   "save_as": "forest_after"
+  },
+  {
+   "do": "assert_more",
+   "than": "forest_before",
+   "now": "forest_after",
+   "path": "count",
+   "name": "the room's reward spawned (more items/ units on the level)"
+  },
+  {
+   "do": "shot",
+   "name": "forest_reward"
+  },
+  {
+   "do": "gl",
+   "verb": "abort"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 120
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "heaven_test",
+    0
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "a heaven floor"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:puzzles\\] hwp_puzzle_open rolled \\(100%\\): placed in a clearing",
+   "timeout": 5,
+   "name": "the heaven floor gets the Constellation in a clearing"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "goto",
+   "args": [
+    "RewardSpot",
+    "constellation",
+    "0",
+    "0"
+   ],
+   "expect": {
+    "found": 1
+   },
+   "name": "walked to the generated room's constellation"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "items/"
+   ],
+   "save_as": "heaven_before"
+  },
+  {
+   "do": "gl",
+   "verb": "ws",
+   "args": [
+    "Variable",
+    "hwp_remaining"
+   ],
+   "expect": {
+    "count": 1,
+    "scripts.0.v": {
+     "between": [
+      7,
+      12
+     ]
+    }
+   },
+   "name": "one constellation, a pattern picked"
+  },
+  {
+   "do": "shot",
+   "name": "heaven_room"
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_0",
+    "ScriptLink",
+    "hwp_correct_0_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_1",
+    "ScriptLink",
+    "hwp_correct_0_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_2",
+    "ScriptLink",
+    "hwp_correct_0_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_3",
+    "ScriptLink",
+    "hwp_correct_0_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_0_4",
+    "ScriptLink",
+    "hwp_correct_0_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_0",
+    "ScriptLink",
+    "hwp_correct_1_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_1",
+    "ScriptLink",
+    "hwp_correct_1_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_2",
+    "ScriptLink",
+    "hwp_correct_1_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_3",
+    "ScriptLink",
+    "hwp_correct_1_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_1_4",
+    "ScriptLink",
+    "hwp_correct_1_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_0",
+    "ScriptLink",
+    "hwp_correct_2_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_1",
+    "ScriptLink",
+    "hwp_correct_2_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_2",
+    "ScriptLink",
+    "hwp_correct_2_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_3",
+    "ScriptLink",
+    "hwp_correct_2_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_2_4",
+    "ScriptLink",
+    "hwp_correct_2_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_0",
+    "ScriptLink",
+    "hwp_correct_3_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_1",
+    "ScriptLink",
+    "hwp_correct_3_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_2",
+    "ScriptLink",
+    "hwp_correct_3_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_3",
+    "ScriptLink",
+    "hwp_correct_3_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_3_4",
+    "ScriptLink",
+    "hwp_correct_3_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_0",
+    "ScriptLink",
+    "hwp_correct_4_0"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_1",
+    "ScriptLink",
+    "hwp_correct_4_1"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_2",
+    "ScriptLink",
+    "hwp_correct_4_2"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_3",
+    "ScriptLink",
+    "hwp_correct_4_3"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "usews",
+   "args": [
+    "hwp_star_4_4",
+    "ScriptLink",
+    "hwp_correct_4_4"
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "gl",
+   "verb": "ws",
+   "args": [
+    "Variable",
+    "hwp_remaining"
+   ],
+   "expect": {
+    "scripts.0.v": 0
+   },
+   "name": "solved"
+  },
+  {
+   "do": "sleep",
+   "seconds": 2
+  },
+  {
+   "do": "gl",
+   "verb": "near",
+   "args": [
+    "6000",
+    "items/"
+   ],
+   "save_as": "heaven_after"
+  },
+  {
+   "do": "assert_more",
+   "than": "heaven_before",
+   "now": "heaven_after",
+   "path": "count",
+   "name": "the room's reward spawned (more items/ units on the level)"
+  },
+  {
+   "do": "shot",
+   "name": "heaven_reward"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

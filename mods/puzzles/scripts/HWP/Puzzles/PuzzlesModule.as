@@ -23,9 +23,12 @@
 //
 // Biomes without puzzle rooms borrow a near one (cave_spider: cave_dark).
 // Forest and heaven floors (ForestBrush) are one authored prefab and paint
-// nothing from the cells, so they have no wall to carve; they keep no puzzle
-// room (logged). The keep is an OutdoorGenerator as well, but its
-// DungeonInstanceBrush paints from the cells like any dungeon.
+// nothing from the cells, so they have no wall to carve a room into. They get
+// the Constellation in an open clearing instead (set hwp_puzzle_open,
+// tweak/missions/hwp_puzzles_open.sval: walkable all over, reserved as floor),
+// placed the vanilla way before the forest's edges and fillers take the space.
+// The keep is an OutdoorGenerator as well, but its DungeonInstanceBrush paints
+// from the cells like any dungeon.
 //
 // The Constellation itself joins the larger rooms' picks in the PrefabPicker
 // override (scripts/WorldScript/Prefabs/PrefabPicker.as).
@@ -36,6 +39,7 @@ namespace HWP
 		const int ROOM_CHANCE = 60;    // percent a floor
 		const int MAX_CORRIDOR = 40;   // cells
 		const string CONSTELLATION_FLAG = "hwp_constellation_placed";
+		const string OPEN_SET = "hwp_puzzle_open";   // tweak/missions/hwp_puzzles_open.sval
 
 		// themes (theme_<biome>, theme_generic_<biome>) with a <biome>_puzzle prefab set
 		const array<string> ROOM_BIOMES = {
@@ -342,15 +346,17 @@ namespace HWP
 			{
 				if (HWP::Settings::GetBool("puzzles.debug_grid"))
 					DumpGrid(brush);
-				if (m_set == "hwp_none")
-				{
-					HWP::Log("puzzles", "outdoor floor: no puzzle room");
-					return true;
-				}
 				int chance = RoomChance();
 				if (randi(100) >= chance)
 				{
 					HWP::Log("puzzles", m_set + " not rolled (" + chance + "%)");
+					return true;
+				}
+				// an outdoor floor: any open clearing, nothing to carve
+				if (m_set == OPEN_SET)
+				{
+					int placed = pfbPlacer.PlacePrefabs(HashString(m_set), 1, m_numBoost, m_typeMinLimit);
+					HWP::Log("puzzles", m_set + " rolled (" + chance + "%): " + (placed > 0 ? "placed in a clearing" : "no open clearing"));
 					return true;
 				}
 				// puzzles.debug_force: skip the vanilla way, so a test lands on the forced one
@@ -406,7 +412,7 @@ namespace HWP
 					// ForestBrush paints nothing from the cells; the keep is an
 					// OutdoorGenerator too, but its DungeonInstanceBrush does
 					bool outdoor = cast<ForestBrush>(gen.m_brush) !is null;
-					string set = outdoor ? "hwp_none" : RoomSet(level.m_themeDef);
+					string set = outdoor ? OPEN_SET : RoomSet(level.m_themeDef);
 					if (set == "")
 						continue;
 
@@ -420,6 +426,10 @@ namespace HWP
 						if (spawn is null)
 							continue;
 						if (EndsWith(spawn.m_set, "_shrine") || EndsWith(spawn.m_set, "_skill"))
+							at = k + 1;
+						// outdoors: right after the first special set (forest_special,
+						// heaven_special_arenas_1), before the edges and fillers
+						if (outdoor && at < 0 && spawn.m_set.findFirst("_special") >= 0)
 							at = k + 1;
 					}
 					if (present)

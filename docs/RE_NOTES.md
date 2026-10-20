@@ -1712,7 +1712,8 @@ Status: measured where a run is cited; the rest says which run checks it.
   corridor end at its door). At 100 % diag-puzzle-rooms 20261020-021148 found one on the
   cave_dark and temple floors, but not on every attempt (the keep's first attempt in
   20261020-021658 logged "no free wall block on the outskirts" even for forcing). Architect's
-  ChallengeSetup also skips SpawnPrefabSet commands (noted before), so challenge floors get none.
+  ChallengeSetup also skips SpawnPrefabSet commands (noted before); that was only about which
+  command it wraps, and challenge floors do get rooms (see "Outdoor floors" below).
 - **Forcing:** `MissionPrefabDef::GetPossiblePrefabs` refuses a def once `PlacePrefabs` failed
   on it (`m_foundNoPlacement`), so the module walks `MissionPrefabDef::Instances` for the set
   itself. A free block is one whose cells are all unconsumed Wall/Nothing/Cliff (summed-area
@@ -1725,6 +1726,17 @@ Status: measured where a run is cited; the rest says which run checks it.
   exist on a forest or heaven floor. The keep is an `OutdoorGenerator` too (themes_keep.sval
   `gen-class`), but its `DungeonInstanceBrush` paints from the cells. The test is the brush, not
   the generator (`cast<ForestBrush>(gen.m_brush)`).
+- **Outdoor floors get a clearing instead (2026-10-20):** a ForestBrush grid starts all Floor
+  (`ForestBrush.Initialize`) and the base level prefab is copied in by `CopyPrefabTo`; the
+  forest's own specials (`forest_special.sval`: well, shrine, cook) are open prefabs that carry
+  their own tiles, matched on Walkable (pattern 7) with ReserveFloor (command 3). The
+  Constellation is units and worldscripts only, so a MissionPrefabDef of it (set
+  `hwp_puzzle_open`, 10x14 cells, origin at 5,8) placed the same way works on grass and on heaven
+  ground. Inserted right after the first `*_special*` command, before the edges/fillers.
+  mod-puzzle-rooms-outdoor 20261020-124846 PASS: placed, walked to, solved and rewarded on a
+  dark_citadel forest floor and a heaven_test floor. Architect: `ChallengeSetup` (Challenges.as:156)
+  wraps a non-SpawnPrefabSet command, so a challenge floor keeps its room:
+  mod-puzzle-rooms-challenges 20261020-125015 PASS (bandit_keep with Crowded + Champions).
 - **mod-puzzle-rooms-forced 20261020-021658 PASS:** with `puzzles.debug_force 1` the keep floor
   logged `forced prefabs/keep/special/puzzle_room_w_16x18_a.pfb at 1,2 of 96x96, corridor 16`;
   `gl goto` walked into it, the Constellation solved and its reward spawned. diag-puzzle-rooms

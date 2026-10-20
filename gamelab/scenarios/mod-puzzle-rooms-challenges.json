@@ -1,0 +1,123 @@
+{
+ "name": "mod-puzzle-rooms-challenges",
+ "about": "mods/puzzles with mods/architect: a floor with Architect challenges picked (ChallengeSetup wraps a non-SpawnPrefabSet command, Challenges.as) still gets its puzzle room at puzzles.room_chance 100.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "architect",
+  "puzzles"
+ ],
+ "timeout": 300,
+ "steps": [
+  {
+   "do": "gl",
+   "verb": "state",
+   "expect": {
+    "phase": "town"
+   },
+   "name": "still in town"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "story_intro_find_npcs",
+    0
+   ],
+   "expect": {
+    "ok": true
+   },
+   "name": "a first run (a new profile saves no town before one)"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 120
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "cht_finish_level"
+  },
+  {
+   "do": "wait_phase",
+   "phase": "town",
+   "timeout": 120
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "key",
+   "key": "escape"
+  },
+  {
+   "do": "sleep",
+   "seconds": 1
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.room_chance 100"
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.debug_force 0"
+  },
+  {
+   "do": "gl",
+   "verb": "save",
+   "expect": {
+    "ok": true
+   },
+   "name": "town saved with the settings"
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp architect try hwp_challenge_crowded hwp_challenge_champions"
+  },
+  {
+   "do": "log_has",
+   "pattern": "architect buffs for the next level: 2",
+   "timeout": 5
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "bandit_keep",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:architect\\] challenges on this floor: crowded champions",
+   "timeout": 5,
+   "name": "a challenge floor (Crowded Halls + Champions)"
+  },
+  {
+   "do": "log_has",
+   "pattern": "\\[HWP:puzzles\\] keep_puzzle rolled \\(100%\\): (placed in a matching spot|forced \\S*puzzle_room)",
+   "timeout": 5,
+   "name": "the challenge floor still gets its puzzle room"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

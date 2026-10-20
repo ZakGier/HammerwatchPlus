@@ -1,0 +1,17 @@
+<loader>MissionPrefabDef::LoadMultiple</loader>
+<array>
+	<!-- HWP puzzles: the Constellation in an open clearing, for floors whose brush paints
+	     nothing from the cells (forest, heaven: ForestBrush), where a walled puzzle room
+	     can't be carved. Walkable all over, reserved as floor so nothing else lands on it.
+	     PuzzlesModule.as gives those floors a PuzzleRoomSpawn of this set. -->
+	<dict>
+		<string name="id">prefabs/puzzles/hwp/puzzle_constellation.pfb</string>
+		<string name="theme">hwp_puzzle_open</string>
+
+		<ivec2 name="grid-pos">-5 -8</ivec2>
+		<ivec2 name="grid-size">10 14</ivec2>
+		<array name="junctions"><a></a><a></a><a></a><a></a></array>
+		<bytes name="grid-pattern">0707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707</bytes>
+		<bytes name="grid-command">0303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303</bytes>
+	</dict>
+</array>
