@@ -151,12 +151,12 @@
 		<bool name="ignore-buff-scaling">true</bool>
 		<string name="fx">players/items/symbol_buff.effect?cR=1&cG=0.85&cB=0.4</string>
 	</dict>
-	<!-- EpiPen (Adrenaline orb): a red glow on the player as the stacks come in (Combat.as HWPFirearmsAdrenaline) -->
+	<!-- EpiPen (Adrenaline orb): a yellow glow on the player as the stacks come in (Combat.as HWPFirearmsAdrenaline) -->
 	<dict name="epipen_glow">
 		<bool name="debuff">false</bool>
 		<int name="duration">800</int>
 		<bool name="ignore-buff-scaling">true</bool>
-		<string name="fx">players/items/symbol_buff.effect?cR=0.9&cG=0.15&cB=0.15</string>
+		<string name="fx">players/items/symbol_buff.effect?cR=1&cG=0.9&cB=0.1</string>
 	</dict>
 	<dict name="shrapnel_0">
 		<bool name="debuff">false</bool>
