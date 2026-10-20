@@ -51,6 +51,15 @@ class Checks:
         v = self.gl("inspect", "player", "equipped").get("value") or [None]
         return v[0]
 
+    def swapped(self, mark, timeout=3.5):
+        """Wait for a weapon swap (a 2 s channel) logged after `mark`; True when it landed."""
+        end = time.time() + timeout
+        while time.time() < end:
+            if "[HWP:weaponswap] set" in self.g.read_log()[mark:]:
+                return True
+            time.sleep(0.2)
+        return False
+
     def widget_text(self):
         return json.dumps(self.gl("widgets", 12))
 
@@ -378,7 +387,8 @@ class Checks:
         units = self.gl("near", 300, unit_name).get("units") or []
         if not units:
             return "", f"no {unit_name} near"
-        r = self.p.use(units[0]["unit"], timeout=15)
+        # a reachable spot can still be a long walk round a wall (27 waypoints for 90 px, 025317)
+        r = self.p.use(units[0]["unit"], timeout=40)
         time.sleep(2.5)
         return self.g.read_log()[mark:], f"{r.result}: {r.reason}"
 
@@ -416,21 +426,77 @@ class Checks:
             else:
                 self.flag("ace_epic_no_legendary", "unlocked a ace chest" in log and "ace chest: legendary" not in log)
 
+    def pos(self):
+        pl = self.gl("state").get("player", {})
+        return pl.get("x", 0.0), pl.get("y", 0.0)
+
+    def swap_lines(self, log):
+        return " | ".join(re.findall(r"\[HWP:weaponswap\] [^\n]*", log))[-240:]
+
     def swap(self):
+        """X starts a 2 s channel: rooted, the sets change when it ends; X again or a dodge
+        cancels it (WeaponSwapModule.as Toggle / UpdateChannel)."""
         e0 = self.gl("inspect", "player", "equipped")["value"]
+        mark = len(self.g.read_log())
+        self.g.key("x")
+        time.sleep(0.4)
+        p0 = self.pos()
+        self.gl("input", 700, 1, 0)  # walk right: the channel roots you
+        time.sleep(0.5)
+        p1 = self.pos()
+        midr = self.gl("inspect", "player", "equipped")
+        mid = midr["value"]
+        landed = self.swapped(mark)
+        e1 = self.gl("inspect", "player", "equipped")["value"]
+        moved = abs(p1[0] - p0[0]) + abs(p1[1] - p0[1])
+        self.flag("swap_channel_rooted", moved < 2, f"moved {moved:.1f} while channelling ({p0} -> {p1})")
+        # the mid-channel look must come before the swap in the game log (wall-clock sleeps
+        # drift with the bridge's latency)
+        log = self.g.read_log()[mark:]
+        at_mid = log.find(f"> gl {midr.get('id')} ")
+        at_set = log.find("[HWP:weaponswap] set ")
+        self.flag("swap_channel_waits", mid[0] == e0[0] and landed and 0 <= at_mid < at_set,
+                  f"held {mid[0]} mid-channel (log offset {at_mid}, swap at {at_set}); landed {landed}")
+        self.flag("swap_empty_hands", e0[0] is not None and e1[0] is None, f"{e0[0]} -> {e1[0]}")
+        p2 = self.pos()
+        self.gl("input", 400, 1, 0)
+        time.sleep(0.6)
+        p3 = self.pos()
+        self.flag("swap_unrooted_after", abs(p3[0] - p2[0]) + abs(p3[1] - p2[1]) > 5, f"{p2} -> {p3}")
+
+        # X again cancels
+        time.sleep(1.2)  # past the swap's 1 s cooldown
+        mark = len(self.g.read_log())
         self.g.key("x")
         time.sleep(0.6)
-        e1 = self.gl("inspect", "player", "equipped")["value"]
-        time.sleep(1.2)  # past the swap's 1 s cooldown
         self.g.key("x")
-        time.sleep(0.1)
-        self.g.key("x")  # spam: within the cooldown, ignored
-        time.sleep(1.5)
+        time.sleep(2.2)
+        log = self.g.read_log()[mark:]
         e2 = self.gl("inspect", "player", "equipped")["value"]
+        self.flag("swap_cancel_key", "swap cancelled (key)" in log and "[HWP:weaponswap] set" not in log and e2[0] is None,
+                  f"{e2[0]}; {self.swap_lines(log)}")
+
+        # a dodge cancels
+        time.sleep(0.5)
+        mark = len(self.g.read_log())
+        self.g.key("x")
+        time.sleep(0.6)
+        self.gl("input", 200, 1, 0, 1, 0, "dash")
+        time.sleep(2.0)
+        log = self.g.read_log()[mark:]
+        e3 = self.gl("inspect", "player", "equipped")["value"]
+        self.flag("swap_cancel_dodge", "swap cancelled (dodge)" in log and "[HWP:weaponswap] set" not in log and e3[0] is None,
+                  f"{e3[0]}; {self.swap_lines(log)}")
+
+        # and back, once
+        time.sleep(4.5)  # the dodge's charge
+        mark = len(self.g.read_log())
+        self.g.key("x")
+        landed = self.swapped(mark)
+        e4 = self.gl("inspect", "player", "equipped")["value"]
         st = self.hwp("swapkey")
-        self.flag("swap_empty_hands", e0[0] is not None and e1[0] is None, f"{e0[0]} -> {e1[0]}")
-        self.flag("swap_back_once", e2[0] == e0[0], f"{e2[0]}")
-        self.notes.append("swap status: " + st.strip()[-200:])
+        self.flag("swap_back_once", landed and e4[0] == e0[0], f"{e4[0]}")
+        self.notes.append("swap status: " + st.strip()[-260:])
 
     def status(self):
         """hwp swapkey's line: (set in hand, other main, other off)."""
@@ -458,8 +524,10 @@ class Checks:
         self.flag("sword_equipped", r.get("ok"), json.dumps(r)[:200])
         sword = self.main_hand()
         time.sleep(1.2)
+        mark = len(self.g.read_log())
         self.g.key("x")
-        time.sleep(0.8)
+        self.swapped(mark)
+        time.sleep(0.3)
         hands = self.main_hand()
         st = self.status()
         hud = [root for root in self.gl("widgets", 4).get("roots", []) if root.get("root") == "HUD:HWPWeaponSwapHUD"]
@@ -477,8 +545,10 @@ class Checks:
         self.flag("bow_equipped", r.get("ok"), json.dumps(r)[:200])
         bow = self.main_hand()
         time.sleep(1.2)
+        mark = len(self.g.read_log())
         self.g.key("x")
-        time.sleep(0.8)
+        self.swapped(mark)
+        time.sleep(0.3)
         back = self.main_hand()
         st2 = self.status()
         slots2, _, raw2 = self.alt_slots()
@@ -494,11 +564,10 @@ class Checks:
         time.sleep(1.2)
         mark = len(self.g.read_log())
         self.g.key("x")
-        time.sleep(1.3)
-        x_ignored = "[HWP:weaponswap] set" not in self.g.read_log()[mark:]
+        time.sleep(2.5)
+        x_ignored = "[HWP:weaponswap] s" not in self.g.read_log()[mark:]
         self.g.key("r")
-        time.sleep(0.8)
-        r_swapped = "[HWP:weaponswap] set" in self.g.read_log()[mark:]
+        r_swapped = self.swapped(mark)
         self.flag("s6_r_swaps", r_swapped, rep.strip()[-160:])
         self.flag("s6_x_no_longer", x_ignored)
         self.hwp("swapkey 27 X", 0.3, until="[HWP]")
@@ -1307,6 +1376,11 @@ class Checks:
         m = re.findall(r"clip (-?\d+)/(-?\d+)", txt)
         return int(m[-1][1]) if m else -1
 
+    def low_clicks(self):
+        """Low-clip clicks played so far (HWPFirearmsLowClick, `hwp firearms` status)."""
+        m = re.findall(r"low clips clicked (\d+)", self.hwp("firearms", 0.4))
+        return int(m[-1]) if m else -1
+
     def press(self, button, ms=60, settle=0.8):
         """One emulated press aimed east; the clip before and after the cycle."""
         c0 = self.clip()
@@ -1328,14 +1402,21 @@ class Checks:
         return None
 
     def firearms_ammo(self):
-        """firearms s2 (clip): the rifle spawns with a full 30-round clip; a shot uses 1 round
-        and no mana; the grenade launcher uses mana and no rounds; an empty clip starts
+        """firearms s2 (clip): the rifle spawns with a full 30-round clip; a click fires a 3-round
+        burst, 1 round a shot, and no mana; the grenade launcher uses mana and no rounds; an empty clip starts
         Reloading, won't fire, and refills after ~1.6 s; a dodge mid-reload restarts it;
         Reload (skill1) won't start on a full clip, refills a part-used clip after its 2 s
-        recharge, and a dodge cancels it with the clip as it was."""
+        recharge, and a dodge cancels it with the clip as it was. A new gunner starts with one
+        pistol (main hand, 10 rounds); the rifle is equipped for the rest."""
         self.gl("char", "hwp_firearms", "LabGunner")
         self.wait_phase("town", 60)
         time.sleep(2)
+        st = self.hwp("firearms", until="clip ")
+        m = re.findall(r"weapon (.*?), clip (-?\d+)/(-?\d+)", st)
+        self.flag("starts_with_one_pistol", bool(m) and "Pistol" in m[-1][0] and m[-1][2] == "10",
+                  f"{m[-1] if m else st[-200:]!r}")
+        self.gl("equip", "hwp_rifle_01", "common")
+        time.sleep(1)
         mark = len(self.g.read_log())
         if not self.start_floor(0):
             self.flag("firearms_mission", False)
@@ -1357,7 +1438,7 @@ class Checks:
             c0, c1 = self.press("main")
             drops.append(c0 - c1)
         m1 = exact()
-        self.flag("shot_costs_round", drops == [1, 1, 1, 1], f"rounds per shot {drops}")
+        self.flag("shot_costs_round", drops == [3, 3, 3, 3], f"rounds per click (a 3-round burst) {drops}")
         self.flag("shot_no_mana", abs(m1 - m0) < 0.2, f"mana {m0:.2f} -> {m1:.2f}")
         # the lowest mana in the 0.9 s after the click: regen starts putting it back at once
         c0, mg0 = self.clip(), exact()
@@ -1426,7 +1507,7 @@ class Checks:
         self.gl("input", 60, 0, 0, 1, 0, "skill1")
         time.sleep(0.3)
         _, c1 = self.press("main", settle=0.5)  # a Reload cast would block the shot
-        self.flag("reload_refused_full", c0 == 30 and c1 == 29, f"clip {c0}, a shot just after Reload leaves {c1}")
+        self.flag("reload_refused_full", c0 == 30 and c1 == 27, f"clip {c0}, a shot just after Reload leaves {c1}")
         for _ in range(2):
             self.press("main", settle=0.6)
         before, t0 = self.clip(), time.time()
@@ -1450,10 +1531,12 @@ class Checks:
 
     def firearms_guns(self):
         """firearms s3 (guns): magazines add up (pistol 10, dual 20, rifle 30); a pistol with a
-        shield fires 2 rounds a left-click cycle; dual pistols fire 2 a left-click cycle (one
-        from each) and 2 at once on right click, which won't fire on 1 round; an off-hand
-        pistol with a sword fires 1. The shield and sword need STR the class
-        lacks at level 1; this sets dbg_cht_ignore_equipment_requirements."""
+        shield fires 1 round a click (no two-round burst); dual pistols fire 2 a left-click cycle
+        (one from each) and 2 at once on right click, which won't fire on 1 round; an off-hand
+        pistol with a sword fires 1; the rifle fires a 3-round burst a click. The last 3 rounds
+        of a clip (6 with dual pistols) click: `hwp firearms` counts the clicks played. The
+        shield and sword need STR the class lacks at level 1; this sets
+        dbg_cht_ignore_equipment_requirements."""
         self.gl("char", "hwp_firearms", "LabGunner")
         self.wait_phase("town", 60)
         time.sleep(2)
@@ -1478,7 +1561,12 @@ class Checks:
         mx = self.clip_max()
         a = [self.press("main") for _ in range(2)]
         self.flag("pistol_shield_mag_10", mx == 10, f"equip {eq}, clip max {mx}")
-        self.flag("pistol_shield_two_rounds", all(c0 - c1 == 2 for c0, c1 in a), f"{a}")
+        self.flag("pistol_shield_one_round", all(c0 - c1 == 1 for c0, c1 in a), f"{a}")
+        # clip at 4: three taps leave 3, 2, 1, each one clicking
+        self.gl("givestacks", self.CLIP, -(self.clip() - 4))
+        k0 = self.low_clicks()
+        taps = [self.press("main") for _ in range(3)]
+        self.flag("pistol_last_three_click", self.low_clicks() - k0 == 3, f"taps {taps}, clicks {k0} -> {self.low_clicks()}")
 
         eq = loadout("hwp_glock_mh_01", "hwp_glock_oh_01")
         mx = self.clip_max()
@@ -1493,6 +1581,12 @@ class Checks:
         self.flag("dual_right_two_at_once", all(c0 - c1 == 2 for c0, c1 in b), f"{b}")
         # one round left: the off hand fires it alone (attacks_firearms.sval "last")
         self.flag("dual_right_last_round", one == (1, 0), f"{one}")
+        # dual: the last 6 click. From 8, two left-click cycles leave 6 (click) then 4 (2 clicks)
+        self.gl("givestacks", self.CLIP, 999)
+        self.gl("givestacks", self.CLIP, -(self.clip() - 8))
+        k0 = self.low_clicks()
+        d = [self.press("main") for _ in range(2)]
+        self.flag("dual_last_six_click", self.low_clicks() - k0 == 3, f"cycles {d}, clicks {k0} -> {self.low_clicks()}")
 
         eq = loadout("mainhand_longsword_01", "hwp_glock_oh_01")
         mx = self.clip_max()
@@ -1503,6 +1597,8 @@ class Checks:
         eq = loadout("hwp_rifle_01")
         mx = self.clip_max()
         self.flag("rifle_mag_30", mx == 30, f"equip {eq}, clip max {mx}")
+        r = [self.press("main") for _ in range(2)]
+        self.flag("rifle_three_round_burst", all(c0 - c1 == 3 for c0, c1 in r), f"{r}")
         self.g.console("dbg_cht_ignore_equipment_requirements 0")
         self.to_town()
 

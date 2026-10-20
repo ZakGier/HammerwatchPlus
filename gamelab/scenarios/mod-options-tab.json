@@ -163,7 +163,7 @@
   },
   {
    "do": "log_lacks",
-   "pattern": "\\[HWP:weaponswap\\] set \\d in hand",
+   "pattern": "\\[HWP:weaponswap\\] (set \\d in hand|swap channel started)",
    "name": "the swap key does nothing on the Plus tab"
   },
   {

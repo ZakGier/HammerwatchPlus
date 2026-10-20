@@ -10,6 +10,11 @@
 // shows the other set in two slots above your character (core hwp-gear-slot
 // widgets; click one, or press X, to swap), and while you are empty-handed
 // with weapons in the other set an on-screen tip says to press X.
+//
+// A swap is a 2 s channel: you stand still (players/hwp/weaponswap/buffs_weaponswap.sval)
+// with a bar over your head, and the sets change when it ends. A dodge or the swap key
+// again cancels it. The channel also runs behind the character menu (which pauses a solo
+// game), so a swap clicked there lands in the menu.
 namespace HWP
 {
 	namespace WeaponSwap
@@ -19,12 +24,17 @@ namespace HWP
 		const string KEY_SET = "weaponswap.set";
 		const int DEFAULT_SCANCODE = 27; // SDL scancode for X
 		const int COOLDOWN_MS = 1000;
+		const int CHANNEL_MS = 2000;
+		const string SWAP_BUFF = "players/hwp/weaponswap/buffs_weaponswap.sval:swapping";
 
 		int g_scancode = DEFAULT_SCANCODE;
 		string g_keyName = "X";
 		bool g_wasDown = false;
 		int g_cooldown = 0;
 		int g_version = 0;   // bumped whenever the stored set changes; the HUD tip reloads on change
+		int g_channel = 0;   // ms left of the swap's channel; 0: none
+		int g_swaps = 0;     // channels finished / cancelled here, for `hwp swapkey`
+		int g_cancels = 0;
 
 		void Changed()
 		{
@@ -236,6 +246,135 @@ namespace HWP
 				gm.m_windowManager.CloseTooltip();
 		}
 
+		PlayerBase@ LocalPlayer()
+		{
+			auto rec = GetLocalPlayerRecord();
+			return rec is null ? null : cast<PlayerBase>(rec.actor);
+		}
+
+		void RemoveSwapBuff(PlayerBase@ plr)
+		{
+			if (plr is null)
+				return;
+			uint hash = HashString(SWAP_BUFF);
+			bool removed = false;
+			auto buffs = plr.m_buffs.m_buffs;
+			for (uint i = 0; i < buffs.length(); i++)
+			{
+				if (buffs[i].m_def.m_pathHash == hash)
+				{
+					buffs[i].Clear();
+					buffs.removeAt(i--);
+					removed = true;
+				}
+			}
+			if (removed)
+				plr.RefreshModifiers();
+		}
+
+		bool Dodging(PlayerBase@ plr)
+		{
+			for (uint i = 0; i < plr.m_skills.length(); i++)
+			{
+				auto sk = plr.m_skills[i];
+				if (sk is null || sk.m_type != PlayerSkillType::Dash)
+					continue;
+				auto a = cast<Skills::ActiveSkill>(sk);
+				if (a !is null && a.m_castingC > 0)
+					return true;
+				auto p = cast<Skills::PlayerSkill>(sk);
+				if (p !is null && p.m_castingT >= 0)
+					return true;
+			}
+			return false;
+		}
+
+		// start the channel; the sets change when it ends (UpdateChannel)
+		void StartChannel()
+		{
+			auto rec = GetLocalPlayerRecord();
+			auto plr = LocalPlayer();
+			if (rec is null || rec.equipped is null || rec.IsDead() || plr is null)
+				return;
+			if (EmptyHanded(rec) && !HasAlt())
+			{
+				Feedback(rec, Resources::GetString(".hwp.weaponswap.nothing"));
+				return;
+			}
+			g_channel = CHANNEL_MS;
+			auto def = LoadActorBuff(SWAP_BUFF);
+			if (def !is null)
+				plr.ApplyBuff(ActorBuff(plr, def, 1.0f, false));
+			Feedback(rec, Resources::GetString(".hwp.weaponswap.channel", { { "set", "" + OtherSet() } }));
+			HWP::Log("weaponswap", "swap channel started (" + CHANNEL_MS + " ms)");
+		}
+
+		void CancelChannel(const string &in why)
+		{
+			if (g_channel <= 0)
+				return;
+			g_channel = 0;
+			g_cancels++;
+			RemoveSwapBuff(LocalPlayer());
+			auto rec = GetLocalPlayerRecord();
+			if (rec !is null && rec.actor !is null)
+				Feedback(rec, Resources::GetString(".hwp.weaponswap.cancelled"));
+			HWP::Log("weaponswap", "swap cancelled (" + why + ")");
+		}
+
+		// dodge: the Dash key (held or pressed) or a dash under way. Rooted by the swap buff,
+		// the dash itself may not get going, so the key alone cancels
+		void UpdateChannel(int ms, bool paused, bool dashKey)
+		{
+			// a solo game pauses behind the character menu: the channel runs there too, so a
+			// swap clicked in the menu lands in it (no time passes for the world either way)
+			if (g_channel <= 0 || (paused && !InPlayerMenu()))
+				return;
+			auto rec = GetLocalPlayerRecord();
+			auto plr = LocalPlayer();
+			if (rec is null || plr is null || rec.IsDead())
+			{
+				CancelChannel("dead");
+				return;
+			}
+			if ((dashKey && !paused) || Dodging(plr))
+			{
+				CancelChannel("dodge");
+				return;
+			}
+			g_channel -= ms;
+			if (g_channel > 0)
+				return;
+			g_channel = 0;
+			RemoveSwapBuff(plr);
+			g_swaps++;
+			Swap();
+		}
+
+		// the channel's bar over the local player
+		void RenderChannel(int idt, SpriteBatch& sb)
+		{
+			auto plr = LocalPlayer();
+			if (g_channel <= 0 || plr is null || !plr.m_unit.IsValid())
+				return;
+			const float w = 30;
+			const float h = 3;
+			vec2 at = ToScreenspace(plr.m_unit.GetInterpolatedPosition(idt) + vec3(0, -34, 0)) / g_gameMode.m_wndScale - vec2(w / 2, 0);
+			at = vec2(int(at.x), int(at.y));
+			float done = clamp(1.0f - g_channel / float(CHANNEL_MS), 0.0f, 1.0f);
+			sb.FillRectangle(vec4(at.x - 1, at.y - 1, w + 2, h + 2), vec4(0, 0, 0, 0.7f));
+			sb.FillRectangle(vec4(at.x, at.y, int(w * done), h), vec4(0.55f, 0.8f, 1.0f, 1.0f));
+		}
+
+		// the key or a click: start a swap, or cancel the one under way
+		void Toggle()
+		{
+			if (g_channel > 0)
+				CancelChannel("key");
+			else if (g_cooldown <= 0)
+				StartChannel();
+		}
+
 		// move the other set back into the bag
 		void Drop()
 		{
@@ -276,10 +415,21 @@ namespace HWP
 			// a solo game pauses behind the character menu; swapping there is wanted
 			if (paused && !InPlayerMenu())
 				return;
-			Swap();
+			Toggle();
 		}
 
-		void CmdSwap(array<string>@ args) { Swap(); }
+		// 'hwp swap': as the key (start or cancel the channel); 'now' (cheat): at once
+		void CmdSwap(array<string>@ args)
+		{
+			if (args.length() > 0 && args[0] == "now")
+			{
+				if (HWP::Cheats::On())
+					Swap();
+				return;
+			}
+			Toggle();
+			HWP::Commands::Reply(g_channel > 0 ? "swap channel: " + g_channel + " ms" : "swap channel: none");
+		}
 		void CmdSwapDrop(array<string>@ args) { Drop(); }
 
 		void CmdSwapKey(array<string>@ args)
@@ -291,6 +441,7 @@ namespace HWP
 				HWP::Commands::Reply(Resources::GetString(".hwp.weaponswap.status", {
 					{ "set", "" + ActiveSet() }, { "main", altMain is null ? "-" : altMain.GetName() },
 					{ "off", altOff is null ? "-" : altOff.GetName() }, { "code", "" + g_scancode }, { "name", g_keyName } }));
+				HWP::Commands::Reply("swap channel: " + (g_channel > 0 ? g_channel + " ms left" : "none") + ", swaps " + g_swaps + ", cancelled " + g_cancels);
 				return;
 			}
 			int code = parseInt(args[0]);
@@ -354,8 +505,7 @@ class HWPAltWeaponSlot : HWP::Gear::Slot
 
 	void Click() override
 	{
-		if (HWP::WeaponSwap::g_cooldown <= 0)
-			HWP::WeaponSwap::Swap();
+		HWP::WeaponSwap::Toggle();
 	}
 }
 
@@ -430,7 +580,7 @@ namespace Modules
 			HWP::Gear::Register("hwp-alt-off", HWPAltWeaponSlot(false));
 			HWP::Gear::RegisterLabel("hwp-alt-caption", HWPAltWeaponLabel(false));
 			HWP::Gear::RegisterLabel("hwp-alt-hint", HWPAltWeaponLabel(true));
-			HWP::Commands::Register("swap", " swap weapon sets (hotkey X)", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwap));
+			HWP::Commands::Register("swap", "[now]  swap weapon sets (hotkey X): a 2 s channel, again to cancel; now (cheat) at once", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwap));
 			HWP::Commands::Register("swapkey", "[scancode [name]]  show or set the swap hotkey", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwapKey));
 			HWP::Commands::Register("swapdrop", " move the other weapon set back into your inventory", HWP::Commands::Handler(HWP::WeaponSwap::CmdSwapDrop));
 			HWP::Commands::OnSettingChanged(HWP::Commands::SettingListener(HWP::WeaponSwap::OnSettingChanged));
@@ -441,6 +591,7 @@ namespace Modules
 		{
 			HWP::WeaponSwap::RefreshSettings();
 			HWP::WeaponSwap::g_cooldown = 0;
+			HWP::WeaponSwap::g_channel = 0;
 			HWP::WeaponSwap::g_wasDown = false;
 			HWP::WeaponSwap::Changed();
 		}
@@ -448,6 +599,12 @@ namespace Modules
 		void UpdateFrame(int ms, GameInput& gameInput, MenuInput& menuInput, bool paused) override
 		{
 			HWP::WeaponSwap::Poll(ms, paused);
+			HWP::WeaponSwap::UpdateChannel(ms, paused, gameInput.Dash.Down || gameInput.Dash.Pressed);
+		}
+
+		void RenderFrame(int idt, SpriteBatch& sb) override
+		{
+			HWP::WeaponSwap::RenderChannel(idt, sb);
 		}
 	}
 }

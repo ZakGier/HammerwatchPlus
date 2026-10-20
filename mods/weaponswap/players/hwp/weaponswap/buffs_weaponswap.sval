@@ -1,0 +1,13 @@
+<svals>
+	<!--
+		The weapon swap's channel (WeaponSwapModule.as): you stand still while the sets
+		change hands. The script removes it when the swap lands or is cancelled; the
+		duration only covers a channel the script never got to end.
+	-->
+	<dict name="swapping">
+		<bool name="debuff">false</bool>
+		<int name="duration">2200</int>
+		<bool name="ignore-buff-scaling">true</bool>
+		<float name="speed-mul">0</float>
+	</dict>
+</svals>
