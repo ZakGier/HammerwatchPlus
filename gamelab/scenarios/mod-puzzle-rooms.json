@@ -1,6 +1,6 @@
 {
  "name": "mod-puzzle-rooms",
- "about": "mods/puzzles in real level generation: with puzzles.room_chance 100 a keep floor (bandit_keep 0) places a keep_puzzle room, and with puzzles.constellation weighted up its PrefabPicker picks the HWP Constellation. Walk there, press the pattern stars: solved, and the room's RewardSpot (assigned at generation) drops its reward. Then no script errors in our files.",
+ "about": "mods/puzzles in real level generation: with puzzles.room_chance 100 a keep floor (bandit_keep 0) places a keep_puzzle room (in a matching spot, or forced onto the outskirts), and with puzzles.constellation weighted up its PrefabPicker picks the HWP Constellation. Walk there, press the pattern stars: solved, and the room's RewardSpot (assigned at generation) drops its reward. Then no script errors in our files.",
  "fixture": "town-paladin",
  "mods": [
   "core",
@@ -106,8 +106,9 @@
   },
   {
    "do": "log_has",
-   "pattern": "SpawnPrefabSet: keep_puzzle",
-   "timeout": 5
+   "pattern": "\\[HWP:puzzles\\] keep_puzzle rolled \\(100%\\): (placed in a matching spot|forced \\S*puzzle_room)",
+   "timeout": 5,
+   "name": "the keep floor rolls and places a puzzle room"
   },
   {
    "do": "console",

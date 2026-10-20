@@ -1,0 +1,189 @@
+{
+ "name": "diag-puzzle-rooms",
+ "about": "Diagnosis: with puzzles.room_chance 100 and puzzles.debug_grid 1 (set on floor 1, so floors 2-7 generate with them), what the Dark Citadel's floors do with a puzzle room (log 'puzzles: <set> rolled (100%): ...', grids dumped). Not evidence of play; puzzles.debug_force 1 so every dungeon floor takes the forced path.",
+ "fixture": "town-paladin",
+ "mods": [
+  "core",
+  "puzzles"
+ ],
+ "timeout": 900,
+ "steps": [
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "gl",
+   "verb": "mission",
+   "args": [
+    "dark_citadel",
+    0
+   ],
+   "expect": {
+    "ok": true
+   }
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "console",
+   "line": "e_cheats 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp god"
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.room_chance 100"
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.debug_grid 1"
+  },
+  {
+   "do": "console",
+   "line": "hwp set puzzles.debug_force 1"
+  },
+  {
+   "do": "shot",
+   "name": "floor1"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor2"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor3"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor4"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor5"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor6"
+  },
+  {
+   "do": "console",
+   "line": "hwp finishlevel"
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "wait_phase",
+   "phase": "mission",
+   "timeout": 150
+  },
+  {
+   "do": "sleep",
+   "seconds": 3
+  },
+  {
+   "do": "shot",
+   "name": "floor7"
+  },
+  {
+   "do": "log_clean"
+  }
+ ]
+}

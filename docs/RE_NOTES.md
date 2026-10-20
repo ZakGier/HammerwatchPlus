@@ -1702,3 +1702,31 @@ Status: measured where a run is cited; the rest says which run checks it.
   "150 -> 300" for the ceramic vase; a dropped vase is "worth 300"; picking it up took the
   character's gold from 0 (`gl inv` c6) to 300 (c9), asserted in the rerun 20261020-021931 PASS; `gold_mult 1` gives 150 -> 150 and 2 gives
   300 again.
+
+## Puzzle rooms on most floors: forced onto the outskirts (2026-10-20)
+
+- **Why a whole run could show none:** the old command rolled 33 % a floor and only went to
+  generators whose theme has a `<biome>_puzzle` set, so the forest, heaven and cave_spider floors
+  never had a chance. A rolled room also needs vanilla `PrefabPlacement.PlacePrefabs` to find a
+  spot whose cells already match its pattern (a solid wall block, `Pattern::Wall` frame, with a
+  corridor end at its door). At 100 % diag-puzzle-rooms 20261020-021148 found one on the
+  cave_dark and temple floors, but not on every attempt (the keep's first attempt in
+  20261020-021658 logged "no free wall block on the outskirts" even for forcing). Architect's
+  ChallengeSetup also skips SpawnPrefabSet commands (noted before), so challenge floors get none.
+- **Forcing:** `MissionPrefabDef::GetPossiblePrefabs` refuses a def once `PlacePrefabs` failed
+  on it (`m_foundNoPlacement`), so the module walks `MissionPrefabDef::Instances` for the set
+  itself. A free block is one whose cells are all unconsumed Wall/Nothing/Cliff (summed-area
+  table); the door is the def's first `m_junctions*` entry (ivec3 x, y, width); the corridor runs
+  straight out until the door-wide strip is Floor/Breakables/Bridge. `PlacePrefabAt` runs the
+  prefab's grid commands (PlaceWall 05, Reserve 01...) and adds its point of interest; the
+  pattern's Walkable cells and the corridor are then set to Floor, which DungeonBrush paints.
+- **Which floors can't:** `ForestBrush.Build` (ForestBrush.as) only spawns the points of interest
+  and runs the painting list; it paints no tiles from the cells, so a carved corridor would not
+  exist on a forest or heaven floor. The keep is an `OutdoorGenerator` too (themes_keep.sval
+  `gen-class`), but its `DungeonInstanceBrush` paints from the cells. The test is the brush, not
+  the generator (`cast<ForestBrush>(gen.m_brush)`).
+- **mod-puzzle-rooms-forced 20261020-021658 PASS:** with `puzzles.debug_force 1` the keep floor
+  logged `forced prefabs/keep/special/puzzle_room_w_16x18_a.pfb at 1,2 of 96x96, corridor 16`;
+  `gl goto` walked into it, the Constellation solved and its reward spawned. diag-puzzle-rooms
+  20261020-021827 forced cave_dark rooms at 6,150 (corridor 35) and 1,25 (corridor 9) of 175x175
+  and a temple room at 24,168 of 187x187. mod-puzzle-rooms 20261020-021747 PASS (unforced). Default chance is now 60 %.

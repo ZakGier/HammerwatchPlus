@@ -6,13 +6,26 @@
 // and barracks ask for "<biome>_puzzles", a set no prefab is in, and the rest
 // never mention them. The mission defs, and with them each level's generator,
 // are rebuilt on every level load, before any module, so the module ctor
-// (every level, ahead of MissionGameMode.Generate) adds the command to every
-// dungeon-style generator whose theme has puzzle rooms: at most one, skipped on
-// no_special floors like the shrine and skill rooms, and placed after those so
-// a puzzle room never takes the space a mandatory room needs. Its chance is
-// puzzles.room_chance percent (default 33, the commented-out vanilla value),
-// rolled in Execute: the settings live in the town record, which Generate
-// loads after the module ctor has run.
+// (every level, ahead of MissionGameMode.Generate) adds one PuzzleRoomSpawn to
+// every level generator: at most one room a floor, skipped on no_special floors
+// like the shrine and skill rooms, and placed after those so a puzzle room never
+// takes the space a mandatory room needs. Its chance is puzzles.room_chance
+// percent (default 60), rolled in Execute: the settings live in the town record,
+// which Generate loads after the module ctor has run.
+//
+// A room first tries the vanilla way (a spot whose cells already match its
+// pattern: a solid wall block with a corridor end at its door). Most floors have
+// no such spot, so then it is forced onto the map's outskirts: the free wall
+// block farthest from the middle whose door can reach the level, by a straight
+// corridor carved through solid wall, in under MAX_CORRIDOR cells. DungeonBrush
+// paints tiles from the cells, so the corridor and the room's frame look like
+// the rest of the floor.
+//
+// Biomes without puzzle rooms borrow a near one (cave_spider: cave_dark).
+// Forest and heaven floors (ForestBrush) are one authored prefab and paint
+// nothing from the cells, so they have no wall to carve; they keep no puzzle
+// room (logged). The keep is an OutdoorGenerator as well, but its
+// DungeonInstanceBrush paints from the cells like any dungeon.
 //
 // The Constellation itself joins the larger rooms' picks in the PrefabPicker
 // override (scripts/WorldScript/Prefabs/PrefabPicker.as).
@@ -20,7 +33,8 @@ namespace HWP
 {
 	namespace Puzzles
 	{
-		const int ROOM_CHANCE = 33;   // percent, the vanilla temple/crypt value
+		const int ROOM_CHANCE = 60;    // percent a floor
+		const int MAX_CORRIDOR = 40;   // cells
 		const string CONSTELLATION_FLAG = "hwp_constellation_placed";
 
 		// themes (theme_<biome>, theme_generic_<biome>) with a <biome>_puzzle prefab set
@@ -29,7 +43,7 @@ namespace HWP
 			"crypt", "dark_halls", "dungeon", "keep", "prison", "temple"
 		};
 
-		string RoomSet(MissionThemeDef@ theme)
+		string Biome(MissionThemeDef@ theme)
 		{
 			if (theme is null)
 				return "";
@@ -39,6 +53,14 @@ namespace HWP
 			biome = biome.substr(6);
 			if (biome.findFirst("generic_") == 0)
 				biome = biome.substr(8);
+			return biome;
+		}
+
+		string RoomSet(MissionThemeDef@ theme)
+		{
+			string biome = Biome(theme);
+			if (biome == "cave_spider")
+				biome = "cave_dark";
 			if (ROOM_BIOMES.find(biome) < 0)
 				return "";
 			return biome + "_puzzle";
@@ -49,18 +71,235 @@ namespace HWP
 			return clamp(HWP::Settings::GetInt("puzzles.room_chance", ROOM_CHANCE), 0, 100);
 		}
 
+		bool Walkable(CellGrid@ grid, int x, int y)
+		{
+			Cell c = grid.GetCell(x, y);
+			return c == Cell::Floor || c == Cell::Breakables || c == Cell::Bridge;
+		}
+
+		// a cell the room or its corridor may take: in the grid, not consumed, not floor
+		bool Free(CellGrid@ grid, int x, int y)
+		{
+			if (grid.IsConsumed(x, y))
+				return false;
+			Cell c = grid.GetCell(x, y);
+			return c == Cell::Wall || c == Cell::Nothing || c == Cell::Cliff;
+		}
+
+		// the room's door: the junction cells on one edge of its pattern, and the way out
+		class Door
+		{
+			ivec2 m_from;    // first door cell on the pattern edge
+			ivec2 m_along;   // step along the door
+			ivec2 m_out;     // step out of the room
+			int m_width;
+		}
+
+		bool GetDoor(MissionPrefabDef@ def, Door@ door)
+		{
+			ivec3 j;
+			if (def.m_junctionsUp.length() > 0)
+			{
+				j = def.m_junctionsUp[0];
+				door.m_along = ivec2(1, 0);
+				door.m_out = ivec2(0, -1);
+			}
+			else if (def.m_junctionsDown.length() > 0)
+			{
+				j = def.m_junctionsDown[0];
+				door.m_along = ivec2(1, 0);
+				door.m_out = ivec2(0, 1);
+			}
+			else if (def.m_junctionsLeft.length() > 0)
+			{
+				j = def.m_junctionsLeft[0];
+				door.m_along = ivec2(0, 1);
+				door.m_out = ivec2(-1, 0);
+			}
+			else if (def.m_junctionsRight.length() > 0)
+			{
+				j = def.m_junctionsRight[0];
+				door.m_along = ivec2(0, 1);
+				door.m_out = ivec2(1, 0);
+			}
+			else
+				return false;
+			door.m_width = max(2, j.z);
+			door.m_from = ivec2(j.x, j.y) - door.m_along * (door.m_width / 2);
+			return true;
+		}
+
+		// cells out of the door until the corridor meets the level, or -1
+		int CorridorLength(CellGrid@ grid, ivec2 pos, Door@ door)
+		{
+			ivec2 base = pos + door.m_from;
+			for (int k = 1; k <= MAX_CORRIDOR; k++)
+			{
+				bool all = true;
+				for (int w = 0; w < door.m_width; w++)
+				{
+					ivec2 c = base + door.m_out * k + door.m_along * w;
+					if (!Walkable(grid, c.x, c.y))
+					{
+						all = false;
+						if (!Free(grid, c.x, c.y))
+							return -1;
+					}
+				}
+				if (all)
+					return k;
+			}
+			return -1;
+		}
+
+		// summed-area table of the cells a room may not take (not Free)
+		array<array<int>>@ BlockedSums(CellGrid@ grid)
+		{
+			int w = grid.m_width;
+			int h = grid.m_height;
+			array<array<int>> s(w + 1, array<int>(h + 1, 0));
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++)
+					s[x + 1][y + 1] = (Free(grid, x, y) ? 0 : 1) + s[x][y + 1] + s[x + 1][y] - s[x][y];
+			return s;
+		}
+
+		int Blocked(array<array<int>>@ s, int x, int y, int w, int h)
+		{
+			return s[x + w][y + h] - s[x][y + h] - s[x + w][y] + s[x][y];
+		}
+
+		// the vanilla way failed: put the room on the outskirts and carve its corridor
+		string ForcePlace(CellGrid@ grid, PrefabPlacement@ placer, const string &in set)
+		{
+			uint setHash = HashString(set);
+			array<MissionPrefabDef@> defs;
+			for (uint i = 0; i < MissionPrefabDef::Instances.length(); i++)
+			{
+				auto def = MissionPrefabDef::Instances[i];
+				if (def.m_set == setHash && def.m_prefab !is null)
+					defs.insertAt(randi(defs.length() + 1), def);
+			}
+			if (defs.length() == 0)
+				return "no rooms in " + set;
+
+			auto sums = BlockedSums(grid);
+			float cx = grid.m_width / 2.0f;
+			float cy = grid.m_height / 2.0f;
+
+			MissionPrefabDef@ best = null;
+			ivec2 bestPos;
+			Door bestDoor;
+			int bestLen = 0;
+			float bestScore = -1e9f;
+			for (uint i = 0; i < defs.length(); i++)
+			{
+				auto def = defs[i];
+				def.UnpackGrid();
+				Door door;
+				if (def.m_gridPattern is null || !GetDoor(def, door))
+					continue;
+				ivec2 sz = def.m_gridSz;
+				for (int y = 1; y + sz.y < grid.m_height - 1; y++)
+				{
+					for (int x = 1; x + sz.x < grid.m_width - 1; x++)
+					{
+						if (Blocked(sums, x, y, sz.x, sz.y) > 0)
+							continue;
+						int len = CorridorLength(grid, ivec2(x, y), door);
+						if (len < 0)
+							continue;
+						float dx = (x + sz.x / 2.0f - cx) / cx;
+						float dy = (y + sz.y / 2.0f - cy) / cy;
+						float score = dx * dx + dy * dy - len * 0.01f;
+						if (score > bestScore)
+						{
+							bestScore = score;
+							@best = def;
+							bestPos = ivec2(x, y);
+							bestDoor = door;
+							bestLen = len;
+						}
+					}
+				}
+			}
+			if (best is null)
+				return "no free wall block on the outskirts";
+
+			auto room = best.UsePrefab();
+			if (room is null)
+				return "room used up";
+			room.UnpackGrid();
+			placer.PlacePrefabAt(room, bestPos);
+
+			// the doorway cells the pattern wants walkable, then the corridor out
+			for (int y = 0; y < room.m_gridSz.y; y++)
+				for (int x = 0; x < room.m_gridSz.x; x++)
+					if (Pattern(room.m_gridPattern[y * room.m_gridSz.x + x]) == Pattern::Walkable)
+						grid.SetCellIfNotConsumed(bestPos.x + x, bestPos.y + y, Cell::Floor);
+			ivec2 base = bestPos + bestDoor.m_from;
+			for (int k = 1; k < bestLen; k++)
+			{
+				for (int w = 0; w < bestDoor.m_width; w++)
+				{
+					ivec2 c = base + bestDoor.m_out * k + bestDoor.m_along * w;
+					grid.SetCellIfNotConsumed(c.x, c.y, Cell::Floor);
+				}
+			}
+			return "forced " + room.m_id + " at " + bestPos.x + "," + bestPos.y + " of " + grid.m_width + "x" + grid.m_height + ", corridor " + (bestLen - 1);
+		}
+
+		// puzzles.debug_grid: the floor's cells in the log, one row a line
+		void DumpGrid(CellGrid@ grid)
+		{
+			for (int y = 0; y < grid.m_height; y++)
+			{
+				string row = "";
+				for (int x = 0; x < grid.m_width; x++)
+				{
+					Cell c = grid.GetCell(x, y);
+					bool used = grid.m_gridConsumed[x][y];
+					string ch = "?";
+					if (c == Cell::Floor) ch = used ? "o" : ".";
+					else if (c == Cell::Wall) ch = used ? "X" : "#";
+					else if (c == Cell::Nothing) ch = " ";
+					else if (c == Cell::Cliff) ch = "~";
+					else if (c == Cell::Breakables) ch = "%";
+					row += ch;
+				}
+				HWP::Log("puzzles", "grid " + formatInt(y, "0", 3) + " " + row);
+			}
+		}
+
 		// SpawnPrefabSet with the chance read when the level is generated
 		class PuzzleRoomSpawn : SpawnPrefabSet
 		{
 			bool Execute(DungeonBrush@ brush, PrefabPlacement@ pfbPlacer) override
 			{
+				if (HWP::Settings::GetBool("puzzles.debug_grid"))
+					DumpGrid(brush);
+				if (m_set == "hwp_none")
+				{
+					HWP::Log("puzzles", "outdoor floor: no puzzle room");
+					return true;
+				}
 				int chance = RoomChance();
 				if (randi(100) >= chance)
 				{
 					HWP::Log("puzzles", m_set + " not rolled (" + chance + "%)");
 					return true;
 				}
-				return SpawnPrefabSet::Execute(brush, pfbPlacer);
+				// puzzles.debug_force: skip the vanilla way, so a test lands on the forced one
+				int n = 0;
+				if (!HWP::Settings::GetBool("puzzles.debug_force"))
+					n = pfbPlacer.PlacePrefabs(HashString(m_set), 1, m_numBoost, m_typeMinLimit);
+				if (n > 0)
+				{
+					HWP::Log("puzzles", m_set + " rolled (" + chance + "%): placed in a matching spot");
+					return true;
+				}
+				HWP::Log("puzzles", m_set + " rolled (" + chance + "%): " + ForcePlace(brush, pfbPlacer, m_set));
+				return true;
 			}
 		}
 
@@ -98,19 +337,24 @@ namespace HWP
 				{
 					auto level = mission.m_levels[j];
 					auto gen = cast<DungeonGenerator>(level.m_generator);
-					string set = RoomSet(level.m_themeDef);
-					if (gen is null || set == "")
+					if (gen is null)
+						continue;
+					// ForestBrush paints nothing from the cells; the keep is an
+					// OutdoorGenerator too, but its DungeonInstanceBrush does
+					bool outdoor = cast<ForestBrush>(gen.m_brush) !is null;
+					string set = outdoor ? "hwp_none" : RoomSet(level.m_themeDef);
+					if (set == "")
 						continue;
 
 					int at = -1;
 					bool present = false;
 					for (uint k = 0; k < gen.m_genCommands.length(); k++)
 					{
+						if (cast<PuzzleRoomSpawn>(gen.m_genCommands[k]) !is null)
+							present = true;
 						auto spawn = cast<SpawnPrefabSet>(gen.m_genCommands[k]);
 						if (spawn is null)
 							continue;
-						if (spawn.m_set == set)
-							present = true;
 						if (EndsWith(spawn.m_set, "_shrine") || EndsWith(spawn.m_set, "_skill"))
 							at = k + 1;
 					}
