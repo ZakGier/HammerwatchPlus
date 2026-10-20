@@ -12,11 +12,12 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   applies stack modifiers before it adds equipment. The module fills the clip
   on spawn. Gun shots take rounds and no mana.
   At 0 rounds the **Reloading** stack starts (1.6 s timer; a dodge restarts it)
-  and refills the clip when it ends. **Reload** (starting skill) is a cast of
+  and refills the clip when it ends. **Reload** (a starting skill, as are Frag and each doctrine's two) is a cast of
   2.0 s down to 1.2 s that refills when it ends, with the automatic reload's
   icon sweep. A dodge cancels it; a full clip refuses it. A held trigger only
   says "cant" on a fresh click (`HWPFirearmsGun`).
   Mana pays for gadgets: the grenade launcher, grenades, rockets, bursts.
+  The pool is 60 + 2 a level, 1 a second (docs/RE_NOTES.md, the Firearms balance pass).
   The last rounds of a clip click (3 or fewer, 6 or fewer with dual pistols):
   a dry metal click after the shot (`HWPFirearmsLowClick`, Audition.as; the
   game's `button_metal`, since a mod can't add a sound).
@@ -78,12 +79,12 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   - Frag orbs, mutually exclusive: **Stun Grenade** (lightning, stun and slow
     1/2/3 s), **Incendiary** (a burning, blinding fire patch), **Gas** (a
     poison cloud that fire ignites).
-- **Marksman:** **Snipe** (both hands' damage, 200-600 %, armor penetration,
-  30-50 mana, no rounds; a red laser dot marks the aim while it charges) and **Critical Aim** (passive: a gun round that
+- **Marksman:** **Snipe** (both hands' damage, 300-750 %, armor penetration,
+  20-30 mana, no rounds; a red laser dot marks the aim while it charges) and **Critical Aim** (passive: a gun round that
   hits gives Focus, crit chance and damage per stack; one that hits nothing
   loses it all). Orbs: Headshot (the first enemy a Snipe hits is crit),
   Piercing Bullet (2/4/6 more enemies), BOOM Headshot! and Elemental Exposure.
-- **Demolitionist:** the **Rocket Launcher** (fire blast, mana, no rounds) and
+- **Demolitionist:** the **Rocket Launcher** (200-400 fire blast, 6 mana, no rounds) and
   **Ordinance Hoarder** (passive: Frag and the rocket recharge faster and bank
   charges while ready; a charge clears the cooldown after a cast). Its buff icon
   counts every use ready (stored charges plus the skill when off cooldown) and
@@ -91,10 +92,11 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
   icon (`scripts/HWP/Firearms/ChargeHUD.as`). Orbs: Fat
   Boy (slow heavy rocket, poison, blind), Magic Missile (ice then fire), Quad
   Missile Chambers (4 small missiles), Elemental Shrapnel, Overpacked.
-- **Assault:** Double Barrel Burst (a shotgun blast: x1.5/2/2.5/3/3.5 damage
-  up close), Adrenaline (damage taken down, kills refill ammo); orbs include
+- **Assault:** Double Barrel Burst (two shotgun shells of 150 physical: x1.5/2/2.5/3/3.5
+  damage up close), Adrenaline (damage taken down, kills refill ammo); orbs include
   Triple Barrel and Dragon's Breath.
-- **Engineer:** Deploy Turret (placed where aimed, wears down over 30 s; orbs
+- **Engineer:** Deploy Turret (placed where aimed, rounds at 1x weapon damage every 0.6-0.2 s,
+  wears down over 30 s; orbs
   Second Turret, Reinforced Turret) and My Turret! (passive: within 60 px, 10 m
   at the game's 6 px a metre, the turret is repaired and boosted; Belt Feed adds
   an elemental chance).

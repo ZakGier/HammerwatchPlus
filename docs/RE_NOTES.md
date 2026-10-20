@@ -1872,3 +1872,86 @@ runs after the fixes: mod-keys 20261020-041212, mod-keys-pool 041225, mod-puzzle
   toward `max`), so every dual round left at least 4° off the aim line. A plain `spread` of 5 (±2.5°)
   takes dual pistols on left click from 38/75 to 87/129 per second at L1/L12, the rifle's 88/129 and
   inside the bows' 83-99/119-142 (bench-weapons 20261020-042519 against 20261020-003538).
+
+## Firearms balance pass: skills and mana, not the guns (2026-10-20)
+
+The class bench (gamelab/bots/bench.py, `bench-<class>` scenarios) builds every spec and weapon build
+at levels 1, 12, 20 and 25 (NG+ 1). It benches each at the start of a run and late in one (skill
+orbs and trinkets: 3/5/6 at L12/20/25), against a pack of target dummies. The ratios below are to
+the median of the 15 vanilla damage specializations (ranger, rogue, sorcerer, wizard, warlock) at
+the same checkpoint. Vanilla's own spec averages run from 0.62x (warlock chaos) to 2.05x (wizard
+conjuration) single target.
+
+**The gun damage is unchanged** (rifle 52 %, epic 65 %, pistols 80 % per round): the user set it to
+match the bow and crossbow, and said a higher setting was "way too strong" (bench-weapons). All of
+the gain comes from the skills and the mana pool.
+
+Bench fixes first (a4c72d3, 6258dc9):
+- **L25 was a level 20 character for every class.** The cap is 20 + 5 per NG+
+  (PlayerRecord.GetLevelCap) and the bench never set NG+. The new verb `ngp` sets it.
+- **Rolled gear made about ±20 % noise** between two runs of one build. `kit ... seed=N` now rolls
+  EquipmentGenerator's choices on a seeded generator: the same kit every run and every class.
+- **A weapon the character can't wear was skipped silently**, e.g. hwp_rifle_03 at ilvl 25 needs
+  about 73 dex. `kit_weapons` now steps the ilvl down until the weapon goes on and records
+  `weapon_ilvl`.
+- The turret fired once per vanilla attack scene instead of at its rate (6258dc9): 7-9 hits in
+  15 s, now 28-41.
+
+Findings:
+- **Firearms' mana pool was the bottleneck.** It was 30 + 1 a level with 0.5 regen. Every vanilla
+  class has 70-120 + 2-5 with 1 regen. Sniper, Engineer and Demolitions sat at empty mana for
+  1.5-8 s of every 15 s bench, and with the grenade launcher's 4 mana a shot, Deploy Turret (50)
+  was never cast in the off-hand bench. Now **60 + 2 a level, 1 regen**: about warrior's 70 + 2,
+  under ranger's 80 + 3.
+- The bench placed the turret at the pack, 80+ px away, so My Turret! (60 px) never applied. The
+  bench now puts it 30 px in front of the player, which is how the passive asks an Engineer to play.
+
+Skill changes:
+- **Snipe:** 200-600 % → 300/400/500/600/750 % weapon damage, mana 30-50 → 20/20/25/25/30.
+- **Rocket Launcher:** 150-300 → 200/240/280/330/400 fire.
+- **Double Barrel Burst:** 200 → 150 physical a shell (Assault was 1.5-1.8x at L12).
+- **Deploy Turret:** rounds at 0.6x → 1x weapon damage.
+
+Runs: HEAD bench-firearms 20261020-074134; skills only 20261020-082101; this commit
+20261020-102050; vanilla ranger 090017, rogue 091548, sorcerer 093114, wizard 094648, warlock
+100215 (all seeded, all PASS).
+
+Spec averages over the L12-L25 checkpoints, single / pack: assault 1.41/1.45 → 1.32/1.43,
+demolitions 0.69/0.91 → 0.88/1.33, engineer 0.58/0.61 → 1.07/0.96, sniper 0.70/0.57 → 1.03/0.75.
+
+single target, x the vanilla median (HEAD a4c72d3 → this commit)
+
+| build | L1 start | L1 run | L12 start | L12 run | L20 start | L20 run | L25 start | L25 run |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| vanilla median | 133 | 139 | 275 | 478 | 497 | 1062 | 596 | 1210 |
+| (level 1) rifle | 0.83 → 0.92 | 0.82 → 0.99 |  |  |  |  |  |  |
+| (level 1) pistols | 0.70 → 0.66 | 0.73 → 0.94 |  |  |  |  |  |  |
+| sniper rifle |  |  | 0.83 → 0.91 | 0.68 → 0.98 | 0.70 → 0.94 | 0.59 → 0.80 | 0.63 → 0.82 | 0.57 → 0.95 |
+| sniper pistols |  |  | 0.74 → 1.18 | 0.63 → 1.29 | 0.74 → 1.11 | 0.70 → 1.17 | 0.79 → 1.02 | 0.77 → 1.20 |
+| demolitions rifle |  |  | 0.83 → 1.02 | 0.59 → 0.89 | 0.77 → 0.92 | 0.48 → 0.74 | 0.71 → 0.86 | 0.77 → 0.85 |
+| demolitions pistols |  |  | 0.83 → 1.05 | 0.67 → 0.84 | 0.91 → 0.96 | 0.47 → 0.66 | 0.76 → 0.85 | 0.48 → 0.86 |
+| assault rifle |  |  | 1.48 → 1.41 | 1.65 → 1.56 | 1.51 → 1.15 | 1.15 → 1.15 | 1.09 → 1.03 | 1.40 → 1.37 |
+| assault pistols |  |  | 1.53 → 1.75 | 1.80 → 1.64 | 1.57 → 1.24 | 1.32 → 1.15 | 1.19 → 1.14 | 1.29 → 1.23 |
+| engineer rifle |  |  | 0.71 → 1.50 | 0.60 → 1.22 | 0.69 → 1.30 | 0.51 → 0.91 | 0.54 → 1.25 | 0.41 → 0.89 |
+| engineer pistols |  |  | 0.68 → 1.22 | 0.52 → 0.88 | 0.59 → 1.08 | 0.48 → 0.86 | 0.71 → 1.04 | 0.50 → 0.73 |
+
+pack target, x the vanilla median (HEAD a4c72d3 → this commit)
+
+| build | L1 start | L1 run | L12 start | L12 run | L20 start | L20 run | L25 start | L25 run |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| vanilla median | 268 | 276 | 731 | 1077 | 1145 | 2455 | 1480 | 3118 |
+| (level 1) rifle | 1.18 → 1.39 | 1.18 → 1.44 |  |  |  |  |  |  |
+| (level 1) pistols | 0.89 → 0.99 | 0.89 → 1.11 |  |  |  |  |  |  |
+| sniper rifle |  |  | 0.62 → 0.83 | 0.56 → 0.60 | 0.55 → 0.91 | 0.54 → 0.65 | 0.67 → 0.80 | 0.57 → 0.55 |
+| sniper pistols |  |  | 0.54 → 0.73 | 0.51 → 0.83 | 0.65 → 0.85 | 0.51 → 0.74 | 0.63 → 0.80 | 0.51 → 0.72 |
+| demolitions rifle |  |  | 0.85 → 1.30 | 0.86 → 1.49 | 1.16 → 1.45 | 0.78 → 1.09 | 0.83 → 1.28 | 0.84 → 1.38 |
+| demolitions pistols |  |  | 0.93 → 1.25 | 1.02 → 1.51 | 1.06 → 1.48 | 0.83 → 1.13 | 0.92 → 1.22 | 0.87 → 1.35 |
+| assault rifle |  |  | 1.28 → 1.45 | 1.77 → 1.86 | 1.62 → 1.44 | 1.30 → 1.32 | 1.24 → 1.27 | 1.42 → 1.40 |
+| assault pistols |  |  | 1.51 → 1.53 | 1.97 → 1.86 | 1.56 → 1.43 | 1.35 → 1.24 | 1.11 → 1.22 | 1.32 → 1.19 |
+| engineer rifle |  |  | 0.73 → 1.17 | 0.71 → 1.07 | 0.75 → 1.23 | 0.56 → 0.87 | 0.70 → 1.13 | 0.47 → 0.85 |
+| engineer pistols |  |  | 0.51 → 0.97 | 0.54 → 0.83 | 0.73 → 1.00 | 0.50 → 0.70 | 0.68 → 1.02 | 0.48 → 0.63 |
+
+Left as is: Engineer late in a run (0.73-0.91 single) and Demolitions' single target at L20 late
+(0.66-0.74; its pack number is 1.1). Both sit inside the vanilla spread. Bench limits: the dummies
+neither move nor fight back, each bench is 15 s from full mana and cooldowns, and the off-hand bench
+holds the off hand all the time (so a grenade launcher spends mana a player would keep for a skill).

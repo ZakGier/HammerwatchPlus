@@ -5,7 +5,7 @@
 	(turret-hp-pct) and its fire rate (turret-rate, the cooldown after each 200 ms attack
 	scene: turret_attack.effect) are the skill's binds; the script
 	(Turret.as HWPFirearmsTurret) drains it over decay ms and runs My Turret!.
-	It fires rifle rounds at 0.6x weapon damage (turret_round.unit), elemental ones while
+	It fires rifle rounds at 1x weapon damage (turret_round.unit), elemental ones while
 	Elemental Belt-Feed is on (Elemental.as HWPFirearmsGunShot).
 -->
 <unit netsync="position" save="false">

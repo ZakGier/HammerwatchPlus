@@ -2,7 +2,7 @@
 <!--
 	Double Barrel Burst (Assault): two shotgun shells, one right after the other, each at
 	the current aim (update-aim covers the whole cast). A shell hits every enemy in a 50
-	degree cone out to 160 px (10 m, at 16 px a metre: assumed) for 200 physical damage
+	degree cone out to 160 px (10 m, at 16 px a metre: assumed) for 150 physical damage
 	(HWPFirearmsShotgun, Shotgun.as); enemies within close-range (5/5/7/7/10 m) take
 	close-mul of that (+50..250%). The pellets (shotgun_pellet.unit) are the look only.
 	castpoint 1 so the mana is paid (PlayerSkillDirectional pays when crossing a castpoint
@@ -17,7 +17,7 @@
 	<string name="description">.skills.hwp_firearms.burst.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage.physical</s><s>200</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage.physical</s><s>150</s></array>
 		<array><s>close-dmg</s><s>.skills.desc.params.hwp_close_dmg</s><s>+50%</s><s>+100%</s><s>+150%</s><s>+200%</s><s>+250%</s></array>
 		<array><s>close-range</s><s>.skills.desc.params.hwp_close_range</s><s>5m</s><s>5m</s><s>7m</s><s>7m</s><s>10m</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>5</s><s>5</s><s>6</s><s>6</s><s>7</s></array>
@@ -65,7 +65,7 @@
 					<array name="effects">
 						<dict>
 							<string name="class">Damage</string>
-							<int name="physical">200</int>
+							<int name="physical">150</int>
 							<string name="fire-bind">breath-dmg</string>
 						</dict>
 					</array>

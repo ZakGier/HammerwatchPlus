@@ -17,7 +17,7 @@
 	<string name="description">.skills.hwp_firearms.rpg.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage.fire</s><s>150</s><s>180</s><s>210</s><s>250</s><s>300</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage.fire</s><s>200</s><s>240</s><s>280</s><s>330</s><s>400</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>6</s></array>
 		<array><s>cooldown</s><b>t</b><s>.skills.desc.params.cooldown</s><s>8s</s></array>
 	</array>
@@ -46,7 +46,7 @@
 		<int name="mana-cost">6</int>
 		<dict name="binds">
 			<string name="proj-unit">players/hwp/firearms/projectiles/rocket.unit</string>
-			<int name="rocket-dmg">150</int>
+			<int name="rocket-dmg">200</int>
 			<int name="area-radius">80</int>
 			<string name="fatboy-blind">players/hwp/firearms/buffs_firearms.sval:fatboy_blind_1</string>
 			<float name="fatboy-poison">0.4</float>
@@ -87,28 +87,28 @@
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_2</int>
 			<dict name="binds">
-				<int name="rocket-dmg">180</int>
+				<int name="rocket-dmg">240</int>
 				<int name="area-radius">80</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_3</int>
 			<dict name="binds">
-				<int name="rocket-dmg">210</int>
+				<int name="rocket-dmg">280</int>
 				<int name="area-radius">84</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_4</int>
 			<dict name="binds">
-				<int name="rocket-dmg">250</int>
+				<int name="rocket-dmg">330</int>
 				<int name="area-radius">84</int>
 			</dict>
 		</dict>
 		<dict>
 			<int name="skill-cost">SKILLCOSTMASTERYLEVEL_5</int>
 			<dict name="binds">
-				<int name="rocket-dmg">300</int>
+				<int name="rocket-dmg">400</int>
 				<int name="area-radius">88</int>
 			</dict>
 		</dict>

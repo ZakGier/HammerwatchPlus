@@ -2,7 +2,7 @@
 <!--
 	Deploy Turret (Engineer): place a turret (units/turret.unit, Turret.as) at the target
 	spot, up to range away and in sight, as Sorcerer's flame_step targets. It shoots the
-	nearest enemy in 200 px every 0.6 .. 0.2 s for 0.6x weapon damage: turret-rate is the
+	nearest enemy in 200 px every 0.6 .. 0.2 s for 1x weapon damage: turret-rate is the
 	cooldown after its 200 ms attack scene (units/turret_attack.effect), which the cooldown
 	waits for (CompositeActorSkill.as:514-541),
 	can be targeted and hit by enemies, and wears down over 30 s.
@@ -16,7 +16,7 @@
 	<string name="description">.skills.hwp_firearms.turret.desc</string>
 
 	<array name="description-params">
-		<array><s>damage</s><s>.skills.desc.params.damage</s><s>60%</s></array>
+		<array><s>damage</s><s>.skills.desc.params.damage</s><s>100%</s></array>
 		<array><s>health</s><s>.skills.desc.params.health</s><s>100</s></array>
 		<array><s>rate</s><s>.skills.desc.params.hwp_fire_rate</s><s>0.6s</s><s>0.5s</s><s>0.4s</s><s>0.3s</s><s>0.2s</s></array>
 		<array><s>mana-cost</s><s>.skills.desc.params.mana_cost</s><s>50</s></array>

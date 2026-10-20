@@ -8,6 +8,8 @@ namespace GameLab
 	const string BENCH_FILTER = "target_dummy";
 
 	const uint BENCH_RELOAD = HashString("hwp_fs_reload");
+	// Firearms Deploy Turret goes down beside the player, as My Turret! (60 px) asks of an Engineer
+	const uint BENCH_TURRET = HashString("hwp_fs_turret");
 	const string BENCH_CLIP = "players/hwp/firearms/stacks_firearms.sval:clip";
 
 	class BenchSkill
@@ -170,6 +172,8 @@ namespace GameLab
 				Skills::TargetingParams params;
 				s.GetTargetingMode(params);
 				target = pos + dir * min(params.rangeMax, max(params.rangeMin, len));
+				if (s.m_skillId == BENCH_TURRET)
+					target = pos + dir * 30;
 			}
 			if (s.Activate(target, 1.0f))
 			{
@@ -311,7 +315,7 @@ namespace GameLab
 
 	// bench <tag> <ms> [radius] [off] [noskills]: hold the main attack (and the off hand with
 	// "off") at the centre of the target dummies within radius (default 400) of the player and
-	// cast every active spell whenever it may (Toggle once, TargetAOE at the centre, Channeling
+	// cast every active spell whenever it may (Toggle once, TargetAOE at the centre (Firearms Deploy Turret beside the player), Channeling
 	// for up to 3 s at a time, DirectionCharge after its charge time), for ms of gameplay frames.
 	// One {"ev":"bench"} event at the end: the dummies' hp lost (every source: hits, DoT,
 	// summons), the direct hits by weapon (PlayerDamagedActor), casts per skill and the mana left.
