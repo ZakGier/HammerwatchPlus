@@ -146,9 +146,8 @@ tiny module that self-checks the loaders and answers `hwp firearms`.
     orbs, plus a picker page that shows them beside the current icon. A picked
     one goes into `art/firearms/override/` (tools/icon_art/README.md).
 
-Next, from the planner
-(https://claude.ai/artifact/GUXggQqycAoQRiJ6G1Nwv3): the two base passives,
-the 4th (turret) doctrine and the remaining orbs. See `docs/design/firearms.md`.
+Next, from the class planner (`python -m planner`, `planner/README.md`): the two
+base passives and final icons. See `docs/design/firearms.md`.
 
 ## Test checklist
 

@@ -42,7 +42,9 @@ This file holds the settled decisions and where each one is built.
   BOOM Headshot! and Elemental Exposure.
 - **Demolitionist:** the Rocket Launcher and Ordinance Hoarder (charges), with Fat Boy,
   Magic Missile, Quad Missile Chambers, Elemental Shrapnel and Overpacked.
-- **Assault:** unchanged from the first build (3 skills, no orbs).
+- **Assault:** Double Barrel Burst and Adrenaline, with their orbs (Triple Barrel, Dragon's
+  Breath, ...). **Engineer:** Deploy Turret and My Turret!, with Second Turret, Reinforced
+  Turret and Belt Feed (`plan-firearms-b`, `mods/firearms/README.md`).
 - Scripted parts: `mods/firearms/scripts/HWP/Firearms/Combat.as`. Checks:
   `plan-firearms-a`, `-b` and `-orbs` (all PASS 2026-10-19).
 - Interpretations made where the planner was open: see the session report in
@@ -50,10 +52,8 @@ This file holds the settled decisions and where each one is built.
 
 ## Not built yet (refine in the planner first)
 - The two base passives.
-- The 4th doctrine (turrets) and reworking Assault into 1 active + 1 passive.
-- Assault's orbs.
 - Firearm trinkets.
-- A 4th spec for every class.
+- A 4th spec for every other class: placeholders in the class planner, being designed.
 
 ## Engine facts this design relies on (verified on the pinned build)
 - **Item modifiers can't change a stack.** `PlayerRecord.RefreshModifiers` runs

@@ -2131,3 +2131,22 @@ another Reload press starts it again as usual. Then the second `/code-review hig
 - Checked: the API (read, write, delete; a bad collection, an id with `../`, a cross-site
   Origin and a non-object body are refused with 400) and headless Edge renders of the
   Firearms, Priest, Ranger, Thief and Paladin pages, each placeholder spec in place.
+
+## README cleanup (2026-10-20)
+
+- `README.md` rewritten as a player-facing overview. The modules are grouped (classes and
+  combat, HoH1, runs and dungeons, town, co-op and QoL), one short row each; the Firearms
+  row points to `mods/firearms/README.md` for the details. The changelog that had grown in
+  the GameLab section moved out: this file already holds it, and the README keeps a short
+  Status list (test-plan state, the co-op limit, the pinned build, what Firearms still lacks).
+- Corrected on the way: `summons` (the game already carries Crusaders through a floor
+  change; the module tops up a shortfall, `mods/summons/README.md`), the Mm-hmm! hats (25 %
+  of rare and epic hats), and Installing (no release is published yet, so it says to build
+  with `tools/build.py`). A Class planner section says how to open it on Windows and Linux
+  and who is designing which 4th spec.
+- Stale lines fixed: `docs/design/firearms.md` listed the turret doctrine and Assault's orbs as
+  not built (both are, `plan-firearms-b` 20261020-121820 PASS), and `mods/firearms/README.md`
+  pointed at the old planner artifact.
+- Firearms checks' latest runs, all PASS: plan-t14 20261020-030347, plan-firearms-a
+  20261020-110341, -b 20261020-121820, -orbs 20261020-113012, -guns 20261020-113307,
+  -reload-cut 20261020-120412, -arm 20261019-183638.

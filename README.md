@@ -1,49 +1,72 @@
 # HammerwatchPlus
 
-A modular co-op mod for **Heroes of Hammerwatch II**: quality-of-life and
-co-op systems, a gambler in the tavern, pets that level up, Heroes of
-Hammerwatch 1 content (ace chests, legendaries, the Forsaken Tower campaign,
-HoH1 classes and pets), new classes, fishing and farming in town.
+A modular co-op mod for **Heroes of Hammerwatch II**: a new class (the Firearms Specialist)
+and the three HoH1 classes HoH2 lacks, Heroes of Hammerwatch 1 content (the Forsaken Tower
+campaign, keys and ace chests, legendaries, mercenaries, titles, pets), new things to find in
+the dungeons, fishing and farming in town, and co-op and quality-of-life fixes.
 
-Every module ships as its own mod package, plus an all-in-one build. Everyone
-in a lobby should run the same version of the same modules.
+Every module ships as its own mod package, plus an all-in-one build. Everyone in a lobby
+should run the same version of the same modules. Every module needs `core`; `goldpet` also
+needs `pets`.
 
 ## Modules
 
+### Classes and combat
+
 | Module | What it does |
 |---|---|
-| `core` | Shared library: settings, save-data extension, networking helper, pet pickup logic. Required by every other module. It also adds a Plants & Herbs section to the Materials tab (seeds and harvested herbs, 8 across), an Eat/Roll action on materials and fish, a warning on orbs that close off other orbs ("Makes unavailable ..." with their icons), and the Mm-hmm! bonus on rare and better hats (every crit plays the merchant's "mm-hmm", for everyone). Extra skill keys: a class with more than three active skills casts the 4th, 5th and 6th on their own keys (default 4, 5, 6; rebind in the Plus tab). The Subclass Picker lists a spec's own skills labelled Active / Passive by their real type. |
-| `gambler` | Higher/Lower card gambler NPC in the tavern. His Sell button buys crops and herbs for gold and fish for bet tokens; he rerolls equipped gear for 2000 gold x item level, or 1 bet token per 5 item levels. |
-| `droptrade` | Drop equipment on the ground for friends: a Drop button / Q key next to Destroy in the inventory. |
-| `goldpet` | Pet vendor in the Hunter's Lodge selling the Gold Collector cat, with two upgrades (materials and scrolls, then valuables). |
-| `laststats` | Last run's stats for the whole party on a notice board by the town fountain. |
-| `deathrecap` | Who killed you: top damage sources from the last 10 s, on screen and in chat. |
-| `bufftips` | Hover a buff icon to see what it does and how many seconds it has left. |
-| `legacy` | HoH1-style class legacy: your best hero of each class buffs every character; one "Title Bonuses" buff lists them, Guild Hall > Titles shows every class. |
-| `pets` | Pets level up (kills, pickups, farm crops at the feeding bowl) and learn utility skills; per-pet pickup toggles; all Heroes of Hammerwatch 1 pets in the Pet Shop (imported from your own HoH1 install); pet dyes at the tailor; pets wait outside puzzle rooms. |
-| `architect` | Any player can pick and pay for Architect alterations; the host's picks are split across the party. Seven HoH1 challenges discount them, down to free. |
-| `chatlinks` | Linked items stay in chat with slot and item level; `hwp link`. |
-| `colors` | Colour-blind / high-contrast tints for enemy and friendly projectiles (player menu > Plus tab). |
-| `groupcombo` | Party-wide combo bonus that scales with how many players are in combo; brief invulnerability when everyone is. |
+| `firearms` | The **Firearms Specialist**, a new class. Guns fire from a clip that counts down per shot and reloads (automatically at 0, or with the Reload skill, which a dodge cancels); mana pays for gadgets. A rifle (30 rounds, 3-round bursts, an under-barrel grenade launcher) or pistols, one or two (10 rounds each, 20 dual). Base kit: Reload and Frag Grenade, whose orbs give Explosive Reload, Over-Reload's timed perfect reload, and Stun, Incendiary or Gas grenades. Four specializations, each with orbs: **Marksman** (Snipe, Critical Aim), **Demolitionist** (Rocket Launcher, Ordinance Hoarder), **Assault** (Double Barrel Burst, Adrenaline) and **Engineer** (Deploy Turret, My Turret!). New characters start with a Service Pistol. Details: `mods/firearms/README.md`; design: `docs/design/firearms.md`. |
+| `classes` | The HoH1 classes HoH2 lacks: **Thief**, **Gladiator** and **Witch Hunter**, three masteries each. Also a HoH1-style 4th mastery for the **Priest** (Smiter) and **Paladin** (Holy Storm). Their extra actives cast on core's Skill 4 key. The real HoH1 art comes from your own HoH1 install (`tools/import_hoh1.py classes`). |
+| `weapons` | Twelve new endgame weapons (ilvl 35, four per slot) with new modifier profiles on vanilla visuals and attacks. |
 | `weaponswap` | A second weapon set on a hotkey (default X): a 2 s channel standing still, cancelled by a dodge or a second press. |
-| `puzzles` | Puzzle rooms are back in the dungeons (HoH2 ships 88 but never places them), and Heroes of Hammerwatch 1's Constellation puzzle is one of the puzzles they can roll. |
-| `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
-| `keys` | HoH1-style keys: every chest but the cursed ones needs one; key drops, the exit guard's General Merchant (keys, bag slots, six trinkets to take into your next run), ace chests, seven red legendaries. |
-| `firearms` | The Firearms Specialist class. Guns use a clip that counts down per shot and auto-reloads at 0 (1.6 s; a dodge restarts it); the Reload skill refills it at the end of a cast as long as its recharge (2.0-1.2 s), which a dodge cancels and a full clip refuses, and shows the same icon sweep; mana pays for gadgets. Weapons: rifle (30 rounds, 3-round bursts, no pierce, grenade-launcher secondary) and one pistol item that fits either hand (10 each, 20 dual; a lone pistol fires single shots, dual pistols alternate; rounds leave each gun, 6 px either side). The last 3 rounds (6 dual) click. New characters start with one Service Pistol. Base kit Reload and Frag Grenade (radius 64) with orbs (Explosive Reload, Over-Reload's timed perfect reload on a bar above the health bar, hit with Reload or left click, Stun/Incendiary/Gas grenades); Marksman (Snipe, Critical Aim's Focus stacks) and Demolitionist (Rocket Launcher, Ordinance Hoarder's charges) specializations with their orbs; Assault (Double Barrel Burst, Adrenaline) and Engineer (Deploy Turret, My Turret!) specializations with their orbs. Plan: `docs/design/firearms.md`. |
-| `fishing` | Six fishing spots on the town coast (timing minigame), more in the water of run floors' potion wells (a bucket in boss rooms), greyed on the map once fished out. A pirate sells bait, rods and fish traps from the trading post's wreck, later its boat. Fish are swords, sell for bet tokens and can be eaten (100 HP per star). New characters start with no rod or can. |
-| `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow per completed run, faster when watered (the farmer sells the can and seeds, the well refills it). Smoke a herb for a buff lasting 10 floors, or roll one into a joint (Materials > Plants & Herbs): an offhand with 5 puffs that a friend with a free offhand can take from you, and smoke that fills the room. |
-| `weapons` | Twelve new weapons (ilvl 35, all slots/classes) with fresh modifier profiles on the vanilla visuals and skills. |
-| `strongbox` | PoE-style strongboxes: open one, a biome-correct pack (elites possible) spawns, clear it for the box's loot. |
-| `abyss` | Abyss cracks: step close and waves crawl out, ending in elites (more in a bigger party); clear them for a reward that grows as the run goes deeper, and the crack closes. |
-| `valuables` | Valuables (vases, chalices, gems, furs, scales: the pickups that turn straight into gold) are worth twice their vanilla gold. |
-| `maps` | Three new layouts for the equipment map drops: Goblin Warrens, Sunken Dungeon, The High Court. |
-| `mercenary` | Heroes of Hammerwatch 1's mercenary mode: once a class has a level-20 hero, a fresh character of it can enlist, climb the ranks from Private to General for more gold and experience, and die for good. |
-| `summons` | Priest Crusaders (and optionally all summons) persist through the loading screen between floors. |
-| `campaign` | The Forsaken Tower: the HoH1 campaign (Mines to Battlements, 18 floors, 6 bosses) started from a portal in town. With HoH1 installed, a second version plays the real HoH1 boss rooms and Battlements (`tools/import_hoh1.py campaign`). |
-| `wavemode` | Wave Arena: a survival arena started from a statue in town; boss kills raise your arena rank. |
-| `classes` | The HoH1 classes HoH2 lacks: Thief, Gladiator, Witch Hunter, three masteries each. Also HoH1-style masteries for the Priest (Smiter) and Paladin (Holy Storm). The Thief's Slice and Dice / Cloak of Shadows and the Holy Storm Paladin's Zealous Charge are 4th actives, cast on core's Skill 4 key (default 4). |
+| `summons` | Summons come through a floor change with the HP they had. The game already carries the Priest's Crusaders; this tops up any that go missing, and the `summons.all` setting covers every summon (wolves, Warlock minions). |
 
-Each module's spec and test checklist is in `mods/<id>/README.md`.
+### Heroes of Hammerwatch 1
+
+| Module | What it does |
+|---|---|
+| `campaign` | **The Forsaken Tower**: the HoH1 campaign (Mines to Battlements, 18 floors, 6 bosses), started from a portal in town. NG+ swaps in HoH1's NG+ bosses and enemies. With HoH1 installed, a second version plays the real HoH1 boss rooms and Battlements (`tools/import_hoh1.py campaign`). |
+| `keys` | HoH1-style keys: every chest but the cursed ones needs a key of its tier. Keys drop in runs (a party can share a key pool), and the exit guard's General Merchant sells keys, bag slots and six trinkets to take into your next run. Also ace chests and seven red legendaries. |
+| `mercenary` | HoH1's mercenary mode: once a class has a level-20 hero, a fresh character of it can enlist (`hwp merc enlist`), climb the ranks from Private to General for more gold and experience, and die for good. |
+| `legacy` | HoH1-style class titles: your best hero of each class buffs every character. One "Title Bonuses" buff lists them, and Guild Hall > Titles shows every class. |
+| `pets` | Pets level up (from kills, pickups, and farm crops at the feeding bowl) and learn utility skills. Per-pet pickup toggles, pet dyes at the tailor, pets wait outside puzzle rooms, and every HoH1 pet is in the Pet Shop (imported from your own HoH1 install). |
+
+### Runs and dungeons
+
+| Module | What it does |
+|---|---|
+| `puzzles` | Puzzle rooms are back on most floors (HoH2 ships 88 but never places them), and HoH1's Constellation puzzle is one they can roll, also in a clearing on forest and heaven floors. |
+| `strongbox` | Path of Exile-style strongboxes: open one, a pack of the floor's enemies spawns (elites possible), clear it for the box's loot. |
+| `abyss` | Abyss cracks: step close and waves crawl out, ending in elites (more in a bigger party). Clear them for a reward that grows the deeper the run goes. |
+| `maps` | Three new layouts for the equipment-map drops: Goblin Warrens, Sunken Dungeon, The High Court. |
+| `valuables` | Valuables (vases, chalices, gems, furs, scales: the pickups that turn straight into gold) are worth twice their vanilla gold. |
+| `wavemode` | **Wave Arena**: a survival arena started from a statue in town; every boss kill raises your arena rank, which is the arena's NG+ level next time. |
+
+### Town
+
+| Module | What it does |
+|---|---|
+| `fishing` | Six fishing spots on the town coast (a timing minigame), more in the water of run floors' potion wells (always one in a boss room), greyed on the map once fished out. A pirate sells bait, rods and fish traps from the trading post's wreck, later its boat. Fish are swords, sell for bet tokens and can be eaten (100 HP per star). |
+| `farming` | The town's field grooves become farm plots: food crops and four Holy Herb strains grow with each completed run, faster when watered (the farmer sells the can and seeds; the well refills it). Smoke a herb for a buff that lasts 10 floors, or roll it into a joint: an off-hand with 5 puffs that a friend can take from you, with smoke that fills the room. |
+| `gambler` | A gambler in the tavern plays Higher/Lower for gold. He buys crops and herbs for gold and fish for bet tokens, and rerolls equipped gear for 2000 gold × item level, or 1 bet token per 5 item levels. |
+| `goldpet` | A pet vendor in the Hunter's Lodge sells the Gold Collector cat, with two upgrades (materials and scrolls, then valuables). |
+| `stash` | A Sort button on the town stash: by class, then weapon type, then item level. |
+| `laststats` | The last run's stats for the whole party, on a notice board by the town fountain. |
+
+### Co-op and quality of life
+
+| Module | What it does |
+|---|---|
+| `groupcombo` | A party-wide combo bonus that grows with how many players are in combo, and brief invulnerability when everyone is. |
+| `architect` | Any player can pick and pay for Architect alterations; the host's picks are split across the party. Seven HoH1 challenges discount them, down to free. |
+| `droptrade` | Drop equipment on the ground for friends: a Drop button (Q) next to Destroy in the inventory. |
+| `deathrecap` | Who killed you: the top damage sources of the last 10 s, on screen and in chat. |
+| `bufftips` | Hover a buff icon to see what it does and how many seconds it has left. |
+| `chatlinks` | Linked items stay in chat with their slot and item level; `hwp link` links an equipped item. |
+| `colors` | Colour-blind and high-contrast tints for enemy and friendly projectiles (player menu > Plus tab). |
+| `core` | Required by every module: settings (the Plus tab and the `hwp` console command), save data and networking. It also adds keys 4, 5 and 6 for a class's 4th to 6th active skill, a Plants & Herbs section in the Materials tab with Eat and Roll actions, a warning on orbs that close off other orbs, the use key picking up a dropped item before it talks to an NPC, and "Mm-hmm!" hats (a quarter of rare and epic hats play the Material Trader's "mm-hmm" on every crit, for everyone). |
+
+Each module's full spec and test checklist is in `mods/<id>/README.md`.
 
 `mods/gamelab-*` are GameLab test harnesses, not player content. `build.py` never packs
 them; they are only linked into the GameLab environment.
@@ -57,12 +80,47 @@ them; they are only linked into the GameLab environment.
 
 ## Installing (players)
 
-1. Download the `.bin` files you want from Releases (or `HammerwatchPlus-All.bin`).
+No releases are published yet; until then, build the packages yourself (see Developing,
+`python tools/build.py`).
+
+1. Take the `.bin` files you want from `dist/` (or `HammerwatchPlus-All.bin` for everything).
 2. Drop them into `<Steam>/steamapps/common/Heroes of Hammerwatch 2/mods/`.
 3. Start the game, open **Resource Mods** and enable them. Everyone in the lobby does the same.
 4. In game, open the console (the key left of 1) and type `hwp help` for the commands and settings.
 
-Workshop uploads will follow once the modules stabilise.
+Workshop uploads will follow once the modules settle.
+
+## Class planner
+
+The class designs live in a local web page: every class's kit, specs and orbs from the game
+data, the Firearms Specialist's full design, and a 4th specialization for each of the other
+classes. The 4th specs of the six vanilla classes are being designed now (Rogue and
+Sorcerer: Zak; Warrior and Warlock: Colin; Ranger and Wizard: Noah); the brief is at the top
+of each class's page.
+
+It needs only Python 3 (no game, no packages):
+- **Windows:** double-click `planner.cmd`.
+- **Linux / macOS:** `./planner.sh`.
+- **Anywhere:** `python -m planner` (or `python3`) from the repo root.
+
+Edits are saved as JSON files under `planner/data/`; commit and push them. More in
+`planner/README.md`.
+
+## Status
+
+- Every solo step of the in-game test plan has a `gamelab/scenarios/plan-*.json` scenario.
+  As of 2026-10-18 they all pass in GameLab except Weapon Swap's "only you can pick it up",
+  which needs a real lobby. The Firearms Specialist's checks (`plan-t14`, `plan-firearms-*`)
+  last passed on 2026-10-19 and 2026-10-20.
+- The co-op steps need two players: GameLab runs one game, and HoH2 only connects through
+  Steam/GOG lobbies.
+- GameLab is pinned to build 25932569 (since 2026-10-19).
+- Firearms still to do: the two base passives (the old Scavenger and Steady Hands stand in)
+  and final icons (the current ones are placeholders from `tools/make_firearms_icons.py`).
+- The vanilla classes' 4th specs are being designed in the class planner.
+- What each session changed, with the GameLab run behind every claim, is in
+  `docs/RE_NOTES.md`. The HoH1-to-HoH2 trinket comparison is a private web app outside the
+  repo; its link is there too.
 
 ## GameLab
 
@@ -71,59 +129,6 @@ drives it through its own scripts (no real input, no focus steals, never touchin
 config or saves), and scores what happened. Use the `gamelab` skill to run it.
 Before merging to main, run `python -m gamelab run mod-all --mode lab` (every content
 mod loaded together; GUI textures must be power-of-two sized or the game won't boot).
-
-The in-game test plan's steps each have a `gamelab/scenarios/plan-*.json` scenario. As of
-2026-10-18, every solo step passes in GameLab except Weapon Swap's "only you can pick it up",
-which needs a real lobby. The Forsaken Tower now swaps HoH1's bosses and enemies for their
-NG+ copies as HoH1 did (the Warden's bomb fan from NG+1, the Vampire Lord's Bat Spray from
-NG+2), and HoH1 burst attacks that never fired (the ice trolls', ballista towers', the NG+
-Warden's club and ballista) now do. The co-op steps need two players:
-GameLab runs one game, and HoH2 only connects through Steam/GOG lobbies. Repeat runs of the
-pet scenarios found three more bugs, now fixed: a pet could stall after waiting by a
-puzzle, the Gold Collector cat froze on an unreachable pickup, and a farming wild plot
-nearby kept Morale off.
-The Firearms Specialist's clip, reload and guns pass `plan-t14` and `plan-firearms-guns`
-(magazines 30/10/20, rounds per click for each loadout, dodge-interrupted reload). Its class
-planner also holds a 4th spec slot for every other class (`docs/design/firearms.md`).
-Its Marksman and Demolitionist specializations and the base kit's orbs followed (2026-10-19),
-checked by `plan-firearms-a`, `-b` and `-orbs` through a new `gl orb` verb. Placeholder
-icons come from `tools/make_firearms_icons.py`. Over-Reload now works on a manual Reload too
-(a second press on the mark), and dual pistols throw their magazines one after the other.
-Rounds are now small tinted bullets fired on the attack's first frame, and the clip fills
-only in the village and on a run's first floor, carrying its count between floors; a
-trigger pull on an empty clip reloads (`mod-firearms-clip`). Assault's old Stun Grenade is gone (Double Barrel Burst and Adrenaline remain), and `hwp
-firearms sound` auditions firing sounds by ear; the guns, rockets and reload use the sounds
-picked that way (reload: unlock, then lever on, or lever off on a perfect). GameLab is pinned to build
-25932569 since 2026-10-19. The Engineer (a turret that wears down and that you repair and boost by standing near it)
-and Assault's checks pass `plan-firearms-b`; after a rifle or pistol shot the arm stays raised until 1 s without a shot (`plan-firearms-arm`).
-The Reload cast is now the whole 2.0-1.2 s recharge (a dodge cancels it, a full clip refuses it) and shows the
-automatic reload's icon sweep; one pistol item fits either hand, rounds leave each gun 6 px out, and a held trigger
-no longer says "cant" (`mod-firearms-pistols`). The demo has a Skill Trainer, training dummies and a 2560x1440 window, and its whole setup is one
-`gl setup` line. Core now puts a dropped item ahead of a vendor for the use key (`mod-core-pickup`).
-Rounds now leave the gun's tip (rifle 22 px out, pistols 12), and Snipe costs mana only and shows a red laser dot while it charges (`look-firearms-tips`).
-Dual pistols fire every 300 ms with even gaps, My Turret! boosts only within 10 m (60 px: the game's metre is 6 px), Double Barrel Burst hits x1.5-3.5 up close, and Ordinance Hoarder's icon counts every use ready while the slot's ring shows the next charge banking (`look-firearms-batch`, `plan-firearms-b`). The demo has an orb that stays after each pick, its trainer sells every tier, and it stays open four hours, closing early when the game does.
-On 2026-10-20 the play-test list was worked through: rifle bursts, single pistol shots, the
-Over-Reload bar, a rooted weapon swap, joints, eating fish, fish spots in the wells' water, the
-pirate in the boat, a party key pool, abyss rewards by depth, double valuables and puzzle rooms
-on most floors (`docs/RE_NOTES.md`, every run cited there). A code review of that work fixed
-ten issues, among them co-op keys, a joint puff lost to a level change, and dual pistols
-whose spread threw every round off the aim line (they now match the rifle,
-`bench-weapons`).
-A later code review fixed 15 smaller issues: town units tracked after a
-town reload, the troll groups and HoH1-floor strongboxes on NG+, the cat giving up while
-walking around a wall, and the wave statue's spot differing between machines
-(`docs/RE_NOTES.md`).
-An ability or the weapon swap now cuts a Firearms reload, and Reload starts it again;
-a save from before Frag and the doctrine skills started at rank 1 that is past the new max is
-pulled back to it (`plan-firearms-reload-cut`). A second code review's fixes cover the joint hand-over,
-the turret's shot rate, puzzle rooms, the key pool and the bench. The class planner now
-shows the three ported HoH1 classes and the Priest's and Paladin's HoH1 masteries. It is
-now a local web app in the repo (`planner/`: double-click `planner.cmd`, run `./planner.sh`
-on Linux, or `python -m planner`), its records JSON files under `planner/data/`; every class but the
-Firearms Specialist has a placeholder 4th specialization in place of the drafted ideas.
-The HoH1-to-HoH2 trinket comparison (missing, modified, new and flat-value trinkets,
-grouped by HoH2 set, with shared verdicts) is a private web app outside the repo; its link
-is in `docs/RE_NOTES.md`.
 
 ## Developing
 
