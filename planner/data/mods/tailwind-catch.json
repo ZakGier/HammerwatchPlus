@@ -1,0 +1,17 @@
+{
+  "built": "",
+  "cls": "ranger",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": ""
+    }
+  ],
+  "name": "Tailwind Catch",
+  "notes": "",
+  "order": null,
+  "skill": "ranger-spec4-active",
+  "status": "idea",
+  "summary": "Catching your returning arrow grants a stack of Tailwind (Gathering Winds)."
+}

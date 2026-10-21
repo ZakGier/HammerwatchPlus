@@ -1,11 +1,16 @@
 {
+  "built": "",
   "cls": "ranger",
+  "cooldown": "",
   "group": "ranger-spec4",
   "kind": "passive",
   "levels": [],
-  "name": "Placeholder Passive",
+  "mana": "",
+  "name": "Gathering Winds",
+  "notes": "",
   "order": 1,
+  "role": "",
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Using Bow & Crossbow skills grants a stack of Tailwind for 4s, up to 5 stacks. Each stack increases your Action Speed (Movement, Skill and Weapon Speed) by 2%.",
   "unlock": "bought"
 }

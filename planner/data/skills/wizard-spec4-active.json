@@ -1,11 +1,16 @@
 {
+  "built": "",
   "cls": "wizard",
+  "cooldown": "12",
   "group": "wizard-spec4",
   "kind": "active",
   "levels": [],
-  "name": "Placeholder Active",
+  "mana": "",
+  "name": "Thunder Orb",
+  "notes": "",
   "order": 0,
+  "role": "weapon",
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "You launch a slow-moving orb of lightning that passes through enemies. Every 0.25s it zaps up to 3 enemies in range, dealing Lightning damage. It prefers enemies it hasn't zapped yet. If it hits a wall, it stops there and keeps zapping until its duration (3s base at max lvl, 2s base at lowest lvl) runs out.\n\nHow the targeting works: every tick fires its 3 zaps no matter how many enemies are in range.\n- In a mob: zaps spread to new targets, so the orb sweeps damage through the pack as it travels.\n- Fewer than 3 enemies: the extra zaps go to enemies already in range.\n- Lone boss: all 3 zaps hit the boss every tick.",
   "unlock": "bought"
 }

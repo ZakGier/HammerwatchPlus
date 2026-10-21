@@ -1,0 +1,25 @@
+{
+  "built": "",
+  "cls": "wizard",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+1"
+    },
+    {
+      "q": "uncommon",
+      "text": "+1.5"
+    },
+    {
+      "q": "rare",
+      "text": "+2"
+    }
+  ],
+  "name": "Lingering Storm",
+  "notes": "",
+  "order": null,
+  "skill": "wizard-spec4-active",
+  "status": "idea",
+  "summary": "Increases Tempest Orb's duration."
+}

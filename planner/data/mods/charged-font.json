@@ -1,0 +1,21 @@
+{
+  "built": "",
+  "cls": "wizard",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "5% mana restored"
+    },
+    {
+      "q": "rare",
+      "text": "10% mana restored"
+    }
+  ],
+  "name": "Charged Font",
+  "notes": "",
+  "order": null,
+  "skill": "wizard-spec4-passive",
+  "status": "idea",
+  "summary": "Releasing Static Charge restores Mana."
+}

@@ -1,0 +1,21 @@
+{
+  "built": "",
+  "cls": "ranger",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "1.5%"
+    },
+    {
+      "q": "rare",
+      "text": "3%"
+    }
+  ],
+  "name": "Wind Ward",
+  "notes": "",
+  "order": null,
+  "skill": "ranger-spec4-passive",
+  "status": "idea",
+  "summary": "Each stack of Tailwind reduces the damage you take."
+}

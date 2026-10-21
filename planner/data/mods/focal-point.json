@@ -1,0 +1,25 @@
+{
+  "built": "",
+  "cls": "wizard",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "+10% range"
+    },
+    {
+      "q": "uncommon",
+      "text": "+20% range"
+    },
+    {
+      "q": "rare",
+      "text": "+35% range"
+    }
+  ],
+  "name": "Focal Point",
+  "notes": "",
+  "order": null,
+  "skill": "wizard-spec4-active",
+  "status": "idea",
+  "summary": "Tempest Orb zaps more enemies per tick and has increased range."
+}

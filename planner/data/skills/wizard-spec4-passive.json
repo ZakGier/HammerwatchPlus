@@ -1,11 +1,16 @@
 {
+  "built": "",
   "cls": "wizard",
+  "cooldown": "",
   "group": "wizard-spec4",
   "kind": "passive",
   "levels": [],
-  "name": "Placeholder Passive",
+  "mana": "",
+  "name": "Static Charge",
+  "notes": "",
   "order": 1,
+  "role": "",
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Your spells that Crit grant a stack of Static Charge, up to 1 per cast. At 5 stacks, your next spell releases a lightning strike that splits between up to 3 nearby enemies. If it hits only one enemy, it deals 50% more damage.",
   "unlock": "bought"
 }

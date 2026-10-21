@@ -1,0 +1,21 @@
+{
+  "built": "",
+  "cls": "wizard",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+4% damage per stack"
+    },
+    {
+      "q": "rare",
+      "text": "+7% damage per stack"
+    }
+  ],
+  "name": "Focal Point",
+  "notes": "",
+  "order": null,
+  "skill": "wizard-spec4-active",
+  "status": "idea",
+  "summary": "Each consecutive zap on the same enemy deals more damage, stacking up to 10 times. "
+}

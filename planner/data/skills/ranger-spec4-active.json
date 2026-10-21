@@ -1,11 +1,16 @@
 {
+  "built": "",
   "cls": "ranger",
+  "cooldown": "",
   "group": "ranger-spec4",
   "kind": "active",
   "levels": [],
-  "name": "Placeholder Active",
+  "mana": "",
+  "name": "Lightning Arrow",
+  "notes": "",
   "order": 0,
+  "role": "",
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "You fire a volley of three arrows in a V that deals Physical and Lightning damage and pierces every enemy in its path. Each enemy it hits calls lightning down on up to 2 other nearby enemies. When the arrow reaches max range or hits a wall, it returns to you, hitting everything along the way again.\n\nAoE and single target:\n- In a pack: each hit spawns lightning strikes, and the return trip triggers them again, so the arrow covers the pack twice.\n- On a boss: the boss takes 2 arrow hits per shot, one going out and one coming back. Fire with the boss between you and a wall for the shortest round trip and the fastest repeat hits.",
   "unlock": "bought"
 }

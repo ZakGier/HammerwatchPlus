@@ -1,0 +1,21 @@
+{
+  "built": "",
+  "cls": "ranger",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+20%"
+    },
+    {
+      "q": "rare",
+      "text": "+40%"
+    }
+  ],
+  "name": "Boomerang",
+  "notes": "",
+  "order": null,
+  "skill": "ranger-spec4-active",
+  "status": "idea",
+  "summary": "The returning arrow deals increased damage. When it hits an enemy with no other enemies nearby, the lightning strikes that enemy instead."
+}

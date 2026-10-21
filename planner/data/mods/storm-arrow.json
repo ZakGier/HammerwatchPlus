@@ -1,0 +1,25 @@
+{
+  "built": "",
+  "cls": "ranger",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+1 extra strikes / +15% radius"
+    },
+    {
+      "q": "uncommon",
+      "text": "+2 extra strikes / +25% radius"
+    },
+    {
+      "q": "rare",
+      "text": "+3 extra strikes / +40% radius"
+    }
+  ],
+  "name": "Storm Arrow",
+  "notes": "",
+  "order": null,
+  "skill": "ranger-spec4-active",
+  "status": "idea",
+  "summary": "Each arrow hit calls lightning on more enemies, in a larger radius."
+}

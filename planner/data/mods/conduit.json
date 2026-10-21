@@ -1,0 +1,21 @@
+{
+  "built": "",
+  "cls": "wizard",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "uncommon",
+      "text": "+2% cast speed per stack"
+    },
+    {
+      "q": "rare",
+      "text": "+4% cast speed per stack"
+    }
+  ],
+  "name": "Conduit",
+  "notes": "",
+  "order": null,
+  "skill": "wizard-spec4-passive",
+  "status": "idea",
+  "summary": "Each stack of Static Charge increases your Cast Speed."
+}
