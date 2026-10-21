@@ -1,0 +1,24 @@
+{
+  "cls": "rogue",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Healing gusts also grant brief Health Regeneration."
+    },
+    {
+      "q": "uncommon",
+      "text": "Increases the Health Regeneration granted by healing gusts."
+    },
+    {
+      "q": "rare",
+      "text": "Further increases the Health Regeneration granted by healing gusts."
+    }
+  ],
+  "name": "Lingering Breeze",
+  "notes": "Applies to everyone healed by a gust, including gusts triggered through Shared Breath. Regeneration strength increases with each orb level. Amounts and duration are left for tuning.",
+  "order": 1,
+  "skill": "rogue-spec4-passive",
+  "status": "idea",
+  "summary": "Healing gusts also grant brief Health Regeneration after the initial heal."
+}

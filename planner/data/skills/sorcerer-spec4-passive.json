@@ -3,9 +3,10 @@
   "group": "sorcerer-spec4",
   "kind": "passive",
   "levels": [],
-  "name": "Placeholder Passive",
+  "name": "Arcane Vessel",
+  "notes": "Working name. Maximum-health bonuses from items and other sources grant maximum mana instead. Food, potions, health regeneration, life leech and other health restoration restore mana. Casting still requires enough mana to pay the normal spell cost; applying the cost leaves at least 1 mana. Damage can empty the pool and kill you.",
   "order": 1,
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Your entire health pool is converted into mana. Health bonuses and healing affect mana instead. Incoming damage drains mana, and reaching 0 mana kills you. Casting can only reduce you to 1 mana.",
   "unlock": "bought"
 }

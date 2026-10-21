@@ -1,0 +1,24 @@
+{
+  "cls": "rogue",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Protective Gale also increases Movement Speed."
+    },
+    {
+      "q": "uncommon",
+      "text": "Increases the Movement Speed granted by Protective Gale."
+    },
+    {
+      "q": "rare",
+      "text": "Further increases the Movement Speed granted by Protective Gale."
+    }
+  ],
+  "name": "Tailwind",
+  "notes": "The Movement Speed bonus increases with each orb level. Exact amounts are left for tuning.",
+  "order": 0,
+  "skill": "rogue-spec4-active",
+  "status": "idea",
+  "summary": "Protective Gale also grants increased Movement Speed."
+}

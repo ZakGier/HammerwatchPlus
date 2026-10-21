@@ -1,0 +1,16 @@
+{
+  "cls": "rogue",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "Teammates affected by Protective Gale can trigger healing gusts on successful evades, sharing your Second Wind cooldown."
+    }
+  ],
+  "name": "Shared Breath",
+  "notes": "A shared gust originates at the evading teammate and heals that player and nearby teammates. These gusts share the same cooldown as your own Second Wind gusts and apply your other Second Wind orbs, including Lingering Breeze.",
+  "order": 0,
+  "skill": "rogue-spec4-passive",
+  "status": "idea",
+  "summary": "Teammates affected by Protective Gale can also trigger Second Wind healing gusts when they successfully evade an attack."
+}

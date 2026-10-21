@@ -1,0 +1,24 @@
+{
+  "cls": "rogue",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Increases the duration of Protective Gale."
+    },
+    {
+      "q": "uncommon",
+      "text": "Further increases the duration of Protective Gale."
+    },
+    {
+      "q": "rare",
+      "text": "Grants the largest increase to Protective Gale duration."
+    }
+  ],
+  "name": "Lasting Gale",
+  "notes": "The duration bonus increases with each orb level and applies to the whole buff, including Tailwind when equipped. Exact durations are left for tuning.",
+  "order": 1,
+  "skill": "rogue-spec4-active",
+  "status": "idea",
+  "summary": "Extends the duration of Protective Gale."
+}

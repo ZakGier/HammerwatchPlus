@@ -3,9 +3,10 @@
   "group": "rogue-spec4",
   "kind": "active",
   "levels": [],
-  "name": "Placeholder Active",
+  "name": "Protective Gale",
+  "notes": "One cast applies the buff to everyone in range. Evasion means dodge chance. The buff's Evasion amount, duration, range, mana cost and cooldown are left for tuning.",
   "order": 0,
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Grant yourself and nearby teammates increased Evasion for a duration. The buff stays with each player as they move.",
   "unlock": "bought"
 }

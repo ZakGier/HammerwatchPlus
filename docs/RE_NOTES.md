@@ -2182,3 +2182,45 @@ another Reload press starts it again as usual. Then the second `/code-review hig
   rather than crashing (from source; not run). No release shipped these subclasses.
 - Runs: mod-classes 20261020-153330 PASS (`self-check done: 3/3 classes`), mod-all
   20261020-153342 PASS.
+
+## Sorcerer fourth-spec design: Arcane (2026-10-20)
+
+- Zak's design is recorded in `planner/data/`: **Arcane**, with **Blink** as the active
+  and **Arcane Vessel** as a working name for the passive. Blink teleports a short
+  distance and damages enemies around the arrival point. The passive converts the
+  health pool, maximum-health bonuses and health restoration into mana. Incoming damage
+  drains mana; reaching zero kills you. Spell costs leave at least one mana, with the
+  normal requirement to afford the spell before casting.
+- Passive orbs: **Mana Conduit** restores 33/66/100% of mana lost to damage to the other
+  players, as one total split evenly between them; spell costs do not trigger it.
+  **Arcane Feedback** empowers the next spell based on mana lost to enemy damage, up to
+  a cap, consumed on casting. Its scaling, cap and multi-hit behavior await tuning.
+- Blink orbs: **Aftershock** adds a departure blast; **Far Step** increases Blink range
+  over three orb levels. Feedback and Aftershock each have one orb level. Range, damage,
+  costs, cooldowns and blast radii await tuning.
+- Scope: planner design records. Gameplay implementation and GameLab verification remain
+  for the in-game work; these mechanics are design intent rather than verified behavior.
+- Verified locally: all planner JSON loaded, the design has one active and one passive
+  with two orbs each (one to three levels), and the planner HTTP page and data API
+  returned successfully. No game was launched.
+
+## Rogue fourth-spec design: Winddancer (2026-10-20)
+
+- Zak chose a survival-focused support Rogue: **Winddancer**. Its active,
+  **Protective Gale**, grants increased Evasion to the Rogue and nearby teammates. The
+  buff stays with each player as they move. **Second Wind**, the passive, releases a
+  healing gust on a successful evade, healing the Rogue and nearby teammates with a
+  short cooldown. This is intended to work with the base kit's Sidestep.
+- Protective Gale orbs: **Tailwind** adds Movement Speed; **Lasting Gale** extends the
+  whole buff's duration. Both have three levels with increasing bonuses.
+- Second Wind orbs: **Shared Breath** lets teammates affected by Protective Gale trigger
+  healing gusts from their positions when they evade. Those gusts share the Rogue's
+  Second Wind cooldown and apply its other orbs. **Lingering Breeze** adds brief Health
+  Regeneration after each healing gust. Shared Breath has one level; Lingering Breeze
+  has three levels with increasing regeneration strength.
+- Evasion, speed, duration, healing, regeneration, radius, mana cost and cooldown values
+  remain for tuning. This is a planner design, awaiting gameplay implementation and
+  GameLab verification.
+- Verified locally: both Winddancer and Arcane load through the planner JSON loader and
+  HTTP data API, each with one active, one passive and two orbs per skill (one to three
+  levels). The planner page responds successfully. No game was launched.

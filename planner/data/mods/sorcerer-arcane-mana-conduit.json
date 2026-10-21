@@ -1,0 +1,24 @@
+{
+  "cls": "sorcerer",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "33% of mana lost to damage is restored to your teammates, split evenly among them."
+    },
+    {
+      "q": "uncommon",
+      "text": "66% of mana lost to damage is restored to your teammates, split evenly among them."
+    },
+    {
+      "q": "rare",
+      "text": "100% of mana lost to damage is restored to your teammates, split evenly among them."
+    }
+  ],
+  "name": "Mana Conduit",
+  "notes": "The percentage determines one total mana amount, divided equally between the other player characters. Uses mana actually lost to incoming damage. Spending mana on skills does not trigger this effect.",
+  "order": 0,
+  "skill": "sorcerer-spec4-passive",
+  "status": "idea",
+  "summary": "When damage makes you lose mana, restore a percentage of that lost mana to your teammates, split evenly among them."
+}

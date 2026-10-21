@@ -3,9 +3,10 @@
   "group": "rogue-spec4",
   "kind": "passive",
   "levels": [],
-  "name": "Placeholder Passive",
+  "name": "Second Wind",
+  "notes": "Triggers on successful Evasion, including evades granted by Sidestep. The base gust originates at the Rogue. Shared Breath allows affected teammates to trigger gusts from their own positions, using the same passive cooldown. Healing, radius and cooldown are left for tuning.",
   "order": 1,
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Successfully evading an attack releases a healing gust that restores health to you and nearby teammates. This effect has a short cooldown.",
   "unlock": "bought"
 }

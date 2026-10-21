@@ -3,9 +3,10 @@
   "group": "sorcerer-spec4",
   "kind": "active",
   "levels": [],
-  "name": "Placeholder Active",
+  "name": "Blink",
+  "notes": "Damage, mana cost, cooldown, base distance and blast radius are left for tuning.",
   "order": 0,
   "status": "idea",
-  "summary": "Placeholder: not designed yet.",
+  "summary": "Teleport a short distance, damaging every enemy near where you reappear.",
   "unlock": "bought"
 }

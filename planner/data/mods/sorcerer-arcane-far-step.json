@@ -1,0 +1,24 @@
+{
+  "cls": "sorcerer",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "common",
+      "text": "Increases Blink's maximum distance."
+    },
+    {
+      "q": "uncommon",
+      "text": "Further increases Blink's maximum distance."
+    },
+    {
+      "q": "rare",
+      "text": "Grants the largest increase to Blink's maximum distance."
+    }
+  ],
+  "name": "Far Step",
+  "notes": "Range increases with each orb level. Exact distances are left for tuning.",
+  "order": 1,
+  "skill": "sorcerer-spec4-active",
+  "status": "idea",
+  "summary": "Blink travels progressively farther with each level of this orb."
+}

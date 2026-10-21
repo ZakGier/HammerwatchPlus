@@ -1,8 +1,8 @@
 {
-  "blurb": "Placeholder: not designed yet.",
+  "blurb": "Protect your team with evasive winds and healing gusts triggered by successful evades.",
   "cls": "rogue",
-  "name": "Placeholder",
-  "notes": "",
+  "name": "Winddancer",
+  "notes": "Zak's survival-focused support design. Protective Gale applies a buff that stays with each player as they move. Second Wind heals automatically on successful evades. Evasion, movement speed, duration, healing, regeneration, range, mana cost and cooldown values are left for tuning.",
   "order": 4,
   "owner": "Zak",
   "spec4": true,

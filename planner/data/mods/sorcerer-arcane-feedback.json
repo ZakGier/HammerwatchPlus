@@ -1,0 +1,16 @@
+{
+  "cls": "sorcerer",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "Taking enemy damage empowers your next spell based on the mana you lost, up to a cap."
+    }
+  ],
+  "name": "Arcane Feedback",
+  "notes": "Casting the empowered spell consumes the bonus. Spell costs do not generate feedback. Damage scaling, the bonus cap and how multiple hits contribute are left for tuning.",
+  "order": 1,
+  "skill": "sorcerer-spec4-passive",
+  "status": "idea",
+  "summary": "Taking enemy damage empowers your next spell based on the mana you lost, up to a cap."
+}

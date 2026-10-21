@@ -1,0 +1,16 @@
+{
+  "cls": "sorcerer",
+  "exclusive": "",
+  "levels": [
+    {
+      "q": "rare",
+      "text": "Blink also damages enemies around your departure point."
+    }
+  ],
+  "name": "Aftershock",
+  "notes": "The departure blast is in addition to Blink's normal arrival blast. Damage and radius are left for tuning.",
+  "order": 0,
+  "skill": "sorcerer-spec4-active",
+  "status": "idea",
+  "summary": "Blink also creates a damaging blast where you teleported from, letting you hit enemies while escaping."
+}

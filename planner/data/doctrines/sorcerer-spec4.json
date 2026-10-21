@@ -1,8 +1,8 @@
 {
-  "blurb": "Placeholder: not designed yet.",
+  "blurb": "Mana becomes your life pool. Blink through battle and damage enemies where you reappear.",
   "cls": "sorcerer",
-  "name": "Placeholder",
-  "notes": "",
+  "name": "Arcane",
+  "notes": "Zak's design draft. Damage, mana costs, cooldowns, blast radii, Blink distances and feedback scaling are left for tuning.",
   "order": 4,
   "owner": "Zak",
   "spec4": true,

@@ -106,6 +106,12 @@ It needs only Python 3 (no game, no packages):
 Edits are saved as JSON files under `planner/data/`; commit and push them. More in
 `planner/README.md`.
 
+Zak's drafts, **Arcane** (Sorcerer) and **Winddancer** (Rogue), are recorded in the planner.
+Arcane converts health into mana and uses Blink to damage enemies on arrival. Winddancer
+boosts the party's Evasion and heals through successful evades. Each has one active and
+one passive with two orbs per skill. Gameplay implementation and numerical tuning are
+still to come.
+
 ## Status
 
 - Every solo step of the in-game test plan has a `gamelab/scenarios/plan-*.json` scenario.
